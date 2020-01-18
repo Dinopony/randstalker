@@ -20,8 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants\ItemCodes.h" />
-    <ClInclude Include="ItemPedestalCodes.h" />
-    <ClInclude Include="ItemRewardCodes.h" />
+    <ClInclude Include="Constants\ItemPedestalCodes.h" />
+    <ClInclude Include="Constants\ItemRewardCodes.h" />
     <ClInclude Include="ItemSource.h" />
     <ClInclude Include="GameROM.h" />
     <ClInclude Include="Item.h" />
@@ -137,6 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

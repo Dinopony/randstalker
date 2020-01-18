@@ -1,7 +1,6 @@
 #include "World.h"
 
 
-
 void World::initItems()
 {
 	_items[ITEM_EKEEKE] = new Item(ITEM_EKEEKE, "EkeEke", 20, true);
@@ -92,9 +91,9 @@ void World::initItemSources()
 	_chests[0x10] = new ItemChest(0x10, ITEM_EKEEKE, "Mercator Dungeon (1F): right ekeeke chest in double chest room");
 	_chests[0x11] = new ItemChest(0x11, ITEM_KEY, "Mercator: Arthur key chest in castle tower");
 	_chests[0x12] = new ItemChest(0x12, ITEM_LIFESTOCK, "Mercator Dungeon (4F): chest on top of tower");
-	_chests[0x13] = new ItemChest(0x13, ITEM_LIFESTOCK, "King Nole's Palace: entrance lifestock chest?");
-	_chests[0x14] = new ItemChest(0x14, ITEM_EKEEKE, "King Nole's Palace: ekeeke chest in topmost pit room?");
-	_chests[0x15] = new ItemChest(0x15, ITEM_DAHL, "King Nole's Palace: dahl chest in floating button room?");
+	_chests[0x13] = new ItemChest(0x13, ITEM_LIFESTOCK, "King Nole's Palace: entrance lifestock chest");
+	_chests[0x14] = new ItemChest(0x14, ITEM_EKEEKE, "King Nole's Palace: ekeeke chest in topmost pit room");
+	_chests[0x15] = new ItemChest(0x15, ITEM_DAHL, "King Nole's Palace: dahl chest in floating button room");
 	_chests[0x16] = new ItemChest(0x16, ITEM_LIFESTOCK, "King Nole's Cave: first lifestock chest");
 	_chests[0x18] = new ItemChest(0x18, ITEM_5_GOLDS, "King Nole's Cave: first gold chest in third room");
 	_chests[0x19] = new ItemChest(0x19, ITEM_5_GOLDS, "King Nole's Cave: second gold chest in third room");
@@ -155,41 +154,41 @@ void World::initItemSources()
 	_chests[0x5D] = new ItemChest(0x5D, ITEM_GOLDEN_STATUE, "Lake Shrine (-1F): golden statue chest in corridor");
 	_chests[0x5E] = new ItemChest(0x5E, ITEM_LIFESTOCK, "Lake Shrine (-1F): green golem spinner lifestock chest");
 	_chests[0x5F] = new ItemChest(0x5F, ITEM_LIFESTOCK, "Lake Shrine (-1F): golem hopping lifestock chest");
-	_chests[0x60] = new ItemChest(0x60, ITEM_LIFESTOCK, "Lake Shrine (-2F): middle life stock ?");
-	_chests[0x61] = new ItemChest(0x61, ITEM_LIFESTOCK, "Lake Shrine (-2F): \"throne room\" lifestock chest ?");
-	_chests[0x62] = new ItemChest(0x62, ITEM_KEY, "Lake Shrine (-2F): \"throne room\" key chest ?");
+	_chests[0x60] = new ItemChest(0x60, ITEM_LIFESTOCK, "Lake Shrine (-2F): middle life stock");
+	_chests[0x61] = new ItemChest(0x61, ITEM_LIFESTOCK, "Lake Shrine (-2F): \"throne room\" lifestock chest");
+	_chests[0x62] = new ItemChest(0x62, ITEM_KEY, "Lake Shrine (-2F): \"throne room\" key chest");
 	_chests[0x63] = new ItemChest(0x63, ITEM_LIFESTOCK, "Lake Shrine (-3F): white golems room");
-	_chests[0x64] = new ItemChest(0x64, ITEM_KEY, "Lake Shrine (-3F): key chest near sword of ice ?");
+	_chests[0x64] = new ItemChest(0x64, ITEM_KEY, "Lake Shrine (-3F): key chest near sword of ice");
 	_chests[0x65] = new ItemChest(0x65, ITEM_LIFESTOCK, "Lake Shrine (-3F): chest in snake caging room");
 	_chests[0x66] = new ItemChest(0x66, ITEM_LIFESTOCK, "Lake Shrine (-3F): lifestock chest on central block, obtained by falling from above");
-	_chests[0x67] = new ItemChest(0x67, ITEM_DAHL, "Lake Shrine (-3F): chest before reaching the duke?");
+	_chests[0x67] = new ItemChest(0x67, ITEM_DAHL, "Lake Shrine (-3F): chest before reaching the duke");
 	_chests[0x68] = new ItemChest(0x68, ITEM_EKEEKE, "Lake Shrine (-3F): reward chest (left) after beating the duke");
 	_chests[0x69] = new ItemChest(0x69, ITEM_LIFESTOCK, "Lake Shrine (-3F): reward chest (middle) after beating the duke");
 	_chests[0x6A] = new ItemChest(0x6A, ITEM_EKEEKE, "Lake Shrine (-3F): reward chest (right) after beating the duke");
 	_chests[0x6B] = new ItemChest(0x6B, ITEM_KEY, "Lake Shrine (-3F): key chest near golden golem spinner");
-	_chests[0x6C] = new ItemChest(0x6C, ITEM_KEY, "King Nole's Labyrinth (0F): key chest in \"outside room\"?");
-	_chests[0x6D] = new ItemChest(0x6D, ITEM_EKEEKE, "King Nole's Labyrinth (0F): ekeeke chest in room after key door?");
-	_chests[0x6E] = new ItemChest(0x6E, ITEM_LIFESTOCK, "King Nole's Labyrinth (0F): lifestock chest in room after key door?");
-	_chests[0x6F] = new ItemChest(0x6F, ITEM_LIFESTOCK, "King Nole's Labyrinth (-1F): lifestock chest in \"small maze\" room?");
+	_chests[0x6C] = new ItemChest(0x6C, ITEM_KEY, "King Nole's Labyrinth (0F): key chest in \"outside room\"");
+	_chests[0x6D] = new ItemChest(0x6D, ITEM_EKEEKE, "King Nole's Labyrinth (0F): ekeeke chest in room after key door");
+	_chests[0x6E] = new ItemChest(0x6E, ITEM_LIFESTOCK, "King Nole's Labyrinth (0F): lifestock chest in room after key door");
+	_chests[0x6F] = new ItemChest(0x6F, ITEM_LIFESTOCK, "King Nole's Labyrinth (-1F): lifestock chest in \"small maze\" room");
 	_chests[0x70] = new ItemChest(0x70, ITEM_GAIA_STATUE, "King Nole's Labyrinth (0F): chest in spike balls room");
 	_chests[0x71] = new ItemChest(0x71, ITEM_EKEEKE, "King Nole's Labyrinth (-1F): ekeeke chest in triple chest dark room (left side)");
 	_chests[0x72] = new ItemChest(0x72, ITEM_EKEEKE, "King Nole's Labyrinth (-1F): ekeeke chest in triple chest dark room (right side)");
 	_chests[0x73] = new ItemChest(0x73, ITEM_RESTORATION, "King Nole's Labyrinth (-1F): restoration chest in triple chest dark room (left side)");
-	_chests[0x74] = new ItemChest(0x74, ITEM_LIFESTOCK, "King Nole's Labyrinth (-1F): lifestock chest in \"big maze\" room?");
-	_chests[0x75] = new ItemChest(0x75, ITEM_EKEEKE, "King Nole's Labyrinth (-1F): ekeeke chest in lantern room?");
+	_chests[0x74] = new ItemChest(0x74, ITEM_LIFESTOCK, "King Nole's Labyrinth (-1F): lifestock chest in \"big maze\" room");
+	_chests[0x75] = new ItemChest(0x75, ITEM_EKEEKE, "King Nole's Labyrinth (-1F): ekeeke chest in lantern room");
 	_chests[0x76] = new ItemChest(0x76, ITEM_LANTERN, "King Nole's Labyrinth (-1F): lantern chest");
-	_chests[0x77] = new ItemChest(0x77, ITEM_KEY, "King Nole's Labyrinth (-1F): key chest in ice shortcut room?");
-	_chests[0x78] = new ItemChest(0x78, ITEM_EKEEKE, "King Nole's Labyrinth (-2F): ekeeke chest in skeleton priest room?");
-	_chests[0x79] = new ItemChest(0x79, ITEM_KEY, "King Nole's Labyrinth (-1F): key chest in \"button and crates\" room?");
-	_chests[0x7A] = new ItemChest(0x7A, ITEM_EKEEKE, "King Nole's Labyrinth (-3F): ekeeke chest before Firedemon?");
-	_chests[0x7B] = new ItemChest(0x7B, ITEM_DAHL, "King Nole's Labyrinth (-3F): dahl chest before Firedemon?");
+	_chests[0x77] = new ItemChest(0x77, ITEM_KEY, "King Nole's Labyrinth (-1F): key chest in ice shortcut room");
+	_chests[0x78] = new ItemChest(0x78, ITEM_EKEEKE, "King Nole's Labyrinth (-2F): ekeeke chest in skeleton priest room");
+	_chests[0x79] = new ItemChest(0x79, ITEM_KEY, "King Nole's Labyrinth (-1F): key chest in \"button and crates\" room");
+	_chests[0x7A] = new ItemChest(0x7A, ITEM_EKEEKE, "King Nole's Labyrinth (-3F): ekeeke chest before Firedemon");
+	_chests[0x7B] = new ItemChest(0x7B, ITEM_DAHL, "King Nole's Labyrinth (-3F): dahl chest before Firedemon");
 	_chests[0x7C] = new ItemChest(0x7C, ITEM_GOLA_NAIL, "King Nole's Labyrinth (-3F): reward for beating Firedemon");
-	_chests[0x7D] = new ItemChest(0x7D, ITEM_LIFESTOCK, "King Nole's Labyrinth (-2F): lifestock chest in four buttons room?");
-	_chests[0x7E] = new ItemChest(0x7E, ITEM_EKEEKE, "King Nole's Labyrinth (-3F): first ekeeke chest before Spinner?");
-	_chests[0x7F] = new ItemChest(0x7F, ITEM_EKEEKE, "King Nole's Labyrinth (-3F): second ekeeke chest before Spinner?");
-	_chests[0x80] = new ItemChest(0x80, ITEM_GAIA_STATUE, "King Nole's Labyrinth (-3F): statue of gaia chest before Spinner?");
+	_chests[0x7D] = new ItemChest(0x7D, ITEM_LIFESTOCK, "King Nole's Labyrinth (-2F): lifestock chest in four buttons room");
+	_chests[0x7E] = new ItemChest(0x7E, ITEM_EKEEKE, "King Nole's Labyrinth (-3F): first ekeeke chest before Spinner");
+	_chests[0x7F] = new ItemChest(0x7F, ITEM_EKEEKE, "King Nole's Labyrinth (-3F): second ekeeke chest before Spinner");
+	_chests[0x80] = new ItemChest(0x80, ITEM_GAIA_STATUE, "King Nole's Labyrinth (-3F): statue of gaia chest before Spinner");
 	_chests[0x81] = new ItemChest(0x81, ITEM_GOLA_FANG, "King Nole's Labyrinth (-3F): reward for beating Spinner");
-	_chests[0x82] = new ItemChest(0x82, ITEM_KEY, "King Nole's Labyrinth (-3F): key chest in Hyper Breast room?");
+	_chests[0x82] = new ItemChest(0x82, ITEM_KEY, "King Nole's Labyrinth (-3F): key chest in Hyper Breast room");
 	_chests[0x83] = new ItemChest(0x83, ITEM_GARLIC, "King Nole's Labyrinth (-3F): chest before Miro");
 	_chests[0x84] = new ItemChest(0x84, ITEM_GOLA_HORN, "King Nole's Labyrinth (-3F): reward for beating Miro");
 	_chests[0x85] = new ItemChest(0x85, ITEM_LIFESTOCK, "King Nole's Labyrinth (-3F): chest in hands room");
@@ -245,7 +244,7 @@ void World::initItemSources()
 	_chests[0xB8] = new ItemChest(0xB8, ITEM_LIFESTOCK, "Ryuma: chest in repaired lighthouse");
 	_chests[0xB9] = new ItemChest(0xB9, ITEM_LIFESTOCK, "Crypt: chest in main room");
 	_chests[0xBA] = new ItemChest(0xBA, ITEM_ARMLET, "Crypt: reward chest");
-	//		_chests[0xBF] = new ItemChest(0xBF, ITEM_DAHL,          "Mercator: hidden casino chest");
+	_chests[0xBF] = new ItemChest(0xBF, ITEM_DAHL, "Mercator: hidden casino chest");
 	_chests[0xC0] = new ItemChest(0xC0, ITEM_LIFESTOCK, "Mercator: chest in Greenpea's house");
 	_chests[0xC1] = new ItemChest(0xC1, ITEM_LIFESTOCK, "Mercator: chest in grandma's house (pot shelving trial)");
 	_chests[0xC2] = new ItemChest(0xC2, ITEM_THUNDER_SWORD, "Verla: after beating Marley");
@@ -264,13 +263,13 @@ void World::initItemSources()
 	_chests[0xD0] = new ItemChest(0xD0, ITEM_KEY, "Mir Tower: chest in timed challenge room");
 	_chests[0xD1] = new ItemChest(0xD1, ITEM_EKEEKE, "Mir Tower: chest in room where Miro closes the door");
 	_chests[0xD2] = new ItemChest(0xD2, ITEM_EKEEKE, "Mir Tower: chest after room where Miro closes the door");
-	//		_chests[0xD3] = new ItemChest(0xD3, ITEM_PURPLE_JEWEL,  "Mir Tower: reward chest");
-	//		_chests[0xD4] = new ItemChest(0xD4, ITEM_EKEEKE,        "Mir Tower: right chest in reward room");
-	//		_chests[0xD5] = new ItemChest(0xD5, ITEM_EKEEKE,        "Mir Tower: left chest in reward room");
+	_chests[0xD3] = new ItemChest(0xD3, ITEM_PURPLE_JEWEL,  "Mir Tower: reward chest");
+	_chests[0xD4] = new ItemChest(0xD4, ITEM_EKEEKE, "Mir Tower: right chest in reward room");
+	_chests[0xD5] = new ItemChest(0xD5, ITEM_EKEEKE, "Mir Tower: left chest in reward room");
 	_chests[0xD6] = new ItemChest(0xD6, ITEM_LIFESTOCK, "Mir Tower: chest behind wall accessible after beating Mir");
-	_chests[0xD7] = new ItemChest(0xD7, ITEM_LIFESTOCK, "Witch Helga's Hut: lifestock chest?");
-	_chests[0xD8] = new ItemChest(0xD8, ITEM_LIFESTOCK, "Massan Cave: lifestock chest?");
-	_chests[0xD9] = new ItemChest(0xD9, ITEM_DAHL, "Massan Cave: dahl chest?");
+	_chests[0xD7] = new ItemChest(0xD7, ITEM_LIFESTOCK, "Witch Helga's Hut: lifestock chest");
+	_chests[0xD8] = new ItemChest(0xD8, ITEM_LIFESTOCK, "Massan Cave: lifestock chest");
+	_chests[0xD9] = new ItemChest(0xD9, ITEM_DAHL, "Massan Cave: dahl chest");
 	_chests[0xDA] = new ItemChest(0xDA, ITEM_LIFESTOCK, "Tibor: reward chest after boss");
 	_chests[0xDB] = new ItemChest(0xDB, ITEM_20_GOLDS, "Tibor: chest in spike balls room");
 	_chests[0xDC] = new ItemChest(0xDC, ITEM_GAIA_STATUE, "Tibor: left chest on 2 chest group");
@@ -303,8 +302,8 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::FRIDAY_EKEEKE_3] = new ItemPedestal(0x02010D, "Friday's Village: third EkeEke pedestal");
 	_pedestals[ItemPedestalCode::MIR_TOWER_EKEEKE] = new ItemPedestal(0x02269C, "Mir Tower: EkeEke pedestal in priest room");
 	_pedestals[ItemPedestalCode::MIR_TOWER_DETOX] = new ItemPedestal(0x0226A3, "Mir Tower: Detox Grass pedestal in priest room");
-	//		_pedestals[ItemPedestalCode::LOGS_1] =					new ItemPedestal(0x01FA43, "King Nole's Labyrinth (-2F): left Logs pedestal");
-	//		_pedestals[ItemPedestalCode::LOGS_2] =					new ItemPedestal(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs pedestal");
+	_pedestals[ItemPedestalCode::LOGS_1] = new ItemPedestal(0x01FA43, "King Nole's Labyrinth (-2F): left Logs pedestal");
+	_pedestals[ItemPedestalCode::LOGS_2] = new ItemPedestal(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs pedestal");
 
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_LIFESTOCK] = new ItemPedestal(0x02101D, "Massan shop: Life Stock slot", true, true);
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_EKEEKE_1] = new ItemPedestal(0x021015, "Massan shop: first EkeEke slot", true);
@@ -324,6 +323,10 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::MERCATOR_SHOP_DETOX_GRASS] = new ItemPedestal(0x021B6B, "Mercator shop: Detox Grass slot", true);
 	_pedestals[ItemPedestalCode::MERCATOR_SHOP_GAIA_STATUE] = new ItemPedestal(0x021B63, "Mercator shop: Statue of Gaia slot", true);
 	_pedestals[ItemPedestalCode::MERCATOR_SHOP_GOLDEN_STATUE] = new ItemPedestal(0x021B5B, "Mercator shop: Golden Statue slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_MIND_REPAIR] = new ItemPedestal(0x021CDF, "Mercator special shop: Mind Repair slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_ANTIPARALYZE] = new ItemPedestal(0x021CD7, "Mercator special shop: Anti Paralyze slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_DAHL] = new ItemPedestal(0x021CCF, "Mercator special shop: Dahl slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_RESTORATION] = new ItemPedestal(0x021CC7, "Mercator special shop: Restoration slot", true);
 	_pedestals[ItemPedestalCode::VERLA_SHOP_LIFESTOCK] = new ItemPedestal(0x021F57, "Verla shop: Life Stock slot", true, true);
 	_pedestals[ItemPedestalCode::VERLA_SHOP_EKEEKE] = new ItemPedestal(0x021F37, "Verla shop: EkeEke slot", true);
 	_pedestals[ItemPedestalCode::VERLA_SHOP_DETOX_GRASS] = new ItemPedestal(0x021F3F, "Verla shop: Detox Grass slot", true);
@@ -370,8 +373,8 @@ void World::initRegions()
 	_spawnRegion = massan;
 
 	WorldRegion* massanCave = new WorldRegion("Massan Cave");
-	massanCave->addItemSource(_chests[0xD8]); // "Massan Cave: lifestock chest?");
-	massanCave->addItemSource(_chests[0xD9]); // "Massan Cave: dahl chest?");
+	massanCave->addItemSource(_chests[0xD8]); // "Massan Cave: lifestock chest");
+	massanCave->addItemSource(_chests[0xD9]); // "Massan Cave: dahl chest");
 	massanCave->addItemSource(_pedestals[ItemPedestalCode::FIREPROOF]);
 	_regions.push_back(massanCave);
 
@@ -454,7 +457,7 @@ void World::initRegions()
 	_regions.push_back(thievesHideout);
 
 	WorldRegion* witchHelgaHut = new WorldRegion("Witch Helga's Hut");
-	witchHelgaHut->addItemSource(_chests[0xD7]);  // "Witch Helga's Hut: lifestock chest?");
+	witchHelgaHut->addItemSource(_chests[0xD7]);  // "Witch Helga's Hut: lifestock chest");
 	witchHelgaHut->addItemSource(_pedestals[ItemPedestalCode::SATURN_STONE]);
 	_regions.push_back(witchHelgaHut);
 
@@ -463,6 +466,7 @@ void World::initRegions()
 	mercator->addItemSource(_chests[0x11]);       // "Mercator: Arthur key chest in castle tower");
 	mercator->addItemSource(_chests[0xC0]);       // "Mercator: chest in Greenpea's house");
 	mercator->addItemSource(_chests[0xC1]);       // "Mercator: chest in grandma's house (pot shelving trial)");
+	mercator->addItemSource(_chests[0xBF]);		  // "Mercator: hidden casino chest");
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_ARMOR]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_BELL]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_EKEEKE]);
@@ -470,6 +474,13 @@ void World::initRegions()
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_GAIA_STATUE]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_GOLDEN_STATUE]);
 	_regions.push_back(mercator);
+
+	WorldRegion* mercatorSpecialShop = new WorldRegion("Mercator special shop");
+	mercatorSpecialShop->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP2_MIND_REPAIR]);
+	mercatorSpecialShop->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP2_ANTIPARALYZE]);
+	mercatorSpecialShop->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP2_DAHL]);
+	mercatorSpecialShop->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP2_RESTORATION]);
+	_regions.push_back(mercatorSpecialShop);
 
 	WorldRegion* crypt = new WorldRegion("Crypt");
 	crypt->addItemSource(_chests[0xB9]);          // "Crypt: chest in main room");
@@ -485,10 +496,6 @@ void World::initRegions()
 	mercatorDungeon->addItemSource(_chests[0x10]);    // "Mercator Dungeon (1F): right ekeeke chest in double chest room");
 	mercatorDungeon->addItemSource(_chests[0x12]);    // "Mercator Dungeon (4F): chest on top of tower");
 	_regions.push_back(mercatorDungeon);
-
-	WorldRegion* mercatorCasino = new WorldRegion("Mercator Casino");
-	//		mercatorCasino->addItemSource(_chests[0xBF]); // "Mercator: hidden casino chest");
-	_regions.push_back(mercatorCasino);
 
 	WorldRegion* mirTowerSector = new WorldRegion("Mir Tower Sector");
 	mirTowerSector->addItemSource(_chests[0x88]); // "Route between Mercator and Verla: golden statue chest on promontory");
@@ -523,9 +530,9 @@ void World::initRegions()
 	mirTowerPostGarlic->addItemSource(_chests[0xD0]);  // "Mir Tower: chest in timed challenge room");
 	mirTowerPostGarlic->addItemSource(_chests[0xD1]);  // "Mir Tower: chest in room where Miro closes the door");
 	mirTowerPostGarlic->addItemSource(_chests[0xD2]);  // "Mir Tower: chest after room where Miro closes the door");
-//		mirTowerPostGarlic->addItemSource(_chests[0xD3]);  // "Mir Tower: reward chest");
-//		mirTowerPostGarlic->addItemSource(_chests[0xD4]);  // "Mir Tower: right chest in reward room");
-//		mirTowerPostGarlic->addItemSource(_chests[0xD5]);  // "Mir Tower: left chest in reward room");
+	mirTowerPostGarlic->addItemSource(_chests[0xD3]);  // "Mir Tower: reward chest");
+	mirTowerPostGarlic->addItemSource(_chests[0xD4]);  // "Mir Tower: right chest in reward room");
+	mirTowerPostGarlic->addItemSource(_chests[0xD5]);  // "Mir Tower: left chest in reward room");
 	mirTowerPostGarlic->addItemSource(_chests[0xD6]);  // "Mir Tower: chest behind wall accessible after beating Mir");
 	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_EKEEKE]);
 	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_DETOX]);
@@ -637,14 +644,14 @@ void World::initRegions()
 	lakeShrine->addItemSource(_chests[0x5D]);     // "Lake Shrine (-1F): golden statue chest in corridor");
 	lakeShrine->addItemSource(_chests[0x5E]);     // "Lake Shrine (-1F): green golem spinner lifestock chest");
 	lakeShrine->addItemSource(_chests[0x5F]);     // "Lake Shrine (-1F): golem hopping lifestock chest");
-	lakeShrine->addItemSource(_chests[0x60]);     // "Lake Shrine (-2F): middle life stock ?");
-	lakeShrine->addItemSource(_chests[0x61]);     // "Lake Shrine (-2F): \"throne room\" lifestock chest ?");
-	lakeShrine->addItemSource(_chests[0x62]);     // "Lake Shrine (-2F): \"throne room\" key chest ?");
+	lakeShrine->addItemSource(_chests[0x60]);     // "Lake Shrine (-2F): middle life stock ");
+	lakeShrine->addItemSource(_chests[0x61]);     // "Lake Shrine (-2F): \"throne room\" lifestock chest ");
+	lakeShrine->addItemSource(_chests[0x62]);     // "Lake Shrine (-2F): \"throne room\" key chest ");
 	lakeShrine->addItemSource(_chests[0x63]);     // "Lake Shrine (-3F): white golems room");
-	lakeShrine->addItemSource(_chests[0x64]);     // "Lake Shrine (-3F): key chest near sword of ice ?");
+	lakeShrine->addItemSource(_chests[0x64]);     // "Lake Shrine (-3F): key chest near sword of ice ");
 	lakeShrine->addItemSource(_chests[0x65]);     // "Lake Shrine (-3F): chest in snake caging room");
 	lakeShrine->addItemSource(_chests[0x66]);     // "Lake Shrine (-3F): lifestock chest on central block, obtained by falling from above");
-	lakeShrine->addItemSource(_chests[0x67]);     // "Lake Shrine (-3F): chest before reaching the duke?");
+	lakeShrine->addItemSource(_chests[0x67]);     // "Lake Shrine (-3F): chest before reaching the duke");
 	lakeShrine->addItemSource(_chests[0x68]);     // "Lake Shrine (-3F): reward chest (left) after beating the duke");
 	lakeShrine->addItemSource(_chests[0x69]);     // "Lake Shrine (-3F): reward chest (middle) after beating the duke");
 	lakeShrine->addItemSource(_chests[0x6A]);     // "Lake Shrine (-3F): reward chest (right) after beating the duke");
@@ -693,24 +700,24 @@ void World::initRegions()
 	_regions.push_back(kazalt);
 
 	WorldRegion* kingNolesLabyrinthEntrance = new WorldRegion("King Nole's Labyrinth (entrance)");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6C]); // "King Nole's Labyrinth (0F): key chest in \"outside room\"?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6D]); // "King Nole's Labyrinth (0F): ekeeke chest in room after key door?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6E]); // "King Nole's Labyrinth (0F): lifestock chest in room after key door?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6F]); // "King Nole's Labyrinth (-1F): lifestock chest in \"small maze\" room?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x70]); // "King Nole's Labyrinth (0F): chest in spike balls room?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x71]); // "King Nole's Labyrinth (-1F): dark room with three chests?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x72]); // "King Nole's Labyrinth (-1F): dark room with three chests?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x73]); // "King Nole's Labyrinth (-1F): dark room with three chests?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x74]); // "King Nole's Labyrinth (-1F): lifestock chest in \"big maze\" room?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x75]); // "King Nole's Labyrinth (-1F): ekeeke chest in lantern room?");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6C]); // "King Nole's Labyrinth (0F): key chest in \"outside room\"");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6D]); // "King Nole's Labyrinth (0F): ekeeke chest in room after key door");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6E]); // "King Nole's Labyrinth (0F): lifestock chest in room after key door");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x6F]); // "King Nole's Labyrinth (-1F): lifestock chest in \"small maze\" room");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x70]); // "King Nole's Labyrinth (0F): chest in spike balls room");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x71]); // "King Nole's Labyrinth (-1F): dark room with three chests");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x72]); // "King Nole's Labyrinth (-1F): dark room with three chests");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x73]); // "King Nole's Labyrinth (-1F): dark room with three chests");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x74]); // "King Nole's Labyrinth (-1F): lifestock chest in \"big maze\" room");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x75]); // "King Nole's Labyrinth (-1F): ekeeke chest in lantern room");
 	kingNolesLabyrinthEntrance->addItemSource(_chests[0x76]); // "King Nole's Labyrinth (-1F): lantern chest");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x77]); // "King Nole's Labyrinth (-1F): key chest in ice shortcut room?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x78]); // "King Nole's Labyrinth (-2F): ekeeke chest in skeleton priest room?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x79]); // "King Nole's Labyrinth (-1F): key chest in \"button and crates\" room?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7A]); // "King Nole's Labyrinth (-3F): ekeeke chest before Firedemon?");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7B]); // "King Nole's Labyrinth (-3F): dahl chest before Firedemon?");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x77]); // "King Nole's Labyrinth (-1F): key chest in ice shortcut room");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x78]); // "King Nole's Labyrinth (-2F): ekeeke chest in skeleton priest room");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x79]); // "King Nole's Labyrinth (-1F): key chest in \"button and crates\" room");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7A]); // "King Nole's Labyrinth (-3F): ekeeke chest before Firedemon");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7B]); // "King Nole's Labyrinth (-3F): dahl chest before Firedemon");
 	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7C]); // "King Nole's Labyrinth (-3F): reward for beating Firedemon");
-	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7D]); // "King Nole's Labyrinth (-3F): lifestock chest in four buttons room?");
+	kingNolesLabyrinthEntrance->addItemSource(_chests[0x7D]); // "King Nole's Labyrinth (-3F): lifestock chest in four buttons room");
 	kingNolesLabyrinthEntrance->addItemSource(_chests[0x85]); // "King Nole's Labyrinth (-2F): chest in hands room");
 	kingNolesLabyrinthEntrance->addItemSource(_pedestals[ItemPedestalCode::SPIKE_BOOTS]);
 	kingNolesLabyrinthEntrance->addItemSource(_pedestals[ItemPedestalCode::IRON_BOOTS]);
@@ -724,23 +731,23 @@ void World::initRegions()
 	_regions.push_back(kingNolesLabyrinthPostSpikeBoots);
 
 	WorldRegion* kingNolesLabyrinthLogsSector = new WorldRegion("King Nole's Labyrinth (logs sector)");
-	//		kingNolesLabyrinthLogsSector->addItemSource(_pedestals[ItemPedestalCode::LOGS_1]);
-	//		kingNolesLabyrinthLogsSector->addItemSource(_pedestals[ItemPedestalCode::LOGS_2]);
+	kingNolesLabyrinthLogsSector->addItemSource(_pedestals[ItemPedestalCode::LOGS_1]);
+	kingNolesLabyrinthLogsSector->addItemSource(_pedestals[ItemPedestalCode::LOGS_2]);
 	_regions.push_back(kingNolesLabyrinthLogsSector);
 
 	WorldRegion* kingNolesLabyrinthPostLogs = new WorldRegion("King Nole's Labyrinth (post logs)");
-	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x7E]); // "King Nole's Labyrinth (-3F): first ekeeke chest before Spinner?");
-	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x7F]); // "King Nole's Labyrinth (-3F): second ekeeke chest before Spinner?");
-//		kingNolesLabyrinthPostLogs->addItemSource(_chests[0x80]); // "King Nole's Labyrinth (-3F): statue of gaia chest before Spinner?");
+	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x7E]); // "King Nole's Labyrinth (-3F): first ekeeke chest before Spinner");
+	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x7F]); // "King Nole's Labyrinth (-3F): second ekeeke chest before Spinner");
+//		kingNolesLabyrinthPostLogs->addItemSource(_chests[0x80]); // "King Nole's Labyrinth (-3F): statue of gaia chest before Spinner");
 	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x81]); // "King Nole's Labyrinth (-3F): reward for beating Spinner");
-	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x82]); // "King Nole's Labyrinth (-3F): key chest in Hyper Breast room?");
+	kingNolesLabyrinthPostLogs->addItemSource(_chests[0x82]); // "King Nole's Labyrinth (-3F): key chest in Hyper Breast room");
 	kingNolesLabyrinthPostLogs->addItemSource(_pedestals[ItemPedestalCode::HYPER_BREAST]);
 	_regions.push_back(kingNolesLabyrinthPostLogs);
 
 	WorldRegion* kingNolesPalace = new WorldRegion("King Nole's Palace");
-	kingNolesPalace->addItemSource(_chests[0x13]); // "King Nole's Palace: entrance lifestock chest?");
-	kingNolesPalace->addItemSource(_chests[0x14]); // "King Nole's Palace: ekeeke chest in topmost pit room?");
-	kingNolesPalace->addItemSource(_chests[0x15]); // "King Nole's Palace: dahl chest in floating button room?");
+	kingNolesPalace->addItemSource(_chests[0x13]); // "King Nole's Palace: entrance lifestock chest");
+	kingNolesPalace->addItemSource(_chests[0x14]); // "King Nole's Palace: ekeeke chest in topmost pit room");
+	kingNolesPalace->addItemSource(_chests[0x15]); // "King Nole's Palace: dahl chest in floating button room");
 	_regions.push_back(kingNolesPalace);
 
 	// Create 3 fake regions to require the 3 Gola items
@@ -762,10 +769,10 @@ void World::initRegions()
 	routeGumiToRyuma->addPathTo(mercator, _items[ITEM_SAFETY_PASS]);
 	routeGumiToRyuma->addPathTo(witchHelgaHut, _items[ITEM_EINSTEIN_WHISTLE]);
 	ryuma->addPathTo(thievesHideout);
-	mercator->addPathTo(mercatorCasino);
 	mercator->addPathTo(mercatorDungeon);
 	mercator->addPathTo(crypt);
 	mercator->addPathTo(mirTowerSector);
+	mercator->addPathTo(mercatorSpecialShop, _items[ITEM_BUYER_CARD]);
 	mercator->addPathTo(greenmaze, _items[ITEM_KEY]);
 	mercator->addPathTo(verlaShore, _items[ITEM_SUN_STONE]);
 	mirTowerSector->addPathTo(mirTowerSectorSacredTrees, _items[ITEM_AXE_MAGIC]);
@@ -800,6 +807,7 @@ void World::initRegions()
 
 void World::initFillerItems()
 {
+	_fillerItems.push_back(_items[ITEM_MAGIC_SWORD]);
 	_fillerItems.push_back(_items[ITEM_THUNDER_SWORD]);
 	_fillerItems.push_back(_items[ITEM_ICE_SWORD]);
 	_fillerItems.push_back(_items[ITEM_GAIA_SWORD]);
@@ -827,37 +835,38 @@ void World::initFillerItems()
 	_fillerItems.push_back(_items[ITEM_LOGS]);
 	_fillerItems.push_back(_items[ITEM_ORACLE_STONE]);
 
-	_fillerItems.push_back(_items[ITEM_BUYER_CARD]);
 	_fillerItems.push_back(_items[ITEM_SHORT_CAKE]);
 	_fillerItems.push_back(_items[ITEM_RED_JEWEL]);
 	_fillerItems.push_back(_items[ITEM_LITHOGRAPH]);
 	_fillerItems.push_back(_items[ITEM_SPELL_BOOK]);
 	_fillerItems.push_back(_items[ITEM_STATUE_JYPTA]);
 
-	for (uint8_t i = 0; i < 70; ++i)
+	for (uint8_t i = 0; i < 76; ++i)
 		_fillerItems.push_back(_items[ITEM_LIFESTOCK]);
 	for (uint8_t i = 0; i < 60; ++i)
 		_fillerItems.push_back(_items[ITEM_EKEEKE]);
 	for (uint8_t i = 0; i < 20; ++i)
 		_fillerItems.push_back(_items[ITEM_DAHL]);
-	for (uint8_t i = 0; i < 15; ++i)
+	for (uint8_t i = 0; i < 14; ++i)
 		_fillerItems.push_back(_items[ITEM_GAIA_STATUE]);
-	for (uint8_t i = 0; i < 12; ++i)
+	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_GOLDEN_STATUE]);
 	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_RESTORATION]);
-	for (uint8_t i = 0; i < 7; ++i)
+	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_DETOX_GRASS]);
-	for (uint8_t i = 0; i < 7; ++i)
+	for (uint8_t i = 0; i < 8; ++i)
 		_fillerItems.push_back(_items[ITEM_MIND_REPAIR]);
+	for (uint8_t i = 0; i < 8; ++i)
+		_fillerItems.push_back(_items[ITEM_ANTI_PARALYZE]);
 
 	for (uint8_t i = 0; i < 15; ++i)
 		_fillerItems.push_back(_items[ITEM_5_GOLDS]);
 	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_20_GOLDS]);
-	for (uint8_t i = 0; i < 6; ++i)
+	for (uint8_t i = 0; i < 8; ++i)
 		_fillerItems.push_back(_items[ITEM_50_GOLDS]);
-	for (uint8_t i = 0; i < 1; ++i)
+	for (uint8_t i = 0; i < 2; ++i)
 		_fillerItems.push_back(_items[ITEM_200_GOLDS]);
 }
 
@@ -924,7 +933,7 @@ void World::randomize(uint32_t seed, std::ofstream& logFile)
 			randomReachableItemSource = reachableItemSources[randomItemSourceIndex];
 		} while (!randomReachableItemSource->isItemCompatible(randomKeyItem));
 
-		logFile << "\t > Key item is [" << randomKeyItem->getName() << "], putting it in '" << randomReachableItemSource->getName() << "'\n";
+		logFile << "\t > Key item is [" << randomKeyItem->getName() << "], putting it in \"" << randomReachableItemSource->getName() << "\"\n";
 		reachableItemSources.erase(reachableItemSources.begin() + randomItemSourceIndex);
 		randomReachableItemSource->setItem(randomKeyItem);
 		playerInventory.push_back(randomKeyItem);
@@ -933,7 +942,7 @@ void World::randomize(uint32_t seed, std::ofstream& logFile)
 		// Fill additionnal item sources with "filler items"
 		int additionnalSourcesToFill = static_cast<int>(reachableItemSources.size() * 0.25);
 		logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
-		for (int i = 0; i < additionnalSourcesToFill; ++i)
+		for (int i = 0; i < additionnalSourcesToFill && !_fillerItems.empty() ; ++i)
 		{
 			distrib = std::uniform_int_distribution<int>(0, reachableItemSources.size() - 1);
 			randomItemSourceIndex = distrib(rng);

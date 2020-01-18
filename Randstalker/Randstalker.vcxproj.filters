@@ -39,10 +39,10 @@
     <ClInclude Include="Constants\ItemCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="ItemPedestalCodes.h">
+    <ClInclude Include="Constants\ItemPedestalCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="ItemRewardCodes.h">
+    <ClInclude Include="Constants\ItemRewardCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
     </ClInclude>
   </ItemGroup>
@@ -54,9 +54,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="GameAlterations.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameAlterations.h">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

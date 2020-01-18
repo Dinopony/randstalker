@@ -1,14 +1,16 @@
 #include "GameAlterations.h"
 #include <cstdint>
 
-#define INIT_FUNCTION_INJECTION_ADDRESS 0x1FFAD0
+constexpr auto INIT_FUNCTION_INJECTION_ADDRESS = 0x1FFAD0;
 
-#define OPCODE_MOVB 0x13FC
-#define OPCODE_MOVW 0x33FC
-#define OPCODE_RTS 0x4E75
-#define OPCODE_JSR 0x4EB9
-#define OPCODE_NOP 0x4E71
-
+constexpr auto OPCODE_MOVB =	0x13FC;
+constexpr auto OPCODE_MOVW =	0x33FC;
+constexpr auto OPCODE_RTS =		0x4E75;
+constexpr auto OPCODE_JSR =		0x4EB9;
+constexpr auto OPCODE_NOP =		0x4E71;
+constexpr auto OPCODE_BRA =		0x6000;
+constexpr auto OPCODE_BNE =		0x6600;
+constexpr auto OPCODE_BEQ =		0x6700;
 
 void alterGameStart(GameROM& rom)
 {
@@ -97,6 +99,11 @@ void alterGameStart(GameROM& rom)
 	rom.setWord(address, 0x8100);		address += 0x02;
 	rom.setLong(address, 0x00FF1014);	address += 0x04;
 
+	// move.w 0x0048 -> $FF1016
+	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
+	rom.setWord(address, 0x0048);		address += 0x02;
+	rom.setLong(address, 0x00FF1016);	address += 0x04;
+
 	// move.w 0x7000 -> $FF1020
 	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
 	rom.setWord(address, 0x7000);		address += 0x02;
@@ -178,22 +185,70 @@ void fixDogTalkingCheck(GameROM& rom)
 	// Change doggo talking check from bit 4 of flag 1024 to "Einstein Whistle owned"
 	
 	// 0x0253C0:
-	// Before:	01 24 (0124 >> 3 = 24 and 0124 & 7 = 04 -----> bit 4 of FF1024)
-	// After:	02 81 (0281 >> 3 = 50 and 0281 & 7 = 01 -----> bit 1 of FF1050)
+		// Before:	01 24 (0124 >> 3 = 24 and 0124 & 7 = 04 -----> bit 4 of FF1024)
+		// After:	02 81 (0281 >> 3 = 50 and 0281 & 7 = 01 -----> bit 1 of FF1050)
 	rom.setWord(0x0253C0, 0x0281);
+}
+
+void fixCryptBehavior(GameROM& rom)
+{
+	// 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
+	
+	// 0x019DF6:
+		// Before:	0839 0006 00FF1014 (btst bit 6 in FF1014) ; 66 14 (bne $19E14)
+		// After:	4EB9 00019E14 (jsr $19E14; 4E71 4E71 (nop nop)
+	rom.setWord(0x019DF6, OPCODE_NOP);
+	rom.setWord(0x019DF8, OPCODE_NOP);
+	rom.setLong(0x019DFA, OPCODE_NOP);
+	rom.setWord(0x019DFC, OPCODE_NOP);
+	rom.setWord(0x019DFE, OPCODE_NOP);
+
+	// 2) Change the room exit check and shadow mummy appearance from "if armlet is owned" to "chest was opened"
+
+	// 0x0117E8:
+		// Before:	103C 001F ; 4EB9 00022ED0 ; 4A41 ; 6B00 F75C (bmi $10F52)
+		// After:	0839 0002 00FF1097 (btst 2 FF1097)	; 6700 F75C (bne $10F52)
+	rom.setWord(0x0117E8, 0x0839);		// btst
+	rom.setWord(0x0117EA, 0x0002);		// bit 2
+	rom.setLong(0x0117EC, 0x00FF1097);	// of flag FF1097
+	rom.setWord(0x0117F0, OPCODE_NOP);	// nop
+	rom.setWord(0x0117F2, OPCODE_NOP);	// nop
+	rom.setWord(0x0117F4, OPCODE_BEQ);	// bne $10F52
+}
+
+void fixMirAfterLakeShrineCheck(GameROM& rom)
+{
+	// 0x01AA22:
+		// Before:	0310 2A A2 (in map 310, check bit 5 of flag 102A)
+		// After:	0000 00 00 (game, please do nothing. simple.)
+	rom.setWord(0x01AA22, 0x0000);
+	rom.setWord(0x01AA24, 0x0000);
 }
 
 void fixLogsRoomExitCheck(GameROM& rom)
 {
 	// Remove logs check
+	rom.setWord(0x011EC4, OPCODE_BRA);
+}
 
-	// rom.setWord(0x011EBC, 0x4E71); // NOP
-	// rom.setWord(0x011EBE, 0x4E71); // NOP
-	// rom.setWord(0x011EC0, 0x4E71); // NOP
-	// rom.setWord(0x011EC2, 0x4E71); // NOP
-	// rom.setWord(0x011EC4, 0x4E71); // NOP
-	// rom.setWord(0x011EC6, 0x4E71); // NOP
-	// DIDN'T WORK
+void alterCasinoCheck(GameROM& rom)
+{
+	// Change the Casino entrance check so that the NPC is always out of the way
+
+	// 0x09DF25:
+		// Before:	29 03 (bit 3 of FF1029)
+		// After:	00 00 (bit 0 of FF1000 - always true) 
+	rom.setWord(0x09DF25, 0x4B02);
+}
+
+void alterMercatorSecondaryShopCheck(GameROM& rom)
+{
+	// Change the Mercator secondary shop check so that it sells item as long as you own Buyer's Card
+
+	// 0x00A574:
+		// Before:	2A 04 (bit 4 of FF102A)
+		// After:	4C 05 (bit 5 of FF104C)
+	rom.setWord(0x00A574, 0x4C05);
 }
 
 void alterWaterfallShrineSecretStairsCheck(GameROM& rom)
@@ -216,7 +271,10 @@ void alterROM(GameROM& rom)
 	fixArmletCheck(rom);
 	fixSunstoneCheck(rom);
 	fixDogTalkingCheck(rom);
+	fixCryptBehavior(rom);
+	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
-
+	alterCasinoCheck(rom);
+	alterMercatorSecondaryShopCheck(rom);
 	alterWaterfallShrineSecretStairsCheck(rom);
 }

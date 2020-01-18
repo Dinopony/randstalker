@@ -21,7 +21,7 @@
 #include "GameAlterations.h"
 #include "World.h"
 
-constexpr auto RELEASE = "0.9a";
+constexpr auto RELEASE = "0.9b";
 
 /*
  * Command line syntax:
