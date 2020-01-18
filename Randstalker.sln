@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Randstalker", "Randstalker\Randstalker.vcxproj", "{51E0986A-1B10-419C-B30F-AEC3D669DB12}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakefileProject", "MakefileProject\MakefileProject.vcxproj", "{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,14 +21,6 @@ Global
 		{51E0986A-1B10-419C-B30F-AEC3D669DB12}.Release|x64.Build.0 = Release|x64
 		{51E0986A-1B10-419C-B30F-AEC3D669DB12}.Release|x86.ActiveCfg = Release|Win32
 		{51E0986A-1B10-419C-B30F-AEC3D669DB12}.Release|x86.Build.0 = Release|Win32
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Debug|x64.ActiveCfg = Debug|x64
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Debug|x64.Build.0 = Debug|x64
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Debug|x86.ActiveCfg = Debug|Win32
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Debug|x86.Build.0 = Debug|Win32
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Release|x64.ActiveCfg = Release|x64
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Release|x64.Build.0 = Release|x64
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Release|x86.ActiveCfg = Release|Win32
-		{3B0A76F5-56D5-4DD3-A54E-3686B8845E3F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
