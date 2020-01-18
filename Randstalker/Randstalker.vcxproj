@@ -34,6 +34,9 @@
     <ClCompile Include="GameAlterations.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="makefile" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{51E0986A-1B10-419C-B30F-AEC3D669DB12}</ProjectGuid>
