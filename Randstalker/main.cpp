@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	if (argc >= 3)
 	{
 		try {
-			seed = std::stoi(argv[2]);
+			seed = (uint32_t)std::stoul(argv[2]);
 		}
 		catch (std::invalid_argument&) {
 			std::cout << "Seed parameter '" << argv[2] << "' is non numerical and thus isn't a valid seed.\n";
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 		std::cout << "Please specify the seed (leave blank for random seed): ";
 		std::getline(std::cin, inputtedSeedString);
 		try {
-			seed = (uint32_t)std::stoi(inputtedSeedString);
+			seed = (uint32_t)std::stoul(inputtedSeedString);
 		}
 		catch (std::invalid_argument&) {
 			seed = (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
@@ -96,11 +96,14 @@ int main(int argc, char* argv[])
 		outputRomPath = argv[3];
 	rom->saveAs(outputRomPath);
 
-	std::cout << "Randomized rom outputted to 'output.md'.\n\n";
+	std::cout << "Randomized rom outputted to \"" << outputRomPath << "\".\n\n";
 
-	std::cout << "Press any key to exit.";
-	std::string dummy;
-	std::getline(std::cin, dummy);
+	if (argc < 4)
+	{
+		std::cout << "Press any key to exit.";
+		std::string dummy;
+		std::getline(std::cin, dummy);
+	}
 
 	return 0;
 }
