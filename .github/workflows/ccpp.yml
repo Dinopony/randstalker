@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: cd
+    - name: cd Randstalker
       run: cd Randstalker
     - name: make
       run: make
