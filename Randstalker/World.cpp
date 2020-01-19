@@ -355,8 +355,8 @@ void World::initItemSources()
 
 	_rewards[ItemRewardCode::MIR_AXE_MAGIC_REWARD] = new ItemReward(0x028A3F, "Mir reward after Lake Shrine (Axe Magic in OG)");
 	_rewards[ItemRewardCode::ZAK_GOLA_EYE_REWARD] = new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
-	//		_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD] =		new ItemReward(0x028ED4, "Swordman Kado reward (Magic Sword in OG)");
-	//		_rewards[ItemRewardCode::LUMBERJACK_REWARD] =			new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
+	_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD] = new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
+	// _rewards[ItemRewardCode::LUMBERJACK_REWARD] =			new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
 }
 
 void World::initRegions()
@@ -412,7 +412,7 @@ void World::initRegions()
 
 	WorldRegion* routeGumiToRyuma = new WorldRegion("Route from Gumi to Ryuma");
 	routeGumiToRyuma->addItemSource(_chests[0x86]);   // "Route between Gumi and Ryuma: chest on the way to Swordsman Kado"
-//		routeGumiToRyuma->addItemSource(_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD]);
+	routeGumiToRyuma->addItemSource(_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD]);
 	_regions.push_back(routeGumiToRyuma);
 
 	WorldRegion* tibor = new WorldRegion("Tibor");
@@ -837,6 +837,7 @@ void World::initFillerItems()
 
 	_fillerItems.push_back(_items[ITEM_SHORT_CAKE]);
 	_fillerItems.push_back(_items[ITEM_RED_JEWEL]);
+	_fillerItems.push_back(_items[ITEM_PURPLE_JEWEL]);
 	_fillerItems.push_back(_items[ITEM_LITHOGRAPH]);
 	_fillerItems.push_back(_items[ITEM_SPELL_BOOK]);
 	_fillerItems.push_back(_items[ITEM_STATUE_JYPTA]);
