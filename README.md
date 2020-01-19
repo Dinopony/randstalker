@@ -1,3 +1,5 @@
+![](https://github.com/Dilandau/randstalker/workflows/Compile/badge.svg)
+
 # Randstalker
 
 Randstalker is a randomizer for the famous Megadrive / Genesis classic "Landstalker : The Treasure of King Nole".
