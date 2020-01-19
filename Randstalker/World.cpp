@@ -287,7 +287,6 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::IRON_BOOTS] = new ItemPedestal(0x01F36F, "King Nole's Labyrinth (-1F): Iron Boots pedestal");
 	_pedestals[ItemPedestalCode::FIREPROOF] = new ItemPedestal(0x022C23, "Massan Cave: Fireproof Boots pedestal");
 	_pedestals[ItemPedestalCode::SPIKE_BOOTS] = new ItemPedestal(0x01FAC1, "King Nole's Labyrinth (-3F): Snow Spikes pedestal");
-	_pedestals[ItemPedestalCode::ICE_SWORD] = new ItemPedestal(0x01EE37, "Lake Shrine (-3F): Sword of Ice pedestal");
 	_pedestals[ItemPedestalCode::GAIA_SWORD] = new ItemPedestal(0x01F183, "King Nole's Labyrinth (-2F): Sword of Gaia pedestal");
 	_pedestals[ItemPedestalCode::MARS_STONE] = new ItemPedestal(0x020419, "Route after Destel: Mars Stone pedestal");
 	_pedestals[ItemPedestalCode::MOON_STONE] = new ItemPedestal(0x020AED, "Mountainous Area cave: Moon Stone pedestal");
@@ -304,6 +303,10 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::MIR_TOWER_DETOX] = new ItemPedestal(0x0226A3, "Mir Tower: Detox Grass pedestal in priest room");
 	_pedestals[ItemPedestalCode::LOGS_1] = new ItemPedestal(0x01FA43, "King Nole's Labyrinth (-2F): left Logs pedestal");
 	_pedestals[ItemPedestalCode::LOGS_2] = new ItemPedestal(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs pedestal");
+
+	// Ice sword pedestal is special in the sense that it's a double one (one that can be seen before pressing the button, and another one in the map with the bridge)
+	_pedestals[ItemPedestalCode::ICE_SWORD] = new ItemPedestal(0x01EE37, "Lake Shrine (-3F): Sword of Ice pedestal");
+	_pedestals[ItemPedestalCode::ICE_SWORD]->addOtherAddress(0x01EE41);
 
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_LIFESTOCK] = new ItemPedestal(0x02101D, "Massan shop: Life Stock slot", true, true);
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_EKEEKE_1] = new ItemPedestal(0x021015, "Massan shop: first EkeEke slot", true);
@@ -356,7 +359,7 @@ void World::initItemSources()
 	_rewards[ItemRewardCode::MIR_AXE_MAGIC_REWARD] = new ItemReward(0x028A3F, "Mir reward after Lake Shrine (Axe Magic in OG)");
 	_rewards[ItemRewardCode::ZAK_GOLA_EYE_REWARD] = new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
 	_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD] = new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
-	// _rewards[ItemRewardCode::LUMBERJACK_REWARD] =			new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
+	// _rewards[ItemRewardCode::LUMBERJACK_REWARD] = new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
 }
 
 void World::initRegions()
@@ -541,7 +544,6 @@ void World::initRegions()
 	WorldRegion* greenmaze = new WorldRegion("Greenmaze");
 	greenmaze->addItemSource(_chests[0xA8]);   // "Greenmaze: chest on path to lumberjack");
 	greenmaze->addItemSource(_chests[0xA9]);   // "Greenmaze: chest on promontory appearing after pressing a button in other section");
-	greenmaze->addItemSource(_chests[0xAA]);   // "Greenmaze: chest between Sunstone and Massan shortcut");
 	greenmaze->addItemSource(_chests[0xAB]);   // "Greenmaze: chest in mages room");
 	greenmaze->addItemSource(_chests[0xAC]);   // "Greenmaze: left chest in elbow cave");
 	greenmaze->addItemSource(_chests[0xAD]);   // "Greenmaze: right chest in elbow cave");
@@ -551,6 +553,7 @@ void World::initRegions()
 	_regions.push_back(greenmaze);
 
 	WorldRegion* greenmazeBehindSacredTrees = new WorldRegion("Greenmaze (behind sacred trees)");
+	greenmazeBehindSacredTrees->addItemSource(_chests[0xAA]);   // "Greenmaze: chest between Sunstone and Massan shortcut");
 	greenmazeBehindSacredTrees->addItemSource(_pedestals[ItemPedestalCode::SUN_STONE]);
 	_regions.push_back(greenmazeBehindSacredTrees);
 
@@ -842,9 +845,9 @@ void World::initFillerItems()
 	_fillerItems.push_back(_items[ITEM_SPELL_BOOK]);
 	_fillerItems.push_back(_items[ITEM_STATUE_JYPTA]);
 
-	for (uint8_t i = 0; i < 76; ++i)
+	for (uint8_t i = 0; i < 75; ++i)
 		_fillerItems.push_back(_items[ITEM_LIFESTOCK]);
-	for (uint8_t i = 0; i < 60; ++i)
+	for (uint8_t i = 0; i < 55; ++i)
 		_fillerItems.push_back(_items[ITEM_EKEEKE]);
 	for (uint8_t i = 0; i < 20; ++i)
 		_fillerItems.push_back(_items[ITEM_DAHL]);
@@ -869,158 +872,188 @@ void World::initFillerItems()
 		_fillerItems.push_back(_items[ITEM_50_GOLDS]);
 	for (uint8_t i = 0; i < 2; ++i)
 		_fillerItems.push_back(_items[ITEM_200_GOLDS]);
+
+	std::shuffle(_fillerItems.begin(), _fillerItems.end(), _rng);
 }
 
-void World::randomize(uint32_t seed, std::ofstream& logFile)
+void World::randomize()
 {
-	std::mt19937 rng(seed);
-	logFile << "Seed: " << seed << "\n\n";
-
 	std::vector<Item*> playerInventory;
-	std::set<WorldRegion*> reachableRegions;
-	std::set<Item*> keyItemsNeededToProgress;
-	_spawnRegion->evaluateReachableRegions(playerInventory, reachableRegions, keyItemsNeededToProgress);
 
-	std::set<AbstractItemSource*> alreadyRandomizedItemSources;
-
-	for (int stepCount = 1; keyItemsNeededToProgress.size() > 0; ++stepCount)
+	for (int stepCount = 1;  ; ++stepCount)
 	{
-		logFile << "Step #" << stepCount << "\n";
-
-		logFile << "\t > Player inventory is: ";
-		for (Item* item : playerInventory)
-			logFile << item->getName() << ", ";
-		logFile << "\n";
-
-		logFile << "\t > Accessible regions are: ";
-
+		// Evaluate accessible regions & stuff
+		std::vector<Item*> keyItemsNeededToProgress;
 		std::vector<AbstractItemSource*> reachableItemSources;
+		std::set<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
+		if (keyItemsNeededToProgress.empty())
+			break;
+
+		std::shuffle(reachableItemSources.begin(), reachableItemSources.end(), _rng);
+
+		_logFile << "Step #" << stepCount << "\n";
+
+		_logFile << "\t > Accessible regions are: ";
 		for (WorldRegion* region : reachableRegions)
+			_logFile << region->getName() << ", ";
+		_logFile << "\n";
+
+		_logFile << "\t > Key items needed to progress are: ";
+		for (Item* item : keyItemsNeededToProgress)
+			_logFile << item->getName() << ", ";
+		_logFile << "\n";
+
+		// Find a random "key item" to place and a compatible item source where to place it
+		std::shuffle(keyItemsNeededToProgress.begin(), keyItemsNeededToProgress.end(), _rng);
+		Item* randomKeyItem = keyItemsNeededToProgress[0];
+
+		AbstractItemSource* randomItemSource = nullptr;
+		for (uint32_t i = 0; i < reachableItemSources.size() ; ++i)
 		{
-			logFile << region->getName() << ", ";
-			std::vector<AbstractItemSource*> itemSourcesInRegion = region->getItemSources();
-			for (AbstractItemSource* itemSource : itemSourcesInRegion)
+			if (reachableItemSources[i]->isItemCompatible(randomKeyItem))
 			{
-				if (alreadyRandomizedItemSources.count(itemSource))
-					continue;
-				reachableItemSources.push_back(itemSource);
+				randomItemSource = reachableItemSources[i];
+				reachableItemSources.erase(reachableItemSources.begin() + i);
+				break;
 			}
 		}
-		logFile << "\n";
+		if (!randomItemSource)
+			throw NoAppropriateItemSourceException();
 
-		logFile << "\t > Key items needed to progress are: ";
-		for (Item* item : keyItemsNeededToProgress)
-			logFile << item->getName() << ", ";
-		logFile << "\n";
-
-		// Find a random "key item" to place inside an item source
-		std::uniform_int_distribution<int> distrib(0, keyItemsNeededToProgress.size() - 1);
-		int randomKeyItemIndex = distrib(rng);
-		auto it = keyItemsNeededToProgress.begin();
-		for (int i = 0; i < randomKeyItemIndex; ++i)
-			++it;
-		Item* randomKeyItem = *it;
-
-		// Find a random item source reachable by the player and compatible with the key item
-		distrib = std::uniform_int_distribution<int>(0, reachableItemSources.size() - 1);
-		AbstractItemSource* randomReachableItemSource = nullptr;
-		int randomItemSourceIndex;
-		int watchdog = 0;
-		do
-		{
-			if (++watchdog > 100) throw InfiniteLoopException();
-
-			randomItemSourceIndex = distrib(rng);
-			randomReachableItemSource = reachableItemSources[randomItemSourceIndex];
-		} while (!randomReachableItemSource->isItemCompatible(randomKeyItem));
-
-		logFile << "\t > Key item is [" << randomKeyItem->getName() << "], putting it in \"" << randomReachableItemSource->getName() << "\"\n";
-		reachableItemSources.erase(reachableItemSources.begin() + randomItemSourceIndex);
-		randomReachableItemSource->setItem(randomKeyItem);
+		_logFile << "\t > Key item is [" << randomKeyItem->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
+		randomItemSource->setItem(randomKeyItem);
 		playerInventory.push_back(randomKeyItem);
-		alreadyRandomizedItemSources.insert(randomReachableItemSource);
 
 		// Fill additionnal item sources with "filler items"
 		int additionnalSourcesToFill = static_cast<int>(reachableItemSources.size() * 0.25);
-		logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
-		for (int i = 0; i < additionnalSourcesToFill && !_fillerItems.empty() ; ++i)
-		{
-			distrib = std::uniform_int_distribution<int>(0, reachableItemSources.size() - 1);
-			randomItemSourceIndex = distrib(rng);
-			AbstractItemSource* randomReachableItemSource = reachableItemSources[distrib(rng)];
-			reachableItemSources.erase(reachableItemSources.begin() + randomItemSourceIndex);
-
-			distrib = std::uniform_int_distribution<int>(0, _fillerItems.size() - 1);
-			Item* randomFillerItem = nullptr;
-			int randomFillerItemIndex;
-			watchdog = 0;
-			do
-			{
-				if (++watchdog > 100) throw InfiniteLoopException();
-
-				randomFillerItemIndex = distrib(rng);
-				randomFillerItem = _fillerItems[randomFillerItemIndex];
-			} while (!randomReachableItemSource->isItemCompatible(randomFillerItem));
-
-			_fillerItems.erase(_fillerItems.begin() + randomFillerItemIndex);
-			randomReachableItemSource->setItem(randomFillerItem);
-			playerInventory.push_back(randomFillerItem);
-			alreadyRandomizedItemSources.insert(randomReachableItemSource);
-		}
-
-		// Reevaluate accessible regions & stuff
-		keyItemsNeededToProgress.clear();
-		reachableRegions.clear();
-		_spawnRegion->evaluateReachableRegions(playerInventory, reachableRegions, keyItemsNeededToProgress);
+		_logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
+		this->fillSourcesWithFillerItems(reachableItemSources, additionnalSourcesToFill);
 	}
 
 	// If no key items are remaining, this means we are in go-mode and we can fill all remaining item sources
-	_spawnRegion->evaluateReachableRegions(playerInventory, reachableRegions, keyItemsNeededToProgress);
-
+	std::vector<Item*> keyItemsNeededToProgress;
 	std::vector<AbstractItemSource*> reachableItemSources;
-	for (WorldRegion* region : reachableRegions)
+	std::set<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
+
+	_logFile << "Key items placement finished, filling the " << reachableItemSources.size() << " remaining sources...\n";
+	this->fillSourcesWithFillerItems(reachableItemSources);
+
+	// Write down the complete item list in the log file
+	this->writeItemSourcesBreakdownInLog();
+}
+
+std::set<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources)
+{
+	std::set<WorldRegion*> returnedRegions;
+	std::set<WorldRegion*> regionsToProcess;
+	regionsToProcess.insert(_spawnRegion);
+
+	std::set<Item*> neededKeyItems;
+
+	while (!regionsToProcess.empty())
 	{
-		std::vector<AbstractItemSource*> itemSourcesInRegion = region->getItemSources();
-		for (AbstractItemSource* itemSource : itemSourcesInRegion)
+		WorldRegion* processedRegion = *(regionsToProcess.begin());
+		regionsToProcess.erase(processedRegion);
+		returnedRegions.insert(processedRegion);
+
+		const std::vector<AbstractItemSource*> itemSourcesInRegion = processedRegion->getItemSources();
+		for (AbstractItemSource* source : itemSourcesInRegion)
 		{
-			if (alreadyRandomizedItemSources.count(itemSource))
-				continue;
-			reachableItemSources.push_back(itemSource);
+			Item* item = source->getItem();
+			if (!item)
+				out_reachableSources.push_back(source);
+		}
+
+		const std::vector<WorldPath*>& outgoingPaths = processedRegion->getOutgoingPaths();
+		for (WorldPath* path : outgoingPaths)
+		{
+			WorldRegion* destination = path->getDestination();
+
+			Item* requiredKeyItem = path->getRequiredItem();
+			bool canReachRegion = true;
+			if (requiredKeyItem)
+			{
+				canReachRegion = false;
+				for (Item* ownedItem : playerInventory)
+				{
+					if (ownedItem == requiredKeyItem)
+					{
+						canReachRegion = true;
+						break;
+					}
+				}
+			}
+
+			if (!canReachRegion)
+				neededKeyItems.insert(requiredKeyItem);
+			else if (!returnedRegions.count(destination))
+				regionsToProcess.insert(destination);
 		}
 	}
 
-	logFile << "Key items placement finished, filling the " << reachableItemSources.size() << " remaining sources...\n";
-	for (AbstractItemSource* source : reachableItemSources)
-	{
-		if (_fillerItems.empty())
-			break;
+	for (Item* keyItem : neededKeyItems)
+		out_keyItems.push_back(keyItem);
 
-		std::uniform_int_distribution<int> distrib = std::uniform_int_distribution<int>(0, _fillerItems.size() - 1);
+	return returnedRegions;
+}
+
+void World::fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count)
+{
+	for (uint32_t i = 0; i < count && i < itemSources.size() && !_fillerItems.empty(); ++i)
+	{
+		AbstractItemSource* randomItemSource = itemSources[i];
 		Item* randomFillerItem = nullptr;
-		int randomFillerItemIndex;
-		int watchdog = 0;
-		do
+		for (uint32_t j = 0; j < _fillerItems.size(); ++j)
 		{
-			if (++watchdog > 100)
+			if (randomItemSource->isItemCompatible(_fillerItems[j]))
 			{
-				logFile << "[WARNING!] " << source->getName() << " could not be filled with any of those items: ";
-				for (Item* item : _fillerItems)
-					logFile << item->getName() << ", ";
-				logFile << "\n";
-				randomFillerItem = nullptr;
+				randomFillerItem = _fillerItems[j];
+				_fillerItems.erase(_fillerItems.begin() + j);
 				break;
 			}
-
-			randomFillerItemIndex = distrib(rng);
-			randomFillerItem = _fillerItems[randomFillerItemIndex];
-		} while (!source->isItemCompatible(randomFillerItem));
+		}
 
 		if (randomFillerItem)
 		{
-			_fillerItems.erase(_fillerItems.begin() + randomFillerItemIndex);
-			source->setItem(randomFillerItem);
+			randomItemSource->setItem(randomFillerItem);
+			_logFile << "\t\t >>> Filling \"" << randomItemSource->getName() << "\" with [" << randomFillerItem->getName() << "]\n";
+		}
+	}
+}
+
+
+void World::writeToROM(GameROM& rom)
+{
+	for (auto& [key, item] : _items)
+		item->writeToROM(rom);
+	for (auto& [key, chest] : _chests)
+		chest->writeToROM(rom);
+	for (auto& [key, pedestal] : _pedestals)
+		pedestal->writeToROM(rom);
+	for (auto& [key, reward] : _rewards)
+		reward->writeToROM(rom);
+}
+
+void World::writeItemSourcesBreakdownInLog()
+{
+	for (WorldRegion* region : _regions)
+	{
+		auto sources = region->getItemSources();
+		if (sources.empty())
+			continue;
+
+		_logFile << "\n-------------------------------\n";
+		_logFile << "\t" << region->getName() << "\n\n";
+
+		for (AbstractItemSource* source : sources)
+		{
+			_logFile << "[" << (source->getItem() ? source->getItem()->getName() : "No item") << "] in \"" << source->getName() << "\"\n";
 		}
 	}
 
-	this->writeToLog(logFile);
+	_logFile << "\n-------------------------------\n";
+	_logFile << "Unplaced items:" << "\n";
+
+	for (Item* item : _fillerItems)
+		_logFile << "- [" << item->getName() << "]\n";
 }

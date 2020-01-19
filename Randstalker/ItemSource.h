@@ -62,10 +62,17 @@ class ItemPedestal : public AbstractItemSource
 public:
     ItemPedestal(uint32_t addressInROM, const std::string& name, bool isShop = false, bool canCarryLifestock = false) :
         AbstractItemSource(name),
-        _addressInROM(addressInROM),
+        _addressesInROM(),
         _isShop(isShop),
         _canCarryLifestock(canCarryLifestock)
-    {}
+    {
+        _addressesInROM.push_back(addressInROM);
+    }
+
+    void addOtherAddress(uint32_t addressInROM)
+    {
+        _addressesInROM.push_back(addressInROM);
+    }
 
     virtual bool isItemCompatible(Item* item) const
     { 
@@ -87,11 +94,12 @@ public:
 
     virtual void writeToROM(GameROM& rom) const
     {
-        rom.setByte(_addressInROM, this->getItemID() + 0xC0);
+        for(uint32_t address : _addressesInROM)
+            rom.setByte(address, this->getItemID() + 0xC0);
     }
 
 private:
-    uint32_t _addressInROM;
+    std::vector<uint32_t> _addressesInROM;
     bool _isShop;
     bool _canCarryLifestock;
 };

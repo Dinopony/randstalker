@@ -15,13 +15,17 @@
 #include "WorldRegion.h"
 #include "Tools.h"
 
-class InfiniteLoopException : public std::exception {};
+class NoAppropriateItemSourceException : public std::exception {};
 
 class World 
 {
 public:
-	World()
+	World(uint32_t seed, std::ofstream& logFile) :
+		_rng(seed),
+		_logFile(logFile)
 	{
+		_logFile << "Seed: " << seed << "\n\n";
+
 		this->initItems();
 		this->initItemSources();
 		this->initRegions();
@@ -47,45 +51,17 @@ public:
 	void initRegions();
 	void initFillerItems();
 
-	void randomize(uint32_t seed, std::ofstream& logFile);
+	void randomize();
+	std::set<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
+	void fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count = INT_MAX);
 
-	void writeToROM(GameROM& rom)
-	{
-		for (auto& [key, item] : _items)
-			item->writeToROM(rom);
-		for (auto& [key, chest] : _chests)
-			chest->writeToROM(rom);
-		for (auto& [key, pedestal] : _pedestals)
-			pedestal->writeToROM(rom);
-		for (auto& [key, reward] : _rewards)
-			reward->writeToROM(rom);
-	}
-
-	void writeToLog(std::ofstream& file)
-	{
-		for (WorldRegion* region : _regions)
-		{
-			auto sources = region->getItemSources();
-			if (sources.empty())
-				continue;
-
-			file << "\n-------------------------------\n";
-			file << "\t" << region->getName() << "\n\n";
-
-			for (AbstractItemSource* source : sources)
-			{
-				file << (source->getItem() ? source->getItem()->getName() : "No item") << " in \"" << source->getName() << "\"\n";
-			}
-		}
-
-		file << "\n-------------------------------\n";
-		file << "Unplaced items:" << "\n";
-
-		for (Item* item : _fillerItems)
-			file << "- " << item->getName() << "\n";
-	}
+	void writeToROM(GameROM& rom);
+	void writeItemSourcesBreakdownInLog();
 
 private:
+	std::ofstream& _logFile;
+	std::mt19937 _rng;
+
 	std::map<uint8_t, Item*> _items;
 	std::map<uint8_t, ItemChest*> _chests;
 	std::map<ItemPedestalCode, ItemPedestal*> _pedestals;
@@ -96,28 +72,3 @@ private:
 
 	std::vector<Item*> _fillerItems;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

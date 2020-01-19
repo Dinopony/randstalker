@@ -5,7 +5,7 @@
 // ---------------------------------------------------------------------------------------
 //
 //		Developed by:	Dinopony (@DinoponyRuns)
-//		Version:		v0.9a
+//		Version:		v0.9c
 //
 // ---------------------------------------------------------------------------------------
 //
@@ -21,14 +21,14 @@
 #include "GameAlterations.h"
 #include "World.h"
 
-constexpr auto RELEASE = "0.9b";
+constexpr auto RELEASE = "0.9c";
 
 /*
  * Command line syntax:
  *	randstalker [input_rom_path] [seed] [output_rom_path] [output_log]
  *
  *	- input_rom_path	===> Path to the game ROM used as input for the randomization (this file will only be read, not modified).
- *	- seed			===> Random seed (integer) used to alter the game. Using the same seed twice will produce the same result.
+ *	- seed				===> Random seed (integer) used to alter the game. Using the same seed twice will produce the same result.
  *	- output_rom_path	===> Path where the randomized ROM will be put, defaults to 'output.md' in current working directory.
  *	- output_log		===> Path where the seed log will be put, defaults to 'randstalker.log' in current working directory.
  */
@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
 
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM
 	std::ofstream logFile(outputLogPath);
-	World landstalkerWorld;
-	landstalkerWorld.randomize(seed, logFile);
+	World landstalkerWorld(seed, logFile);
+	landstalkerWorld.randomize();
 	landstalkerWorld.writeToROM(*rom);
 	logFile.close();
 

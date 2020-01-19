@@ -238,7 +238,7 @@ void alterCasinoCheck(GameROM& rom)
 	// 0x09DF25:
 		// Before:	29 03 (bit 3 of FF1029)
 		// After:	00 00 (bit 0 of FF1000 - always true) 
-	rom.setWord(0x09DF25, 0x4B02);
+	rom.setWord(0x09DF25, 0x0000);
 }
 
 void alterMercatorSecondaryShopCheck(GameROM& rom)
