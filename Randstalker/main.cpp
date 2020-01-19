@@ -25,7 +25,7 @@ constexpr auto RELEASE = "0.9b";
 
 /*
  * Command line syntax:
- *	randstalker [input_rom_path] [seed] [output_rom_path]
+ *	randstalker [input_rom_path] [seed] [output_rom_path] [output_log]
  *
  *	- input_rom_path	===> Path to the game ROM used as input for the randomization (this file will only be read, not modified).
  *	- seed			===> Random seed (integer) used to alter the game. Using the same seed twice will produce the same result.

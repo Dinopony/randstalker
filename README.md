@@ -17,4 +17,4 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 
 Either launch Randstalker.exe and follow the instructions, or execute it through the command line with the following syntax:
 
-`Randstalker.exe [input_filename] [seed] [output_filename]`
+`Randstalker.exe [input_filename] [seed] [output_filename] [output_log]`
