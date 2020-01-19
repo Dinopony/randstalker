@@ -25,11 +25,12 @@ constexpr auto RELEASE = "0.9b";
 
 /*
  * Command line syntax:
- *		randstalker [input_rom_path] [seed] [output_rom_path]
+ *	randstalker [input_rom_path] [seed] [output_rom_path] [output_log]
  *
- *  - input_rom_path	===> Path to the game ROM used as input for the randomization (this file will only be read, not modified).
- *	- seed				===> Random seed (integer) used to alter the game. Using the same seed twice will produce the same result.
+ *	- input_rom_path	===> Path to the game ROM used as input for the randomization (this file will only be read, not modified).
+ *	- seed			===> Random seed (integer) used to alter the game. Using the same seed twice will produce the same result.
  *	- output_rom_path	===> Path where the randomized ROM will be put, defaults to 'output.md' in current working directory.
+ *	- output_log		===> Path where the seed log will be put, defaults to 'randstalker.log' in current working directory.
  */
 
 int main(int argc, char* argv[])
@@ -81,24 +82,28 @@ int main(int argc, char* argv[])
 	}
 	std::cout << "Used seed: " << seed << "\n\n";
 
+	std::string outputRomPath = "output.md";
+	if (argc >= 4)
+		outputRomPath = argv[3];
+
+	std::string outputLogPath = "randstalker.log";
+	if (argc >= 5)
+		outputLogPath = argv[4];
+
 	// Perform game changes unrelated with the randomization part
 	alterROM(*rom);
 
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM
-	std::ofstream logFile("randstalker.log");
+	std::ofstream logFile(outputLogPath);
 	World landstalkerWorld;
 	landstalkerWorld.randomize(seed, logFile);
 	landstalkerWorld.writeToROM(*rom);
 	logFile.close();
 
-	std::string outputRomPath = "output.md";
-	if (argc >= 4)
-		outputRomPath = argv[3];
 	rom->saveAs(outputRomPath);
-
 	std::cout << "Randomized rom outputted to \"" << outputRomPath << "\".\n\n";
 
-	if (argc < 4)
+	if (argc < 5)
 	{
 		std::cout << "Press any key to exit.";
 		std::string dummy;
