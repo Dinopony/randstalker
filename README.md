@@ -1,4 +1,4 @@
-![](https://github.com/Dilandau/randstalker/workflows/Compile/badge.svg)
+![](https://github.com/Dinopony/randstalker/workflows/Compile/badge.svg)
 
 # Randstalker
 
