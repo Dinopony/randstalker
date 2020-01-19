@@ -5,6 +5,7 @@
 #include <string>
 #include <chrono>
 #include <random>
+#include <climits>
 
 #include "Constants/ItemCodes.h"
 #include "Constants/ItemPedestalCodes.h"
@@ -53,7 +54,7 @@ public:
 
 	void randomize();
 	std::set<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
-	void fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count = INT_MAX);
+	void fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count = UINT_MAX);
 
 	void writeToROM(GameROM& rom);
 	void writeItemSourcesBreakdownInLog();

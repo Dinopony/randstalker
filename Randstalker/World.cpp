@@ -1,5 +1,5 @@
 #include "World.h"
-
+#include <algorithm>
 
 void World::initItems()
 {
