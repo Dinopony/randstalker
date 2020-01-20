@@ -2,37 +2,15 @@
 
 namespace Tools 
 {
-    /*
     template<typename T>
-    T getRandomElementFrom(std::set<T>& set)
+    void shuffle(std::vector<T>& vector, std::mt19937& rng)
     {
-        size_t size = set.size();
-        uint32_t randomIndex = Random::getRandomInteger(0, size - 1);
-     
-        auto iter = set.begin();
-        for (uint32_t i = 0; i < randomIndex; ++i)
-            ++iter;
+        std::map<uint32_t, T> elems;
+        for (T elem : vector)
+            elems[rng()] = elem;
 
-        return *iter;
+        vector.clear();
+        for (auto [key, value] : elems)
+            vector.push_back(value);
     }
-
-    template<typename T>
-    T getRandomElementFrom(std::vector<T>& vector)
-    {
-        size_t size = vector.size();
-        uint32_t randomIndex = Random::getRandomInteger(0, size - 1);
-        return vector[randomIndex];
-    }
-    
-    template<typename T>
-    T extractRandomElementFrom(std::vector<T>& vector)
-    {
-        size_t size = vector.size();
-        uint32_t randomIndex = Random::getRandomInteger(0, size-1);
-
-        T obj = vector[randomIndex];
-        vector.erase(vector.begin() + randomIndex);
-        return obj;
-    }*/
-
-} // namespace end
+}

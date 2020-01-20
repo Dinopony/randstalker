@@ -875,7 +875,7 @@ void World::initFillerItems()
 	for (uint8_t i = 0; i < 2; ++i)
 		_fillerItems.push_back(_items[ITEM_200_GOLDS]);
 
-	std::shuffle(_fillerItems.begin(), _fillerItems.end(), _rng);
+	Tools::shuffle(_fillerItems, _rng);
 }
 
 void World::randomize()
@@ -891,7 +891,7 @@ void World::randomize()
 		if (keyItemsNeededToProgress.empty())
 			break;
 
-		std::shuffle(reachableItemSources.begin(), reachableItemSources.end(), _rng);
+		Tools::shuffle(reachableItemSources, _rng);
 
 		_logFile << "Step #" << stepCount << "\n";
 
@@ -906,7 +906,7 @@ void World::randomize()
 		_logFile << "\n";
 
 		// Find a random "key item" to place and a compatible item source where to place it
-		std::shuffle(keyItemsNeededToProgress.begin(), keyItemsNeededToProgress.end(), _rng);
+		Tools::shuffle(keyItemsNeededToProgress, _rng);
 		Item* randomKeyItem = keyItemsNeededToProgress[0];
 
 		AbstractItemSource* randomItemSource = nullptr;

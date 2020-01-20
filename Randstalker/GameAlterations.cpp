@@ -1,6 +1,5 @@
 #include "GameAlterations.h"
 #include <cstdint>
-#include <set>
 
 constexpr auto INIT_FUNCTION_INJECTION_ADDRESS = 0x1FFAD0;
 
