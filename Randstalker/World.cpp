@@ -359,7 +359,7 @@ void World::initItemSources()
 	_rewards[ItemRewardCode::MIR_AXE_MAGIC] = new ItemReward(0x028A3F, "Mir reward after Lake Shrine (Axe Magic in OG)");
 	_rewards[ItemRewardCode::ZAK_GOLA_EYE] = new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
 	_rewards[ItemRewardCode::SWORDSMAN_KADO] = new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
-	_rewards[ItemRewardCode::RYUMA_MAYOR] = new ItemReward(0x02837B, "Ryuma's Mayor reward (Safety Pass in OG)");
+	// _rewards[ItemRewardCode::RYUMA_MAYOR] = new ItemReward(0x02837B, "Ryuma's Mayor reward (Safety Pass in OG)");
 	// _rewards[ItemRewardCode::LUMBERJACK] = new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
 }
 
@@ -458,7 +458,7 @@ void World::initRegions()
 	thievesHideout->addItemSource(_chests[0x3A]); // "Thieves Hideout: 50 golds chest in boss reward room");
 	thievesHideout->addItemSource(_chests[0x3B]); // "Thieves Hideout: lifestock chest in boss reward room");
 	thievesHideout->addItemSource(_chests[0x3C]); // "Thieves Hideout: ekeeke chest in boss reward room");
-	thievesHideout->addItemSource(_rewards[ItemRewardCode::RYUMA_MAYOR]);
+	// thievesHideout->addItemSource(_rewards[ItemRewardCode::RYUMA_MAYOR]);
 	_regions.push_back(thievesHideout);
 
 	WorldRegion* witchHelgaHut = new WorldRegion("Witch Helga's Hut");

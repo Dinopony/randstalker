@@ -79,7 +79,7 @@ void alterGameStart(GameROM& rom)
 
 	// move.w 0xDD60 -> $FF1004
 	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0xDD60);		address += 0x02;
+	rom.setWord(address, 0xDF60);		address += 0x02;
 	rom.setLong(address, 0x00FF1004);	address += 0x04;
 
 	// move.w 0x7EB4 -> $FF1006
@@ -238,11 +238,11 @@ void fixRyumaMayorDialogues(GameROM& rom)
 {
 	// Remove all useless dialogues for Ryuma's mayor, as the only ones we want are the ones granting a reward
 	// and saying thanks after getting said reward. Any other one would interfere with the reward granting.
-	std::set<uint32_t> keptDialogues = { 0x025378, 0x02537C };
+/*	std::set<uint32_t> keptDialogues = { 0x025378, 0x02537C };
 
 	for(uint32_t addr = 0x025324 ; addr <= 0x025398 ; addr += 4 )
 		if( ! keptDialogues.count(addr) )
-			rom.setWord(addr, DIALOGUE_NULLIFIER);
+			rom.setWord(addr, DIALOGUE_NULLIFIER);*/
 }
 
 void alterCasinoCheck(GameROM& rom)
