@@ -293,6 +293,19 @@ void alterVerlaBoulderCheck(GameROM& rom)
 	rom.setByte(0x01A965, 0x86);
 }
 
+void removeMercatorCastleBackdoorGuard(GameROM& rom)
+{
+	// There is a guard staying in front of the Mercator castle backdoor to prevent you from using
+	// Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
+	// but we actually never want him to be there, so we delete him from existence.
+
+	// 0x01A6AA:
+		// Before:	027E 94 C5 (in map 27E, check bit 6 [C5 >> 5] of flag 1014 [94 & 7F])
+		// After:	0000 5F E2 (in map 0, check bit 7 of flag 105F - never true)
+	rom.setWord(0x01A6AA, 0x0000);
+	rom.setWord(0x01A6AC, 0x5FE2);
+}
+
 void alterROM(GameROM& rom)
 {
 	alterGameStart(rom);
@@ -306,8 +319,11 @@ void alterROM(GameROM& rom)
 	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
 	fixRyumaMayorDialogues(rom);
+
 	alterCasinoCheck(rom);
 	alterMercatorSecondaryShopCheck(rom);
 	alterWaterfallShrineSecretStairsCheck(rom);
 	alterVerlaBoulderCheck(rom);
+
+	removeMercatorCastleBackdoorGuard(rom);
 }
