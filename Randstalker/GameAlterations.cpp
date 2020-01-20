@@ -222,9 +222,9 @@ void fixMirAfterLakeShrineCheck(GameROM& rom)
 {
 	// 0x01AA22:
 		// Before:	0310 2A A2 (in map 310, check bit 5 of flag 102A)
-		// After:	0000 00 00 (game, please do nothing. simple.)
+		// After:	0000 5F E2 (in map 0, check bit 7 of flag 105F - never true)
 	rom.setWord(0x01AA22, 0x0000);
-	rom.setWord(0x01AA24, 0x0000);
+	rom.setWord(0x01AA24, 0x5FE2);
 }
 
 void fixLogsRoomExitCheck(GameROM& rom)
