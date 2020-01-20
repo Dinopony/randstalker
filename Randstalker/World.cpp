@@ -887,7 +887,7 @@ void World::randomize()
 		// Evaluate accessible regions & stuff
 		std::vector<Item*> keyItemsNeededToProgress;
 		std::vector<AbstractItemSource*> reachableItemSources;
-		std::set<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
+		std::vector<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
 		if (keyItemsNeededToProgress.empty())
 			break;
 
@@ -935,7 +935,7 @@ void World::randomize()
 	// If no key items are remaining, this means we are in go-mode and we can fill all remaining item sources
 	std::vector<Item*> keyItemsNeededToProgress;
 	std::vector<AbstractItemSource*> reachableItemSources;
-	std::set<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
+	std::vector<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
 
 	_logFile << "Key items placement finished, filling the " << reachableItemSources.size() << " remaining sources...\n";
 	this->fillSourcesWithFillerItems(reachableItemSources);
@@ -944,28 +944,25 @@ void World::randomize()
 	this->writeItemSourcesBreakdownInLog();
 }
 
-std::set<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources)
+std::vector<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources)
 {
-	std::set<WorldRegion*> returnedRegions;
-	std::set<WorldRegion*> regionsToProcess;
-	regionsToProcess.insert(_spawnRegion);
-
-	std::set<Item*> neededKeyItems;
+	std::vector<WorldRegion*> returnedRegions;
+	std::vector<WorldRegion*> regionsToProcess;
+	regionsToProcess.push_back(_spawnRegion);
 
 	while (!regionsToProcess.empty())
 	{
 		WorldRegion* processedRegion = *(regionsToProcess.begin());
-		regionsToProcess.erase(processedRegion);
-		returnedRegions.insert(processedRegion);
+		regionsToProcess.erase(regionsToProcess.begin());
+		returnedRegions.push_back(processedRegion);
 
+		// Add empty item sources from this region to the reachable item sources
 		const std::vector<AbstractItemSource*> itemSourcesInRegion = processedRegion->getItemSources();
 		for (AbstractItemSource* source : itemSourcesInRegion)
-		{
-			Item* item = source->getItem();
-			if (!item)
+			if (!source->getItem())
 				out_reachableSources.push_back(source);
-		}
 
+		// Analyze outgoing paths to check for other regions to explore
 		const std::vector<WorldPath*>& outgoingPaths = processedRegion->getOutgoingPaths();
 		for (WorldPath* path : outgoingPaths)
 		{
@@ -987,14 +984,14 @@ std::set<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item*>&
 			}
 
 			if (!canReachRegion)
-				neededKeyItems.insert(requiredKeyItem);
-			else if (!returnedRegions.count(destination))
-				regionsToProcess.insert(destination);
+			{
+				if( std::find(out_keyItems.begin(), out_keyItems.end(), requiredKeyItem) == out_keyItems.end() )
+					out_keyItems.push_back(requiredKeyItem);
+			}
+			else if ( std::find(returnedRegions.begin(), returnedRegions.end(), destination) == returnedRegions.end() )
+				regionsToProcess.push_back(destination);
 		}
 	}
-
-	for (Item* keyItem : neededKeyItems)
-		out_keyItems.push_back(keyItem);
 
 	return returnedRegions;
 }
