@@ -18,8 +18,10 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 ## Usage
 
 You can use the online generator provided by Dilandau (thanks to him!) at this address: https://randstalker.ovh/
+
 The online generator always uses the most up-to-date version of the tool.
 
 You can also use the executable version on your own device.
 To do so, either launch Randstalker.exe and follow the instructions, or execute it through the command line with the following syntax:
+
 `Randstalker.exe [input_filename] [seed] [output_filename] [output_log]`
