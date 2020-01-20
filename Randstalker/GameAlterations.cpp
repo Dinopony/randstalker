@@ -1,5 +1,6 @@
 #include "GameAlterations.h"
 #include <cstdint>
+#include <set>
 
 constexpr auto INIT_FUNCTION_INJECTION_ADDRESS = 0x1FFAD0;
 
@@ -11,6 +12,8 @@ constexpr auto OPCODE_NOP =		0x4E71;
 constexpr auto OPCODE_BRA =		0x6000;
 constexpr auto OPCODE_BNE =		0x6600;
 constexpr auto OPCODE_BEQ =		0x6700;
+
+constexpr auto DIALOGUE_NULLIFIER = 0x02FF;
 
 void alterGameStart(GameROM& rom)
 {
@@ -74,9 +77,9 @@ void alterGameStart(GameROM& rom)
 	rom.setWord(address, 0xD5E0);		address += 0x02;
 	rom.setLong(address, 0x00FF1002);	address += 0x04;
 
-	// move.w 0xDF60 -> $FF1004
+	// move.w 0xDD60 -> $FF1004
 	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0xDF60);		address += 0x02;
+	rom.setWord(address, 0xDD60);		address += 0x02;
 	rom.setLong(address, 0x00FF1004);	address += 0x04;
 
 	// move.w 0x7EB4 -> $FF1006
@@ -231,6 +234,17 @@ void fixLogsRoomExitCheck(GameROM& rom)
 	rom.setWord(0x011EC4, OPCODE_BRA);
 }
 
+void fixRyumaMayorDialogues(GameROM& rom)
+{
+	// Remove all useless dialogues for Ryuma's mayor, as the only ones we want are the ones granting a reward
+	// and saying thanks after getting said reward. Any other one would interfere with the reward granting.
+	std::set<uint32_t> keptDialogues = { 0x025378, 0x02537C };
+
+	for(uint32_t addr = 0x025324 ; addr <= 0x025398 ; addr += 4 )
+		if( ! keptDialogues.count(addr) )
+			rom.setWord(addr, DIALOGUE_NULLIFIER);
+}
+
 void alterCasinoCheck(GameROM& rom)
 {
 	// Change the Casino entrance check so that the NPC is always out of the way
@@ -262,6 +276,24 @@ void alterWaterfallShrineSecretStairsCheck(GameROM& rom)
 	rom.setWord(0x005014, 0x0209);
 }
 
+void alterVerlaBoulderCheck(GameROM& rom)
+{
+	// Change the removal check for the boulder between Verla and Mercator so that it disappears as soon as you sail with the boat.
+	// This means you don't need to do anything in Verla to be able to go back to the rest of the island, preventing any softlock there
+
+	// Mercator side map (exterior)
+	//  5071 08 => 0C
+	// 1A8C9 08 => 88 (>> 5 = 4 --> bit 4)
+	rom.setByte(0x005071, 0x0C);
+	rom.setByte(0x01A8C9, 0x88);
+
+	// Verla side map (inside tunnel)
+	//  5075 08 => 0C
+	// 1A965 06 => 86 (>> 5 = 4 --> bit 4)
+	rom.setByte(0x005075, 0x0C);
+	rom.setByte(0x01A965, 0x86);
+}
+
 void alterROM(GameROM& rom)
 {
 	alterGameStart(rom);
@@ -274,7 +306,9 @@ void alterROM(GameROM& rom)
 	fixCryptBehavior(rom);
 	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
+	fixRyumaMayorDialogues(rom);
 	alterCasinoCheck(rom);
 	alterMercatorSecondaryShopCheck(rom);
 	alterWaterfallShrineSecretStairsCheck(rom);
+	alterVerlaBoulderCheck(rom);
 }

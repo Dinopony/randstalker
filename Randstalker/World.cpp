@@ -356,10 +356,11 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::KAZALT_SHOP_GOLDEN_STATUE] = new ItemPedestal(0x02211D, "Kazalt shop: Golden Statue slot", true);
 	_pedestals[ItemPedestalCode::KAZALT_SHOP_RESTORATION] = new ItemPedestal(0x02210D, "Kazalt shop: Restoration slot", true);
 
-	_rewards[ItemRewardCode::MIR_AXE_MAGIC_REWARD] = new ItemReward(0x028A3F, "Mir reward after Lake Shrine (Axe Magic in OG)");
-	_rewards[ItemRewardCode::ZAK_GOLA_EYE_REWARD] = new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
-	_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD] = new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
-	// _rewards[ItemRewardCode::LUMBERJACK_REWARD] = new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
+	_rewards[ItemRewardCode::MIR_AXE_MAGIC] = new ItemReward(0x028A3F, "Mir reward after Lake Shrine (Axe Magic in OG)");
+	_rewards[ItemRewardCode::ZAK_GOLA_EYE] = new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
+	_rewards[ItemRewardCode::SWORDSMAN_KADO] = new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
+	_rewards[ItemRewardCode::RYUMA_MAYOR] = new ItemReward(0x02837B, "Ryuma's Mayor reward (Safety Pass in OG)");
+	// _rewards[ItemRewardCode::LUMBERJACK] = new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
 }
 
 void World::initRegions()
@@ -415,7 +416,7 @@ void World::initRegions()
 
 	WorldRegion* routeGumiToRyuma = new WorldRegion("Route from Gumi to Ryuma");
 	routeGumiToRyuma->addItemSource(_chests[0x86]);   // "Route between Gumi and Ryuma: chest on the way to Swordsman Kado"
-	routeGumiToRyuma->addItemSource(_rewards[ItemRewardCode::SWORDSMAN_KADO_REWARD]);
+	routeGumiToRyuma->addItemSource(_rewards[ItemRewardCode::SWORDSMAN_KADO]);
 	_regions.push_back(routeGumiToRyuma);
 
 	WorldRegion* tibor = new WorldRegion("Tibor");
@@ -457,6 +458,7 @@ void World::initRegions()
 	thievesHideout->addItemSource(_chests[0x3A]); // "Thieves Hideout: 50 golds chest in boss reward room");
 	thievesHideout->addItemSource(_chests[0x3B]); // "Thieves Hideout: lifestock chest in boss reward room");
 	thievesHideout->addItemSource(_chests[0x3C]); // "Thieves Hideout: ekeeke chest in boss reward room");
+	thievesHideout->addItemSource(_rewards[ItemRewardCode::RYUMA_MAYOR]);
 	_regions.push_back(thievesHideout);
 
 	WorldRegion* witchHelgaHut = new WorldRegion("Witch Helga's Hut");
@@ -665,7 +667,7 @@ void World::initRegions()
 	lakeShrine->addItemSource(_pedestals[ItemPedestalCode::LAKE_SHRINE_EKEEKE_2]);
 	lakeShrine->addItemSource(_pedestals[ItemPedestalCode::LAKE_SHRINE_EKEEKE_3]);
 	lakeShrine->addItemSource(_pedestals[ItemPedestalCode::LAKE_SHRINE_EKEEKE_4]);
-	lakeShrine->addItemSource(_rewards[ItemRewardCode::MIR_AXE_MAGIC_REWARD]);
+	lakeShrine->addItemSource(_rewards[ItemRewardCode::MIR_AXE_MAGIC]);
 	_regions.push_back(lakeShrine);
 
 	WorldRegion* mountainousArea = new WorldRegion("Mountainous Area");
@@ -683,7 +685,7 @@ void World::initRegions()
 	mountainousArea->addItemSource(_chests[0xA7]);   // "Mountainous Area Cave: chest in small visible room");
 	mountainousArea->addItemSource(_chests[0xA2]);   // "Route to Lake Shrine: \"hard\" chest on crossroads with mountainous area");
 	mountainousArea->addItemSource(_pedestals[ItemPedestalCode::MOON_STONE]);
-	mountainousArea->addItemSource(_rewards[ItemRewardCode::ZAK_GOLA_EYE_REWARD]);
+	mountainousArea->addItemSource(_rewards[ItemRewardCode::ZAK_GOLA_EYE]);
 	_regions.push_back(mountainousArea);
 
 	WorldRegion* kingNolesCave = new WorldRegion("King Nole's Cave");
