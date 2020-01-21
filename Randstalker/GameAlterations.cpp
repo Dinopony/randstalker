@@ -215,7 +215,7 @@ void fixCryptBehavior(GameROM& rom)
 	rom.setLong(0x0117EC, 0x00FF1097);	// of flag FF1097
 	rom.setWord(0x0117F0, OPCODE_NOP);	// nop
 	rom.setWord(0x0117F2, OPCODE_NOP);	// nop
-	rom.setWord(0x0117F4, OPCODE_BEQ);	// bne $10F52
+	rom.setWord(0x0117F4, OPCODE_BEQ);	// beq $10F52
 }
 
 void fixMirAfterLakeShrineCheck(GameROM& rom)
