@@ -5,7 +5,7 @@
 // ---------------------------------------------------------------------------------------
 //
 //		Developed by:	Dinopony (@DinoponyRuns)
-//		Version:		v0.9c
+//		Version:		v0.9d
 //
 // ---------------------------------------------------------------------------------------
 //
@@ -21,7 +21,7 @@
 #include "GameAlterations.h"
 #include "World.h"
 
-constexpr auto RELEASE = "0.9c";
+constexpr auto RELEASE = "0.9d";
 
 /*
  * Command line syntax:
