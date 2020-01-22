@@ -314,6 +314,18 @@ void removeMercatorCastleBackdoorGuard(GameROM& rom)
 	rom.setWord(0x0215A6, 0x0000);
 }
 
+void removeSailorInDarkPort(GameROM& rom)
+{
+	// There is a sailor NPC in the "dark" version of Mercator port who responds badly to story triggers, allowing us to sail to Verla
+	// even without having repaired the lighthouse. To prevent this from being exploited, we removed him altogether.
+
+	// 0x021646:
+		// Before:	23 EC
+		// After:	00 00
+	rom.setWord(0x021646, 0x0000);
+}
+
+
 void replaceLumberjackByChest(GameROM& rom)
 {
 	// Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
@@ -348,6 +360,7 @@ void alterROM(GameROM& rom)
 	alterBlueRibbonStoryCheck(rom);
 
 	removeMercatorCastleBackdoorGuard(rom);
+	removeSailorInDarkPort(rom);
 
 	replaceLumberjackByChest(rom);
 }
