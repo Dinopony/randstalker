@@ -1,5 +1,33 @@
 #include "World.h"
+#include "Tools.h"
 #include <algorithm>
+
+World::World(uint32_t seed, std::ofstream& logFile) :
+	_rng(seed),
+	_logFile(logFile)
+{
+	_logFile << "Seed: " << seed << "\n\n";
+
+	this->initItems();
+	this->initItemSources();
+	this->initRegions();
+	this->initTiborTrees();
+	this->initFillerItems();
+}
+
+World::~World()
+{
+	for (auto& [key, chest] : _chests)
+		delete chest;
+	for (auto& [key, pedestal] : _pedestals)
+		delete pedestal;
+	for (auto& [key, item] : _items)
+		delete item;
+	for (auto& [key, reward] : _rewards)
+		delete reward;
+	for (auto region : _regions)
+		delete region;
+}
 
 void World::initItems()
 {
@@ -812,6 +840,20 @@ void World::initRegions()
 	_chests[0x80]->setItem(_items[ITEM_LOGS]);
 }
 
+void World::initTiborTrees()
+{
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Massan sector", 0x11DC56, 0x11DC66, 0x0200));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Tibor sector", 0x11DD9E, 0x11DDA6, 0x0216));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Mercator front gate", 0x11DDD6, 0x11DDDE, 0x021B));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Verla shore", 0x11DEA6, 0x11DEAE, 0x0219));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Destel sector", 0x11DFA6, 0x11DFAE, 0x0218));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Lake Shrine sector", 0x11DFE6, 0x11DFEE, 0x0201));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Mir Tower sector", 0x11DE06, 0x11DE0E, 0x021A));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Mountainous area", 0x11DF3E, 0x11DF46, 0x0217));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Greenmaze entrance", 0x11E1DE, 0x11E1E6, 0x01FF));
+	_outsideTreeMaps.push_back(new OutsideTreeMap("Greenmaze exit", 0x11E25E, 0x11E266, 0x01FE));
+}
+
 void World::initFillerItems()
 {
 	_fillerItems.push_back(_items[ITEM_MAGIC_SWORD]);
@@ -942,8 +984,12 @@ void World::randomize()
 	_logFile << "Key items placement finished, filling the " << reachableItemSources.size() << " remaining sources...\n";
 	this->fillSourcesWithFillerItems(reachableItemSources);
 
+	this->shuffleTiborTrees();
+
 	// Write down the complete item list in the log file
 	this->writeItemSourcesBreakdownInLog();
+	this->writeTiborJunctionsInLog();
+
 }
 
 std::vector<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources)
@@ -1023,6 +1069,18 @@ void World::fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& i
 	}
 }
 
+void World::shuffleTiborTrees()
+{
+	_logFile << "SHUFFLING TIBOR TREES\n";
+
+	std::vector<uint16_t> trees;
+	for (OutsideTreeMap* map : _outsideTreeMaps)
+		trees.push_back(map->getTree());
+
+	Tools::shuffle(trees, _rng);
+	for (uint8_t i = 0; i < _outsideTreeMaps.size(); ++i)
+		_outsideTreeMaps[i]->setTree(trees[i]);
+}
 
 void World::writeToROM(GameROM& rom)
 {
@@ -1034,6 +1092,8 @@ void World::writeToROM(GameROM& rom)
 		pedestal->writeToROM(rom);
 	for (auto& [key, reward] : _rewards)
 		reward->writeToROM(rom);
+	for(OutsideTreeMap* map : _outsideTreeMaps)
+	     map->writeToROM(rom);
 }
 
 void World::writeItemSourcesBreakdownInLog()
@@ -1058,4 +1118,29 @@ void World::writeItemSourcesBreakdownInLog()
 
 	for (Item* item : _fillerItems)
 		_logFile << "- [" << item->getName() << "]\n";
+}
+
+void World::writeTiborJunctionsInLog()
+{
+	_logFile << "\n-------------------------------\n";
+	_logFile << "Tibor trees:" << "\n";
+
+	std::pair<OutsideTreeMap*, OutsideTreeMap*> pairs[5];
+	for (OutsideTreeMap* map : _outsideTreeMaps)
+	{
+		uint16_t treeMapID = map->getTree();
+		if (treeMapID == 0x0200)		pairs[0].first = map;
+		else if (treeMapID == 0x0216)	pairs[0].second = map;
+		else if (treeMapID == 0x021B)	pairs[1].first = map;
+		else if (treeMapID == 0x0219)	pairs[1].second = map;
+		else if (treeMapID == 0x0218)	pairs[2].first = map;
+		else if (treeMapID == 0x0201)	pairs[2].second = map;
+		else if (treeMapID == 0x021A)	pairs[3].first = map;
+		else if (treeMapID == 0x0217)	pairs[3].second = map;
+		else if (treeMapID == 0x01FF)	pairs[4].first = map;
+		else if (treeMapID == 0x01FE)	pairs[4].second = map;
+	}
+
+	for (int i = 0; i < 5; ++i)
+		_logFile << "- " << pairs[i].first->getName() << " <===> " << pairs[i].second->getName() << "\n";
 }

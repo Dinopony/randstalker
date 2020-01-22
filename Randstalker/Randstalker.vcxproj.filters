@@ -45,6 +45,9 @@
     <ClInclude Include="Constants\ItemRewardCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
     </ClInclude>
+    <ClInclude Include="OutsideTreeMap.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

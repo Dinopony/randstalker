@@ -14,50 +14,31 @@
 #include "Item.h"
 #include "ItemSource.h"
 #include "WorldRegion.h"
-#include "Tools.h"
+#include "OutsideTreeMap.h"
 
 class NoAppropriateItemSourceException : public std::exception {};
 
 class World 
 {
 public:
-	World(uint32_t seed, std::ofstream& logFile) :
-		_rng(seed),
-		_logFile(logFile)
-	{
-		_logFile << "Seed: " << seed << "\n\n";
-
-		this->initItems();
-		this->initItemSources();
-		this->initRegions();
-		this->initFillerItems();
-	}
-
-	~World()
-	{
-		for (auto& [key, chest] : _chests)
-			delete chest;
-		for (auto& [key, pedestal] : _pedestals)
-			delete pedestal;
-		for (auto& [key, item] : _items)
-			delete item;
-		for (auto& [key, reward] : _rewards)
-			delete reward;
-		for (auto region : _regions)
-			delete region;
-	}
+	World(uint32_t seed, std::ofstream& logFile);
+	~World();
 
 	void initItems();
 	void initItemSources();
 	void initRegions();
+	void initTiborTrees();
 	void initFillerItems();
 
 	void randomize();
 	std::vector<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
 	void fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count = UINT_MAX);
 
+	void shuffleTiborTrees();
+
 	void writeToROM(GameROM& rom);
 	void writeItemSourcesBreakdownInLog();
+	void writeTiborJunctionsInLog();
 
 private:
 	std::ofstream& _logFile;
@@ -70,6 +51,8 @@ private:
 
 	std::vector<WorldRegion*> _regions;
 	WorldRegion* _spawnRegion;
+
+	std::vector<OutsideTreeMap*> _outsideTreeMaps;
 
 	std::vector<Item*> _fillerItems;
 };
