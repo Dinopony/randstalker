@@ -233,17 +233,6 @@ void fixLogsRoomExitCheck(GameROM& rom)
 	rom.setWord(0x011EC4, OPCODE_BRA);
 }
 
-void fixRyumaMayorDialogues(GameROM& rom)
-{
-	// Remove all useless dialogues for Ryuma's mayor, as the only ones we want are the ones granting a reward
-	// and saying thanks after getting said reward. Any other one would interfere with the reward granting.
-/*	std::set<uint32_t> keptDialogues = { 0x025378, 0x02537C };
-
-	for(uint32_t addr = 0x025324 ; addr <= 0x025398 ; addr += 4 )
-		if( ! keptDialogues.count(addr) )
-			rom.setWord(addr, DIALOGUE_NULLIFIER);*/
-}
-
 void alterCasinoCheck(GameROM& rom)
 {
 	// Change the Casino entrance check so that the NPC is always out of the way
@@ -317,7 +306,6 @@ void alterROM(GameROM& rom)
 	fixCryptBehavior(rom);
 	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
-	fixRyumaMayorDialogues(rom);
 
 	alterCasinoCheck(rom);
 	alterMercatorSecondaryShopCheck(rom);

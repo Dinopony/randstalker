@@ -990,7 +990,8 @@ std::vector<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item
 				if( std::find(out_keyItems.begin(), out_keyItems.end(), requiredKeyItem) == out_keyItems.end() )
 					out_keyItems.push_back(requiredKeyItem);
 			}
-			else if ( std::find(returnedRegions.begin(), returnedRegions.end(), destination) == returnedRegions.end() )
+			else if ( std::find(returnedRegions.begin(), returnedRegions.end(), destination) == returnedRegions.end() 
+				   && std::find(regionsToProcess.begin(), regionsToProcess.end(), destination) == regionsToProcess.end() )
 				regionsToProcess.push_back(destination);
 		}
 	}
