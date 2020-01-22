@@ -125,6 +125,8 @@ void World::initItemSources()
 	_chests[0x16] = new ItemChest(0x16, ITEM_LIFESTOCK, "King Nole's Cave: first lifestock chest");
 	_chests[0x18] = new ItemChest(0x18, ITEM_5_GOLDS, "King Nole's Cave: first gold chest in third room");
 	_chests[0x19] = new ItemChest(0x19, ITEM_5_GOLDS, "King Nole's Cave: second gold chest in third room");
+	_chests[0x1A] = new ItemChest(0x1A, ITEM_LIFESTOCK, "Greenmaze: chest on path to lumberjack");
+	_chests[0x1B] = new ItemChest(0x1B, ITEM_EINSTEIN_WHISTLE, "Greenmaze: chest replacing lumberjack");
 	_chests[0x1C] = new ItemChest(0x1C, ITEM_5_GOLDS, "King Nole's Cave: gold chest in isolated room");
 	_chests[0x1D] = new ItemChest(0x1D, ITEM_LIFESTOCK, "King Nole's Cave: lifestock chest in crate room");
 	_chests[0x1F] = new ItemChest(0x1F, ITEM_LIFESTOCK, "King Nole's Cave: boulder chase corridor chest");
@@ -254,7 +256,6 @@ void World::initItemSources()
 	_chests[0xA5] = new ItemChest(0xA5, ITEM_GAIA_STATUE, "Route to Lake Shrine: left chest in volcano");
 	_chests[0xA6] = new ItemChest(0xA6, ITEM_LIFESTOCK, "Mountainous Area Cave: chest in small hidden room");
 	_chests[0xA7] = new ItemChest(0xA7, ITEM_DAHL, "Mountainous Area Cave: chest in small visible room");
-	_chests[0xA8] = new ItemChest(0xA8, ITEM_LIFESTOCK, "Greenmaze: chest on path to lumberjack");
 	_chests[0xA9] = new ItemChest(0xA9, ITEM_20_GOLDS, "Greenmaze: chest on promontory appearing after pressing a button in other section");
 	_chests[0xAA] = new ItemChest(0xAA, ITEM_DAHL, "Greenmaze: chest between Sunstone and Massan shortcut");
 	_chests[0xAB] = new ItemChest(0xAB, ITEM_LIFESTOCK, "Greenmaze: chest in mages room");
@@ -304,8 +305,8 @@ void World::initItemSources()
 	_chests[0xDC] = new ItemChest(0xDC, ITEM_GAIA_STATUE, "Tibor: left chest on 2 chest group");
 	_chests[0xDD] = new ItemChest(0xDD, ITEM_20_GOLDS, "Tibor: right chest on 2 chest group");
 
-	// The following chests are absent from the game on release, and their IDs are therefore free:
-	// 0x0E, 0x17, 0x1A, 0x1B, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
+	// The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
+	// 0x0E, 0x17, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
 
 	_pedestals[ItemPedestalCode::IDOL_STONE] = new ItemPedestal(0x021167, "Gumi: Idol Stone pedestal");
 	_pedestals[ItemPedestalCode::SUN_STONE] = new ItemPedestal(0x020C21, "Greenmaze: Sun Stone pedestal");
@@ -577,7 +578,8 @@ void World::initRegions()
 	_regions.push_back(mirTowerPostGarlic);
 
 	WorldRegion* greenmaze = new WorldRegion("Greenmaze");
-	greenmaze->addItemSource(_chests[0xA8]);   // "Greenmaze: chest on path to lumberjack");
+	greenmaze->addItemSource(_chests[0x1A]);   // "Greenmaze: chest on path to lumberjack");
+	greenmaze->addItemSource(_chests[0x1B]);   // "Greenmaze: chest replacing lumberjack");
 	greenmaze->addItemSource(_chests[0xA9]);   // "Greenmaze: chest on promontory appearing after pressing a button in other section");
 	greenmaze->addItemSource(_chests[0xAB]);   // "Greenmaze: chest in mages room");
 	greenmaze->addItemSource(_chests[0xAC]);   // "Greenmaze: left chest in elbow cave");

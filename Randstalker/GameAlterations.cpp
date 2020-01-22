@@ -233,6 +233,15 @@ void fixLogsRoomExitCheck(GameROM& rom)
 	rom.setWord(0x011EC4, OPCODE_BRA);
 }
 
+void fixArmletSkip(GameROM& rom)
+{
+	// Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
+	// 0x02030C:
+		// Before:  0x82 (Tornado pos Y = 20)
+		// After:   0x85 (Tornado pos Y = 50)
+	rom.setByte(0x02030C, 0x85);
+}
+
 void alterCasinoCheck(GameROM& rom)
 {
 	// Change the Casino entrance check so that the NPC is always out of the way
@@ -282,6 +291,17 @@ void alterVerlaBoulderCheck(GameROM& rom)
 	rom.setByte(0x01A965, 0x86);
 }
 
+void alterBlueRibbonStoryCheck(GameROM& rom)
+{
+	// 0x00A466:
+		// Before:  20 05 (bit 5 of flag 1020)
+		// After:   3F 07 (bit 7 of flag 103F - never true)
+	rom.setWord(0x00A466, 0x3F07);
+
+	// Remove the servant guarding the door, setting her position to 00 00
+	rom.setWord(0x01BFCA, 0x0000);
+}
+
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
 {
 	// There is a guard staying in front of the Mercator castle backdoor to prevent you from using
@@ -294,15 +314,17 @@ void removeMercatorCastleBackdoorGuard(GameROM& rom)
 	rom.setWord(0x0215A6, 0x0000);
 }
 
-void alterBlueRibbonStoryCheck(GameROM& rom)
+void replaceLumberjackByChest(GameROM& rom)
 {
-	// 0x00A466:
-		// Before:  20 05 (bit 5 of flag 1020)
-		// After:   3F 07 (bit 7 of flag 103F - never true)
-	rom.setWord(0x00A466, 0x3F07);
+	// Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
+	for (uint32_t addr = 0x9E9BA; addr <= 0x9E9BE; ++addr)
+		rom.setByte(addr, 0x1A);
 
-	// Remove the servant guarding the door, setting her position to 00 00
-	rom.setWord(0x01BFCA, 0x0000);
+	// Transform the lumberjack into a chest
+	rom.setWord(0x020B9C, 0xD5B1);  // First word: position, orientation and palette (5571 => D5B1)
+	rom.setWord(0x020B9E, 0x0000);  // Second word: ??? (2200 => 0000)
+	rom.setWord(0x020BA0, 0x0012);  // Third word: type (0550 = Lumberjack NPC => 0012 = chest)
+	rom.setWord(0x020BA2, 0x8000);  // Fourth word: behavior (00C1 => 8000 works for some reason)
 }
 
 void alterROM(GameROM& rom)
@@ -317,6 +339,7 @@ void alterROM(GameROM& rom)
 	fixCryptBehavior(rom);
 	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
+	fixArmletSkip(rom);
 
 	alterCasinoCheck(rom);
 	alterMercatorSecondaryShopCheck(rom);
@@ -325,4 +348,6 @@ void alterROM(GameROM& rom)
 	alterBlueRibbonStoryCheck(rom);
 
 	removeMercatorCastleBackdoorGuard(rom);
+
+	replaceLumberjackByChest(rom);
 }
