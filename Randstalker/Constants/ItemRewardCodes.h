@@ -5,5 +5,5 @@ enum class ItemRewardCode {
     ZAK_GOLA_EYE,
     SWORDSMAN_KADO,
     RYUMA_MAYOR,
-    GREENMAZE_LUMBERJACK
+    GREENMAZE_HIDDEN_DWARF
 };

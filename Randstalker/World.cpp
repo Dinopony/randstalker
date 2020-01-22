@@ -359,8 +359,8 @@ void World::initItemSources()
 	_rewards[ItemRewardCode::MIR_AXE_MAGIC] = new ItemReward(0x028A3F, "Mir reward after Lake Shrine (Axe Magic in OG)");
 	_rewards[ItemRewardCode::ZAK_GOLA_EYE] = new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
 	_rewards[ItemRewardCode::SWORDSMAN_KADO] = new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
+	_rewards[ItemRewardCode::GREENMAZE_HIDDEN_DWARF] = new ItemReward(0x0288DF, "Greenmaze hidden dwarf (Restoration in OG)");
 	// _rewards[ItemRewardCode::RYUMA_MAYOR] = new ItemReward(0x02837B, "Ryuma's Mayor reward (Safety Pass in OG)");
-	// _rewards[ItemRewardCode::LUMBERJACK] = new ItemReward(0x000000, "Greenmaze lumberjack reward (Einstein Whistle in OG)");
 }
 
 void World::initRegions()
@@ -552,6 +552,7 @@ void World::initRegions()
 	greenmaze->addItemSource(_chests[0xAE]);   // "Greenmaze: chest in waterfall cave");
 	greenmaze->addItemSource(_chests[0xAF]);   // "Greenmaze: left chest in hidden room behind waterfall ");
 	greenmaze->addItemSource(_chests[0xB0]);   // "Greenmaze: right chest in hidden room behind waterfall ");
+	greenmaze->addItemSource(_rewards[ItemRewardCode::GREENMAZE_HIDDEN_DWARF]);
 	_regions.push_back(greenmaze);
 
 	WorldRegion* greenmazeBehindSacredTrees = new WorldRegion("Greenmaze (behind sacred trees)");
