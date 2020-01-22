@@ -333,6 +333,9 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::LOGS_1] = new ItemPedestal(0x01FA43, "King Nole's Labyrinth (-2F): left Logs pedestal");
 	_pedestals[ItemPedestalCode::LOGS_2] = new ItemPedestal(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs pedestal");
 
+	// This pedestal is special in the sense that it can only be taken once, so we take advantage of this to authorize Lifestocks inside
+	_pedestals[ItemPedestalCode::MERCATOR_FALLING_RIBBON] = new ItemPedestal(0x01BFDF, "Mercator: falling ribbon in castle court", true, true);
+
 	// Ice sword pedestal is special in the sense that it's a double one (one that can be seen before pressing the button, and another one in the map with the bridge)
 	_pedestals[ItemPedestalCode::ICE_SWORD] = new ItemPedestal(0x01EE37, "Lake Shrine (-3F): Sword of Ice pedestal");
 	_pedestals[ItemPedestalCode::ICE_SWORD]->addOtherAddress(0x01EE41);
@@ -507,6 +510,7 @@ void World::initRegions()
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_DETOX_GRASS]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_GAIA_STATUE]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_GOLDEN_STATUE]);
+	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_FALLING_RIBBON]);
 	_regions.push_back(mercator);
 
 	WorldRegion* mercatorSpecialShop = new WorldRegion("Mercator special shop");

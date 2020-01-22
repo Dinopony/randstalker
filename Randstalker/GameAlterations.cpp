@@ -294,6 +294,17 @@ void removeMercatorCastleBackdoorGuard(GameROM& rom)
 	rom.setWord(0x0215A6, 0x0000);
 }
 
+void alterBlueRibbonStoryCheck(GameROM& rom)
+{
+	// 0x00A466:
+		// Before:  20 05 (bit 5 of flag 1020)
+		// After:   3F 07 (bit 7 of flag 103F - never true)
+	rom.setWord(0x00A466, 0x3F07);
+
+	// Remove the servant guarding the door, setting her position to 00 00
+	rom.setWord(0x01BFCA, 0x0000);
+}
+
 void alterROM(GameROM& rom)
 {
 	alterGameStart(rom);
@@ -311,6 +322,7 @@ void alterROM(GameROM& rom)
 	alterMercatorSecondaryShopCheck(rom);
 	alterWaterfallShrineSecretStairsCheck(rom);
 	alterVerlaBoulderCheck(rom);
+	alterBlueRibbonStoryCheck(rom);
 
 	removeMercatorCastleBackdoorGuard(rom);
 }
