@@ -115,6 +115,7 @@ void World::initItemSources()
 	_chests[0x0B] = new ItemChest(0x0B, ITEM_EKEEKE, "Mercator Dungeon (-1F): left ekeeke chest in double chest room");
 	_chests[0x0C] = new ItemChest(0x0C, ITEM_EKEEKE, "Mercator Dungeon (-1F): right ekeeke chest in double chest room");
 	_chests[0x0D] = new ItemChest(0x0D, ITEM_LIFESTOCK, "Mercator: castle kitchen chest");
+	_chests[0x0E] = new ItemChest(0x0E, ITEM_BUYER_CARD, "Mercator: chest replacing sick merchant in secondary shop backroom");
 	_chests[0x0F] = new ItemChest(0x0F, ITEM_EKEEKE, "Mercator Dungeon (1F): left ekeeke chest in double chest room");
 	_chests[0x10] = new ItemChest(0x10, ITEM_EKEEKE, "Mercator Dungeon (1F): right ekeeke chest in double chest room");
 	_chests[0x11] = new ItemChest(0x11, ITEM_KEY, "Mercator: Arthur key chest in castle tower");
@@ -505,6 +506,7 @@ void World::initRegions()
 	mercator->addItemSource(_chests[0xC0]);       // "Mercator: chest in Greenpea's house");
 	mercator->addItemSource(_chests[0xC1]);       // "Mercator: chest in grandma's house (pot shelving trial)");
 	mercator->addItemSource(_chests[0xBF]);		  // "Mercator: hidden casino chest");
+	mercator->addItemSource(_chests[0x0E]);		  // "Mercator: chest replacing sick merchant in secondary shop backroom");
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_ARMOR]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_BELL]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_EKEEKE]);

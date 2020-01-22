@@ -325,7 +325,6 @@ void removeSailorInDarkPort(GameROM& rom)
 	rom.setWord(0x021646, 0x0000);
 }
 
-
 void replaceLumberjackByChest(GameROM& rom)
 {
 	// Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
@@ -337,6 +336,25 @@ void replaceLumberjackByChest(GameROM& rom)
 	rom.setWord(0x020B9E, 0x0000);  // Second word: ??? (2200 => 0000)
 	rom.setWord(0x020BA0, 0x0012);  // Third word: type (0550 = Lumberjack NPC => 0012 = chest)
 	rom.setWord(0x020BA2, 0x8000);  // Fourth word: behavior (00C1 => 8000 works for some reason)
+}
+
+void replaceSickMerchantByChest(GameROM& rom)
+{
+	// Change the map triggers to remove the "sidequest complete" check
+	rom.setWord(0x0050B4, 0x0008);
+//	rom.setWord(0x01A6F8, 0x0000);
+
+	// Set the index for added chest in map to "0E" instead of "C2"
+	rom.setByte(0x09EA48, 0x0E);
+
+	// Transform the sick merchant into a chest
+	rom.setWord(0x021D0E, 0xCE92);  // First word: position, orientation and palette (CE16 => CE92)
+	rom.setWord(0x021D10, 0x0000);  // Second word: ??? (3000 => 0000)
+	rom.setWord(0x021D12, 0x0012);  // Third word: type (006D = Lumberjack NPC => 0012 = chest)
+//	rom.setWord(0x021D14, 0x0000); 
+
+	// Move the kid to hide the fact that the bed looks broken af
+	rom.setWord(0x021D16, 0x5055);
 }
 
 void alterROM(GameROM& rom)
@@ -363,4 +381,5 @@ void alterROM(GameROM& rom)
 	removeSailorInDarkPort(rom);
 
 	replaceLumberjackByChest(rom);
+	replaceSickMerchantByChest(rom);
 }
