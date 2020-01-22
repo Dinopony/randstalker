@@ -792,7 +792,6 @@ void World::initRegions()
 	routeToLakeShrine->addPathTo(lakeShrine, _items[ITEM_GAIA_STATUE]);
 	//		routeToLakeShrine->addPathTo(lakeShrine, _items[ITEM_GAIA_SWORD]);
 	greenmaze->addPathTo(mountainousArea, _items[ITEM_AXE_MAGIC]);
-	greenmaze->addPathTo(greenmazeBehindSacredTrees, _items[ITEM_AXE_MAGIC]);
 	greenmaze->addPathTo(greenmazeBehindSacredTrees, _items[ITEM_EINSTEIN_WHISTLE]);
 	mountainousArea->addPathTo(routeToLakeShrine, _items[ITEM_AXE_MAGIC]);
 	mountainousArea->addPathTo(kingNolesCave, _items[ITEM_GOLA_EYE]);
