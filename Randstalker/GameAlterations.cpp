@@ -91,9 +91,9 @@ void alterGameStart(GameROM& rom)
 	rom.setWord(address, 0xFE7E);		address += 0x02;
 	rom.setLong(address, 0x00FF1008);	address += 0x04;
 
-	// move.w 0x1E03 -> $FF1012
+	// move.w 0x1E43 -> $FF1012
 	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x1E03);		address += 0x02;
+	rom.setWord(address, 0x1E43);		address += 0x02;
 	rom.setLong(address, 0x00FF1012);	address += 0x04;
 
 	// move.w 0x8100 -> $FF1014
