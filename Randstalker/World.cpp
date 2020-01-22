@@ -209,6 +209,7 @@ void World::initItemSources()
 	_chests[0x94] = new ItemChest(0x94, ITEM_DAHL, "Mountainous Area: chest near teleport tree");
 	_chests[0x95] = new ItemChest(0x95, ITEM_LIFESTOCK, "Mountainous Area: chest on right side of the map right before the bridge");
 	_chests[0x96] = new ItemChest(0x96, ITEM_GOLDEN_STATUE, "Mountainous Area: hidden chest in narrow path");
+	_chests[0x97] = new ItemChest(0x97, ITEM_GAIA_STATUE, "Mountainous Area: hidden Statue of Gaia chest");
 	_chests[0x98] = new ItemChest(0x98, ITEM_LIFESTOCK, "Mountainous Area: isolated life stock in bridge map");
 	_chests[0x99] = new ItemChest(0x99, ITEM_EKEEKE, "Mountainous Area: left chest on wall in bridge map");
 	_chests[0x9A] = new ItemChest(0x9A, ITEM_GOLDEN_STATUE, "Mountainous Area: right chest on wall in bridge map");
@@ -276,7 +277,7 @@ void World::initItemSources()
 	_chests[0xDD] = new ItemChest(0xDD, ITEM_20_GOLDS, "Tibor: right chest on 2 chest group");
 
 	// The following chests are absent from the game on release, and their IDs are therefore free:
-	// 0x0E, 0x17, 0x1A, 0x1B, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x97, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
+	// 0x0E, 0x17, 0x1A, 0x1B, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
 
 	_pedestals[ItemPedestalCode::IDOL_STONE] = new ItemPedestal(0x021167, "Gumi: Idol Stone pedestal");
 	_pedestals[ItemPedestalCode::SUN_STONE] = new ItemPedestal(0x020C21, "Greenmaze: Sun Stone pedestal");
@@ -675,6 +676,7 @@ void World::initRegions()
 	mountainousArea->addItemSource(_chests[0x94]);   // "Mountainous Area: chest near teleport tree");
 	mountainousArea->addItemSource(_chests[0x95]);   // "Mountainous Area: chest on right side of the map right before the bridge");
 	mountainousArea->addItemSource(_chests[0x96]);   // "Mountainous Area: hidden chest in narrow path");
+	mountainousArea->addItemSource(_chests[0x97]);   // "Mountainous Area: hidden Statue of Gaia chest");
 	mountainousArea->addItemSource(_chests[0x98]);   // "Mountainous Area: isolated life stock in bridge map");
 	mountainousArea->addItemSource(_chests[0x99]);   // "Mountainous Area: left chest on wall in bridge map");
 	mountainousArea->addItemSource(_chests[0x9A]);   // "Mountainous Area: right chest on wall in bridge map");
