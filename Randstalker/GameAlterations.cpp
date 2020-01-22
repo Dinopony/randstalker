@@ -297,13 +297,12 @@ void removeMercatorCastleBackdoorGuard(GameROM& rom)
 {
 	// There is a guard staying in front of the Mercator castle backdoor to prevent you from using
 	// Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
-	// but we actually never want him to be there, so we delete him from existence.
+	// but we actually never want him to be there, so we delete him from existence by moving him away from the map.
 
-	// 0x01A6AA:
-		// Before:	027E 94 C5 (in map 27E, check bit 6 [C5 >> 5] of flag 1014 [94 & 7F])
-		// After:	0000 5F E2 (in map 0, check bit 7 of flag 105F - never true)
-	rom.setWord(0x01A6AA, 0x0000);
-	rom.setWord(0x01A6AC, 0x5FE2);
+	// 0x0215A6:
+		// Before:	93 9D
+		// After:	00 00
+	rom.setWord(0x0215A6, 0x0000);
 }
 
 void alterROM(GameROM& rom)
