@@ -465,7 +465,6 @@ void World::initRegions()
 
 	WorldRegion* ryuma = new WorldRegion("Ryuma");
 	ryuma->addItemSource(_chests[0xB7]);      // "Ryuma: chest in mayor's house");
-	ryuma->addItemSource(_chests[0xB8]);      // "Ryuma: chest in repaired lighthouse");
 	ryuma->addItemSource(_pedestals[ItemPedestalCode::RYUMA_SHOP_LIFESTOCK]);
 	ryuma->addItemSource(_pedestals[ItemPedestalCode::RYUMA_SHOP_GAIA_STATUE]);
 	ryuma->addItemSource(_pedestals[ItemPedestalCode::RYUMA_SHOP_GOLDEN_STATUE]);
@@ -473,6 +472,10 @@ void World::initRegions()
 	ryuma->addItemSource(_pedestals[ItemPedestalCode::RYUMA_SHOP_DETOX_GRASS]);
 	ryuma->addItemSource(_pedestals[ItemPedestalCode::RYUMA_INN_EKEEKE]);
 	_regions.push_back(ryuma);
+
+	WorldRegion* ryumaLighthouseRepaired = new WorldRegion("Ryuma Lighthouse (repaired)");
+	ryumaLighthouseRepaired->addItemSource(_chests[0xB8]);      // "Ryuma: chest in repaired lighthouse");
+	_regions.push_back(ryumaLighthouseRepaired);
 
 	WorldRegion* thievesHideout = new WorldRegion("Thieves Hideout");
 	thievesHideout->addItemSource(_chests[0x26]); // "Thieves Hideout: chest in entrance room when water is removed");
@@ -816,6 +819,7 @@ void World::initRegions()
 	routeGumiToRyuma->addPathTo(mercator, _items[ITEM_SAFETY_PASS]);
 	routeGumiToRyuma->addPathTo(witchHelgaHut, _items[ITEM_EINSTEIN_WHISTLE]);
 	ryuma->addPathTo(thievesHideout);
+	ryuma->addPathTo(ryumaLighthouseRepaired, _items[ITEM_SUN_STONE]);
 	mercator->addPathTo(mercatorDungeon);
 	mercator->addPathTo(crypt);
 	mercator->addPathTo(mirTowerSector);
