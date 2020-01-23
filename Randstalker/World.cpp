@@ -317,7 +317,7 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::CHROME_BREAST] = new ItemPedestal(0x01DDB7, "Verla Mines: Chrome Breast pedestal");
 	_pedestals[ItemPedestalCode::SHELL_BREAST] = new ItemPedestal(0x01EC99, "Lake Shrine (-3F): Shell Breast pedestal");
 	_pedestals[ItemPedestalCode::HYPER_BREAST] = new ItemPedestal(0x01F9BD, "King Nole's Labyrinth (-3F): Hyper Breast pedestal");
-	_pedestals[ItemPedestalCode::HEALING_BOOTS] = new ItemPedestal(0x01E247, "Destell Well: Healing Boots pedestal");
+	_pedestals[ItemPedestalCode::HEALING_BOOTS] = new ItemPedestal(0x01E247, "Destel Well: Healing Boots pedestal");
 	_pedestals[ItemPedestalCode::IRON_BOOTS] = new ItemPedestal(0x01F36F, "King Nole's Labyrinth (-1F): Iron Boots pedestal");
 	_pedestals[ItemPedestalCode::FIREPROOF] = new ItemPedestal(0x022C23, "Massan Cave: Fireproof Boots pedestal");
 	_pedestals[ItemPedestalCode::SPIKE_BOOTS] = new ItemPedestal(0x01FAC1, "King Nole's Labyrinth (-3F): Snow Spikes pedestal");
