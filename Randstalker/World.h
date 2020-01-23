@@ -28,10 +28,13 @@ public:
 	void initItemSources();
 	void initRegions();
 	void initTiborTrees();
+	void initPriorityItems();
 	void initFillerItems();
 
 	void randomize();
 	std::vector<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
+	
+	void fillRandomSourcesWithPriorityItems();
 	void fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count = UINT_MAX);
 
 	void shuffleTiborTrees();
@@ -54,5 +57,6 @@ private:
 
 	std::vector<OutsideTreeMap*> _outsideTreeMaps;
 
+	std::vector<Item*> _priorityItems;
 	std::vector<Item*> _fillerItems;
 };

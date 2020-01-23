@@ -12,6 +12,7 @@ World::World(uint32_t seed, std::ofstream& logFile) :
 	this->initItemSources();
 	this->initRegions();
 	this->initTiborTrees();
+	this->initPriorityItems();
 	this->initFillerItems();
 }
 
@@ -27,6 +28,8 @@ World::~World()
 		delete reward;
 	for (auto region : _regions)
 		delete region;
+	for (auto tree : _outsideTreeMaps)
+		delete tree;
 }
 
 void World::initItems()
@@ -87,7 +90,7 @@ void World::initItems()
 	_items[ITEM_50_GOLDS] = new Item(ITEM_50_GOLDS, "50 golds", 0);
 	_items[ITEM_200_GOLDS] = new Item(ITEM_200_GOLDS, "200 golds", 0);
 	_items[ITEM_LIFESTOCK] = new Item(ITEM_LIFESTOCK, "Life Stock", 300);
-	_items[ITEM_NONE] = new Item(ITEM_NONE, "Empty", 0);
+	_items[ITEM_NONE] = new Item(ITEM_NONE, "No Item", 0);
 
 	// The following items are placeholder items, thus they are missing from this list:
 	//      - Awakening Book (0x11)
@@ -862,36 +865,42 @@ void World::initTiborTrees()
 	_outsideTreeMaps.push_back(new OutsideTreeMap("Greenmaze exit", 0x11E25E, 0x11E266, 0x01FE));
 }
 
+void World::initPriorityItems()
+{
+	// Priority items are filler items which are always placed first in the randomization, no matter what
+	_priorityItems.push_back(_items[ITEM_MAGIC_SWORD]);
+	_priorityItems.push_back(_items[ITEM_THUNDER_SWORD]);
+	_priorityItems.push_back(_items[ITEM_ICE_SWORD]);
+	_priorityItems.push_back(_items[ITEM_GAIA_SWORD]);
+
+	_priorityItems.push_back(_items[ITEM_STEEL_BREAST]);
+	_priorityItems.push_back(_items[ITEM_CHROME_BREAST]);
+	_priorityItems.push_back(_items[ITEM_SHELL_BREAST]);
+	_priorityItems.push_back(_items[ITEM_HYPER_BREAST]);
+
+	_priorityItems.push_back(_items[ITEM_HEALING_BOOTS]);
+	_priorityItems.push_back(_items[ITEM_IRON_BOOTS]);
+	_priorityItems.push_back(_items[ITEM_FIREPROOF_BOOTS]);
+
+	_priorityItems.push_back(_items[ITEM_MARS_STONE]);
+	_priorityItems.push_back(_items[ITEM_MOON_STONE]);
+	_priorityItems.push_back(_items[ITEM_SATURN_STONE]);
+	_priorityItems.push_back(_items[ITEM_VENUS_STONE]);
+
+	_priorityItems.push_back(_items[ITEM_DEATH_STATUE]);
+	_priorityItems.push_back(_items[ITEM_BELL]);
+	_priorityItems.push_back(_items[ITEM_LANTERN]);
+	_priorityItems.push_back(_items[ITEM_BLUE_RIBBON]);
+	_priorityItems.push_back(_items[ITEM_ORACLE_STONE]);
+
+	Tools::shuffle(_priorityItems, _rng);
+}
+
 void World::initFillerItems()
 {
-	_fillerItems.push_back(_items[ITEM_MAGIC_SWORD]);
-	_fillerItems.push_back(_items[ITEM_THUNDER_SWORD]);
-	_fillerItems.push_back(_items[ITEM_ICE_SWORD]);
-	_fillerItems.push_back(_items[ITEM_GAIA_SWORD]);
-
-	_fillerItems.push_back(_items[ITEM_STEEL_BREAST]);
-	_fillerItems.push_back(_items[ITEM_CHROME_BREAST]);
-	_fillerItems.push_back(_items[ITEM_SHELL_BREAST]);
-	_fillerItems.push_back(_items[ITEM_HYPER_BREAST]);
-
-	_fillerItems.push_back(_items[ITEM_HEALING_BOOTS]);
-	_fillerItems.push_back(_items[ITEM_IRON_BOOTS]);
-	_fillerItems.push_back(_items[ITEM_FIREPROOF_BOOTS]);
-
-	_fillerItems.push_back(_items[ITEM_MARS_STONE]);
-	_fillerItems.push_back(_items[ITEM_MOON_STONE]);
-	_fillerItems.push_back(_items[ITEM_SATURN_STONE]);
-	_fillerItems.push_back(_items[ITEM_VENUS_STONE]);
-
-	_fillerItems.push_back(_items[ITEM_DEATH_STATUE]);
-	_fillerItems.push_back(_items[ITEM_PAWN_TICKET]);
-	_fillerItems.push_back(_items[ITEM_BELL]);
-	_fillerItems.push_back(_items[ITEM_LANTERN]);
-	_fillerItems.push_back(_items[ITEM_BLUE_RIBBON]);
 	_fillerItems.push_back(_items[ITEM_GARLIC]);
 	_fillerItems.push_back(_items[ITEM_LOGS]);
-	_fillerItems.push_back(_items[ITEM_ORACLE_STONE]);
-
+	_fillerItems.push_back(_items[ITEM_PAWN_TICKET]);
 	_fillerItems.push_back(_items[ITEM_SHORT_CAKE]);
 	_fillerItems.push_back(_items[ITEM_RED_JEWEL]);
 	_fillerItems.push_back(_items[ITEM_PURPLE_JEWEL]);
@@ -899,13 +908,13 @@ void World::initFillerItems()
 	_fillerItems.push_back(_items[ITEM_SPELL_BOOK]);
 	_fillerItems.push_back(_items[ITEM_STATUE_JYPTA]);
 
-	for (uint8_t i = 0; i < 75; ++i)
+	for (uint8_t i = 0; i < 80; ++i)
 		_fillerItems.push_back(_items[ITEM_LIFESTOCK]);
 	for (uint8_t i = 0; i < 55; ++i)
 		_fillerItems.push_back(_items[ITEM_EKEEKE]);
-	for (uint8_t i = 0; i < 20; ++i)
+	for (uint8_t i = 0; i < 18; ++i)
 		_fillerItems.push_back(_items[ITEM_DAHL]);
-	for (uint8_t i = 0; i < 14; ++i)
+	for (uint8_t i = 0; i < 12; ++i)
 		_fillerItems.push_back(_items[ITEM_GAIA_STATUE]);
 	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_GOLDEN_STATUE]);
@@ -918,14 +927,17 @@ void World::initFillerItems()
 	for (uint8_t i = 0; i < 8; ++i)
 		_fillerItems.push_back(_items[ITEM_ANTI_PARALYZE]);
 
-	for (uint8_t i = 0; i < 15; ++i)
+	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_5_GOLDS]);
 	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_items[ITEM_20_GOLDS]);
-	for (uint8_t i = 0; i < 8; ++i)
+	for (uint8_t i = 0; i < 5; ++i)
 		_fillerItems.push_back(_items[ITEM_50_GOLDS]);
 	for (uint8_t i = 0; i < 2; ++i)
 		_fillerItems.push_back(_items[ITEM_200_GOLDS]);
+
+	for (uint8_t i = 0; i < 4; ++i)
+		_fillerItems.push_back(_items[ITEM_NONE]);
 
 	Tools::shuffle(_fillerItems, _rng);
 }
@@ -933,6 +945,8 @@ void World::initFillerItems()
 void World::randomize()
 {
 	std::vector<Item*> playerInventory;
+
+	this->fillRandomSourcesWithPriorityItems();
 
 	for (int stepCount = 1;  ; ++stepCount)
 	{
@@ -1077,10 +1091,38 @@ void World::fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& i
 	}
 }
 
+void World::fillRandomSourcesWithPriorityItems()
+{
+	_logFile << "Step #0 (placing priority items)\n";
+
+	std::vector<AbstractItemSource*> allItemSources;
+	for (WorldRegion* region : _regions)
+	{
+		const std::vector<AbstractItemSource*>& regionSources = region->getItemSources();
+		allItemSources.insert(allItemSources.end(), regionSources.begin(), regionSources.end());
+	}
+	Tools::shuffle(allItemSources, _rng);
+
+	while (!_priorityItems.empty())
+	{
+		Item* itemToPlace = *_priorityItems.begin();
+
+		for (AbstractItemSource* source : allItemSources)
+		{
+			if (!source->getItem() && source->isItemCompatible(itemToPlace))
+			{
+				source->setItem(itemToPlace);
+				_logFile << "\t > Placing priority item [" << itemToPlace->getName() << "] in \"" << source->getName() << "\"\n";
+				break;
+			}
+		}
+
+		_priorityItems.erase(_priorityItems.begin());
+	}
+}
+
 void World::shuffleTiborTrees()
 {
-	_logFile << "SHUFFLING TIBOR TREES\n";
-
 	std::vector<uint16_t> trees;
 	for (OutsideTreeMap* map : _outsideTreeMaps)
 		trees.push_back(map->getTree());
@@ -1117,7 +1159,7 @@ void World::writeItemSourcesBreakdownInLog()
 
 		for (AbstractItemSource* source : sources)
 		{
-			_logFile << "[" << (source->getItem() ? source->getItem()->getName() : "No item") << "] in \"" << source->getName() << "\"\n";
+			_logFile << "[" << (source->getItem() ? source->getItem()->getName() : "No Item (out of items)") << "] in \"" << source->getName() << "\"\n";
 		}
 	}
 

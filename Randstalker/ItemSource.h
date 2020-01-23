@@ -82,7 +82,7 @@ public:
         if (_isShop)
         {
             uint8_t itemID = item->getID();
-            if (itemID == ITEM_5_GOLDS || itemID == ITEM_20_GOLDS || itemID == ITEM_50_GOLDS || itemID == ITEM_200_GOLDS)
+            if (itemID == ITEM_5_GOLDS || itemID == ITEM_20_GOLDS || itemID == ITEM_50_GOLDS || itemID == ITEM_200_GOLDS || itemID == ITEM_NONE)
                 return false;
             if (itemID == ITEM_LIFESTOCK && !_canCarryLifestock)
                 return false;
