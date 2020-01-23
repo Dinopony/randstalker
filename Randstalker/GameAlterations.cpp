@@ -293,10 +293,22 @@ void alterVerlaBoulderCheck(GameROM& rom)
 
 void alterBlueRibbonStoryCheck(GameROM& rom)
 {
+	// The "falling ribbon" item source is pretty dependant from the scenario to happen. In the original game,
+	// the timeframe to get it is really tight. We try to get rid of any conditions here, apart from checking
+	// if item has already been obtained.
+
 	// 0x00A466:
 		// Before:  20 05 (bit 5 of flag 1020)
 		// After:   3F 07 (bit 7 of flag 103F - never true)
 	rom.setWord(0x00A466, 0x3F07);
+
+	// 0x01A724:
+		// Before:	16 22 (bit 1 of flag 1016)
+		// After:	3F E2 (bit 7 of flag 103F - never true)
+	rom.setWord(0x1A724, 0x3FE2);
+
+	// Change falling item position from 1F to 20 to ensure it is taken by Nigel whatever its original position is
+	room.setByte(0x09C59E, 0x20);
 
 	// Remove the servant guarding the door, setting her position to 00 00
 	rom.setWord(0x01BFCA, 0x0000);
