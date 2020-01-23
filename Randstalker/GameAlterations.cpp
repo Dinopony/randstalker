@@ -308,7 +308,7 @@ void alterBlueRibbonStoryCheck(GameROM& rom)
 	rom.setWord(0x1A724, 0x3FE2);
 
 	// Change falling item position from 1F to 20 to ensure it is taken by Nigel whatever its original position is
-	room.setByte(0x09C59E, 0x20);
+	rom.setByte(0x09C59E, 0x20);
 
 	// Remove the servant guarding the door, setting her position to 00 00
 	rom.setWord(0x01BFCA, 0x0000);
