@@ -352,10 +352,13 @@ void replaceLumberjackByChest(GameROM& rom)
 
 void replaceSickMerchantByChest(GameROM& rom)
 {
-	// Change the map triggers to remove the "sidequest complete" check
-	rom.setWord(0x0050B4, 0x0008);
-//	rom.setWord(0x01A6F8, 0x0000);
-
+	// Neutralize map entrance triggers for both the shop and the backroom to remove the "sidequest complete" check.
+	// Either we forced them to be always true or always false
+	rom.setWord(0x0050B4, 0x0008);  // Before: 0x2A0C (bit 4 of 102A) | After: 0x0008 (bit 0 of 1000 - always true)
+	rom.setWord(0x00A568, 0x3F07);	// Before: 0x2A04 (bit 4 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
+	rom.setWord(0x00A56E, 0x3F07);	// Before: 0x2A03 (bit 3 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
+	rom.setWord(0x01A6F8, 0x3FE0);	// Before: 0x2A80 (bit 4 of 102A) | After: 0x3FE0 (bit 7 of 103F - always false)
+	
 	// Set the index for added chest in map to "0E" instead of "C2"
 	rom.setByte(0x09EA48, 0x0E);
 
