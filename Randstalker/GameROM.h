@@ -65,12 +65,27 @@ public:
 
 	void saveAs(const std::string& outputPath)
 	{
+		this->updateChecksum();
+
 		std::ofstream file(outputPath, std::ios::binary);
 		file.write(_byteArray, ROM_SIZE);
 		file.close();
 	}
 
 private:
+	void updateChecksum()
+	{
+		uint16_t checksum = 0;
+		for(uint32_t addr = 0x200 ; addr < ROM_SIZE ; addr += 0x02 )
+		{
+			uint16_t msb = (uint16_t)_byteArray[addr];
+			uint16_t lsb = (uint16_t)_byteArray[addr+1];
+			checksum += msb << 8 + lsb;
+		}
+
+		this->setWord(0x18E, checksum);
+	}
+
 	bool _wasOpen;
 	char* _byteArray;
 };
