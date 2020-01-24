@@ -11,9 +11,12 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 - Most cutscenes and scenario related checks / blockers are removed
 - All key doors are gone, except one (the Mercator castle backdoor), same goes for the keys. The key becomes a unique item to find which gives you access to Greenmaze sector.
 - You can go to the Mercator Casino freely without any story trigger and without Casino Ticket
-- The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
 - You can go back to the Crypt after having done it a first time 
-- The secondary shop of Mercator requiring to do the Traders sidequest in the original game is now unlocked solely by having Buyer Card in your inventory
+- The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
+- The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked solely by having Buyer Card in your inventory
+- Some reward-giving NPCs (such as sick merchant in Mercator or lumberjack in Greenmaze) are replaced by chests because of story triggers sometimes preventing them from giving their items
+- Some reward-giving NPCs are not handled at all because it would be too complex to do so right now (Massan elder reward after saving Fara and Ryuma's mayor)
+- Tibor trees connections are randomized (will be available as an option later on)
 
 ## Usage
 
