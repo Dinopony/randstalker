@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <random>
+#include <algorithm>
 
 namespace Tools 
 {
