@@ -2,18 +2,29 @@
 #include "Tools.h"
 #include <algorithm>
 
-World::World(uint32_t seed, std::ofstream& logFile) :
-	_rng(seed),
-	_logFile(logFile)
+World::World(uint32_t seed, std::ofstream& logFile, const std::map<std::string, std::string>& options) :
+	_rng				(seed),
+	_logFile			(logFile),
+	_shuffleTiborTrees	(false)
 {
-	_logFile << "Seed: " << seed << "\n\n";
+	_logFile << "Seed: " << seed << "\n";
+
+	if (options.count("shuffletrees"))
+	{
+		_shuffleTiborTrees = true;
+		_logFile << "Option enabled: randomize Tibor trees\n";
+	}
+
+	_logFile << "\n";
 
 	this->initItems();
 	this->initItemSources();
 	this->initRegions();
-	this->initTiborTrees();
 	this->initPriorityItems();
 	this->initFillerItems();
+
+	if(_shuffleTiborTrees)
+		this->initTiborTrees();
 }
 
 World::~World()
@@ -1004,12 +1015,24 @@ void World::randomize()
 	_logFile << "Key items placement finished, filling the " << reachableItemSources.size() << " remaining sources...\n";
 	this->fillSourcesWithFillerItems(reachableItemSources);
 
-	this->shuffleTiborTrees();
-
 	// Write down the complete item list in the log file
 	this->writeItemSourcesBreakdownInLog();
-	this->writeTiborJunctionsInLog();
 
+	if (_shuffleTiborTrees)
+		this->shuffleTiborTrees();
+}
+
+void World::shuffleTiborTrees()
+{
+	std::vector<uint16_t> trees;
+	for (OutsideTreeMap* map : _outsideTreeMaps)
+		trees.push_back(map->getTree());
+
+	Tools::shuffle(trees, _rng);
+	for (uint8_t i = 0; i < _outsideTreeMaps.size(); ++i)
+		_outsideTreeMaps[i]->setTree(trees[i]);
+
+	this->writeTiborJunctionsInLog();
 }
 
 std::vector<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources)
@@ -1126,17 +1149,6 @@ void World::fillRandomSourcesWithPriorityItems()
 
 		_priorityItems.erase(_priorityItems.begin());
 	}
-}
-
-void World::shuffleTiborTrees()
-{
-	std::vector<uint16_t> trees;
-	for (OutsideTreeMap* map : _outsideTreeMaps)
-		trees.push_back(map->getTree());
-
-	Tools::shuffle(trees, _rng);
-	for (uint8_t i = 0; i < _outsideTreeMaps.size(); ++i)
-		_outsideTreeMaps[i]->setTree(trees[i]);
 }
 
 void World::writeToROM(GameROM& rom)

@@ -21,9 +21,15 @@ class NoAppropriateItemSourceException : public std::exception {};
 class World 
 {
 public:
-	World(uint32_t seed, std::ofstream& logFile);
+	World(uint32_t seed, std::ofstream& logFile, const std::map<std::string, std::string>& options);
 	~World();
 
+	void randomize();
+	void shuffleTiborTrees();
+
+	void writeToROM(GameROM& rom);
+
+private:
 	void initItems();
 	void initItemSources();
 	void initRegions();
@@ -31,21 +37,19 @@ public:
 	void initPriorityItems();
 	void initFillerItems();
 
-	void randomize();
 	std::vector<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
 	
 	void fillRandomSourcesWithPriorityItems();
 	void fillSourcesWithFillerItems(const std::vector<AbstractItemSource*>& itemSources, uint32_t count = UINT_MAX);
 
-	void shuffleTiborTrees();
-
-	void writeToROM(GameROM& rom);
 	void writeItemSourcesBreakdownInLog();
 	void writeTiborJunctionsInLog();
 
 private:
 	std::ofstream& _logFile;
 	std::mt19937 _rng;
+
+	bool _shuffleTiborTrees;
 
 	std::map<uint8_t, Item*> _items;
 	std::map<uint8_t, ItemChest*> _chests;
