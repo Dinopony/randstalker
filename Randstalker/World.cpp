@@ -801,12 +801,8 @@ void World::initRegions()
 	_regions.push_back(kingNolesPalace);
 
 	// Create 3 fake regions to require the 3 Gola items
-	WorldRegion* endItem1 = new WorldRegion("GO MODE 1/3");
-	WorldRegion* endItem2 = new WorldRegion("GO MODE 2/3");
-	WorldRegion* endItem3 = new WorldRegion("GO MODE 3/3");
-	_regions.push_back(endItem1);
-	_regions.push_back(endItem2);
-	_regions.push_back(endItem3);
+	WorldRegion* endgame = new WorldRegion("The End");
+	_regions.push_back(endgame);
 
 	massan->addPathTo(massanCave, _items[ITEM_AXE_MAGIC]);
 	massan->addPathTo(routeMassanToGumi);
@@ -836,7 +832,7 @@ void World::initRegions()
 	destel->addPathTo(destelWell);
 	destelWell->addPathTo(routeToLakeShrine);
 	routeToLakeShrine->addPathTo(lakeShrine, _items[ITEM_GAIA_STATUE]);
-	//		routeToLakeShrine->addPathTo(lakeShrine, _items[ITEM_GAIA_SWORD]);
+	// routeToLakeShrine->addPathTo(lakeShrine, _items[ITEM_GAIA_SWORD]);
 	greenmaze->addPathTo(mountainousArea, _items[ITEM_AXE_MAGIC]);
 	greenmaze->addPathTo(greenmazeBehindSacredTrees, _items[ITEM_EINSTEIN_WHISTLE]);
 	mountainousArea->addPathTo(routeToLakeShrine, _items[ITEM_AXE_MAGIC]);
@@ -847,9 +843,7 @@ void World::initRegions()
 	kingNolesLabyrinthPostSpikeBoots->addPathTo(kingNolesLabyrinthLogsSector, _items[ITEM_AXE_MAGIC]);
 	kingNolesLabyrinthPostSpikeBoots->addPathTo(kingNolesPalace, _items[ITEM_SPIKE_BOOTS]);
 	kingNolesLabyrinthPostSpikeBoots->addPathTo(kingNolesLabyrinthPostLogs, _items[ITEM_LOGS]);
-	kingNolesPalace->addPathTo(endItem1, _items[ITEM_GOLA_FANG]);
-	endItem1->addPathTo(endItem2, _items[ITEM_GOLA_HORN]);
-	endItem2->addPathTo(endItem3, _items[ITEM_GOLA_NAIL]);
+	kingNolesPalace->addPathTo(endgame, { _items[ITEM_GOLA_FANG], _items[ITEM_GOLA_HORN],  _items[ITEM_GOLA_NAIL] });
 
 	// Set fixed chests
 	_chests[0x80]->setItem(_items[ITEM_LOGS]);
@@ -1042,29 +1036,38 @@ std::vector<WorldRegion*> World::evaluateReachableRegions(const std::vector<Item
 		{
 			WorldRegion* destination = path->getDestination();
 
-			Item* requiredKeyItem = path->getRequiredItem();
+			std::vector<Item*> requiredKeyItems = path->getRequiredItems();
 			bool canReachRegion = true;
-			if (requiredKeyItem)
+			if (!requiredKeyItems.empty())
 			{
-				canReachRegion = false;
-				for (Item* ownedItem : playerInventory)
+				for (Item* requiredItem : requiredKeyItems)
 				{
-					if (ownedItem == requiredKeyItem)
+					bool hasItem = false;
+					for (Item* ownedItem : playerInventory)
 					{
-						canReachRegion = true;
-						break;
+						if (ownedItem == requiredItem)
+						{
+							hasItem = true;
+							break;
+						}
+					}
+
+					if (!hasItem)
+					{
+						if (std::find(out_keyItems.begin(), out_keyItems.end(), requiredItem) == out_keyItems.end())
+							out_keyItems.push_back(requiredItem);
+						canReachRegion = false;
 					}
 				}
 			}
 
-			if (!canReachRegion)
+			if (canReachRegion)
 			{
-				if( std::find(out_keyItems.begin(), out_keyItems.end(), requiredKeyItem) == out_keyItems.end() )
-					out_keyItems.push_back(requiredKeyItem);
+				bool regionAlreadyProcessed = std::find(returnedRegions.begin(), returnedRegions.end(), destination) != returnedRegions.end();
+				bool regionAlreadyQueuedForProcessing = std::find(regionsToProcess.begin(), regionsToProcess.end(), destination) != regionsToProcess.end();
+				if( !regionAlreadyProcessed && !regionAlreadyQueuedForProcessing )
+					regionsToProcess.push_back(destination);
 			}
-			else if ( std::find(returnedRegions.begin(), returnedRegions.end(), destination) == returnedRegions.end() 
-				   && std::find(regionsToProcess.begin(), regionsToProcess.end(), destination) == regionsToProcess.end() )
-				regionsToProcess.push_back(destination);
 		}
 	}
 
