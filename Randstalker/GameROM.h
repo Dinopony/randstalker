@@ -78,9 +78,10 @@ private:
 		uint16_t checksum = 0;
 		for(uint32_t addr = 0x200 ; addr < ROM_SIZE ; addr += 0x02 )
 		{
-			uint16_t msb = (uint16_t)_byteArray[addr];
-			uint16_t lsb = (uint16_t)_byteArray[addr+1];
-			checksum += msb << 8 + lsb;
+			uint8_t msb = _byteArray[addr];
+			uint8_t lsb = _byteArray[addr + 1];
+			uint16_t word = (uint16_t)(msb << 8) | lsb;
+			checksum += word;
 		}
 
 		this->setWord(0x18E, checksum);
