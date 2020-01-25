@@ -8,7 +8,7 @@ all : randstalker
 
 # Link the object files into a binary
 randstalker : main
-	$(LINK) -O2- pipe -s -o randstalker main.o World.o GameAlterations.o -lstdc++
+	$(LINK) -O2 -pipe -s -o randstalker main.o World.o GameAlterations.o -lstdc++
 
 # Compile the source files into object files
 main :
