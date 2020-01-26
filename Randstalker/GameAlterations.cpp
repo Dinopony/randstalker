@@ -1,12 +1,13 @@
 #include "GameAlterations.h"
 #include <cstdint>
 
-constexpr auto INIT_FUNCTION_INJECTION_ADDRESS = 0x1FFAD0;
+constexpr auto CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAD0;
 
 constexpr auto OPCODE_MOVB =	0x13FC;
 constexpr auto OPCODE_MOVW =	0x33FC;
 constexpr auto OPCODE_RTS =		0x4E75;
 constexpr auto OPCODE_JSR =		0x4EB9;
+constexpr auto OPCODE_JMP =		0x4EF9;
 constexpr auto OPCODE_NOP =		0x4E71;
 constexpr auto OPCODE_BRA =		0x6000;
 constexpr auto OPCODE_BNE =		0x6600;
@@ -14,7 +15,7 @@ constexpr auto OPCODE_BEQ =		0x6700;
 
 constexpr auto DIALOGUE_NULLIFIER = 0x02FF;
 
-void alterGameStart(GameROM& rom)
+void alterGameStart(GameROM& rom, uint32_t& codeInjectionAddress)
 {
 	// ------- Change default map --------
 	// Change the starting map from the intro cutscene map to Massan Inn
@@ -44,7 +45,7 @@ void alterGameStart(GameROM& rom)
 		// Before: 	[08F9] bset 3 -> $FF1027
 		// After:	[4EB9] jsr $1FFAD0	; 	[4E71] nop
 	rom.setWord(0x002700, OPCODE_JSR);
-	rom.setLong(0x002702, INIT_FUNCTION_INJECTION_ADDRESS);
+	rom.setLong(0x002702, codeInjectionAddress);
 	rom.setWord(0x002706, OPCODE_NOP); // transform last two bytes into a NOP to keep the ROM padding intact
 	
 	// ------- Remove cutscene flag (no input allowed) ---------
@@ -64,70 +65,68 @@ void alterGameStart(GameROM& rom)
 	// Init function is used to set story flags to specific values at the very beginning of the game, opening some usually closed paths
 	// and removing some useless cutscenes (considering them as "already seen").
 
-	uint32_t address = INIT_FUNCTION_INJECTION_ADDRESS;
-
 	// move.b 0x00B1 -> $FF1000
-	rom.setWord(address, OPCODE_MOVB);	address += 0x02;
-	rom.setWord(address, 0x00B1);		address += 0x02;
-	rom.setLong(address, 0x00FF1000);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVB);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x00B1);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1000);	codeInjectionAddress += 0x04;
 
 	// move.w 0xD5E0 -> $FF1002
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0xD5E0);		address += 0x02;
-	rom.setLong(address, 0x00FF1002);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0xD5E0);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1002);	codeInjectionAddress += 0x04;
 
 	// move.w 0xDD60 -> $FF1004
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0xDF60);		address += 0x02;
-	rom.setLong(address, 0x00FF1004);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0xDF60);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1004);	codeInjectionAddress += 0x04;
 
 	// move.w 0x7EB4 -> $FF1006
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x7EB4);		address += 0x02;	
-	rom.setLong(address, 0x00FF1006);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x7EB4);		codeInjectionAddress += 0x02;	
+	rom.setLong(codeInjectionAddress, 0x00FF1006);	codeInjectionAddress += 0x04;
 
 	// move.w 0xFE7E -> $FF1008
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0xFE7E);		address += 0x02;
-	rom.setLong(address, 0x00FF1008);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0xFE7E);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1008);	codeInjectionAddress += 0x04;
 
 	// move.w 0x1E43 -> $FF1012
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x1E43);		address += 0x02;
-	rom.setLong(address, 0x00FF1012);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x1E43);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1012);	codeInjectionAddress += 0x04;
 
 	// move.w 0x8100 -> $FF1014
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x8100);		address += 0x02;
-	rom.setLong(address, 0x00FF1014);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x8100);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1014);	codeInjectionAddress += 0x04;
 
 	// move.w 0x0048 -> $FF1016
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x0048);		address += 0x02;
-	rom.setLong(address, 0x00FF1016);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0048);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1016);	codeInjectionAddress += 0x04;
 
 	// move.w 0x7000 -> $FF1020
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x7000);		address += 0x02;
-	rom.setLong(address, 0x00FF1020);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x7000);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1020);	codeInjectionAddress += 0x04;
 
 	// move.w 0x8020 -> $FF1026
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x8020);		address += 0x02;
-	rom.setLong(address, 0x00FF1026);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x8022);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1026);	codeInjectionAddress += 0x04;
 
 	// move.w 0xE040 -> $FF1028
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0xE040);		address += 0x02;
-	rom.setLong(address, 0x00FF1028);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0xE040);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1028);	codeInjectionAddress += 0x04;
 
 	// move.w 0x8180 -> $FF102A
-	rom.setWord(address, OPCODE_MOVW);	address += 0x02;
-	rom.setWord(address, 0x8180);		address += 0x02;
-	rom.setLong(address, 0x00FF102A);	address += 0x04;
+	rom.setWord(codeInjectionAddress, OPCODE_MOVW);	codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x8180);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF102A);	codeInjectionAddress += 0x04;
 
 	// rts (return from function)
-	rom.setWord(address, OPCODE_RTS);
+	rom.setWord(codeInjectionAddress, OPCODE_RTS);	codeInjectionAddress += 0x02;
 }
 
 void fixAxeMagicCheck(GameROM& rom)
@@ -314,6 +313,50 @@ void alterBlueRibbonStoryCheck(GameROM& rom)
 	rom.setWord(0x01BFCA, 0x0000);
 }
 
+void alterKingNolesCaveTeleporterCheck(GameROM& rom, uint32_t& codeInjectionAddress)
+{
+	// Change the flag checked for teleporter appearance from "saw the duke Kazalt cutscene" to "has visited four white golems room in King Nole's Cave"
+	// 0x0050A0:
+		// Before:	27 09 (bit 1 of flag 1027)
+		// After:	D0 09 (bit 1 of flag 10D0)
+	rom.setWord(0x0050A0, 0xD009);
+	// 0x00509C:
+		// Before:	27 11 (bit 1 of flag 1027)
+		// After:	D0 11 (bit 1 of flag 10D0)
+	rom.setWord(0x00509C, 0xD011);
+
+	// We need to inject a procedure checking "is D0 equal to FF" to replace the "bmi" previously used which was preventing
+	// from checking flags above 0x80 (the one we need to check is 0xD0).
+
+	// Replace the (move.b, bmi, ext.w) by a jmp to the injected procedure
+	// clr.w D0
+	rom.setWord(0x004E18, 0x4240);
+	
+	// jmp to procedure
+	rom.setWord(0x004E1A, OPCODE_JMP);
+	rom.setLong(0x004E1C, codeInjectionAddress);
+
+	// Inject the actual procedure
+	// move.b ($2,A0), D0
+	rom.setWord(codeInjectionAddress, 0x1028);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0002);		codeInjectionAddress += 0x02;
+
+	// cmpi.b #FF, D0
+	rom.setWord(codeInjectionAddress, 0x0C00);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x00FF);		codeInjectionAddress += 0x02;
+
+	// bne $(PC,0x06)
+	rom.setWord(codeInjectionAddress, 0x6606);		codeInjectionAddress += 0x02;
+
+	// jmp $4E2E
+	rom.setWord(codeInjectionAddress, OPCODE_JMP);	codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00004E2E);	codeInjectionAddress += 0x04;
+
+	// jmp $4E1E
+	rom.setWord(codeInjectionAddress, OPCODE_JMP);	codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00004E20);	codeInjectionAddress += 0x04;
+}
+
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
 {
 	// There is a guard staying in front of the Mercator castle backdoor to prevent you from using
@@ -374,7 +417,9 @@ void replaceSickMerchantByChest(GameROM& rom)
 
 void alterROM(GameROM& rom)
 {
-	alterGameStart(rom);
+	uint32_t codeInjectionAddress = CODE_INJECTION_SECTOR_START_ADDRESS;
+
+	alterGameStart(rom, codeInjectionAddress);
 	
 	fixAxeMagicCheck(rom);
 	fixSafetyPassCheck(rom);
@@ -391,6 +436,7 @@ void alterROM(GameROM& rom)
 	alterWaterfallShrineSecretStairsCheck(rom);
 	alterVerlaBoulderCheck(rom);
 	alterBlueRibbonStoryCheck(rom);
+	alterKingNolesCaveTeleporterCheck(rom, codeInjectionAddress);
 
 	removeMercatorCastleBackdoorGuard(rom);
 	removeSailorInDarkPort(rom);
