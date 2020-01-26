@@ -31,12 +31,12 @@ To do so, either launch randstalker.exe and follow the instructions, or execute 
 
 With the following options being available:
 
-- inputRom: set the path to the ROM used as input (e.g. `--inputRom="myROM.md"`)
-- outputRom: set the path where the randomized ROM will be outputted (e.g. `--outputROM="rando.md"`)
-- seed: set the seed used for the randomizer. It must be an integer or the string "random" if you want it to be random (e.g. `--seed=2134548740`)
-- outputLog: set the path where the spoiler log will be outputted (e.g. `--outputLog=spoiler.log`)
-- noPause: if set, no "press any key" prompt will be put at the end of generation, especially useful for automated generators (e.g. `--noPause`)
+- **inputRom**: set the path to the ROM used as input (e.g. `--inputRom="myROM.md"`)
+- **outputRom**: set the path where the randomized ROM will be outputted (e.g. `--outputROM="rando.md"`)
+- **seed**: set the seed used for the randomizer. It must be an integer or the string "random" if you want it to be random (e.g. `--seed=2134548740`)
+- **outputLog**: set the path where the spoiler log will be outputted (e.g. `--outputLog=spoiler.log`)
+- **noPause**: if set, no "press any key" prompt will be put at the end of generation, especially useful for automated generators (e.g. `--noPause`)
 
 It also provides a few randomization options:
 
-- shuffleTrees: if set, Tibor trees connections are shuffled (e.g. `--shuffleTrees`)
+- **shuffleTrees**: if set, Tibor trees connections are shuffled (e.g. `--shuffleTrees`)
