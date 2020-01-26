@@ -1,8 +1,8 @@
 # Specify compiler
-CC=gcc
+CC=c++
 
 # Specify linker
-LINK=gcc
+LINK=c++
 
 all : randstalker
 
