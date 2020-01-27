@@ -357,6 +357,15 @@ void alterKingNolesCaveTeleporterCheck(GameROM& rom, uint32_t& codeInjectionAddr
 	rom.setLong(codeInjectionAddress, 0x00004E20);	codeInjectionAddress += 0x04;
 }
 
+void alterMercatorDocksShopCheck(GameROM& rom)
+{
+	// 0x01AA26:
+		// Before:	0284 2A A2 (in map 284, check bit 5 of flag 102A)
+		// After:	0000 5F E2 (in map 0, check bit 7 of flag 105F - never true)
+	rom.setWord(0x01AA26, 0x0000);
+	rom.setWord(0x01AA28, 0x5FE2);
+}
+
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
 {
 	// There is a guard staying in front of the Mercator castle backdoor to prevent you from using
@@ -437,6 +446,7 @@ void alterROM(GameROM& rom)
 	alterVerlaBoulderCheck(rom);
 	alterBlueRibbonStoryCheck(rom);
 	alterKingNolesCaveTeleporterCheck(rom, codeInjectionAddress);
+	alterMercatorDocksShopCheck(rom);
 
 	removeMercatorCastleBackdoorGuard(rom);
 	removeSailorInDarkPort(rom);

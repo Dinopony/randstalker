@@ -378,6 +378,12 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_ANTIPARALYZE] = new ItemPedestal(0x021CD7, "Mercator special shop: Anti Paralyze slot", true);
 	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_DAHL] = new ItemPedestal(0x021CCF, "Mercator special shop: Dahl slot", true);
 	_pedestals[ItemPedestalCode::MERCATOR_SHOP2_RESTORATION] = new ItemPedestal(0x021CC7, "Mercator special shop: Restoration slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE1] = new ItemPedestal(0x0216BD, "Mercator docks shop: left EkeEke slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE2] = new ItemPedestal(0x0216C5, "Mercator docks shop: middle EkeEke slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE3] = new ItemPedestal(0x0216CD, "Mercator docks shop: right EkeEke slot", true);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE1]->addOtherAddress(0x02168B);	// Dark port variants
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE2]->addOtherAddress(0x021693);
+	_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE3]->addOtherAddress(0x02169B);
 	_pedestals[ItemPedestalCode::VERLA_SHOP_LIFESTOCK] = new ItemPedestal(0x021F57, "Verla shop: Life Stock slot", true, true);
 	_pedestals[ItemPedestalCode::VERLA_SHOP_EKEEKE] = new ItemPedestal(0x021F37, "Verla shop: EkeEke slot", true);
 	_pedestals[ItemPedestalCode::VERLA_SHOP_DETOX_GRASS] = new ItemPedestal(0x021F3F, "Verla shop: Detox Grass slot", true);
@@ -531,6 +537,9 @@ void World::initRegions()
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_GAIA_STATUE]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP_GOLDEN_STATUE]);
 	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_FALLING_RIBBON]);
+	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE1]);
+	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE2]);
+	mercator->addItemSource(_pedestals[ItemPedestalCode::MERCATOR_SHOP3_EKEEKE3]);
 	_regions.push_back(mercator);
 
 	WorldRegion* mercatorSpecialShop = new WorldRegion("Mercator special shop");
