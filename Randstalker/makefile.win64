@@ -12,9 +12,9 @@ randstalker : main
 
 # Compile the source files into object files
 main :
-	$(CC) -O2 -static -pipe -s -c World.cpp -o World.o -std=c++17
-	$(CC) -O2 -static -pipe -s -c GameAlterations.cpp -o GameAlterations.o -std=c++17
-	$(CC) -O2 -static -pipe -s -c main.cpp -o main.o -std=c++17
+	$(CC) -O2 -static -pipe -c World.cpp -o World.o -std=c++17
+	$(CC) -O2 -static -pipe -c GameAlterations.cpp -o GameAlterations.o -std=c++17
+	$(CC) -O2 -static -pipe -c main.cpp -o main.o -std=c++17
 
 # Clean target
 clean :
