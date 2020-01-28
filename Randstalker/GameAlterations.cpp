@@ -366,6 +366,13 @@ void alterMercatorDocksShopCheck(GameROM& rom)
 	rom.setWord(0x01AA28, 0x5FE2);
 }
 
+void alterLanternIntoPassiveItem(GameROM& rom)
+{
+	// Change all "is room lit" flags by "is lantern owned"
+	for (uint32_t addr = 0x008802; addr < 0x008830; addr += 0x04)
+		rom.setWord(addr, 0x4D01);
+}
+
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
 {
 	// There is a guard staying in front of the Mercator castle backdoor to prevent you from using
@@ -655,6 +662,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 	alterMercatorDocksShopCheck(rom);
 	alterMercatorSecondaryShopCheck(rom);
 	alterCasinoCheck(rom);
+	alterLanternIntoPassiveItem(rom);
 
 	fixAxeMagicCheck(rom);
 	fixSafetyPassCheck(rom);
