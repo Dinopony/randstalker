@@ -52,15 +52,15 @@ World::~World()
 
 void World::initItems()
 {
-	_items[ITEM_EKEEKE] = new Item(ITEM_EKEEKE, "EkeEke", 20, true);
+	_items[ITEM_EKEEKE] = new Item(ITEM_EKEEKE, "EkeEke", 15, true);
 	_items[ITEM_MAGIC_SWORD] = new Item(ITEM_MAGIC_SWORD, "Magic Sword", 200, true);
 	_items[ITEM_ICE_SWORD] = new Item(ITEM_ICE_SWORD, "Sword of Ice", 300, true);
 	_items[ITEM_THUNDER_SWORD] = new Item(ITEM_THUNDER_SWORD, "Thunder Sword", 400, true);
 	_items[ITEM_GAIA_SWORD] = new Item(ITEM_GAIA_SWORD, "Sword of Gaia", 500, true);
 	_items[ITEM_FIREPROOF_BOOTS] = new Item(ITEM_FIREPROOF_BOOTS, "Fireproof", 100, true);
 	_items[ITEM_IRON_BOOTS] = new Item(ITEM_IRON_BOOTS, "Iron Boots", 200, true);
-	_items[ITEM_HEALING_BOOTS] = new Item(ITEM_HEALING_BOOTS, "Healing Boots", 500, true);
-	_items[ITEM_SPIKE_BOOTS] = new Item(ITEM_SPIKE_BOOTS, "Snow Spikes", 300, true);
+	_items[ITEM_HEALING_BOOTS] = new Item(ITEM_HEALING_BOOTS, "Healing Boots", 300, true);
+	_items[ITEM_SPIKE_BOOTS] = new Item(ITEM_SPIKE_BOOTS, "Snow Spikes", 400, true);
 
 	if (_noArmorUpgrades)
 	{
@@ -82,7 +82,7 @@ void World::initItems()
 	_items[ITEM_SATURN_STONE] = new Item(ITEM_SATURN_STONE, "Saturn Stone", 200, true);
 	_items[ITEM_VENUS_STONE] = new Item(ITEM_VENUS_STONE, "Venus Stone", 300, true);
 	_items[ITEM_DETOX_GRASS] = new Item(ITEM_DETOX_GRASS, "Detox Grass", 20, true);
-	_items[ITEM_GAIA_STATUE] = new Item(ITEM_GAIA_STATUE, "Statue of Gaia", 150);
+	_items[ITEM_GAIA_STATUE] = new Item(ITEM_GAIA_STATUE, "Statue of Gaia", 150, true);
 	_items[ITEM_GOLDEN_STATUE] = new Item(ITEM_GOLDEN_STATUE, "Golden Statue", 200);
 	_items[ITEM_MIND_REPAIR] = new Item(ITEM_MIND_REPAIR, "Mind Repair", 20, true);
 	_items[ITEM_CASINO_TICKET] = new Item(ITEM_CASINO_TICKET, "Casino Ticket", 1); // What to do with them?
@@ -91,7 +91,7 @@ void World::initItems()
 	_items[ITEM_BUYER_CARD] = new Item(ITEM_BUYER_CARD, "Buyer's Card", 100, true); // What to do with it?
 	_items[ITEM_LANTERN] = new Item(ITEM_LANTERN, "Lantern", 150, true);
 	_items[ITEM_GARLIC] = new Item(ITEM_GARLIC, "Garlic", 150, true);
-	_items[ITEM_ANTI_PARALYZE] = new Item(ITEM_ANTI_PARALYZE, "Anti Paralyze", 20);
+	_items[ITEM_ANTI_PARALYZE] = new Item(ITEM_ANTI_PARALYZE, "Anti Paralyze", 20, true);
 	_items[ITEM_STATUE_JYPTA] = new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 2000, true); // What to do with it?
 	_items[ITEM_SUN_STONE] = new Item(ITEM_SUN_STONE, "Sun Stone", 400, true);
 	_items[ITEM_ARMLET] = new Item(ITEM_ARMLET, "Armlet", 300, true);
