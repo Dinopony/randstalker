@@ -241,6 +241,15 @@ void fixArmletSkip(GameROM& rom)
 	rom.setByte(0x02030C, 0x85);
 }
 
+void fixMirTowerPriestRoomPedestals(GameROM& rom)
+{
+	// Remove the "shop/church" flag on the priest room of Mir Tower to make its pedestals work everytime
+	// 0x024E5A:
+		// Before:	0307
+		// After:	7F7F
+	rom.setWord(0x024E5A, 0x7F7F);
+}
+
 void alterCasinoCheck(GameROM& rom)
 {
 	// Change the Casino entrance check so that the NPC is always out of the way
@@ -672,6 +681,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 	fixCryptBehavior(rom);
 	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
+	fixMirTowerPriestRoomPedestals(rom);
 
 	removeMercatorCastleBackdoorGuard(rom);
 	removeSailorInDarkPort(rom);

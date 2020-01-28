@@ -26,6 +26,7 @@ enum class ItemPedestalCode {
     FRIDAY_EKEEKE_3,
     MIR_TOWER_EKEEKE,
     MIR_TOWER_DETOX,
+    MIR_TOWER_RECORD_BOOK,
     LOGS_1,
     LOGS_2,
 

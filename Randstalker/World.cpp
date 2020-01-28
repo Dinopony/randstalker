@@ -363,8 +363,9 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::FRIDAY_EKEEKE_1] = new ItemPedestal(0x02011D, "Friday's Village: first EkeEke pedestal");
 	_pedestals[ItemPedestalCode::FRIDAY_EKEEKE_2] = new ItemPedestal(0x020115, "Friday's Village: second EkeEke pedestal");
 	_pedestals[ItemPedestalCode::FRIDAY_EKEEKE_3] = new ItemPedestal(0x02010D, "Friday's Village: third EkeEke pedestal");
-//	_pedestals[ItemPedestalCode::MIR_TOWER_EKEEKE] = new ItemPedestal(0x02269C, "Mir Tower: EkeEke pedestal in priest room");
-//	_pedestals[ItemPedestalCode::MIR_TOWER_DETOX] = new ItemPedestal(0x0226A3, "Mir Tower: Detox Grass pedestal in priest room");
+	_pedestals[ItemPedestalCode::MIR_TOWER_EKEEKE] = new ItemPedestal(0x0226A3, "Mir Tower: EkeEke pedestal in priest room");
+	_pedestals[ItemPedestalCode::MIR_TOWER_DETOX] = new ItemPedestal(0x02269B, "Mir Tower: Detox Grass pedestal in priest room");
+	_pedestals[ItemPedestalCode::MIR_TOWER_RECORD_BOOK] = new ItemPedestal(0x022673, "Mir Tower: Record Book pedestal in priest room");
 	_pedestals[ItemPedestalCode::LOGS_1] = new ItemPedestal(0x01FA43, "King Nole's Labyrinth (-2F): left Logs pedestal");
 	_pedestals[ItemPedestalCode::LOGS_2] = new ItemPedestal(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs pedestal");
 
@@ -534,7 +535,6 @@ void World::initRegions()
 	thievesHideout->addItemSource(_chests[0x3A]); // "Thieves Hideout: 50 golds chest in boss reward room");
 	thievesHideout->addItemSource(_chests[0x3B]); // "Thieves Hideout: lifestock chest in boss reward room");
 	thievesHideout->addItemSource(_chests[0x3C]); // "Thieves Hideout: ekeeke chest in boss reward room");
-	// thievesHideout->addItemSource(_rewards[ItemRewardCode::RYUMA_MAYOR]);
 	_regions.push_back(thievesHideout);
 
 	WorldRegion* witchHelgaHut = new WorldRegion("Witch Helga's Hut");
@@ -620,8 +620,9 @@ void World::initRegions()
 	mirTowerPostGarlic->addItemSource(_chests[0xD4]);  // "Mir Tower: right chest in reward room");
 	mirTowerPostGarlic->addItemSource(_chests[0xD5]);  // "Mir Tower: left chest in reward room");
 	mirTowerPostGarlic->addItemSource(_chests[0xD6]);  // "Mir Tower: chest behind wall accessible after beating Mir");
-//	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_EKEEKE]);
-//	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_DETOX]);
+	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_EKEEKE]);
+	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_DETOX]);
+	mirTowerPostGarlic->addItemSource(_pedestals[ItemPedestalCode::MIR_TOWER_RECORD_BOOK]);
 	_regions.push_back(mirTowerPostGarlic);
 
 	WorldRegion* greenmaze = new WorldRegion("Greenmaze");
