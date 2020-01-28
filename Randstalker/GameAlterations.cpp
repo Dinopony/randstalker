@@ -672,8 +672,8 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 	replaceLumberjackByChest(rom);
 	replaceSickMerchantByChest(rom);
 
-	if(options.count("noarmorupgrades"))
-	handleArmorUpgrades(rom, codeInjectionAddress);
+	if(!options.count("noarmorupgrades"))
+		handleArmorUpgrades(rom, codeInjectionAddress);
 
 	// Glitch prevention
 	fixArmletSkip(rom);
