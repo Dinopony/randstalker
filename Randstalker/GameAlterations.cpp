@@ -512,15 +512,15 @@ void handleArmorUpgrades(GameROM& rom, uint32_t& codeInjectionAddress)
 	rom.setWord(codeInjectionAddress, 0x0C00);					codeInjectionAddress += 0x02;
 	rom.setWord(codeInjectionAddress, 0x000C);					codeInjectionAddress += 0x02;
 
-	// bgt (+0x2A [to movem]) (6E2A)
-	rom.setWord(codeInjectionAddress, 0x6E2A);					codeInjectionAddress += 0x02;
+	// bgt (+0x2A [to movem]) (6E22)
+	rom.setWord(codeInjectionAddress, 0x6E22);					codeInjectionAddress += 0x02;
 
 	// cmpi.b #09, D0 (0C00 0009)
 	rom.setWord(codeInjectionAddress, 0x0C00);					codeInjectionAddress += 0x02;
 	rom.setWord(codeInjectionAddress, 0x0009);					codeInjectionAddress += 0x02;
 
-	// blt (+0x24 [to movem]) (6D24)
-	rom.setWord(codeInjectionAddress, 0x6D24);					codeInjectionAddress += 0x02;
+	// blt (+0x24 [to movem]) (6D1C)
+	rom.setWord(codeInjectionAddress, 0x6D1C);					codeInjectionAddress += 0x02;
 
 	// jsr ALTERATION FUNC
 	rom.setWord(codeInjectionAddress, OPCODE_JSR);				codeInjectionAddress += 0x02;
