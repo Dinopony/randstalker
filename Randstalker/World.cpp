@@ -380,7 +380,6 @@ void World::initItemSources()
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_LIFESTOCK] = new ItemPedestal(0x02101D, "Massan shop: Life Stock slot", true, true);
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_EKEEKE_1] = new ItemPedestal(0x021015, "Massan shop: first EkeEke slot", true);
 	_pedestals[ItemPedestalCode::MASSAN_SHOP_EKEEKE_2] = new ItemPedestal(0x02100D, "Massan shop: second EkeEke slot", true);
-	_pedestals[ItemPedestalCode::GUMI_SHOP_MAP] = new ItemPedestal(0x0211DD, "Gumi shop: Map slot", true);
 	_pedestals[ItemPedestalCode::GUMI_SHOP_LIFESTOCK] = new ItemPedestal(0x0211E5, "Gumi shop: Life Stock slot", true, true);
 	_pedestals[ItemPedestalCode::GUMI_SHOP_EKEEKE] = new ItemPedestal(0x0211D5, "Gumi shop: Map slot", true);
 	_pedestals[ItemPedestalCode::RYUMA_SHOP_LIFESTOCK] = new ItemPedestal(0x0212D9, "Ryuma shop: Life Stock slot", true, true);
@@ -485,7 +484,6 @@ void World::initRegions()
 	WorldRegion* gumi = new WorldRegion("Gumi");
 	gumi->addItemSource(_chests[0xB5]);       // "Gumi: chest on top of bed in house");
 	gumi->addItemSource(_pedestals[ItemPedestalCode::IDOL_STONE]);
-	gumi->addItemSource(_pedestals[ItemPedestalCode::GUMI_SHOP_MAP]);
 	gumi->addItemSource(_pedestals[ItemPedestalCode::GUMI_SHOP_LIFESTOCK]);
 	gumi->addItemSource(_pedestals[ItemPedestalCode::GUMI_SHOP_EKEEKE]);
 	_regions.push_back(gumi);
