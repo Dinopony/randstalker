@@ -157,6 +157,7 @@ void World::initItemSources()
 	_chests[0x14] = new ItemChest(0x14, ITEM_EKEEKE, "King Nole's Palace: ekeeke chest in topmost pit room");
 	_chests[0x15] = new ItemChest(0x15, ITEM_DAHL, "King Nole's Palace: dahl chest in floating button room");
 	_chests[0x16] = new ItemChest(0x16, ITEM_LIFESTOCK, "King Nole's Cave: first lifestock chest");
+	_chests[0x17] = new ItemChest(0x17, ITEM_RED_JEWEL, "Massan: chest in elder house after freeing Fara");
 	_chests[0x18] = new ItemChest(0x18, ITEM_5_GOLDS, "King Nole's Cave: first gold chest in third room");
 	_chests[0x19] = new ItemChest(0x19, ITEM_5_GOLDS, "King Nole's Cave: second gold chest in third room");
 	_chests[0x1A] = new ItemChest(0x1A, ITEM_LIFESTOCK, "Greenmaze: chest on path to lumberjack");
@@ -340,7 +341,7 @@ void World::initItemSources()
 	_chests[0xDD] = new ItemChest(0xDD, ITEM_20_GOLDS, "Tibor: right chest on 2 chest group");
 
 	// The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
-	// 0x0E, 0x17, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
+	// 0x0E, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
 
 	_pedestals[ItemPedestalCode::IDOL_STONE] = new ItemPedestal(0x021167, "Gumi: Idol Stone pedestal");
 	_pedestals[ItemPedestalCode::SUN_STONE] = new ItemPedestal(0x020C21, "Greenmaze: Sun Stone pedestal");
@@ -478,6 +479,7 @@ void World::initRegions()
 	swampShrine->addItemSource(_chests[0x07]);    // "Swamp Shrine (1F): key chest in spike room");
 	swampShrine->addItemSource(_chests[0x08]);    // "Swamp Shrine (2F): lifestock chest in Fara's room");
 	swampShrine->addItemSource(_chests[0xB6]);    // "Gumi: chest in elder house after saving Fara");
+	swampShrine->addItemSource(_chests[0x17]);    // "Massan: chest in elder house after saving Fara");
 	_regions.push_back(swampShrine);
 
 	WorldRegion* gumi = new WorldRegion("Gumi");

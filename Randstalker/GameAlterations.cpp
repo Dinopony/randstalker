@@ -440,6 +440,33 @@ void replaceSickMerchantByChest(GameROM& rom)
 	rom.setWord(0x021D16, 0x5055);
 }
 
+void replaceFaraInElderHouseByChest(GameROM& rom)
+{
+	// Neutralize a map specific trigger which broke chests inside it
+	// 0x019C82:
+		// Before:	0x0251 (map ID)
+		// After:	0xFFFF 
+	rom.setWord(0x019C82, 0xFFFF);
+	
+	// Move the elder to his right position
+	rom.setWord(0x020FA2, 0x1113);
+
+	// Replace Fara entity by a chest
+	rom.setWord(0x020FAA, 0x134F);
+	rom.setWord(0x020FAC, 0x0000);
+	rom.setWord(0x020FAE, 0x0012);
+	rom.setWord(0x020FB0, 0x0000);
+
+	// Remove bed wakeup cutscene
+	rom.setWord(0x020FB2, 0x7F7F);
+	rom.setWord(0x020FB4, 0x0000);
+	rom.setWord(0x020FB6, 0x0000);
+	rom.setWord(0x020FB8, 0x0000);
+
+	// Set map base chest index to 0x17
+	rom.setByte(0x09E9DF, 0x17);
+}
+
 void handleArmorUpgrades(GameROM& rom, uint32_t& codeInjectionAddress)
 {
 	// --------------- Alter item in D0 register function ---------------
@@ -689,6 +716,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 	// Rando extensions (non-vanilla content)
 	replaceLumberjackByChest(rom);
 	replaceSickMerchantByChest(rom);
+	replaceFaraInElderHouseByChest(rom);
 
 	if(!options.count("noarmorupgrades"))
 		handleArmorUpgrades(rom, codeInjectionAddress);
