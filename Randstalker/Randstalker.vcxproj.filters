@@ -48,6 +48,9 @@
     <ClInclude Include="OutsideTreeMap.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="GameAlterations.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,5 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="makefile" />
+    <None Include="..\README.md" />
   </ItemGroup>
 </Project>

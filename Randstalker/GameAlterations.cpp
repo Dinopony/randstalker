@@ -424,12 +424,238 @@ void replaceSickMerchantByChest(GameROM& rom)
 	rom.setWord(0x021D16, 0x5055);
 }
 
-void alterROM(GameROM& rom)
+void handleArmorUpgrades(GameROM& rom, uint32_t& codeInjectionAddress)
+{
+	// --------------- Alter item in D0 register function ---------------
+	uint32_t alterItemInD0Function = codeInjectionAddress;
+
+	// Inject the function
+	// cmpi.b #09, D0 (0C00 0009)
+	rom.setWord(codeInjectionAddress, 0x0C00);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0009);		codeInjectionAddress += 0x02;
+
+	// blt (+0x34 [to rts]) (6D3A)
+	rom.setWord(codeInjectionAddress, 0x6D34);		codeInjectionAddress += 0x02;
+
+	// cmpi.b #0C, D0 (0C00 000C)
+	rom.setWord(codeInjectionAddress, 0x0C00);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x000C);		codeInjectionAddress += 0x02;
+
+	// bgt (+0x2E [to rts]) (6E2E)
+	rom.setWord(codeInjectionAddress, 0x6E2E);		codeInjectionAddress += 0x02;
+
+	// move.w #C, D0 (303C 000C)
+	rom.setWord(codeInjectionAddress, 0x303C);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x000C);		codeInjectionAddress += 0x02;
+
+	// btst #5, $FF1045 (0839 0005 00FF1045)
+	rom.setWord(codeInjectionAddress, 0x0839);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0005);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1045);	codeInjectionAddress += 0x04;
+
+	// bne +0x04 (6604)
+	rom.setWord(codeInjectionAddress, 0x6604);		codeInjectionAddress += 0x02;
+
+	// move.w #B, D0 (303C 000B)
+	rom.setWord(codeInjectionAddress, 0x303C);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x000B);		codeInjectionAddress += 0x02;
+
+	// btst #1, $FF1045 (0839 0001 00FF1045)
+	rom.setWord(codeInjectionAddress, 0x0839);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0001);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1045);	codeInjectionAddress += 0x04;
+
+	// bne +0x04 (6604)
+	rom.setWord(codeInjectionAddress, 0x6604);		codeInjectionAddress += 0x02;
+
+	// move.w #A, D0 (303C 000A)
+	rom.setWord(codeInjectionAddress, 0x303C);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x000A);		codeInjectionAddress += 0x02;
+
+	// btst #5, $FF1044 (0839 0005 00FF1044)
+	rom.setWord(codeInjectionAddress, 0x0839);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0005);		codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1044);	codeInjectionAddress += 0x04;
+
+	// bne +0x04 (6604)
+	rom.setWord(codeInjectionAddress, 0x6604);		codeInjectionAddress += 0x02;
+
+	// move.w #9, D0 (303C 0009)
+	rom.setWord(codeInjectionAddress, 0x303C);		codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0009);		codeInjectionAddress += 0x02;
+
+	// rts (4E75)
+	rom.setWord(codeInjectionAddress, OPCODE_RTS);	codeInjectionAddress += 0x02;
+
+	// --------------- Change item in reward box function ---------------
+	uint32_t changeItemInRewardBoxFunction = codeInjectionAddress;
+
+	// jsr ALTERATION FUNC
+	rom.setWord(codeInjectionAddress, OPCODE_JSR);				codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, alterItemInD0Function);	codeInjectionAddress += 0x04;
+
+	// move.w D0, $FF1196 (33C0 00FF1196)
+	rom.setWord(codeInjectionAddress, 0x33C0);					codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1196);				codeInjectionAddress += 0x04;
+
+	// rts (4E75)
+	rom.setWord(codeInjectionAddress, OPCODE_RTS);				codeInjectionAddress += 0x02;
+
+	// --------------- Change item given by pedestal function ---------------
+	uint32_t changeItemGivenByPedestalFunction = codeInjectionAddress;
+
+	// movem D7,A0 -(A7)	(48E7 0180)
+	rom.setWord(codeInjectionAddress, 0x48E7);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0180);					codeInjectionAddress += 0x02;
+	
+	// cmpi.b #0C, D0 (0C00 000C)
+	rom.setWord(codeInjectionAddress, 0x0C00);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x000C);					codeInjectionAddress += 0x02;
+
+	// bgt (+0x2A [to movem]) (6E2A)
+	rom.setWord(codeInjectionAddress, 0x6E2A);					codeInjectionAddress += 0x02;
+
+	// cmpi.b #09, D0 (0C00 0009)
+	rom.setWord(codeInjectionAddress, 0x0C00);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0009);					codeInjectionAddress += 0x02;
+
+	// blt (+0x24 [to movem]) (6D24)
+	rom.setWord(codeInjectionAddress, 0x6D24);					codeInjectionAddress += 0x02;
+
+	// jsr ALTERATION FUNC
+	rom.setWord(codeInjectionAddress, OPCODE_JSR);				codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, alterItemInD0Function);	codeInjectionAddress += 0x04;
+
+	// move ($3B,A5), D7	(1E2D 003B)
+	rom.setWord(codeInjectionAddress, 0x1E2D);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x003B);					codeInjectionAddress += 0x02;
+
+	// subi #C9, D7	 (0407)
+	rom.setWord(codeInjectionAddress, 0x0407);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x00C9);					codeInjectionAddress += 0x02;
+
+	// cmpa #00FF5400, A5	(BBF9 5400)
+	rom.setWord(codeInjectionAddress, 0xBBFC);					codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF5400);				codeInjectionAddress += 0x04;
+
+	// blt +0x06 (6D06)
+	rom.setWord(codeInjectionAddress, 0x6D06);					codeInjectionAddress += 0x02;
+
+	// bset D7, FF103F	(0FF9 00FF103F)
+	rom.setWord(codeInjectionAddress, 0x0FF9);					codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF103F);				codeInjectionAddress += 0x04;
+
+	// movem (A7)+, D7,A0	(4CDF 0180)
+	rom.setWord(codeInjectionAddress, 0x4CDF);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0180);					codeInjectionAddress += 0x02;
+	 
+	// lea FF1040, A0 (41F9 00FF1040)
+	rom.setWord(codeInjectionAddress, 0x41F9);					codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF1040);				codeInjectionAddress += 0x04;
+
+	// rts (4E75)
+	rom.setWord(codeInjectionAddress, OPCODE_RTS);				codeInjectionAddress += 0x02;
+
+	// --------------- Change visible item in pedestal function ---------------
+	uint32_t changeItemVisibleInPedestalFunction = codeInjectionAddress;
+
+	// movem D7,A0 -(A7)	(48E7 0180)
+	rom.setWord(codeInjectionAddress, 0x48E7);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0180);					codeInjectionAddress += 0x02;
+
+	// subi #C0, D0  (0400 00C0)
+	rom.setWord(codeInjectionAddress, 0x0400);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x00C0);					codeInjectionAddress += 0x02;
+
+	// cmpi.b #0C, D0 (0C00 000C)
+	rom.setWord(codeInjectionAddress, 0x0C00);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x000C);					codeInjectionAddress += 0x02;
+
+	// bgt (+0x20 [to movem]) (6E20)
+	rom.setWord(codeInjectionAddress, 0x6E20);					codeInjectionAddress += 0x02;
+
+	// cmpi.b #09, D0 (0C00 0009)
+	rom.setWord(codeInjectionAddress, 0x0C00);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0009);					codeInjectionAddress += 0x02;
+
+	// blt (+0x1A [to movem]) (6D1A)
+	rom.setWord(codeInjectionAddress, 0x6D1A);					codeInjectionAddress += 0x02;
+
+	// move D0, D7 (001E)
+	rom.setWord(codeInjectionAddress, 0x1E00);					codeInjectionAddress += 0x02;
+
+	// subi #9, D7	 (0407)
+	rom.setWord(codeInjectionAddress, 0x0407);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0009);					codeInjectionAddress += 0x02;
+
+	// btest D7, FF103F	(0F39 00FF103F)
+	rom.setWord(codeInjectionAddress, 0x0F39);					codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, 0x00FF103F);				codeInjectionAddress += 0x04;
+
+	// bne (+0x08 [to move 3F into item]) (6608)
+	rom.setWord(codeInjectionAddress, 0x6608);					codeInjectionAddress += 0x02;
+
+	// jsr ALTERATION FUNC
+	rom.setWord(codeInjectionAddress, OPCODE_JSR);				codeInjectionAddress += 0x02;
+	rom.setLong(codeInjectionAddress, alterItemInD0Function);	codeInjectionAddress += 0x04;
+
+	// bra +0x04
+	rom.setWord(codeInjectionAddress, 0x6004);					codeInjectionAddress += 0x02;
+
+	// move.w #3F, D0 (303C 003F)
+	rom.setWord(codeInjectionAddress, 0x303C);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x003F);					codeInjectionAddress += 0x02;
+
+	// move D0, ($36,A1) (1340 0036)
+	rom.setWord(codeInjectionAddress, 0x1340);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0036);					codeInjectionAddress += 0x02;
+
+	// movem (A7)+, D7,A0	(4CDF 0180)
+	rom.setWord(codeInjectionAddress, 0x4CDF);					codeInjectionAddress += 0x02;
+	rom.setWord(codeInjectionAddress, 0x0180);					codeInjectionAddress += 0x02;
+
+	// rts (4E75)
+	rom.setWord(codeInjectionAddress, OPCODE_RTS);				codeInjectionAddress += 0x02;
+
+	// --------------- Hooks ---------------
+
+	// In 'chest reward' function, replace the item ID move by the injected function
+	rom.setWord(0x0070BE, OPCODE_JSR);
+	rom.setLong(0x0070C0, changeItemInRewardBoxFunction);
+
+	// In 'NPC reward' function, replace the item ID move by the injected function
+	rom.setWord(0x028DD8, OPCODE_JSR);
+	rom.setLong(0x028DDA, changeItemInRewardBoxFunction);
+
+	// In 'pedestal reward' function, replace the item ID move by the injected function
+	rom.setWord(0x024ADC, 0x3002); // put the move D2,D0 before the jsr because it helps us while changing nothing to the usual logic
+	rom.setWord(0x024ADE, OPCODE_JSR);
+	rom.setLong(0x024AE0, changeItemInRewardBoxFunction);
+
+	// Replace 2928C lea (41F9 00FF1040) by a jsr to injected function
+	rom.setWord(0x02928C, OPCODE_JSR);
+	rom.setLong(0x02928E, changeItemGivenByPedestalFunction);
+
+	// Replace 1963C - 19644 (0400 00C0 ; 1340 0036) by a jsr to a replacement function
+	rom.setWord(0x01963C, OPCODE_JSR);
+	rom.setLong(0x01963E, changeItemVisibleInPedestalFunction);
+	rom.setWord(0x019642, OPCODE_NOP);
+}
+
+void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 {
 	uint32_t codeInjectionAddress = CODE_INJECTION_SECTOR_START_ADDRESS;
 
+	// Rando core
 	alterGameStart(rom, codeInjectionAddress);
-	
+	alterWaterfallShrineSecretStairsCheck(rom);
+	alterVerlaBoulderCheck(rom);
+	alterBlueRibbonStoryCheck(rom);
+	alterKingNolesCaveTeleporterCheck(rom, codeInjectionAddress);
+	alterMercatorDocksShopCheck(rom);
+	alterMercatorSecondaryShopCheck(rom);
+	alterCasinoCheck(rom);
+
 	fixAxeMagicCheck(rom);
 	fixSafetyPassCheck(rom);
 	fixArmletCheck(rom);
@@ -438,19 +664,17 @@ void alterROM(GameROM& rom)
 	fixCryptBehavior(rom);
 	fixMirAfterLakeShrineCheck(rom);
 	fixLogsRoomExitCheck(rom);
-	fixArmletSkip(rom);
-
-	alterCasinoCheck(rom);
-	alterMercatorSecondaryShopCheck(rom);
-	alterWaterfallShrineSecretStairsCheck(rom);
-	alterVerlaBoulderCheck(rom);
-	alterBlueRibbonStoryCheck(rom);
-	alterKingNolesCaveTeleporterCheck(rom, codeInjectionAddress);
-	alterMercatorDocksShopCheck(rom);
 
 	removeMercatorCastleBackdoorGuard(rom);
 	removeSailorInDarkPort(rom);
 
+	// Rando extensions (non-vanilla content)
 	replaceLumberjackByChest(rom);
 	replaceSickMerchantByChest(rom);
+
+	if(options.count("noarmorupgrades"))
+	handleArmorUpgrades(rom, codeInjectionAddress);
+
+	// Glitch prevention
+	fixArmletSkip(rom);
 }

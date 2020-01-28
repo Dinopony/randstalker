@@ -22,6 +22,7 @@
     <ClInclude Include="Constants\ItemCodes.h" />
     <ClInclude Include="Constants\ItemPedestalCodes.h" />
     <ClInclude Include="Constants\ItemRewardCodes.h" />
+    <ClInclude Include="GameAlterations.h" />
     <ClInclude Include="ItemSource.h" />
     <ClInclude Include="GameROM.h" />
     <ClInclude Include="Item.h" />
@@ -36,6 +37,7 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md" />
     <None Include="makefile" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

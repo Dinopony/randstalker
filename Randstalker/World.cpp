@@ -5,7 +5,8 @@
 World::World(uint32_t seed, std::ofstream& logFile, const std::map<std::string, std::string>& options) :
 	_rng				(seed),
 	_logFile			(logFile),
-	_shuffleTiborTrees	(false)
+	_shuffleTiborTrees	(false),
+	_noArmorUpgrades	(false)
 {
 	_logFile << "Seed: " << seed << "\n";
 
@@ -13,6 +14,12 @@ World::World(uint32_t seed, std::ofstream& logFile, const std::map<std::string, 
 	{
 		_shuffleTiborTrees = true;
 		_logFile << "Option enabled: randomize Tibor trees\n";
+	}
+
+	if (options.count("noarmorupgrades"))
+	{
+		_noArmorUpgrades = true;
+		_logFile << "Option enabled: no armor upgrades\n";
 	}
 
 	_logFile << "\n";
@@ -54,10 +61,22 @@ void World::initItems()
 	_items[ITEM_IRON_BOOTS] = new Item(ITEM_IRON_BOOTS, "Iron Boots", 200, true);
 	_items[ITEM_HEALING_BOOTS] = new Item(ITEM_HEALING_BOOTS, "Healing Boots", 500, true);
 	_items[ITEM_SPIKE_BOOTS] = new Item(ITEM_SPIKE_BOOTS, "Snow Spikes", 300, true);
-	_items[ITEM_STEEL_BREAST] = new Item(ITEM_STEEL_BREAST, "Steel Breast", 300, true);
-	_items[ITEM_CHROME_BREAST] = new Item(ITEM_CHROME_BREAST, "Chrome Breast", 400, true);
-	_items[ITEM_SHELL_BREAST] = new Item(ITEM_SHELL_BREAST, "Shell Breast", 500, true);
-	_items[ITEM_HYPER_BREAST] = new Item(ITEM_HYPER_BREAST, "Hyper Breast", 750, true);
+
+	if (_noArmorUpgrades)
+	{
+		_items[ITEM_STEEL_BREAST] = new Item(ITEM_STEEL_BREAST, "Steel Breast", 300, true);
+		_items[ITEM_CHROME_BREAST] = new Item(ITEM_CHROME_BREAST, "Chrome Breast", 400, true);
+		_items[ITEM_SHELL_BREAST] = new Item(ITEM_SHELL_BREAST, "Shell Breast", 500, true);
+		_items[ITEM_HYPER_BREAST] = new Item(ITEM_HYPER_BREAST, "Hyper Breast", 750, true);
+	}
+	else
+	{
+		_items[ITEM_STEEL_BREAST] = new Item(ITEM_STEEL_BREAST, "Armor upgrade 1", 250, true);
+		_items[ITEM_CHROME_BREAST] = new Item(ITEM_CHROME_BREAST, "Armor upgrade 2", 250, true);
+		_items[ITEM_SHELL_BREAST] = new Item(ITEM_SHELL_BREAST, "Armor upgrade 3", 250, true);
+		_items[ITEM_HYPER_BREAST] = new Item(ITEM_HYPER_BREAST, "Armor upgrade 4", 250, true);
+	}
+	
 	_items[ITEM_MARS_STONE] = new Item(ITEM_MARS_STONE, "Mars Stone", 100, true);
 	_items[ITEM_MOON_STONE] = new Item(ITEM_MOON_STONE, "Moon Stone", 150, true);
 	_items[ITEM_SATURN_STONE] = new Item(ITEM_SATURN_STONE, "Saturn Stone", 200, true);

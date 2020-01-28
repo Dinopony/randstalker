@@ -50,6 +50,7 @@ private:
 	std::mt19937 _rng;
 
 	bool _shuffleTiborTrees;
+	bool _noArmorUpgrades;
 
 	std::map<uint8_t, Item*> _items;
 	std::map<uint8_t, ItemChest*> _chests;

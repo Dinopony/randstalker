@@ -25,6 +25,7 @@
 //
 //	Randomization options:
 //		--shuffleTrees			===> Randomize Tibor trees
+//		--noArmorUpgrades		===> Don't use armor upgrades, just place vanilla armors randomly
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -138,7 +139,7 @@ int main(int argc, char* argv[])
 
 	// ------------ RANDOMIZATION -------------
 	// Perform game changes unrelated with the randomization part
-	alterROM(*rom);
+	alterROM(*rom, options);
 
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM
 	std::ofstream logFile(outputLogPath);
