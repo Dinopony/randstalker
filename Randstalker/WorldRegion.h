@@ -31,8 +31,9 @@ private:
 class WorldRegion
 {
 public:
-	WorldRegion(const std::string& name) :
-		_name(name)
+	WorldRegion(const std::string& name, const std::vector<AbstractItemSource*> itemSources) :
+		_name		(name),
+		_itemSources(itemSources)
 	{}
 
 	~WorldRegion() 
@@ -41,25 +42,36 @@ public:
 			delete path;
 	}
 
-	void addItemSource(AbstractItemSource* itemSource) { _itemSources.push_back(itemSource); }
-	const std::vector<AbstractItemSource*>& getItemSources() const { return _itemSources; }
+	const std::string& getName() const { return _name; }
 
-	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr)
-	{
-		_outgoingPaths.push_back(new WorldPath(otherRegion, requiredItem));
+	void addItemSource(AbstractItemSource* itemSource) 				{ _itemSources.push_back(itemSource); }
+	const std::vector<AbstractItemSource*>& getItemSources() const 	{ return _itemSources; }
+
+	void addItemSource(AbstractItemSource* itemSource, Item* requiredItem) { _restrictedItemSources.push_back(std::make_pair(itemSource, requiredItem)); }
+	const std::vector<std::pair<AbstractItemSource*, Item*>>& getRestrictedItemSources() const { return _restrictedItemSources; }
+
+	std::vector<AbstractItemSource*> getAllItemSources() const 
+	{ 
+		std::vector<AbstractItemSource*> allItemSources = _itemSources;
+		for (auto& [source, item] : _restrictedItemSources)
+			allItemSources.push_back(source);
+		return allItemSources;
 	}
 
-	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems)
-	{
+	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr) {
+		_outgoingPaths.push_back(new WorldPath(otherRegion, requiredItem));
+	}
+	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems) {
 		_outgoingPaths.push_back(new WorldPath(otherRegion, requiredItems));
 	}
 
 	const std::vector<WorldPath*>& getOutgoingPaths() const { return _outgoingPaths; }
 
-	const std::string& getName() const { return _name;  }
-
 private:
-	std::vector<AbstractItemSource*> _itemSources;
-	std::vector<WorldPath*> _outgoingPaths;
 	std::string _name;
+	std::vector<AbstractItemSource*> _itemSources;
+	std::vector<std::pair<AbstractItemSource*, Item*>> _restrictedItemSources;
+
+	std::vector<WorldPath*> _outgoingPaths;
+
 };

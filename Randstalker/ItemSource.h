@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 #include "GameROM.h"
 #include "Constants/ItemCodes.h"
 #include "Item.h"
@@ -57,10 +58,10 @@ private:
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class ItemPedestal : public AbstractItemSource
+class ItemOnGround : public AbstractItemSource
 {
 public:
-    ItemPedestal(uint32_t addressInROM, const std::string& name, bool isShop = false, bool canCarryLifestock = false) :
+    ItemOnGround(uint32_t addressInROM, const std::string& name, bool isShop = false, bool canCarryLifestock = false) :
         AbstractItemSource(name),
         _addressesInROM(),
         _isShop(isShop),
@@ -68,6 +69,13 @@ public:
     {
         _addressesInROM.push_back(addressInROM);
     }
+
+    ItemOnGround(std::vector<uint32_t> addressesInROM, const std::string& name, bool isShop = false, bool canCarryLifestock = false) :
+        AbstractItemSource(name),
+        _addressesInROM(addressesInROM),
+        _isShop(isShop),
+        _canCarryLifestock(canCarryLifestock)
+    {}
 
     void addOtherAddress(uint32_t addressInROM)
     {
@@ -89,7 +97,7 @@ public:
             return true;
         }
 
-        return item->isAllowedForPedestals(); 
+        return item->isAllowedOnGround(); 
     }
 
     virtual void writeToROM(GameROM& rom) const

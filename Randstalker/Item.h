@@ -5,16 +5,22 @@
 class Item
 {
 public:
-    Item(uint8_t itemID, const std::string& name, uint16_t priceInShop, bool isAllowedForPedestals = false) :
+    Item(uint8_t itemID, const std::string& name, uint16_t priceInShop, bool isAllowedOnGround = false) :
         _itemID(itemID),
         _name(name),
         _priceInShop(priceInShop),
-        _isAllowedForPedestals(isAllowedForPedestals)
+        _isAllowedOnGround(isAllowedOnGround)
     {}
 
+    void setID(uint8_t id) { _itemID = id; }
     uint8_t getID() const { return _itemID; }
-    bool isAllowedForPedestals() const { return _isAllowedForPedestals; }
+
+    void setName(const std::string& name) { _name = name; }
     const std::string& getName() const { return _name; }
+
+    void setPrice(uint16_t priceInShop) { _priceInShop = priceInShop; }
+
+    bool isAllowedOnGround() const { return _isAllowedOnGround; }
 
     void writeToROM(GameROM& rom) const
     {
@@ -25,5 +31,5 @@ private:
     uint8_t _itemID;
     std::string _name;
     uint16_t _priceInShop;
-    bool _isAllowedForPedestals;
+    bool _isAllowedOnGround;
 };

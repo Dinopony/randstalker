@@ -4,11 +4,12 @@
 #include <fstream>
 
 constexpr auto ROM_SIZE = 2097152;
+constexpr auto CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAD0;
 
 class GameROM 
 {
 public:
-	GameROM(const std::string& inputPath) : _wasOpen(false)
+	GameROM(const std::string& inputPath) : _wasOpen(false), _currentInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS)
 	{
 		_byteArray = new char[ROM_SIZE];
 
@@ -63,6 +64,32 @@ public:
 		this->setWord(address+2, (longWord & 0xFFFF));
 	}
 
+	uint32_t injectByte(uint8_t byte) 
+	{
+		uint32_t injectionAddressOnStart = _currentInjectionAddress;
+		this->setByte(_currentInjectionAddress, byte);
+		_currentInjectionAddress += 0x01;
+		return injectionAddressOnStart;
+	}
+
+	uint32_t injectWord(uint16_t word) 
+	{
+		uint32_t injectionAddressOnStart = _currentInjectionAddress;
+		this->setWord(_currentInjectionAddress, word);
+		_currentInjectionAddress += 0x02;
+		return injectionAddressOnStart;
+	}
+
+	uint32_t injectLong(uint32_t longWord) 
+	{
+		uint32_t injectionAddressOnStart = _currentInjectionAddress;
+		this->setLong(_currentInjectionAddress, longWord);
+		_currentInjectionAddress += 0x04;
+		return injectionAddressOnStart;
+	}
+
+	uint32_t getCurrentInjectionAddress() { return _currentInjectionAddress; }
+
 	void saveAs(const std::string& outputPath)
 	{
 		this->updateChecksum();
@@ -89,4 +116,5 @@ private:
 
 	bool _wasOpen;
 	char* _byteArray;
+	uint32_t _currentInjectionAddress;
 };

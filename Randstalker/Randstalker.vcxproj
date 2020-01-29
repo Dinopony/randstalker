@@ -20,21 +20,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants\ItemCodes.h" />
-    <ClInclude Include="Constants\ItemPedestalCodes.h" />
-    <ClInclude Include="Constants\ItemRewardCodes.h" />
+    <ClInclude Include="Constants\ItemSourceCodes.h" />
+    <ClInclude Include="Constants\RegionCodes.h" />
     <ClInclude Include="GameAlterations.h" />
     <ClInclude Include="ItemSource.h" />
     <ClInclude Include="GameROM.h" />
     <ClInclude Include="Item.h" />
-    <ClInclude Include="OutsideTreeMap.h" />
     <ClInclude Include="Tools.h" />
+    <ClInclude Include="TreeMap.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="WorldRandomizer.h" />
     <ClInclude Include="WorldRegion.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameAlterations.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="WorldRandomizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

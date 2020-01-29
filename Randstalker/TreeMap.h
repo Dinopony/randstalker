@@ -4,9 +4,9 @@
 #include <string>
 #include "GameROM.h"
 
-class OutsideTreeMap {
+class TreeMap {
 public:
-    OutsideTreeMap(const std::string& name, uint32_t leftEntranceMapAddress, uint32_t rightEntranceMapAddress, uint16_t treeMapID) :
+    TreeMap(const std::string& name, uint32_t leftEntranceMapAddress, uint32_t rightEntranceMapAddress, uint16_t treeMapID) :
         _name(name),
         _leftTreeEntranceMapAddress(leftEntranceMapAddress),
         _rightTreeEntranceMapAddress(rightEntranceMapAddress),
@@ -17,7 +17,7 @@ public:
     void setTree(uint16_t treeMapID) { _treeMapID = treeMapID; }
     const std::string& getName() const { return _name; }
 
-    void writeToROM(GameROM& rom)
+    void writeToROM(GameROM& rom) const
     {
         rom.setWord(_leftTreeEntranceMapAddress, _treeMapID);
         rom.setWord(_rightTreeEntranceMapAddress, _treeMapID);

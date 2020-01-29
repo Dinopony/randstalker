@@ -5,7 +5,7 @@
 // ---------------------------------------------------------------------------------------
 //
 //		Developed by:	Dinopony (@DinoponyRuns)
-//		Version:		v0.9d
+//		Version:		v0.9e
 //
 // ---------------------------------------------------------------------------------------
 //
@@ -30,15 +30,18 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include <cstdint>
+#include <string>
 #include <iostream>
 #include <map>
+#include <chrono>
 
 #include "GameROM.h"
 #include "GameAlterations.h"
 #include "Tools.h"
 #include "World.h"
+#include "WorldRandomizer.h"
 
-constexpr auto RELEASE = "0.9d";
+constexpr auto RELEASE = "0.9e";
 
 std::map<std::string, std::string> parseOptions(int argc, char* argv[])
 {
@@ -63,16 +66,40 @@ std::map<std::string, std::string> parseOptions(int argc, char* argv[])
 	return options;
 }
 
-
-int main(int argc, char* argv[])
+uint32_t getSeedFromOptionsOrPrompt(const std::map<std::string, std::string>& options)
 {
-	std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
+	bool randomSeed = false;
 
-	std::map<std::string, std::string> options = parseOptions(argc, argv);
-	for (auto it = options.begin(); it != options.end(); ++it)
-		std::cout << "NAME = `" << it->first << "`, VALUE = `" << it->second << "`\n";
+	std::string inputtedSeedString;
+	try {
+		inputtedSeedString = options.at("seed");
+	}
+	catch(std::out_of_range&) {
+		std::cout << "Please specify the seed (blank for random seed): ";
+		std::getline(std::cin, inputtedSeedString);
+	}
 
-	// ------------- Input ROM path -------------
+	if (inputtedSeedString == "random" || inputtedSeedString.empty())
+	{
+		randomSeed = true;
+	}
+	else
+	{
+		try {
+			return (uint32_t)std::stoul(inputtedSeedString);
+		}
+		catch (std::invalid_argument&) {
+			std::cout << "Provided seed '" << inputtedSeedString << "' is invalid, a random seed will be used instead.\n";
+			randomSeed = true;
+		}
+	}
+
+	if(randomSeed)
+		return (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
+}
+
+GameROM* getInputROM(std::map<std::string, std::string>& options, int argc, char* argv[])
+{
 	std::string inputRomPath = options["inputrom"];
 	if (inputRomPath.empty() && argc >= 2)
 	{
@@ -91,40 +118,24 @@ int main(int argc, char* argv[])
 		std::getline(std::cin, inputRomPath);
 		rom = new GameROM(inputRomPath);
 	}
+
+	return rom;
+}
+
+int main(int argc, char* argv[])
+{
+	std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
+
+	std::map<std::string, std::string> options = parseOptions(argc, argv);
+	for (auto it = options.begin(); it != options.end(); ++it)
+		std::cout << "NAME = `" << it->first << "`, VALUE = `" << it->second << "`\n";
+
+	// ------------- Input ROM path -------------
+	GameROM* rom = getInputROM(options, argc, argv);
 	std::cout << "\n";
 
 	// ------------ Seed -------------
-	uint32_t seed = 0;
-	bool randomSeed = false;
-
-	std::string inputtedSeedString;
-	if (options.count("seed"))
-	{
-		inputtedSeedString = options["seed"];
-	}
-	else
-	{
-		std::cout << "Please specify the seed (blank for random seed): ";
-		std::getline(std::cin, inputtedSeedString);
-	}
-
-	if (inputtedSeedString == "random" || inputtedSeedString.empty())
-	{
-		randomSeed = true;
-	}
-	else
-	{
-		try {
-			seed = (uint32_t)std::stoul(inputtedSeedString);
-		}
-		catch (std::invalid_argument&) {
-			std::cout << "Provided seed '" << inputtedSeedString << "' is invalid, a random seed will be used instead.\n";
-			randomSeed = true;
-		}
-	}
-
-	if(randomSeed)
-		seed = (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
+	uint32_t seed = getSeedFromOptionsOrPrompt(options);
 	std::cout << "Used seed: " << seed << "\n\n";
 
 	// ------------ Output ROM path -------------
@@ -137,20 +148,21 @@ int main(int argc, char* argv[])
 	if (outputLogPath.empty())
 		outputLogPath = "randstalker.log";
 
-	// ------------ RANDOMIZATION -------------
+	// ------------ Randomization -------------
 	// Perform game changes unrelated with the randomization part
 	alterROM(*rom, options);
-
-	// Create a replica model of Landstalker world, randomize it and save it to the ROM
-	std::ofstream logFile(outputLogPath);
-	World landstalkerWorld(seed, logFile, options);
 	
-	landstalkerWorld.randomize();
+	// Create a replica model of Landstalker world, randomize it and save it to the ROM	
+	World landstalkerWorld(options);
 
-	landstalkerWorld.writeToROM(*rom);
+	std::ofstream logFile(outputLogPath);
+	WorldRandomizer randomizer(landstalkerWorld, seed, logFile, options);
+	randomizer.randomize();
 	logFile.close();
 
+	landstalkerWorld.writeToROM(*rom);
 	rom->saveAs(outputRomPath);
+
 	std::cout << "Randomized rom outputted to \"" << outputRomPath << "\".\n\n";
 
 	if ( ! options.count("nopause") )

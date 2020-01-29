@@ -30,6 +30,9 @@
     <ClInclude Include="World.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="WorldRandomizer.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
     <ClInclude Include="WorldRegion.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
@@ -39,16 +42,16 @@
     <ClInclude Include="Constants\ItemCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="Constants\ItemPedestalCodes.h">
+    <ClInclude Include="Constants\ItemSourceCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
     </ClInclude>
-    <ClInclude Include="Constants\ItemRewardCodes.h">
+    <ClInclude Include="Constants\RegionCodes.h">
       <Filter>Fichiers sources\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="OutsideTreeMap.h">
-      <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="GameAlterations.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeMap.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +63,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="GameAlterations.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRandomizer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
