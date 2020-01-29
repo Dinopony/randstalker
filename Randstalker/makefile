@@ -1,14 +1,19 @@
-# Specify compiler
-CC=c++
+# Arch Target
+ARCH := linux
 
-# Specify linker
-LINK=c++
-
-all : randstalker
+ifeq ($(ARCH),win64)
+CC :=x86_64-w64-mingw32-c++
+STATIC :=-static
+EXT :=.exe
+else
+CC :=c++
+STATIC :=
+EXT :=
+endif
 
 # Link the object files into a binary
-randstalker : main
-	$(LINK) -O2 -pipe -s -o randstalker main.o WorldRandomizer.o World.o GameAlterations.o -lstdc++
+all : main
+	$(CC) $(STATIC) -O2 -pipe -s -o randstalker$(EXT) main.o WorldRandomizer.o World.o GameAlterations.o -lstdc++
 
 # Compile the source files into object files
 main :
@@ -19,4 +24,4 @@ main :
 
 # Clean target
 clean :
-	rm main.o World.o GameAlterations.o randstalker
+	rm main.o World.o WorldRandomizer.o GameAlterations.o randstalker randstalker.exe
