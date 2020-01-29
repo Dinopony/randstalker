@@ -79,23 +79,17 @@ uint32_t getSeedFromOptionsOrPrompt(const std::map<std::string, std::string>& op
 		std::getline(std::cin, inputtedSeedString);
 	}
 
-	if (inputtedSeedString == "random" || inputtedSeedString.empty())
-	{
-		randomSeed = true;
-	}
-	else
+	if (inputtedSeedString != "random" && !inputtedSeedString.empty())
 	{
 		try {
 			return (uint32_t)std::stoul(inputtedSeedString);
 		}
 		catch (std::invalid_argument&) {
 			std::cout << "Provided seed '" << inputtedSeedString << "' is invalid, a random seed will be used instead.\n";
-			randomSeed = true;
 		}
 	}
 
-	if(randomSeed)
-		return (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
+	return (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
 }
 
 GameROM* getInputROM(std::map<std::string, std::string>& options, int argc, char* argv[])
