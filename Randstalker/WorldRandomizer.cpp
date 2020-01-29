@@ -28,9 +28,9 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 
 void WorldRandomizer::randomize()
 {
-	this->randomizeSpawnPoint();
 	this->randomizeItems();
-	
+	this->randomizeSpawnPoint();
+
 	if(_shuffleTiborTrees)
 		this->randomizeTiborTrees();
 }
@@ -41,29 +41,28 @@ void WorldRandomizer::randomizeSpawnPoint()
 		_world.regions[RegionCode::MASSAN], _world.regions[RegionCode::GUMI], _world.regions[RegionCode::RYUMA]
 	};
 	Tools::shuffle(possibleSpawnRegions, _rng);
-    _spawnRegion = possibleSpawnRegions[0];
+	
+	WorldRegion* spawnRegion = possibleSpawnRegions[0];
 
-	if(_spawnRegion == _world.regions[RegionCode::MASSAN])
+	if(spawnRegion == _world.regions[RegionCode::MASSAN])
 	{
 		_world.spawnMapID = 0x258;
 		_world.spawnX = 0x1F;
 		_world.spawnZ = 0x19;
-		_logFile << "Spawn point: Massan\n";
 	}
-	else if(_spawnRegion == _world.regions[RegionCode::GUMI])
+	else if(spawnRegion == _world.regions[RegionCode::GUMI])
 	{
 		_world.spawnMapID = 0x25E;
 		_world.spawnX = 0x10;
 		_world.spawnZ = 0x0F;
-		_logFile << "Spawn point: Gumi\n";
 	}
-	else if(_spawnRegion == _world.regions[RegionCode::RYUMA])
+	else if(spawnRegion == _world.regions[RegionCode::RYUMA])
 	{
 		_world.spawnMapID = 0x268;
 		_world.spawnX = 0x11;
 		_world.spawnZ = 0x14;
-		_logFile << "Spawn point: Ryuma\n";
 	}
+	_logFile << "\nSpawn point: " << spawnRegion->getName() << "\n";
 }
 
 void WorldRandomizer::initPriorityItems()
@@ -217,7 +216,7 @@ std::vector<WorldRegion*> WorldRandomizer::evaluateReachableRegions(const std::v
 {
 	std::vector<WorldRegion*> returnedRegions;
 	std::vector<WorldRegion*> regionsToProcess;
-	regionsToProcess.push_back(_spawnRegion);
+	regionsToProcess.push_back(_world.regions[RegionCode::MASSAN]);
 
 	while (!regionsToProcess.empty())
 	{

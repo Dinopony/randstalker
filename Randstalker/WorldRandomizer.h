@@ -49,8 +49,6 @@ private:
 	bool _shuffleTiborTrees;
 	bool _noArmorUpgrades;
 
-	WorldRegion* _spawnRegion;
-
 	std::vector<Item*> _priorityItems;
 	std::vector<Item*> _fillerItems;
 };
