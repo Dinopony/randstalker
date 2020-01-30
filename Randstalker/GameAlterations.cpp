@@ -211,6 +211,17 @@ void fixMirTowerPriestRoomItems(GameROM& rom)
     rom.setWord(0x024E5A, 0x7F7F);
 }
 
+void fixKingNolesLabyrinthRafts(GameROM& rom)
+{
+    // Change the rafts logic so we can take them several times in a row, preventing from getting softlocked by missing chests
+    // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene while discarding the "raft already taken" state 
+    // as early as the player moves to another map.
+    rom.setWord(0x09E031, 0x0100);
+    rom.setWord(0x09E034, 0x0100);
+    rom.setWord(0x09E04E, 0x0100);
+    rom.setWord(0x09E051, 0x0100);
+}
+
 void alterArthurCheck(GameROM& rom)
 {
     // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
@@ -673,6 +684,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     fixMirAfterLakeShrineCheck(rom);
     fixLogsRoomExitCheck(rom);
     fixMirTowerPriestRoomItems(rom);
+    fixKingNolesLabyrinthRafts(rom);
 
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
