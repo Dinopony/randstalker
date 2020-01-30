@@ -82,6 +82,11 @@ void alterGameStart(GameROM& rom)
         }
     }
 
+    // Set the orientation byte of Nigel to 88 (south-west) on game start
+    rom.injectWord(OPCODE_MOVB);
+    rom.injectWord(0x0088);
+    rom.injectLong(0x00FF5404);
+
     // rts (return from function)
     rom.injectWord(OPCODE_RTS);
 }
