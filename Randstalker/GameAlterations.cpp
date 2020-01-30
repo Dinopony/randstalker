@@ -206,14 +206,19 @@ void fixMirTowerPriestRoomItems(GameROM& rom)
     rom.setWord(0x024E5A, 0x7F7F);
 }
 
-void alterCasinoCheck(GameROM& rom)
+void alterArthurCheck(GameROM& rom)
 {
-    // Change the Casino entrance check so that the NPC is always out of the way
+    // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
 
-    // 0x09DF25:
-        // Before:	29 03 (bit 3 of FF1029)
-        // After:	00 00 (bit 0 of FF1000 - always true) 
-    rom.setWord(0x09DF25, 0x0000);
+    // 0x01A904: 
+        // Before:  AAA0 (bit 5 of flag 2A, affecting entity 0) 
+        // After:   8000 (bit 0 of flag 00, affecting entity 0)
+    rom.setWord(0x01A904, 0x8000);
+
+    // 0x01A908:
+        // Before:	AAA1 (bit 5 of flag 2A, affecting entity 1) 
+        // After:	8001 (bit 0 of flag 00, affecting entity 1)
+    rom.setWord(0x01A908, 0x8001);
 }
 
 void alterMercatorSecondaryShopCheck(GameROM& rom)
@@ -651,7 +656,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterKingNolesCaveTeleporterCheck(rom);
     alterMercatorDocksShopCheck(rom);
     alterMercatorSecondaryShopCheck(rom);
-    alterCasinoCheck(rom);
+    alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
 
     fixAxeMagicCheck(rom);
