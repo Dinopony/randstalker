@@ -35,7 +35,7 @@
 #define ITEM_EINSTEIN_WHISTLE 0x20
 // Detox Book 0x21
 // AntiCurse 0x22
-// Record Book 0x23
+#define ITEM_RECORD_BOOK 0x23
 #define ITEM_SPELL_BOOK 0x24
 // Hotel Register 0x25
 // Island Map 0x26

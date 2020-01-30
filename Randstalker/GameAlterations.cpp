@@ -1,7 +1,7 @@
 #include "GameAlterations.h"
+#include "Constants/ItemCodes.h"
 #include <cstdint>
-
-
+#include <vector>
 
 constexpr auto OPCODE_MOVB =	0x13FC;
 constexpr auto OPCODE_MOVW =	0x33FC;
@@ -14,11 +14,6 @@ constexpr auto OPCODE_BNE =		0x6600;
 constexpr auto OPCODE_BEQ =		0x6700;
 constexpr auto OPCODE_BLT =		0x6D00;
 constexpr auto OPCODE_BGT =		0x6E00;
-
-
-constexpr auto DIALOGUE_NULLIFIER = 0x02FF;
-
-
 
 void alterGameStart(GameROM& rom)
 {
@@ -46,10 +41,11 @@ void alterGameStart(GameROM& rom)
     // Init function used to set story flags to specific values at the very beginning of the game, opening some usually closed paths
     // and removing some useless cutscenes (considering them as "already seen").
 
-    uint8_t flagArray[0x40];
-    for(int i=0 ; i<0x40 ; ++i)
+    uint8_t flagArray[0x60];
+    for(int i=0 ; i<0x60 ; ++i)
         flagArray[i] = 0x0;
 
+    // Setup story flags
     flagArray[0x00] = 0xB1;
     flagArray[0x02] = 0xD5;
     flagArray[0x03] = 0xE0;
@@ -71,7 +67,21 @@ void alterGameStart(GameROM& rom)
     flagArray[0x2A] = 0x81;
     flagArray[0x2B] = 0x82;
 
-    for(int i=0 ; i<0x40 ; i+=0x2)
+    // Setup inventory
+    flagArray[0x4B] = 0x10;
+    flagArray[0x4C] = 0x10;
+    flagArray[0x4D] = 0x11;
+    flagArray[0x4F] = 0x11;
+    flagArray[0x50] = 0x01;
+    flagArray[0x51] = 0x20;
+    flagArray[0x55] = 0x10;
+    flagArray[0x57] = 0x10;
+    flagArray[0x58] = 0x10;
+    flagArray[0x59] = 0x11;
+    flagArray[0x5B] = 0x10;
+    flagArray[0x5C] = 0x11;
+
+    for(int i=0 ; i<0x60 ; i+=0x2)
     {
         if( flagArray[i] != 0 || flagArray[i+1] != 0)
         {
@@ -357,6 +367,36 @@ void alterLanternIntoPassiveItem(GameROM& rom)
     // Change all "is room lit" flags by "is lantern owned"
     for (uint32_t addr = 0x008802; addr < 0x008830; addr += 0x04)
         rom.setWord(addr, 0x4D01);
+}
+
+void alterItemOrderInMenu(GameROM& rom)
+{
+    std::vector<uint8_t> itemOrder = {
+        ITEM_EKEEKE,        ITEM_RECORD_BOOK,
+        ITEM_DAHL,          ITEM_RESTORATION,
+        ITEM_GOLDEN_STATUE, ITEM_GAIA_STATUE,
+        ITEM_DETOX_GRASS,   ITEM_MIND_REPAIR,
+        ITEM_ANTI_PARALYZE, ITEM_ORACLE_STONE,
+        ITEM_KEY,           ITEM_LOGS,
+        ITEM_DEATH_STATUE,  ITEM_STATUE_JYPTA,
+        ITEM_SHORT_CAKE,    ITEM_PAWN_TICKET,
+        ITEM_CASINO_TICKET, ITEM_LITHOGRAPH,
+        ITEM_LANTERN,       ITEM_BELL,
+        ITEM_IDOL_STONE,    ITEM_SAFETY_PASS,
+        ITEM_SUN_STONE,     ITEM_BUYER_CARD,
+        ITEM_ARMLET,        ITEM_GARLIC,
+        ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
+        ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
+        ITEM_GOLA_EYE,      ITEM_GOLA_NAIL,
+        ITEM_GOLA_HORN,     ITEM_GOLA_FANG,
+        ITEM_BLUE_RIBBON,   ITEM_SPELL_BOOK,
+        0xFF,               0xFF,
+        0xFF,               0xFF
+    };
+
+    uint32_t baseAddress = 0x00D55C;
+    for (int i = 0; baseAddress + i < 0x00D584; ++i)
+        rom.setByte(baseAddress + i, itemOrder[i]);
 }
 
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
@@ -662,6 +702,48 @@ void handleArmorUpgrades(GameROM& rom)
     rom.setWord(0x019642, OPCODE_NOP);
 }
 
+void addFunctionToRecordBook(GameROM& rom)
+{
+    rom.setWord(0x00DBA8, OPCODE_JSR);
+    rom.setLong(0x00DBAA, rom.getCurrentInjectionAddress());
+    rom.setWord(0x00DBAE, OPCODE_NOP);
+    rom.setWord(0x00DBB0, OPCODE_NOP);
+    rom.setWord(0x00DBB2, OPCODE_NOP);
+    rom.setWord(0x00DBB4, OPCODE_NOP);
+
+    // cmpi.b #23, D0
+    rom.injectWord(0x0C00);
+    rom.injectWord(ITEM_RECORD_BOOK);
+
+    // bne to next case
+    rom.injectWord(0x660E);
+
+    // Call the "save game" function
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x00001592);
+
+    // jsr $DC1C       ("Abracadabra...")
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x0000DC1C);
+
+    // Eject out to the "success" address
+    rom.injectWord(OPCODE_RTS);
+
+    // cmpi.b #18, D0
+    rom.injectWord(0x0C00);
+    rom.injectWord(ITEM_SPELL_BOOK);
+
+    // bne to no match
+    rom.injectWord(0x6606);
+
+    // jsr $DC1C       ("Abracadabra...")
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x0000DC1C);
+
+    // rts
+    rom.injectWord(OPCODE_RTS);
+}
+
 void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 {
     // Rando core
@@ -674,6 +756,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
+    alterItemOrderInMenu(rom);
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
@@ -699,4 +782,6 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 
     if(options.count("noarmorupgrades") == 0)
         handleArmorUpgrades(rom);
+
+    addFunctionToRecordBook(rom);
 }
