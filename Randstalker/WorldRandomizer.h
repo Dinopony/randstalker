@@ -49,6 +49,7 @@ private:
 	bool _shuffleTiborTrees;
 	bool _noArmorUpgrades;
 	bool _randomSpawnPoint;
+	bool _saveVanilla;
 
 	std::vector<Item*> _priorityItems;
 	std::vector<Item*> _fillerItems;

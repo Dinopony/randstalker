@@ -369,7 +369,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
         rom.setWord(addr, 0x4D01);
 }
 
-void alterItemOrderInMenu(GameROM& rom)
+void alterItemOrderInMenu(GameROM& rom, bool saveVanilla=false)
 {
     std::vector<uint8_t> itemOrder = {
         ITEM_EKEEKE,        ITEM_RECORD_BOOK,
@@ -393,6 +393,8 @@ void alterItemOrderInMenu(GameROM& rom)
         0xFF,               0xFF,
         0xFF,               0xFF
     };
+    if (saveVanilla)
+	itemOrder[1] = 0xFF;
 
     uint32_t baseAddress = 0x00D55C;
     for (int i = 0; baseAddress + i < 0x00D584; ++i)
@@ -756,7 +758,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
-    alterItemOrderInMenu(rom);
+    alterItemOrderInMenu(rom, options.count("savevanilla") == 0);
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);

@@ -8,6 +8,7 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 	_logFile			(logFile),
 	_shuffleTiborTrees	(false),
 	_randomSpawnPoint	(false),
+	_saveVanilla		(false),
 	_noArmorUpgrades	(false)
 {
 	_logFile << "Seed: " << seed << "\n";
@@ -28,6 +29,12 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 	{
 		_randomSpawnPoint = true;
 		_logFile << "Option enabled: randomize spawn point\n";
+	}
+
+	if (options.count("savevanilla"))
+	{
+		_saveVanilla = true;
+		_logFile << "Option enabled: save vanilla\n";
 	}
 
 	_logFile << "\n";
