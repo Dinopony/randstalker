@@ -758,7 +758,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
-    alterItemOrderInMenu(rom, options.count("savevanilla") == 0);
+    alterItemOrderInMenu(rom, options.count("savevanilla") != 0);
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
