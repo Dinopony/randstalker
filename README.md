@@ -41,3 +41,4 @@ It also provides a few randomization options:
 
 - **shuffleTrees**: if set, Tibor trees connections are shuffled (e.g. `--shuffleTrees`)
 - **noArmorUpgrades**: don't use armor upgrades, just place vanilla armors randomly
+- **randomSpawn**: randomize spawn point between Massan, Gumi and Ryuma

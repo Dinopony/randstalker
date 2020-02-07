@@ -26,6 +26,7 @@
 //	Randomization options:
 //		--shuffleTrees			===> Randomize Tibor trees
 //		--noArmorUpgrades		===> Don't use armor upgrades, just place vanilla armors randomly
+//		--randomSpawn			===> randomize spawn point between Massan, Gumi and Ryuma
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 

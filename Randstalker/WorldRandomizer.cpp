@@ -7,6 +7,7 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 	_rng				(seed),
 	_logFile			(logFile),
 	_shuffleTiborTrees	(false),
+	_randomSpawnPoint	(false),
 	_noArmorUpgrades	(false)
 {
 	_logFile << "Seed: " << seed << "\n";
@@ -23,13 +24,20 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 		_logFile << "Option enabled: no armor upgrades\n";
 	}
 
+	if (options.count("randomspawn"))
+	{
+		_randomSpawnPoint = true;
+		_logFile << "Option enabled: randomize spawn point\n";
+	}
+
 	_logFile << "\n";
 }
 
 void WorldRandomizer::randomize()
 {
 	this->randomizeItems();
-	this->randomizeSpawnPoint();
+	if (_randomSpawnPoint)
+		this->randomizeSpawnPoint();
 
 	if(_shuffleTiborTrees)
 		this->randomizeTiborTrees();
