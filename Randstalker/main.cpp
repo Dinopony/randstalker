@@ -144,6 +144,18 @@ int main(int argc, char* argv[])
 	if (outputLogPath.empty())
 		outputLogPath = "randstalker.log";
 
+	// ------------  Randomize spawn points -------------
+	if (!options.count("randomspawn"))
+	{
+		std::cout << "Randomize spawn points (y/n): ";
+		std::string answer;
+		std::getline(std::cin, answer);
+		if (!answer.empty() && (answer[0] == 'y' || answer[0] == 'Y'))
+		{
+			options["randomspawn"] = "true";
+		}
+	}
+
 	// ------------ Randomization -------------
 	// Perform game changes unrelated with the randomization part
 	alterROM(*rom, options);
