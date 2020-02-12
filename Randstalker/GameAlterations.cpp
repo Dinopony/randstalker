@@ -232,6 +232,59 @@ void fixKingNolesLabyrinthRafts(GameROM& rom)
     rom.setWord(0x09E051, 0x0100);
 }
 
+void fixFaraLifestockChest(GameROM& rom)
+{
+    // Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
+    
+    // --------- Function to remove all entities but the chest when coming back in the room ---------
+    uint32_t removeAllEntitiesButChestFunc = rom.getCurrentInjectionAddress();
+
+    // movem(store registers) [48E7 FFFE]
+    rom.injectWord(0x48E7);
+    rom.injectWord(0xFFFE);
+
+    // lea $FF5480, A0 [41F9 00FF5480] 
+    rom.injectWord(0x41F9);
+    rom.injectLong(0x00FF5480);
+
+    // moveq.b #D, D0 [7012]
+    rom.injectWord(0x700D);
+
+    // move.w $7F7F, (A0) [30BC 7F7F]
+    rom.injectWord(0x30BC);
+    rom.injectWord(0x7F7F);
+
+    // adda $80, A0 [D1FC 0080]
+    rom.injectWord(0xD1FC);
+    rom.injectLong(0x00000080);
+
+    // dbra D0, -12 [51C8 FFF4]
+    rom.injectWord(0x51C8);
+    rom.injectWord(0xFFF4);
+
+    // movem(restore registers) [4CDF 7FFF]
+    rom.injectWord(0x4CDF);
+    rom.injectWord(0x7FFF);
+
+    // rts (4E75)
+    rom.injectWord(OPCODE_RTS);
+
+    // --------- Call to the function ---------
+
+    // jsr FUNC
+    rom.setWord(0x019BE0, OPCODE_JSR);
+    rom.setLong(0x019BE2, removeAllEntitiesButChestFunc);
+
+    // nop (for padding)
+    rom.setLong(0x019BE6, OPCODE_NOP);
+
+    // --------- Moving the chest to the ground ---------
+    rom.setWord(0x01BF6C, 0x1A93);
+    rom.setWord(0x01BF6E, 0x0000);
+    rom.setWord(0x01BF70, 0x0012);
+    rom.setWord(0x01BF72, 0x0400);
+}
+
 void alterArthurCheck(GameROM& rom)
 {
     // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
@@ -771,6 +824,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     fixLogsRoomExitCheck(rom);
     fixMirTowerPriestRoomItems(rom);
     fixKingNolesLabyrinthRafts(rom);
+    fixFaraLifestockChest(rom);
 
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
