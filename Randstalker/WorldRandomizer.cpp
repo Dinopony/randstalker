@@ -28,7 +28,7 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 		_logFile << "Option enabled: randomize spawn point\n";
 	}
 
-	if (options.count("savevanilla") || options.count("norecordbook"))
+	if (options.count("norecordbook"))
 	{
 		_logFile << "Option enabled: no record book\n";
 	}

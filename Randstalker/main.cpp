@@ -27,7 +27,7 @@
 //		--shuffleTrees			===> Randomize Tibor trees
 //		--noArmorUpgrades		===> Don't use armor upgrades, just place vanilla armors randomly
 //		--randomSpawn			===> randomize spawn point between Massan, Gumi and Ryuma
-//		--saveVanilla			===> Record Book not available in inventory
+//		--noRecordBook			===> Record Book not available in inventory
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 

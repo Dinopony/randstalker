@@ -838,7 +838,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
-    alterItemOrderInMenu(rom, options.count("norecordbook") || options.count("savevanilla"));
+    alterItemOrderInMenu(rom, options.count("norecordbook"));
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
