@@ -212,6 +212,38 @@ void fixArmletSkip(GameROM& rom)
     rom.setByte(0x02030C, 0x85);
 }
 
+void fixTreeCuttingGlitch(GameROM& rom)
+{
+    // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
+    uint32_t fixedMoneyValueCheckFunc = rom.getCurrentInjectionAddress();
+
+    // tst.b ($36,A5) [4A2D 0036]
+    rom.injectWord(0x4A2D);
+    rom.injectWord(0x0036);
+
+    // beq to rts +0x0E
+    rom.injectWord(0x670E);
+
+    // cmpi.w #0126, ($A,A5) [0C6D 0126]
+    rom.injectWord(0x0C6D);
+    rom.injectWord(0x0126);
+    rom.injectWord(0x000A);
+
+    // beq to rts +0x6
+    rom.injectWord(0x6706);
+
+    // jmp to $16284
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x00016284);
+
+    // rts
+    rom.injectWord(OPCODE_RTS);
+
+    // Call the injected function when killing an enemy
+    rom.setWord(0x01625C, OPCODE_JSR);
+    rom.setLong(0x01625E, fixedMoneyValueCheckFunc);
+}
+
 void fixMirTowerPriestRoomItems(GameROM& rom)
 {
     // Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
@@ -831,6 +863,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
 
     // Glitch prevention
     fixArmletSkip(rom);
+    fixTreeCuttingGlitch(rom);
 
     // Rando extensions (non-vanilla content)
     replaceLumberjackByChest(rom);
