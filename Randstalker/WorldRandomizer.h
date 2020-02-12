@@ -1,15 +1,14 @@
 #pragma once
 
 #include <vector>
-#include <map>
 #include <string>
-#include <chrono>
 #include <random>
 
 #include "Constants/ItemCodes.h"
 #include "Constants/ItemSourceCodes.h"
 #include "Constants/RegionCodes.h"
 
+#include "RandomizerOptions.h"
 #include "Item.h"
 #include "ItemSource.h"
 #include "World.h"
@@ -20,7 +19,7 @@ class NoAppropriateItemSourceException : public std::exception {};
 class WorldRandomizer
 {
 public:
-	WorldRandomizer(World& world, uint32_t seed, std::ofstream& logFile, const std::map<std::string, std::string>& options);
+	WorldRandomizer(World& world, const RandomizerOptions& options, std::ofstream& logFile);
 	~WorldRandomizer() {}
 
 	void randomize();
@@ -42,12 +41,10 @@ private:
 
 private:
 	World& _world;
+	const RandomizerOptions& _options;
 
 	std::ofstream& _logFile;
 	std::mt19937 _rng;
-
-	bool _shuffleTiborTrees;
-	bool _randomSpawnPoint;
 
 	std::vector<Item*> _priorityItems;
 	std::vector<Item*> _fillerItems;

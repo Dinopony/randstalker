@@ -54,6 +54,9 @@
     <ClInclude Include="TreeMap.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="RandomizerOptions.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

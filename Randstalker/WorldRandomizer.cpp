@@ -2,48 +2,23 @@
 #include "Tools.h"
 #include <algorithm>
 
-WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& logFile, const std::map<std::string, std::string>& options) :
+WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options, std::ofstream& logFile) :
 	_world				(world),
-	_rng				(seed),
-	_logFile			(logFile),
-	_shuffleTiborTrees	(false),
-	_randomSpawnPoint	(false)
+	_options			(options),
+	_rng				(options.getSeed()),
+	_logFile			(logFile)
 {
-	_logFile << "Seed: " << seed << "\n";
-
-	if (options.count("shuffletrees"))
-	{
-		_shuffleTiborTrees = true;
-		_logFile << "Option enabled: randomize Tibor trees\n";
-	}
-
-	if (options.count("noarmorupgrades"))
-	{
-		_logFile << "Option enabled: no armor upgrades\n";
-	}
-
-	if (options.count("randomspawn"))
-	{
-		_randomSpawnPoint = true;
-		_logFile << "Option enabled: randomize spawn point\n";
-	}
-
-	if (options.count("norecordbook"))
-	{
-		_logFile << "Option enabled: no record book\n";
-	}
-
-	_logFile << "\n";
+	_options.logToFile(logFile);
 }
 
 void WorldRandomizer::randomize()
 {
 	this->randomizeItems();
 
-	if (_randomSpawnPoint)
+	if (_options.useRandomSpawnPoint())
 		this->randomizeSpawnPoint();
 
-	if(_shuffleTiborTrees)
+	if(_options.shuffleTiborTrees())
 		this->randomizeTiborTrees();
 }
 

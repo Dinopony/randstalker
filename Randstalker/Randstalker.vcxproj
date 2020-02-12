@@ -26,6 +26,7 @@
     <ClInclude Include="ItemSource.h" />
     <ClInclude Include="GameROM.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="RandomizerOptions.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TreeMap.h" />
     <ClInclude Include="World.h" />

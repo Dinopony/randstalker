@@ -1,5 +1,6 @@
 #include "GameAlterations.h"
 #include "Constants/ItemCodes.h"
+#include "RandomizerOptions.h"
 #include <cstdint>
 #include <vector>
 
@@ -447,7 +448,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
         rom.setWord(addr, 0x4D01);
 }
 
-void alterItemOrderInMenu(GameROM& rom, bool noRecordBook)
+void alterItemOrderInMenu(GameROM& rom, bool recordBook)
 {
     std::vector<uint8_t> itemOrder = {
         ITEM_EKEEKE,        ITEM_RECORD_BOOK,
@@ -472,7 +473,7 @@ void alterItemOrderInMenu(GameROM& rom, bool noRecordBook)
         0xFF,               0xFF
     };
     
-    if(noRecordBook)
+    if(!recordBook)
 	    itemOrder[1] = 0xFF;
 
     uint32_t baseAddress = 0x00D55C;
@@ -826,7 +827,7 @@ void addFunctionToRecordBook(GameROM& rom)
     rom.injectWord(OPCODE_RTS);
 }
 
-void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
+void alterROM(GameROM& rom, const RandomizerOptions& options)
 {
     // Rando core
     alterGameStart(rom);
@@ -838,7 +839,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
-    alterItemOrderInMenu(rom, options.count("norecordbook"));
+    alterItemOrderInMenu(rom, options.useRecordBook());
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
@@ -864,7 +865,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     replaceSickMerchantByChest(rom);
     replaceFaraInElderHouseByChest(rom);
 
-    if(options.count("noarmorupgrades") == 0)
+    if(options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
     addFunctionToRecordBook(rom);

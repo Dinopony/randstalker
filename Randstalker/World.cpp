@@ -6,10 +6,13 @@
 #include "Item.h"
 #include "ItemSource.h"
 
-World::World(const std::map<std::string, std::string>& options) :
+World::World(const RandomizerOptions& options) :
     spawnMapID(0x258), spawnX(0x1F), spawnZ(0x19)
 {
-    this->initItems(options.count("noarmorupgrades") == 0);
+    this->initItems();
+    if (options.useArmorUpgrades())
+        this->replaceArmorsByArmorUpgrades();
+
     this->initChests();
     this->initGroundItems();
     this->initShops();
@@ -18,7 +21,7 @@ World::World(const std::map<std::string, std::string>& options) :
     this->initRegions();
     this->initRegionPaths();
 
-    if(options.count("shuffletrees"))
+    if(options.shuffleTiborTrees())
         this->initTreeMaps();
 }
 
@@ -46,7 +49,7 @@ void World::writeToROM(GameROM& rom)
 	rom.setByte(0x002805, spawnZ);
 }
 
-void World::initItems(bool armorUpgrades)
+void World::initItems()
 {
     items[ITEM_EKEEKE] =               new Item(ITEM_EKEEKE, "EkeEke", 15, true);
     items[ITEM_MAGIC_SWORD] =          new Item(ITEM_MAGIC_SWORD, "Magic Sword", 200, true);
@@ -57,26 +60,10 @@ void World::initItems(bool armorUpgrades)
     items[ITEM_IRON_BOOTS] =           new Item(ITEM_IRON_BOOTS, "Iron Boots", 200, true);
     items[ITEM_HEALING_BOOTS] =        new Item(ITEM_HEALING_BOOTS, "Healing Boots", 300, true);
     items[ITEM_SPIKE_BOOTS] =          new Item(ITEM_SPIKE_BOOTS, "Snow Spikes", 400, true);
-
-	if(armorUpgrades)
-    {
-        items[ITEM_STEEL_BREAST] =     new Item(ITEM_STEEL_BREAST, "Armor upgrade 1", 250, true);
-        items[ITEM_CHROME_BREAST] =    new Item(ITEM_CHROME_BREAST, "Armor upgrade 2", 250, true);
-        items[ITEM_SHELL_BREAST] =     new Item(ITEM_SHELL_BREAST, "Armor upgrade 3", 250, true);
-        items[ITEM_HYPER_BREAST] =     new Item(ITEM_HYPER_BREAST, "Armor upgrade 4", 250, true);   
-	}
-    else 
-    {
-        items[ITEM_STEEL_BREAST] =     new Item(ITEM_STEEL_BREAST, "Steel Breast", 300, true);
-        items[ITEM_CHROME_BREAST] =    new Item(ITEM_CHROME_BREAST, "Chrome Breast", 400, true);
-        items[ITEM_SHELL_BREAST] =     new Item(ITEM_SHELL_BREAST, "Shell Breast", 500, true);
-        items[ITEM_HYPER_BREAST] =     new Item(ITEM_HYPER_BREAST, "Hyper Breast", 750, true); 
-    }
-    
-    items[ITEM_STEEL_BREAST] =         new Item(ITEM_STEEL_BREAST, "Armor upgrade 1", 250, true);
-    items[ITEM_CHROME_BREAST] =        new Item(ITEM_CHROME_BREAST, "Armor upgrade 2", 250, true);
-    items[ITEM_SHELL_BREAST] =         new Item(ITEM_SHELL_BREAST, "Armor upgrade 3", 250, true);
-    items[ITEM_HYPER_BREAST] =         new Item(ITEM_HYPER_BREAST, "Armor upgrade 4", 250, true);     
+    items[ITEM_STEEL_BREAST] =         new Item(ITEM_STEEL_BREAST, "Steel Breast", 300, true);
+    items[ITEM_CHROME_BREAST] =        new Item(ITEM_CHROME_BREAST, "Chrome Breast", 400, true);
+    items[ITEM_SHELL_BREAST] =         new Item(ITEM_SHELL_BREAST, "Shell Breast", 500, true);
+    items[ITEM_HYPER_BREAST] =         new Item(ITEM_HYPER_BREAST, "Hyper Breast", 750, true); 
     items[ITEM_MARS_STONE] =           new Item(ITEM_MARS_STONE, "Mars Stone", 100, true);
     items[ITEM_MOON_STONE] =           new Item(ITEM_MOON_STONE, "Moon Stone", 150, true);
     items[ITEM_SATURN_STONE] =         new Item(ITEM_SATURN_STONE, "Saturn Stone", 200, true);
@@ -130,6 +117,16 @@ void World::initItems(bool armorUpgrades)
     //      - Hotel Register (0x25)
     //      - Island Map (0x26)
     //      - No52 (0x34)
+}
+
+void World::replaceArmorsByArmorUpgrades()
+{
+    std::vector<Item*> armors = { items[ITEM_STEEL_BREAST], items[ITEM_CHROME_BREAST], items[ITEM_SHELL_BREAST], items[ITEM_HYPER_BREAST] };
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        armors[i]->setName(std::string("Armor upgrade").append(1, '1'+i));
+        armors[i]->setPrice(250);
+    }
 }
 
 void World::initChests()

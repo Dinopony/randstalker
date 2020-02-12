@@ -34,8 +34,6 @@
 #include <cstdint>
 #include <string>
 #include <iostream>
-#include <map>
-#include <chrono>
 
 #include "GameROM.h"
 #include "GameAlterations.h"
@@ -45,65 +43,8 @@
 
 constexpr auto RELEASE = "0.9e";
 
-std::map<std::string, std::string> parseOptions(int argc, char* argv[])
+GameROM* getInputROM(std::string inputRomPath)
 {
-	std::map<std::string, std::string> options;
-
-	for (int i = 1; i < argc; ++i)
-	{
-		std::string param = argv[i];
-//		Tools::trim(param);
-		if (param[0] != '-' || param[1] != '-')
-			continue;
-
-		auto tokenIter = std::find(param.begin() + 2, param.end(), '=');
-		std::string paramName(param.begin() + 2, tokenIter);
-		Tools::toLower(paramName);
-		if (tokenIter != param.end())
-			options[paramName] = std::string(tokenIter + 1, param.end());
-		else
-			options[paramName] = "true";
-	}
-
-	return options;
-}
-
-uint32_t getSeedFromOptionsOrPrompt(const std::map<std::string, std::string>& options)
-{
-	bool randomSeed = false;
-
-	std::string inputtedSeedString;
-	try {
-		inputtedSeedString = options.at("seed");
-	}
-	catch(std::out_of_range&) {
-		std::cout << "Please specify the seed (blank for random seed): ";
-		std::getline(std::cin, inputtedSeedString);
-	}
-
-	if (inputtedSeedString != "random" && !inputtedSeedString.empty())
-	{
-		try {
-			return (uint32_t)std::stoul(inputtedSeedString);
-		}
-		catch (std::invalid_argument&) {
-			std::cout << "Provided seed '" << inputtedSeedString << "' is invalid, a random seed will be used instead.\n";
-		}
-	}
-
-	return (uint32_t)std::chrono::system_clock::now().time_since_epoch().count();
-}
-
-GameROM* getInputROM(std::map<std::string, std::string>& options, int argc, char* argv[])
-{
-	std::string inputRomPath = options["inputrom"];
-	if (inputRomPath.empty() && argc >= 2)
-	{
-		std::string param = argv[1];
-		if (param.size() > 2 && param[0] != '-' && param[1] != '-')
-			inputRomPath = param;
-	}
-
 	GameROM* rom = new GameROM(inputRomPath);
 	while (!rom->isValid())
 	{
@@ -122,39 +63,10 @@ int main(int argc, char* argv[])
 {
 	std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
 
-	std::map<std::string, std::string> options = parseOptions(argc, argv);
-	for (auto it = options.begin(); it != options.end(); ++it)
-		std::cout << "NAME = `" << it->first << "`, VALUE = `" << it->second << "`\n";
+	RandomizerOptions options(argc, argv);
 
-	// ------------- Input ROM path -------------
-	GameROM* rom = getInputROM(options, argc, argv);
-	std::cout << "\n";
-
-	// ------------ Seed -------------
-	uint32_t seed = getSeedFromOptionsOrPrompt(options);
-	std::cout << "Used seed: " << seed << "\n\n";
-
-	// ------------ Output ROM path -------------
-	std::string outputRomPath = options["outputrom"];
-	if (outputRomPath.empty())
-		outputRomPath = "output.md";
-
-	// ------------ Output log path -------------
-	std::string outputLogPath = options["outputlog"];
-	if (outputLogPath.empty())
-		outputLogPath = "randstalker.log";
-
-	// ------------  Randomize spawn points -------------
-	if (!options.count("randomspawn"))
-	{
-		std::cout << "Randomize spawn points (y/n): ";
-		std::string answer;
-		std::getline(std::cin, answer);
-		if (!answer.empty() && (answer[0] == 'y' || answer[0] == 'Y'))
-		{
-			options["randomspawn"] = "true";
-		}
-	}
+	GameROM* rom = getInputROM(options.getInputROMPath());
+	std::ofstream logFile(options.getSpoilerLogPath());
 
 	// ------------ Randomization -------------
 	// Perform game changes unrelated with the randomization part
@@ -163,17 +75,16 @@ int main(int argc, char* argv[])
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM	
 	World landstalkerWorld(options);
 
-	std::ofstream logFile(outputLogPath);
-	WorldRandomizer randomizer(landstalkerWorld, seed, logFile, options);
+	WorldRandomizer randomizer(landstalkerWorld, options, logFile);
 	randomizer.randomize();
 	logFile.close();
 
 	landstalkerWorld.writeToROM(*rom);
-	rom->saveAs(outputRomPath);
+	rom->saveAs(options.getOutputROMPath());
 
-	std::cout << "Randomized rom outputted to \"" << outputRomPath << "\".\n\n";
+	std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";
 
-	if ( ! options.count("nopause") )
+	if ( options.mustPause() )
 	{
 		std::cout << "Press any key to exit.";
 		std::string dummy;

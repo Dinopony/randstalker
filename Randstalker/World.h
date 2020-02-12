@@ -1,23 +1,25 @@
 #pragma once
 
-#include <map>
 #include "Constants/ItemSourceCodes.h"
 #include "Constants/RegionCodes.h"
 #include "Item.h"
 #include "ItemSource.h"
 #include "WorldRegion.h"
+#include "RandomizerOptions.h"
 #include "TreeMap.h"
 
 struct World
 {
 public:
-    World(const std::map<std::string, std::string>& options);
+    World(const RandomizerOptions& options);
     ~World();
 
     void writeToROM(GameROM& rom);
 
 private:
-    void initItems(bool armorUpgrades);
+    void initItems();
+    void replaceArmorsByArmorUpgrades();
+
     void initChests();
     void initGroundItems();
     void initShops();
