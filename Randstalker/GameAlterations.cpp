@@ -67,7 +67,7 @@ void alterGameStart(GameROM& rom)
     flagArray[0x2A] = 0x81;
     flagArray[0x2B] = 0x82;
 
-    // Setup inventory
+    // Setup inventory tracker and give record book
     flagArray[0x4B] = 0x10;
     flagArray[0x4C] = 0x10;
     flagArray[0x4D] = 0x11;
@@ -369,7 +369,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
         rom.setWord(addr, 0x4D01);
 }
 
-void alterItemOrderInMenu(GameROM& rom, bool saveVanilla=false)
+void alterItemOrderInMenu(GameROM& rom, bool noRecordBook)
 {
     std::vector<uint8_t> itemOrder = {
         ITEM_EKEEKE,        ITEM_RECORD_BOOK,
@@ -377,24 +377,25 @@ void alterItemOrderInMenu(GameROM& rom, bool saveVanilla=false)
         ITEM_GOLDEN_STATUE, ITEM_GAIA_STATUE,
         ITEM_DETOX_GRASS,   ITEM_MIND_REPAIR,
         ITEM_ANTI_PARALYZE, ITEM_ORACLE_STONE,
-        ITEM_KEY,           ITEM_LOGS,
+        ITEM_KEY,           ITEM_GARLIC,
+        ITEM_LOGS,          ITEM_IDOL_STONE,
+        ITEM_GOLA_EYE,      ITEM_GOLA_NAIL,
+        ITEM_GOLA_HORN,     ITEM_GOLA_FANG,
         ITEM_DEATH_STATUE,  ITEM_STATUE_JYPTA,
         ITEM_SHORT_CAKE,    ITEM_PAWN_TICKET,
         ITEM_CASINO_TICKET, ITEM_LITHOGRAPH,
         ITEM_LANTERN,       ITEM_BELL,
-        ITEM_IDOL_STONE,    ITEM_SAFETY_PASS,
+        ITEM_SAFETY_PASS,   ITEM_ARMLET,
         ITEM_SUN_STONE,     ITEM_BUYER_CARD,
-        ITEM_ARMLET,        ITEM_GARLIC,
         ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
         ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
-        ITEM_GOLA_EYE,      ITEM_GOLA_NAIL,
-        ITEM_GOLA_HORN,     ITEM_GOLA_FANG,
         ITEM_BLUE_RIBBON,   ITEM_SPELL_BOOK,
         0xFF,               0xFF,
         0xFF,               0xFF
     };
-    if (saveVanilla)
-	itemOrder[1] = 0xFF;
+    
+    if(noRecordBook)
+	    itemOrder[1] = 0xFF;
 
     uint32_t baseAddress = 0x00D55C;
     for (int i = 0; baseAddress + i < 0x00D584; ++i)
@@ -758,7 +759,7 @@ void alterROM(GameROM& rom, const std::map<std::string, std::string>& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
-    alterItemOrderInMenu(rom, options.count("savevanilla") != 0);
+    alterItemOrderInMenu(rom, options.count("norecordbook") || options.count("savevanilla"));
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
