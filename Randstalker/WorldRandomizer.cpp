@@ -7,9 +7,7 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 	_rng				(seed),
 	_logFile			(logFile),
 	_shuffleTiborTrees	(false),
-	_randomSpawnPoint	(false),
-	_saveVanilla		(false),
-	_noArmorUpgrades	(false)
+	_randomSpawnPoint	(false)
 {
 	_logFile << "Seed: " << seed << "\n";
 
@@ -21,7 +19,6 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 
 	if (options.count("noarmorupgrades"))
 	{
-		_noArmorUpgrades = true;
 		_logFile << "Option enabled: no armor upgrades\n";
 	}
 
@@ -31,10 +28,9 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 		_logFile << "Option enabled: randomize spawn point\n";
 	}
 
-	if (options.count("savevanilla"))
+	if (options.count("savevanilla") || options.count("norecordbook"))
 	{
-		_saveVanilla = true;
-		_logFile << "Option enabled: save vanilla\n";
+		_logFile << "Option enabled: no record book\n";
 	}
 
 	_logFile << "\n";
@@ -43,6 +39,7 @@ WorldRandomizer::WorldRandomizer(World& world, uint32_t seed, std::ofstream& log
 void WorldRandomizer::randomize()
 {
 	this->randomizeItems();
+
 	if (_randomSpawnPoint)
 		this->randomizeSpawnPoint();
 

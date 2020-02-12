@@ -785,6 +785,11 @@ void handleArmorUpgrades(GameROM& rom)
 
 void addFunctionToRecordBook(GameROM& rom)
 {
+    // To remove the "Nothing happened..." text, the item must be put in a list which has a finite size.
+    // We replace the Blue Ribbon (0x18) by the Record Book (0x23) to do so.
+    rom.setByte(0x008642, 0x23);
+
+
     rom.setWord(0x00DBA8, OPCODE_JSR);
     rom.setLong(0x00DBAA, rom.getCurrentInjectionAddress());
     rom.setWord(0x00DBAE, OPCODE_NOP);
@@ -797,15 +802,11 @@ void addFunctionToRecordBook(GameROM& rom)
     rom.injectWord(ITEM_RECORD_BOOK);
 
     // bne to next case
-    rom.injectWord(0x660E);
+    rom.injectWord(0x6608);
 
     // Call the "save game" function
     rom.injectWord(OPCODE_JSR);
     rom.injectLong(0x00001592);
-
-    // jsr $DC1C       ("Abracadabra...")
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x0000DC1C);
 
     // Eject out to the "success" address
     rom.injectWord(OPCODE_RTS);
