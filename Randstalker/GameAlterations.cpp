@@ -214,9 +214,11 @@ void fixArmletSkip(GameROM& rom)
 
 void fixTreeCuttingGlitch(GameROM& rom)
 {
-    // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
-    uint32_t fixedMoneyValueCheckFunc = rom.getCurrentInjectionAddress();
+    // Call the injected function when killing an enemy
+    rom.setWord(0x01625C, OPCODE_JSR);
+    rom.setLong(0x01625E, rom.getCurrentInjectionAddress());
 
+    // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
     // tst.b ($36,A5) [4A2D 0036]
     rom.injectWord(0x4A2D);
     rom.injectWord(0x0036);
@@ -238,10 +240,6 @@ void fixTreeCuttingGlitch(GameROM& rom)
 
     // rts
     rom.injectWord(OPCODE_RTS);
-
-    // Call the injected function when killing an enemy
-    rom.setWord(0x01625C, OPCODE_JSR);
-    rom.setLong(0x01625E, fixedMoneyValueCheckFunc);
 }
 
 void fixMirTowerPriestRoomItems(GameROM& rom)
@@ -267,10 +265,14 @@ void fixKingNolesLabyrinthRafts(GameROM& rom)
 void fixFaraLifestockChest(GameROM& rom)
 {
     // Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
-    
-    // --------- Function to remove all entities but the chest when coming back in the room ---------
-    uint32_t removeAllEntitiesButChestFunc = rom.getCurrentInjectionAddress();
+    // jsr FUNC
+    rom.setWord(0x019BE0, OPCODE_JSR);
+    rom.setLong(0x019BE2, rom.getCurrentInjectionAddress());
 
+    // nop (for padding)
+    rom.setLong(0x019BE6, OPCODE_NOP);
+
+    // --------- Function to remove all entities but the chest when coming back in the room ---------
     // movem(store registers) [48E7 FFFE]
     rom.injectWord(0x48E7);
     rom.injectWord(0xFFFE);
@@ -300,15 +302,6 @@ void fixFaraLifestockChest(GameROM& rom)
 
     // rts (4E75)
     rom.injectWord(OPCODE_RTS);
-
-    // --------- Call to the function ---------
-
-    // jsr FUNC
-    rom.setWord(0x019BE0, OPCODE_JSR);
-    rom.setLong(0x019BE2, removeAllEntitiesButChestFunc);
-
-    // nop (for padding)
-    rom.setLong(0x019BE6, OPCODE_NOP);
 
     // --------- Moving the chest to the ground ---------
     rom.setWord(0x01BF6C, 0x1A93);
