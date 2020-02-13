@@ -26,7 +26,7 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 		} catch (std::invalid_argument&)
 		{
 			for (uint32_t i = 0; i < seedString.length(); ++i)
-				_seed += ((uint32_t)seedString[i]) * (i*10+1);
+				_seed += ((uint32_t)seedString[i]) * (i*100+1);
 		}
 	} 
 	else
