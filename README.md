@@ -31,15 +31,16 @@ To do so, either launch randstalker.exe and follow the instructions, or execute 
 
 With the following options being available:
 
+- **seed**: set the seed used for the randomizer. It must be an integer or the string "random" if you want it to be random (e.g. `--seed=2134548740`)
 - **inputRom**: set the path to the ROM used as input (e.g. `--inputRom="myROM.md"`)
 - **outputRom**: set the path where the randomized ROM will be outputted (e.g. `--outputROM="rando.md"`)
-- **seed**: set the seed used for the randomizer. It must be an integer or the string "random" if you want it to be random (e.g. `--seed=2134548740`)
 - **outputLog**: set the path where the spoiler log will be outputted (e.g. `--outputLog=spoiler.log`)
 - **noPause**: if set, no "press any key" prompt will be put at the end of generation, especially useful for automated generators (e.g. `--noPause`)
 
 It also provides a few randomization options:
 
-- **shuffleTrees**: if set, Tibor trees connections are shuffled (e.g. `--shuffleTrees`)
-- **noArmorUpgrades**: don't use armor upgrades, just place vanilla armors randomly (e.g. `--noArmorUpgrades`)
-- **randomSpawn**: randomize spawn point between Massan, Gumi and Ryuma (e.g. `--randomSpawn`)
-- **noRecordBook**: Record Book not available in inventory (e.g. `--noRecordBook`)
+- **shuffleTrees**: if set, Tibor trees connections are shuffled (defaults to false, `--shuffleTrees` to add it)
+- **armorUpgrades**: choose whether or not to enable armor upgrades instead of vanilla armors (defaults to true, `--noArmorUpgrades` to remove it)
+- **recordBook**: give a Record Book in inventory to be able to save anywhere (defaults to true, `--noRecordBook` to remove it)
+- **spawnLocation**: choose the starting location between `massan`, `gumi`, `ryuma` and `random`
+- **ingameTracker**: greys out key items in inventory to have a working in-game item tracker (defaults to false, `--ingameTracker` to add it)

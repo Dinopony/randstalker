@@ -26,7 +26,7 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 		} catch (std::invalid_argument&)
 		{
 			for (uint32_t i = 0; i < seedString.length(); ++i)
-				_seed += (uint32_t) seedString[i];
+				_seed += ((uint32_t)seedString[i]) * (i+1);
 		}
 	} else
 	{
@@ -39,7 +39,7 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 	if (options.count("outputrom"))
 		_outputRomPath = options["outputrom"];
 	if (options.count("outputlog"))
-		_spoilerLogPath = options["outputrom"];
+		_spoilerLogPath = options["outputlog"];
 	if (options.count("pause"))
 		_pauseAfterGeneration = (options["pause"] == "true");
 
