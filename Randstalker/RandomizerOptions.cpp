@@ -59,9 +59,9 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 	{
 		std::string spawnLoc = options["spawnlocation"];
 		Tools::toLower(spawnLoc);
-		if (spawnLoc == "gumi")			_spawnLocation = SpawnLocation::GUMI;
-		else if (spawnLoc == "ryuma")	_spawnLocation = SpawnLocation::RYUMA;
-		else if (spawnLoc == "random")	_spawnLocation = SpawnLocation::RANDOM;
+		if (spawnLoc == "gumi" || spawnLoc == "1")			_spawnLocation = SpawnLocation::GUMI;
+		else if (spawnLoc == "ryuma" || spawnLoc == "2")	_spawnLocation = SpawnLocation::RYUMA;
+		else if (spawnLoc == "random" || spawnLoc == "3")	_spawnLocation = SpawnLocation::RANDOM;
 		else							_spawnLocation = SpawnLocation::MASSAN;
 	}
 	else if (options.count("randomspawn"))
