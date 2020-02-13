@@ -28,9 +28,16 @@ public:
 	bool addIngameItemTracker() const { return _addIngameItemTracker; }
 	SpawnLocation getSpawnLocation() const { return _spawnLocation;  }
 
-	static std::map<std::string, std::string> parseOptionsDictionaryFromArgs(int argc, char* argv[]);
-
 private:
+	void parseOptionsDictionaryFromArgs(int argc, char* argv[]);
+	std::string parseStringOption(const std::string& name, const std::string& defaultValue) const;
+	bool parseBooleanOption(const std::string& name, bool defaultValue) const;
+	SpawnLocation parseSpawnLocationEnumOption(const std::string& name, SpawnLocation defaultValue) const;
+
+	// ------------- Attributes -------------
+
+	std::map<std::string, std::string> _optionsDictionary;
+
 	uint32_t _seed;
 	
 	std::string _inputRomPath;
@@ -45,5 +52,4 @@ private:
 	SpawnLocation _spawnLocation;
 	
 	// record book in inventory / record book findable in chests / record book disabled
-	// spawn location : massan / gumi / ryuma / random
 };

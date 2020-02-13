@@ -2,6 +2,8 @@
 #include "Tools.h"
 #include <algorithm>
 
+constexpr auto FILLING_RATE = 0.25;
+
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
 	_options			(options),
@@ -182,7 +184,7 @@ void WorldRandomizer::randomizeItems()
 		playerInventory.push_back(randomKeyItem);
 
 		// Fill additionnal item sources with "filler items"
-		int additionnalSourcesToFill = static_cast<int>(reachableItemSources.size() * 0.25);
+		int additionnalSourcesToFill = static_cast<int>(reachableItemSources.size() * FILLING_RATE);
 		_logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
 		this->fillSourcesWithFillerItems(reachableItemSources.begin(), reachableItemSources.begin() + additionnalSourcesToFill);
 	}

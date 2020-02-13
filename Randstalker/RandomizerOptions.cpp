@@ -1,30 +1,21 @@
 #include "RandomizerOptions.h"
 #include <set>
+#include <unordered_map>
 
-RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
-	_seed(0),
-
-	_inputRomPath("input.md"),
-	_outputRomPath("output.md"),
-	_spoilerLogPath("spoiler.log"),
-	_pauseAfterGeneration(true),
-
-	_armorUpgrades(true),
-	_shuffleTiborTrees(false),
-	_saveAnywhereBook(true),
-	_addIngameItemTracker(false),
-	_spawnLocation(SpawnLocation::MASSAN)
+RandomizerOptions::RandomizerOptions(int argc, char* argv[])
 {
-	std::map<std::string, std::string> options = parseOptionsDictionaryFromArgs(argc, argv);
+	this->parseOptionsDictionaryFromArgs(argc, argv);
 
-	if (options.count("seed") && options["seed"] != "random")
+	if (_optionsDictionary.count("seed") && _optionsDictionary["seed"] != "random")
 	{
-		std::string& seedString = options["seed"];
+		std::string& seedString = _optionsDictionary["seed"];
 		try
 		{
 			_seed = (uint32_t) std::stoul(seedString);
-		} catch (std::invalid_argument&)
+		} 
+		catch (std::invalid_argument&)
 		{
+			_seed = 0;
 			for (uint32_t i = 0; i < seedString.length(); ++i)
 				_seed += ((uint32_t)seedString[i]) * (i*100+1);
 		}
@@ -34,38 +25,18 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 		_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
 	}
 
+	// Technical options
+	_inputRomPath			= parseStringOption("inputrom", "input.md");
+	_outputRomPath			= parseStringOption("outputrom", "output.md");
+	_spoilerLogPath			= parseStringOption("outputlog", "spoiler.log");
+	_pauseAfterGeneration	= parseBooleanOption("pause", true);
 
-	if (options.count("inputrom"))
-		_inputRomPath = options["inputrom"];
-	if (options.count("outputrom"))
-		_outputRomPath = options["outputrom"];
-	if (options.count("outputlog"))
-		_spoilerLogPath = options["outputlog"];
-	if (options.count("pause"))
-		_pauseAfterGeneration = (options["pause"] == "true");
-
-
-	if (options.count("armorupgrades"))
-		_armorUpgrades = (options["armorupgrades"] == "true");
-	if (options.count("shuffletrees"))
-		_shuffleTiborTrees = (options["shuffletrees"] == "true");
-	if (options.count("recordbook"))
-		_saveAnywhereBook = (options["recordbook"] == "true");
-	if (options.count("ingametracker"))
-		_addIngameItemTracker = (options["ingametracker"] == "true");
-	
-
-	if (options.count("spawnlocation"))
-	{
-		std::string spawnLoc = options["spawnlocation"];
-		Tools::toLower(spawnLoc);
-		if (spawnLoc == "gumi" || spawnLoc == "1")			_spawnLocation = SpawnLocation::GUMI;
-		else if (spawnLoc == "ryuma" || spawnLoc == "2")	_spawnLocation = SpawnLocation::RYUMA;
-		else if (spawnLoc == "random" || spawnLoc == "3")	_spawnLocation = SpawnLocation::RANDOM;
-		else							_spawnLocation = SpawnLocation::MASSAN;
-	}
-	else if (options.count("randomspawn"))
-		_spawnLocation = (options["randomspawn"] == "true") ? SpawnLocation::RANDOM : SpawnLocation::MASSAN;
+	// Gameplay options
+	_armorUpgrades			= parseBooleanOption("armorupgrades", true);
+	_shuffleTiborTrees		= parseBooleanOption("shuffletrees", false);
+	_saveAnywhereBook		= parseBooleanOption("recordbook", true);
+	_addIngameItemTracker	= parseBooleanOption("ingametracker", false);
+	_spawnLocation			= parseSpawnLocationEnumOption("spawnlocation", SpawnLocation::MASSAN);
 }
 
 void RandomizerOptions::logToFile(std::ofstream& logFile) const
@@ -87,10 +58,8 @@ void RandomizerOptions::logToFile(std::ofstream& logFile) const
 	logFile << "\n";
 }
 
-std::map<std::string, std::string> RandomizerOptions::parseOptionsDictionaryFromArgs(int argc, char* argv[])
+void RandomizerOptions::parseOptionsDictionaryFromArgs(int argc, char* argv[])
 {
-	std::map<std::string, std::string> options;
-
 	for (int i = 1; i < argc; ++i)
 	{
 		std::string param = argv[i];
@@ -101,12 +70,71 @@ std::map<std::string, std::string> RandomizerOptions::parseOptionsDictionaryFrom
 		std::string paramName(param.begin() + 2, tokenIter);
 		Tools::toLower(paramName);
 		if (tokenIter != param.end())
-			options[paramName] = std::string(tokenIter + 1, param.end());
-		else if (paramName.substr(0, 2) == "no")
-			options[paramName.substr(2)] = "false";
+			_optionsDictionary[paramName] = std::string(tokenIter + 1, param.end());
 		else
-			options[paramName] = "true";
+			_optionsDictionary[paramName] = "";
 	}
+}
 
-	return options;
+std::string RandomizerOptions::parseStringOption(const std::string& name, const std::string& defaultValue) const
+{
+	try
+	{
+		return _optionsDictionary.at(name);
+	}
+	catch (std::out_of_range&)
+	{
+		return defaultValue;
+	}
+}
+
+bool RandomizerOptions::parseBooleanOption(const std::string& name, bool defaultValue) const
+{
+	// "--noParam" <==> "--param=false"
+	std::string negationParam = "no" + name;
+	if (_optionsDictionary.count(negationParam))
+		return false;
+
+	try
+	{
+		std::string contents = _optionsDictionary.at(name);
+		Tools::toLower(contents);
+
+		// "--param=false"
+		if (contents == "false")
+			return false;
+
+		// "--param=true" or "--param"
+		return true;
+	}
+	catch (std::out_of_range&)
+	{
+		// No trace of "--param" or "--noParam", return default value
+		return defaultValue;
+	}
+}
+
+SpawnLocation RandomizerOptions::parseSpawnLocationEnumOption(const std::string& name, SpawnLocation defaultValue) const
+{
+	const std::unordered_map<std::string, SpawnLocation> assocMap = {
+		{ "massan", SpawnLocation::MASSAN	},
+		{ "0",		SpawnLocation::MASSAN	},
+		{ "gumi",	SpawnLocation::GUMI		},
+		{ "1",		SpawnLocation::GUMI		},
+		{ "ryuma",	SpawnLocation::RYUMA	},
+		{ "2",		SpawnLocation::RYUMA	},
+		{ "random",	SpawnLocation::RANDOM	},
+		{ "3",		SpawnLocation::RANDOM	}
+	};
+
+	try
+	{
+		std::string spawnLoc = _optionsDictionary.at(name);
+		Tools::toLower(spawnLoc);
+		return assocMap.at(spawnLoc);
+	}
+	catch (std::out_of_range&)
+	{
+		return defaultValue;
+	}
 }
