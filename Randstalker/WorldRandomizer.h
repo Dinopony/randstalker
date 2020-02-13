@@ -19,11 +19,11 @@ class NoAppropriateItemSourceException : public std::exception {};
 class WorldRandomizer
 {
 public:
-	WorldRandomizer(World& world, const RandomizerOptions& options, std::ofstream& logFile);
+	WorldRandomizer(World& world, const RandomizerOptions& options);
 	~WorldRandomizer() {}
 
 	void randomize();
-	void randomizeSpawnPoint();
+	void setSpawnPoint();
 	void randomizeItems();
 
 private:
@@ -43,7 +43,7 @@ private:
 	World& _world;
 	const RandomizerOptions& _options;
 
-	std::ofstream& _logFile;
+	std::ofstream _logFile;
 	std::mt19937 _rng;
 
 	std::vector<Item*> _priorityItems;

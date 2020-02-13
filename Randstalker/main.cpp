@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	RandomizerOptions options(argc, argv);
 
 	GameROM* rom = getInputROM(options.getInputROMPath());
-	std::ofstream logFile(options.getSpoilerLogPath());
+
 
 	// ------------ Randomization -------------
 	// Perform game changes unrelated with the randomization part
@@ -75,9 +75,8 @@ int main(int argc, char* argv[])
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM	
 	World landstalkerWorld(options);
 
-	WorldRandomizer randomizer(landstalkerWorld, options, logFile);
+	WorldRandomizer randomizer(landstalkerWorld, options);
 	randomizer.randomize();
-	logFile.close();
 
 	landstalkerWorld.writeToROM(*rom);
 	rom->saveAs(options.getOutputROMPath());

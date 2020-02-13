@@ -16,7 +16,7 @@ constexpr auto OPCODE_BEQ =		0x6700;
 constexpr auto OPCODE_BLT =		0x6D00;
 constexpr auto OPCODE_BGT =		0x6E00;
 
-void alterGameStart(GameROM& rom)
+void alterGameStart(GameROM& rom, const RandomizerOptions& options)
 {
     // ------- Remove no music flag ---------
     // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom
@@ -68,19 +68,25 @@ void alterGameStart(GameROM& rom)
     flagArray[0x2A] = 0x81;
     flagArray[0x2B] = 0x82;
 
-    // Setup inventory tracker and give record book
-    flagArray[0x4B] = 0x10;
-    flagArray[0x4C] = 0x10;
-    flagArray[0x4D] = 0x11;
-    flagArray[0x4F] = 0x11;
-    flagArray[0x50] = 0x01;
-    flagArray[0x51] = 0x20;
-    flagArray[0x55] = 0x10;
-    flagArray[0x57] = 0x10;
-    flagArray[0x58] = 0x10;
-    flagArray[0x59] = 0x11;
-    flagArray[0x5B] = 0x10;
-    flagArray[0x5C] = 0x11;
+    // Give Record book
+    if(options.useRecordBook())
+        flagArray[0x51] |= 0x20;
+
+    // Setup inventory tracker if needed
+    if (options.addIngameItemTracker())
+    {
+        flagArray[0x4B] |= 0x10;
+        flagArray[0x4C] |= 0x10;
+        flagArray[0x4D] |= 0x11;
+        flagArray[0x4F] |= 0x11;
+        flagArray[0x50] |= 0x01;
+        flagArray[0x55] |= 0x10;
+        flagArray[0x57] |= 0x10;
+        flagArray[0x58] |= 0x10;
+        flagArray[0x59] |= 0x11;
+        flagArray[0x5B] |= 0x10;
+        flagArray[0x5C] |= 0x11;
+    }
 
     for(int i=0 ; i<0x60 ; i+=0x2)
     {
@@ -448,7 +454,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
         rom.setWord(addr, 0x4D01);
 }
 
-void alterItemOrderInMenu(GameROM& rom, bool recordBook)
+void alterItemOrderInMenu(GameROM& rom)
 {
     std::vector<uint8_t> itemOrder = {
         ITEM_EKEEKE,        ITEM_RECORD_BOOK,
@@ -472,9 +478,6 @@ void alterItemOrderInMenu(GameROM& rom, bool recordBook)
         0xFF,               0xFF,
         0xFF,               0xFF
     };
-    
-    if(!recordBook)
-	    itemOrder[1] = 0xFF;
 
     uint32_t baseAddress = 0x00D55C;
     for (int i = 0; baseAddress + i < 0x00D584; ++i)
@@ -830,7 +833,7 @@ void addFunctionToRecordBook(GameROM& rom)
 void alterROM(GameROM& rom, const RandomizerOptions& options)
 {
     // Rando core
-    alterGameStart(rom);
+    alterGameStart(rom, options);
     alterWaterfallShrineSecretStairsCheck(rom);
     alterVerlaBoulderCheck(rom);
     alterBlueRibbonStoryCheck(rom);
@@ -839,7 +842,7 @@ void alterROM(GameROM& rom, const RandomizerOptions& options)
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
-    alterItemOrderInMenu(rom, options.useRecordBook());
+    alterItemOrderInMenu(rom);
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);

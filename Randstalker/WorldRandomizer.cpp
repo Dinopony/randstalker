@@ -2,54 +2,55 @@
 #include "Tools.h"
 #include <algorithm>
 
-WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options, std::ofstream& logFile) :
+WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
 	_options			(options),
 	_rng				(options.getSeed()),
-	_logFile			(logFile)
+	_logFile			()
 {
-	_options.logToFile(logFile);
+	_logFile.open(options.getSpoilerLogPath());
+	_options.logToFile(_logFile);
 }
 
 void WorldRandomizer::randomize()
 {
 	this->randomizeItems();
 
-	if (_options.useRandomSpawnPoint())
-		this->randomizeSpawnPoint();
+	this->setSpawnPoint();
 
 	if(_options.shuffleTiborTrees())
 		this->randomizeTiborTrees();
 }
 
-void WorldRandomizer::randomizeSpawnPoint()
+void WorldRandomizer::setSpawnPoint()
 {
-	std::vector<WorldRegion*> possibleSpawnRegions = {
-		_world.regions[RegionCode::MASSAN], _world.regions[RegionCode::GUMI], _world.regions[RegionCode::RYUMA]
-	};
-	Tools::shuffle(possibleSpawnRegions, _rng);
+	SpawnLocation spawnLocation = _options.getSpawnLocation();
 	
-	WorldRegion* spawnRegion = possibleSpawnRegions[0];
+	if (spawnLocation == SpawnLocation::RANDOM)
+	{
+		std::vector<SpawnLocation> possibleSpawnRegions = { SpawnLocation::MASSAN, SpawnLocation::GUMI, SpawnLocation::RYUMA };
+		Tools::shuffle(possibleSpawnRegions, _rng);
+		spawnLocation = possibleSpawnRegions[0];
+	}
 
-	if(spawnRegion == _world.regions[RegionCode::MASSAN])
+	if(spawnLocation == SpawnLocation::MASSAN)
 	{
 		_world.spawnMapID = 0x258;
 		_world.spawnX = 0x1F;
 		_world.spawnZ = 0x19;
 	}
-	else if(spawnRegion == _world.regions[RegionCode::GUMI])
+	else if(spawnLocation == SpawnLocation::GUMI)
 	{
 		_world.spawnMapID = 0x25E;
 		_world.spawnX = 0x10;
 		_world.spawnZ = 0x0F;
 	}
-	else if(spawnRegion == _world.regions[RegionCode::RYUMA])
+	else if(spawnLocation == SpawnLocation::RYUMA)
 	{
 		_world.spawnMapID = 0x268;
 		_world.spawnX = 0x11;
 		_world.spawnZ = 0x14;
 	}
-	_logFile << "\nSpawn point: " << spawnRegion->getName() << "\n";
 }
 
 void WorldRandomizer::initPriorityItems()
