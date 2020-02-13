@@ -26,9 +26,10 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 		} catch (std::invalid_argument&)
 		{
 			for (uint32_t i = 0; i < seedString.length(); ++i)
-				_seed += ((uint32_t)seedString[i]) * (i+1);
+				_seed += ((uint32_t)seedString[i]) * (i*10+1);
 		}
-	} else
+	} 
+	else
 	{
 		_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
 	}
@@ -51,8 +52,9 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[]) :
 	if (options.count("recordbook"))
 		_saveAnywhereBook = (options["recordbook"] == "true");
 	if (options.count("ingametracker"))
-		_saveAnywhereBook = (options["ingametracker"] == "true");
+		_addIngameItemTracker = (options["ingametracker"] == "true");
 	
+
 	if (options.count("spawnlocation"))
 	{
 		std::string spawnLoc = options["spawnlocation"];
@@ -73,6 +75,7 @@ void RandomizerOptions::logToFile(std::ofstream& logFile) const
 	logFile << "Armor upgrades: " << ((_armorUpgrades) ? "enabled" : "disabled") << "\n";
 	logFile << "Randomized Tibor trees: " << ((_shuffleTiborTrees) ? "enabled" : "disabled") << "\n";
 	logFile << "Record Book: " << ((_saveAnywhereBook) ? "enabled" : "disabled") << "\n";
+	logFile << "In-game item tracker: " << ((_addIngameItemTracker) ? "enabled" : "disabled") << "\n";
 
 	logFile << "Starting location: ";
 	if (_spawnLocation == SpawnLocation::MASSAN)			logFile << "Massan";
