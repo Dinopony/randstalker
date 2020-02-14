@@ -528,14 +528,12 @@ void alterGoldRewardsHandling(GameROM& rom)
 void alterLifestockHandlingInShops(GameROM& rom)
 {
     // Align price multipliers between regular items and lifestocks
-    for (uint32_t addr = 0x024D34; addr <= 0x024E4C; addr += 0xE)
+    for (uint32_t addr = 0x024D34; addr <= 0x024EAE; addr += 0xE)
         rom.setByte(addr + 0x03, rom.getByte(addr + 0x02));
 
     // Remove the usage of "bought lifestock in shop X" flags 
     for (uint32_t addr = 0x009D18; addr <= 0x009D33; addr += 0xE)
         rom.setByte(addr, 0xFF);
-
-
 }
 
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
