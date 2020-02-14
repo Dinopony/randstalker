@@ -23,12 +23,14 @@ public:
 	~WorldRandomizer() {}
 
 	void randomize();
-	void setSpawnPoint();
-	void randomizeItems();
 
 private:
+	void setSpawnPoint();
+	void randomizeGoldValues();
 	void initPriorityItems();
 	void initFillerItems();
+
+	void randomizeItems();
 
 	std::vector<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
 	

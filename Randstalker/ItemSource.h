@@ -61,20 +61,18 @@ private:
 class ItemOnGround : public AbstractItemSource
 {
 public:
-    ItemOnGround(uint32_t addressInROM, const std::string& name, bool isShop = false, bool canCarryLifestock = false) :
+    ItemOnGround(uint32_t addressInROM, const std::string& name, bool isShop = false) :
         AbstractItemSource(name),
         _addressesInROM(),
-        _isShop(isShop),
-        _canCarryLifestock(canCarryLifestock)
+        _isShop(isShop)
     {
         _addressesInROM.push_back(addressInROM);
     }
 
-    ItemOnGround(std::vector<uint32_t> addressesInROM, const std::string& name, bool isShop = false, bool canCarryLifestock = false) :
+    ItemOnGround(std::vector<uint32_t> addressesInROM, const std::string& name, bool isShop = false) :
         AbstractItemSource(name),
         _addressesInROM(addressesInROM),
-        _isShop(isShop),
-        _canCarryLifestock(canCarryLifestock)
+        _isShop(isShop)
     {}
 
     void addOtherAddress(uint32_t addressInROM)
@@ -90,9 +88,7 @@ public:
         if (_isShop)
         {
             uint8_t itemID = item->getID();
-            if (itemID == ITEM_5_GOLDS || itemID == ITEM_20_GOLDS || itemID == ITEM_50_GOLDS || itemID == ITEM_200_GOLDS || itemID == ITEM_NONE)
-                return false;
-            if (itemID == ITEM_LIFESTOCK && !_canCarryLifestock)
+            if (itemID == ITEM_NONE || itemID >= ITEM_GOLDS_START)
                 return false;
             return true;
         }
@@ -109,7 +105,6 @@ public:
 private:
     std::vector<uint32_t> _addressesInROM;
     bool _isShop;
-    bool _canCarryLifestock;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,8 +119,7 @@ public:
 
     virtual bool isItemCompatible(Item* item) const
     {
-        uint8_t itemID = item->getID();
-        return (itemID != ITEM_5_GOLDS && itemID != ITEM_20_GOLDS && itemID != ITEM_50_GOLDS && itemID != ITEM_200_GOLDS);
+        return (item->getID() < ITEM_NONE);
     }
 
     virtual void writeToROM(GameROM& rom) const

@@ -1,14 +1,15 @@
 #pragma once
 
 #include "GameROM.h"
+#include "Constants/ItemCodes.h"
 
 class Item
 {
 public:
-    Item(uint8_t itemID, const std::string& name, uint16_t priceInShop, bool isAllowedOnGround = false) :
+    Item(uint8_t itemID, const std::string& name, uint16_t goldWorth, bool isAllowedOnGround = false) :
         _itemID(itemID),
         _name(name),
-        _priceInShop(priceInShop),
+        _goldWorth(goldWorth),
         _isAllowedOnGround(isAllowedOnGround)
     {}
 
@@ -18,18 +19,21 @@ public:
     void setName(const std::string& name) { _name = name; }
     const std::string& getName() const { return _name; }
 
-    void setPrice(uint16_t priceInShop) { _priceInShop = priceInShop; }
+    void setGoldWorth(uint16_t goldWorth) { _goldWorth = goldWorth; }
 
     bool isAllowedOnGround() const { return _isAllowedOnGround; }
 
     void writeToROM(GameROM& rom) const
     {
-        rom.setWord(0x029306 + _itemID * 0x04, _priceInShop);
+        if(_itemID < ITEM_GOLDS_START)
+            rom.setWord(0x029306 + _itemID * 0x04, _goldWorth);
+        else
+            rom.setByte(0x01FFFC0 + (_itemID - ITEM_GOLDS_START), (uint8_t)_goldWorth);
     }
 
 private:
     uint8_t _itemID;
     std::string _name;
-    uint16_t _priceInShop;
+    uint16_t _goldWorth;
     bool _isAllowedOnGround;
 };

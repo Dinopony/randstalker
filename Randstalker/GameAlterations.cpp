@@ -487,6 +487,57 @@ void alterItemOrderInMenu(GameROM& rom)
         rom.setByte(baseAddress + i, itemOrder[i]);
 }
 
+void alterGoldRewardsHandling(GameROM& rom)
+{
+    // In the original game, only 3 item IDs are reserved for gold rewards (3A, 3B, 3C)
+    // Here, we moved the table of gold rewards to the end of the ROM so that we can handle 64 rewards up to 255 golds each.
+    // In the new system, all item IDs after the "empty item" one (0x40 and above) are now gold rewards.
+    
+    rom.setByte(0x0070DF, 0x40); // cmpi 3A, D0 >>> cmpi 40, D0
+    rom.setByte(0x0070E5, 0x40); // subi 3A, D0 >>> subi 40, D0
+
+    // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
+    // After:       jsr to new procedure
+    rom.setWord(0x0070E8, OPCODE_JSR);
+    rom.setLong(0x0070EA, rom.getCurrentInjectionAddress());
+
+    // ------------- Procedure to put gold reward value in D0 ----------------
+    // Input: D0 = gold reward ID (offset from 0x40)
+    // Output: D0 = gold reward value
+
+    // store A0 into -(A7)
+    rom.injectWord(0x48E7);
+    rom.injectWord(0x0080);
+     
+    // lea $1FFFC0, A0
+    rom.injectWord(0x41F9);
+    rom.injectLong(0x001FFFC0);
+
+    // move.b (A0, D0), D0
+    rom.injectWord(0x1030);
+    rom.injectWord(0x0000);
+
+    // restore A0 from (A7)+
+    rom.injectWord(0x4CDF);
+    rom.injectWord(0x0100);
+
+    // rts
+    rom.injectWord(OPCODE_RTS);
+}
+
+void alterLifestockHandlingInShops(GameROM& rom)
+{
+    // Align price multipliers between regular items and lifestocks
+    for (uint32_t addr = 0x024D34; addr <= 0x024E4C; addr += 0xE)
+        rom.setByte(addr + 0x03, rom.getByte(addr + 0x02));
+
+    // Remove the usage of "bought lifestock in shop X" flags 
+    for (uint32_t addr = 0x009D18; addr <= 0x009D33; addr += 0xE)
+        rom.setByte(addr, 0xFF);
+
+
+}
+
 void removeMercatorCastleBackdoorGuard(GameROM& rom)
 {
     // There is a guard staying in front of the Mercator castle backdoor to prevent you from using
@@ -846,6 +897,8 @@ void alterROM(GameROM& rom, const RandomizerOptions& options)
     alterArthurCheck(rom);
     alterLanternIntoPassiveItem(rom);
     alterItemOrderInMenu(rom);
+    alterGoldRewardsHandling(rom);
+    alterLifestockHandlingInShops(rom);
 
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);

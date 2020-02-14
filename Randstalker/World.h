@@ -8,6 +8,8 @@
 #include "RandomizerOptions.h"
 #include "TreeMap.h"
 
+constexpr auto GOLD_SOURCES_COUNT = 40;
+
 struct World
 {
 public:

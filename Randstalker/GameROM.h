@@ -26,6 +26,8 @@ public:
 	{
 		_wasOpen = otherROM._wasOpen;
 
+		_currentInjectionAddress = otherROM._currentInjectionAddress;
+
 		_byteArray = new char[ROM_SIZE];
 		for (uint32_t i = 0; i < ROM_SIZE; ++i)
 			_byteArray[i] = otherROM._byteArray[i];
@@ -37,6 +39,8 @@ public:
 	}
 
 	bool isValid() const { return _wasOpen; }
+
+	uint8_t getByte(uint32_t address) const { return _byteArray[address]; }
 
 	void setByte(uint32_t address, uint8_t byte)
 	{

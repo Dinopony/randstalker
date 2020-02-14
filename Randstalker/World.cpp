@@ -51,30 +51,30 @@ void World::writeToROM(GameROM& rom)
 
 void World::initItems()
 {
-    items[ITEM_EKEEKE] =               new Item(ITEM_EKEEKE, "EkeEke", 15, true);
-    items[ITEM_MAGIC_SWORD] =          new Item(ITEM_MAGIC_SWORD, "Magic Sword", 200, true);
+    items[ITEM_EKEEKE] =               new Item(ITEM_EKEEKE, "EkeEke", 20, true);
+    items[ITEM_MAGIC_SWORD] =          new Item(ITEM_MAGIC_SWORD, "Magic Sword", 300, true);
     items[ITEM_ICE_SWORD] =            new Item(ITEM_ICE_SWORD, "Sword of Ice", 300, true);
-    items[ITEM_THUNDER_SWORD] =        new Item(ITEM_THUNDER_SWORD, "Thunder Sword", 400, true);
-    items[ITEM_GAIA_SWORD] =           new Item(ITEM_GAIA_SWORD, "Sword of Gaia", 500, true);
-    items[ITEM_FIREPROOF_BOOTS] =      new Item(ITEM_FIREPROOF_BOOTS, "Fireproof", 100, true);
-    items[ITEM_IRON_BOOTS] =           new Item(ITEM_IRON_BOOTS, "Iron Boots", 200, true);
+    items[ITEM_THUNDER_SWORD] =        new Item(ITEM_THUNDER_SWORD, "Thunder Sword", 500, true);
+    items[ITEM_GAIA_SWORD] =           new Item(ITEM_GAIA_SWORD, "Sword of Gaia", 300, true);
+    items[ITEM_FIREPROOF_BOOTS] =      new Item(ITEM_FIREPROOF_BOOTS, "Fireproof", 150, true);
+    items[ITEM_IRON_BOOTS] =           new Item(ITEM_IRON_BOOTS, "Iron Boots", 150, true);
     items[ITEM_HEALING_BOOTS] =        new Item(ITEM_HEALING_BOOTS, "Healing Boots", 300, true);
     items[ITEM_SPIKE_BOOTS] =          new Item(ITEM_SPIKE_BOOTS, "Snow Spikes", 400, true);
     items[ITEM_STEEL_BREAST] =         new Item(ITEM_STEEL_BREAST, "Steel Breast", 300, true);
     items[ITEM_CHROME_BREAST] =        new Item(ITEM_CHROME_BREAST, "Chrome Breast", 400, true);
     items[ITEM_SHELL_BREAST] =         new Item(ITEM_SHELL_BREAST, "Shell Breast", 500, true);
     items[ITEM_HYPER_BREAST] =         new Item(ITEM_HYPER_BREAST, "Hyper Breast", 750, true); 
-    items[ITEM_MARS_STONE] =           new Item(ITEM_MARS_STONE, "Mars Stone", 100, true);
+    items[ITEM_MARS_STONE] =           new Item(ITEM_MARS_STONE, "Mars Stone", 150, true);
     items[ITEM_MOON_STONE] =           new Item(ITEM_MOON_STONE, "Moon Stone", 150, true);
     items[ITEM_SATURN_STONE] =         new Item(ITEM_SATURN_STONE, "Saturn Stone", 200, true);
     items[ITEM_VENUS_STONE] =          new Item(ITEM_VENUS_STONE, "Venus Stone", 300, true);
     items[ITEM_DETOX_GRASS] =          new Item(ITEM_DETOX_GRASS, "Detox Grass", 20, true);
-    items[ITEM_GAIA_STATUE] =          new Item(ITEM_GAIA_STATUE, "Statue of Gaia", 150, true);
+    items[ITEM_GAIA_STATUE] =          new Item(ITEM_GAIA_STATUE, "Statue of Gaia", 100, true);
     items[ITEM_GOLDEN_STATUE] =        new Item(ITEM_GOLDEN_STATUE, "Golden Statue", 200);
     items[ITEM_MIND_REPAIR] =          new Item(ITEM_MIND_REPAIR, "Mind Repair", 20, true);
-    items[ITEM_CASINO_TICKET] =        new Item(ITEM_CASINO_TICKET, "Casino Ticket", 1); // What to do with them?
+    items[ITEM_CASINO_TICKET] =        new Item(ITEM_CASINO_TICKET, "Casino Ticket", 50); // What to do with them?
     items[ITEM_AXE_MAGIC] =            new Item(ITEM_AXE_MAGIC, "Axe Magic", 400, true);
-    items[ITEM_BLUE_RIBBON] =          new Item(ITEM_BLUE_RIBBON, "Blue Ribbon", 1, true); // What to do with it?
+    items[ITEM_BLUE_RIBBON] =          new Item(ITEM_BLUE_RIBBON, "Blue Ribbon", 50, true); // What to do with it?
     items[ITEM_BUYER_CARD] =           new Item(ITEM_BUYER_CARD, "Buyer's Card", 100, true); // What to do with it?
     items[ITEM_LANTERN] =              new Item(ITEM_LANTERN, "Lantern", 150, true);
     items[ITEM_GARLIC] =               new Item(ITEM_GARLIC, "Garlic", 150, true);
@@ -87,27 +87,26 @@ void World::initItems()
     items[ITEM_LITHOGRAPH] =           new Item(ITEM_LITHOGRAPH, "Lithograph", 100, true); // What to do with it?
     items[ITEM_RED_JEWEL] =            new Item(ITEM_RED_JEWEL, "Red Jewel", 100, true); // What to do with it?
     items[ITEM_PAWN_TICKET] =          new Item(ITEM_PAWN_TICKET, "Pawn Ticket", 100, true);
-    items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 1); // What to do with it?
+    items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 100); // What to do with it?
     items[ITEM_GOLA_EYE] =             new Item(ITEM_GOLA_EYE, "Gola's Eye", 500, true);
     items[ITEM_DEATH_STATUE] =         new Item(ITEM_DEATH_STATUE, "Death Statue", 150, true);
-    items[ITEM_DAHL] =                 new Item(ITEM_DAHL, "Dahl", 150);
+    items[ITEM_DAHL] =                 new Item(ITEM_DAHL, "Dahl", 100);
     items[ITEM_RESTORATION] =          new Item(ITEM_RESTORATION, "Restoration", 40, true);
-    items[ITEM_LOGS] =                 new Item(ITEM_LOGS, "Logs", 100, true);
+    items[ITEM_LOGS] =                 new Item(ITEM_LOGS, "Logs", 150, true);
     items[ITEM_ORACLE_STONE] =         new Item(ITEM_ORACLE_STONE, "Oracle Stone", 100, true); // What to do with it?
     items[ITEM_IDOL_STONE] =           new Item(ITEM_IDOL_STONE, "Idol Stone", 200, true);
     items[ITEM_KEY] =                  new Item(ITEM_KEY, "Key", 150, true);
     items[ITEM_SAFETY_PASS] =          new Item(ITEM_SAFETY_PASS, "Safety Pass", 300, true);
-    items[ITEM_BELL] =                 new Item(ITEM_BELL, "Bell", 300, true);
+    items[ITEM_BELL] =                 new Item(ITEM_BELL, "Bell", 200, true);
     items[ITEM_SHORT_CAKE] =           new Item(ITEM_SHORT_CAKE, "Short Cake", 100, true); // What to do with it?
     items[ITEM_GOLA_NAIL] =            new Item(ITEM_GOLA_NAIL, "Gola's Nail", 1000, true);
     items[ITEM_GOLA_HORN] =            new Item(ITEM_GOLA_HORN, "Gola's Horn", 1000, true);
     items[ITEM_GOLA_FANG] =            new Item(ITEM_GOLA_FANG, "Gola's Fang", 1000, true);
-    items[ITEM_5_GOLDS] =              new Item(ITEM_5_GOLDS, "5 golds", 0);
-    items[ITEM_20_GOLDS] =             new Item(ITEM_20_GOLDS, "20 golds", 0);
-    items[ITEM_50_GOLDS] =             new Item(ITEM_50_GOLDS, "50 golds", 0);
-    items[ITEM_200_GOLDS] =            new Item(ITEM_200_GOLDS, "200 golds", 0);
-    items[ITEM_LIFESTOCK] =            new Item(ITEM_LIFESTOCK, "Life Stock", 300);
+    items[ITEM_LIFESTOCK] =            new Item(ITEM_LIFESTOCK, "Life Stock", 200);
     items[ITEM_NONE] =                 new Item(ITEM_NONE, "No Item", 0);
+
+    for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
+        items[ITEM_GOLDS_START + i] = new Item(ITEM_GOLDS_START + i, "", 0);
 
     // The following items are placeholder items, thus they are missing from this list:
     //      - Awakening Book (0x11)
@@ -124,8 +123,8 @@ void World::replaceArmorsByArmorUpgrades()
     std::vector<Item*> armors = { items[ITEM_STEEL_BREAST], items[ITEM_CHROME_BREAST], items[ITEM_SHELL_BREAST], items[ITEM_HYPER_BREAST] };
     for (uint8_t i = 0; i < 4; ++i)
     {
-        armors[i]->setName(std::string("Armor upgrade").append(1, '1'+i));
-        armors[i]->setPrice(250);
+        armors[i]->setName(std::string("Armor upgrade ").append(1, '1'+i));
+        armors[i]->setGoldWorth(250);
     }
 }
 
@@ -373,17 +372,17 @@ void World::initGroundItems()
     itemSources[ItemSourceCode::GROUND_FIREDEMON_EKEEKE] = new ItemOnGround(0x01F8E1, "King Nole's Labyrinth (-3F): EkeEke on ground before Firedemon");
 
     // This ground item is special in the sense that it can only be taken once, so we take advantage of this to authorize Lifestocks inside
-    itemSources[ItemSourceCode::GROUND_FALLING_RIBBON] = new ItemOnGround(0x01BFDF, "Mercator: falling ribbon in castle court", true, true);
+    itemSources[ItemSourceCode::GROUND_FALLING_RIBBON] = new ItemOnGround(0x01BFDF, "Mercator: falling ribbon in castle court", true);
 }
 
 void World::initShops()
 {
-    itemSources[ItemSourceCode::SHOP_MASSAN_LIFESTOCK] = new ItemOnGround(0x02101D, "Massan shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_MASSAN_LIFESTOCK] = new ItemOnGround(0x02101D, "Massan shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_1] = new ItemOnGround(0x021015, "Massan shop: first EkeEke slot", true);
     itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_2] = new ItemOnGround(0x02100D, "Massan shop: second EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_GUMI_LIFESTOCK] = new ItemOnGround(0x0211E5, "Gumi shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_GUMI_LIFESTOCK] = new ItemOnGround(0x0211E5, "Gumi shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_GUMI_EKEEKE] = new ItemOnGround(0x0211D5, "Gumi shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_LIFESTOCK] = new ItemOnGround(0x0212D9, "Ryuma shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_RYUMA_LIFESTOCK] = new ItemOnGround(0x0212D9, "Ryuma shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_RYUMA_GAIA_STATUE] = new ItemOnGround(0x0212C9, "Ryuma shop: Statue of Gaia slot", true);
     itemSources[ItemSourceCode::SHOP_RYUMA_GOLDEN_STATUE] = new ItemOnGround(0x0212B9, "Ryuma shop: Golden Statue slot", true);
     itemSources[ItemSourceCode::SHOP_RYUMA_EKEEKE] = new ItemOnGround(0x0212D1, "Ryuma shop: EkeEke slot", true);
@@ -402,12 +401,12 @@ void World::initShops()
     itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_ANTIPARALYZE] = new ItemOnGround(0x021CD7, "Mercator special shop: Anti Paralyze slot", true);
     itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_DAHL] = new ItemOnGround(0x021CCF, "Mercator special shop: Dahl slot", true);
     itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_RESTORATION] = new ItemOnGround(0x021CC7, "Mercator special shop: Restoration slot", true);
-    itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK] = new ItemOnGround(0x021F57, "Verla shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK] = new ItemOnGround(0x021F57, "Verla shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE] = new ItemOnGround(0x021F37, "Verla shop: EkeEke slot", true);
     itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS] = new ItemOnGround(0x021F3F, "Verla shop: Detox Grass slot", true);
     itemSources[ItemSourceCode::SHOP_VERLA_DAHL] = new ItemOnGround(0x021F47, "Verla shop: Dahl slot", true);
 //    itemSources[ItemSourceCode::SHOP_VERLA_MAP] = new ItemOnGround(0x021F4F, "Verla shop: Map slot", true);
-    itemSources[ItemSourceCode::SHOP_KELKETO_LIFESTOCK] = new ItemOnGround(0x020861, "Kelketo Waterfalls shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_KELKETO_LIFESTOCK] = new ItemOnGround(0x020861, "Kelketo Waterfalls shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_KELKETO_EKEEKE] = new ItemOnGround(0x020869, "Kelketo Waterfalls shop: EkeEke slot", true);
     itemSources[ItemSourceCode::SHOP_KELKETO_DETOX_GRASS] = new ItemOnGround(0x020871, "Kelketo Waterfalls shop: Detox Grass slot", true);
     itemSources[ItemSourceCode::SHOP_KELKETO_DAHL] = new ItemOnGround(0x020879, "Kelketo Waterfalls shop: Dahl slot", true);
@@ -417,11 +416,11 @@ void World::initShops()
     itemSources[ItemSourceCode::SHOP_DESTEL_DETOX_GRASS] = new ItemOnGround(0x02206D, "Destel shop: Detox Grass slot", true);
     itemSources[ItemSourceCode::SHOP_DESTEL_RESTORATION] = new ItemOnGround(0x022065, "Destel shop: Restoration slot", true);
     itemSources[ItemSourceCode::SHOP_DESTEL_DAHL] = new ItemOnGround(0x02205D, "Destel shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_LIFE_STOCK] = new ItemOnGround(0x022075, "Destel shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_DESTEL_LIFE_STOCK] = new ItemOnGround(0x022075, "Destel shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_GREEDLY_GAIA_STATUE] = new ItemOnGround(0x0209C7, "Greedly's shop: Statue of Gaia slot", true);
     itemSources[ItemSourceCode::SHOP_GREEDLY_GOLDEN_STATUE] = new ItemOnGround(0x0209BF, "Greedly's shop: Golden Statue slot", true);
     itemSources[ItemSourceCode::SHOP_GREEDLY_DAHL] = new ItemOnGround(0x0209CF, "Greedly's shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_GREEDLY_LIFE_STOCK] = new ItemOnGround(0x0209AF, "Greedly's shop: Life Stock slot", true, true);
+    itemSources[ItemSourceCode::SHOP_GREEDLY_LIFE_STOCK] = new ItemOnGround(0x0209AF, "Greedly's shop: Life Stock slot", true);
     itemSources[ItemSourceCode::SHOP_KAZALT_EKEEKE] = new ItemOnGround(0x022115, "Kazalt shop: EkeEke slot", true);
     itemSources[ItemSourceCode::SHOP_KAZALT_DAHL] = new ItemOnGround(0x022105, "Kazalt shop: Dahl slot", true);
     itemSources[ItemSourceCode::SHOP_KAZALT_GOLDEN_STATUE] = new ItemOnGround(0x02211D, "Kazalt shop: Golden Statue slot", true);

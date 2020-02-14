@@ -1,8 +1,10 @@
 #include "WorldRandomizer.h"
 #include "Tools.h"
 #include <algorithm>
+#include <sstream>
 
 constexpr auto FILLING_RATE = 0.25;
+
 
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
@@ -16,8 +18,9 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
 
 void WorldRandomizer::randomize()
 {
+	this->randomizeGoldValues();
 	this->randomizeItems();
-
+	
 	this->setSpawnPoint();
 
 	if(_options.shuffleTiborTrees())
@@ -27,7 +30,7 @@ void WorldRandomizer::randomize()
 void WorldRandomizer::setSpawnPoint()
 {
 	SpawnLocation spawnLocation = _options.getSpawnLocation();
-	
+
 	if (spawnLocation == SpawnLocation::RANDOM)
 	{
 		std::vector<SpawnLocation> possibleSpawnRegions = { SpawnLocation::MASSAN, SpawnLocation::GUMI, SpawnLocation::RYUMA };
@@ -35,23 +38,52 @@ void WorldRandomizer::setSpawnPoint()
 		spawnLocation = possibleSpawnRegions[0];
 	}
 
-	if(spawnLocation == SpawnLocation::MASSAN)
+	if (spawnLocation == SpawnLocation::MASSAN)
 	{
 		_world.spawnMapID = 0x258;
 		_world.spawnX = 0x1F;
 		_world.spawnZ = 0x19;
 	}
-	else if(spawnLocation == SpawnLocation::GUMI)
+	else if (spawnLocation == SpawnLocation::GUMI)
 	{
 		_world.spawnMapID = 0x25E;
 		_world.spawnX = 0x10;
 		_world.spawnZ = 0x0F;
 	}
-	else if(spawnLocation == SpawnLocation::RYUMA)
+	else if (spawnLocation == SpawnLocation::RYUMA)
 	{
 		_world.spawnMapID = 0x268;
 		_world.spawnX = 0x11;
 		_world.spawnZ = 0x14;
+	}
+}
+
+void WorldRandomizer::randomizeGoldValues()
+{
+	std::vector<uint8_t> goldValues = {
+		250,
+		100,	100,	100,	100,	100,
+		50,		50,		50,		50,		50,		50,		50,		50,		50,		50,		50,	
+		20,		20,		20,		20,		20,		20,		20,		20,		20,		20,		20,
+		10,		10,		10,		10,		10,		10,		10,		10,		10,		10,
+		1,		1
+	};
+
+	for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
+	{
+		Item* goldItem = _world.items[ITEM_GOLDS_START + i];
+		
+		uint32_t randomNumber = _rng();
+		double proportion = (double)randomNumber / (double)UINT32_MAX;
+		double factor = 1 - (0.35 * proportion);
+
+		uint8_t goldValue = std::max<uint8_t>((uint8_t)(goldValues[i] * factor), 1);
+
+		std::ostringstream goldName;
+		goldName << (uint32_t)goldValue << " golds";
+
+		goldItem->setName(goldName.str());
+		goldItem->setGoldWorth(goldValue);
 	}
 }
 
@@ -95,11 +127,11 @@ void WorldRandomizer::initFillerItems()
 	_fillerItems.push_back(_world.items[ITEM_SPELL_BOOK]);
 	_fillerItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
 
-	for (uint8_t i = 0; i < 80; ++i)
+	for (uint8_t i = 0; i < 76; ++i)
 		_fillerItems.push_back(_world.items[ITEM_LIFESTOCK]);
 	for (uint8_t i = 0; i < 55; ++i)
 		_fillerItems.push_back(_world.items[ITEM_EKEEKE]);
-	for (uint8_t i = 0; i < 18; ++i)
+	for (uint8_t i = 0; i < 15; ++i)
 		_fillerItems.push_back(_world.items[ITEM_DAHL]);
 	for (uint8_t i = 0; i < 12; ++i)
 		_fillerItems.push_back(_world.items[ITEM_GAIA_STATUE]);
@@ -109,19 +141,13 @@ void WorldRandomizer::initFillerItems()
 		_fillerItems.push_back(_world.items[ITEM_RESTORATION]);
 	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_world.items[ITEM_DETOX_GRASS]);
-	for (uint8_t i = 0; i < 8; ++i)
+	for (uint8_t i = 0; i < 5; ++i)
 		_fillerItems.push_back(_world.items[ITEM_MIND_REPAIR]);
-	for (uint8_t i = 0; i < 8; ++i)
+	for (uint8_t i = 0; i < 5; ++i)
 		_fillerItems.push_back(_world.items[ITEM_ANTI_PARALYZE]);
 
-	for (uint8_t i = 0; i < 10; ++i)
-		_fillerItems.push_back(_world.items[ITEM_5_GOLDS]);
-	for (uint8_t i = 0; i < 10; ++i)
-		_fillerItems.push_back(_world.items[ITEM_20_GOLDS]);
-	for (uint8_t i = 0; i < 5; ++i)
-		_fillerItems.push_back(_world.items[ITEM_50_GOLDS]);
-	for (uint8_t i = 0; i < 2; ++i)
-		_fillerItems.push_back(_world.items[ITEM_200_GOLDS]);
+	for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
+		_fillerItems.push_back(_world.items[ITEM_GOLDS_START+i]);
 
 	for (uint8_t i = 0; i < 4; ++i)
 		_fillerItems.push_back(_world.items[ITEM_NONE]);

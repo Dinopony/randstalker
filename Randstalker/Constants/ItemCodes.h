@@ -64,3 +64,4 @@
 #define ITEM_200_GOLDS 0x3D
 #define ITEM_LIFESTOCK 0x3E
 #define ITEM_NONE 0x3F
+#define ITEM_GOLDS_START 0x40
