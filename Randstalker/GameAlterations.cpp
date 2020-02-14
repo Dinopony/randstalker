@@ -267,6 +267,9 @@ void fixKingNolesLabyrinthRafts(GameROM& rom)
     rom.setWord(0x09E034, 0x0100);
     rom.setWord(0x09E04E, 0x0100);
     rom.setWord(0x09E051, 0x0100);
+
+    // Second raft is always here, so no need for two logs anymore, set the maximum amount of logs to one
+    rom.setByte(0x0293C0, 0x01);
 }
 
 void fixFaraLifestockChest(GameROM& rom)
