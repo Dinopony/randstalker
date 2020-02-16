@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <sstream>
 
-constexpr auto FILLING_RATE = 0.25;
+constexpr auto FILLING_RATE = 0.20;
 
 
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :

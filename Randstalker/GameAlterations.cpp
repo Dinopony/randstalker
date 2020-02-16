@@ -559,6 +559,62 @@ void removeSailorInDarkPort(GameROM& rom)
     rom.setWord(0x021646, 0x0000);
 }
 
+void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
+{
+    // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
+    constexpr uint16_t wrongWarpMapID = 0x0061;
+    constexpr uint16_t wrongWarpPosition = 0x1516;
+
+    rom.setWord(0x0025C6, OPCODE_JSR);
+    rom.setLong(0x0025C8, rom.getCurrentInjectionAddress());
+    rom.setWord(0x0025CC, OPCODE_NOP);
+
+    // cmpi.w #$AA, ($FF1204)
+    rom.injectWord(0x0C79);
+    rom.injectWord(0x00AA);
+    rom.injectLong(0x00FF1204);
+
+    // bne to EXIT
+    rom.injectWord(0x6626);
+
+    // btst #$1, ($FF1054)    - Test if red jewel is owned
+    rom.injectWord(0x0839);
+    rom.injectWord(0x0001);
+    rom.injectLong(0x00FF1054);
+
+    // beq to REMOVEPORTAL
+    rom.injectWord(0x670C);
+
+    // btst #$1, ($FF1055)    - Test if purple jewel is owned
+    rom.injectWord(0x0839);
+    rom.injectWord(0x0001);
+    rom.injectLong(0x00FF1055);
+
+    // beq to REMOVEPORTAL
+    rom.injectWord(0x6702);
+
+    // bra to EXIT
+    rom.injectWord(0x6010);
+
+    // move.w #0061, $(FF1226)  [REMOVEPORTAL:]
+    rom.injectWord(0x33FC);
+    rom.injectWord(wrongWarpMapID);
+    rom.injectLong(0x00FF1226);
+
+    // move.w #1516, $(FF1228)
+    rom.injectWord(0x33FC);
+    rom.injectWord(wrongWarpPosition);
+    rom.injectLong(0x00FF1228);
+
+    // cmpi.w #$20C, ($FF1204)  [EXIT:]
+    rom.injectWord(0x0C79);
+    rom.injectWord(0x020C);
+    rom.injectLong(0x00FF1204);
+
+    // rts
+    rom.injectWord(OPCODE_RTS);
+}
+
 void replaceLumberjackByChest(GameROM& rom)
 {
     // Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
@@ -912,6 +968,8 @@ void alterROM(GameROM& rom, const RandomizerOptions& options)
 
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
+
+    addJewelsCheckForTeleporterToKazalt(rom);
 
     // Glitch prevention
     fixArmletSkip(rom);

@@ -78,33 +78,33 @@ void World::initItems()
     items[ITEM_GAIA_STATUE] =          new Item(ITEM_GAIA_STATUE, "Statue of Gaia", 100, true);
     items[ITEM_GOLDEN_STATUE] =        new Item(ITEM_GOLDEN_STATUE, "Golden Statue", 200);
     items[ITEM_MIND_REPAIR] =          new Item(ITEM_MIND_REPAIR, "Mind Repair", 20, true);
-    items[ITEM_CASINO_TICKET] =        new Item(ITEM_CASINO_TICKET, "Casino Ticket", 50); // What to do with them?
+    items[ITEM_CASINO_TICKET] =        new Item(ITEM_CASINO_TICKET, "Casino Ticket", 50);
     items[ITEM_AXE_MAGIC] =            new Item(ITEM_AXE_MAGIC, "Axe Magic", 400, true);
     items[ITEM_BLUE_RIBBON] =          new Item(ITEM_BLUE_RIBBON, "Blue Ribbon", 50, true); // What to do with it?
-    items[ITEM_BUYER_CARD] =           new Item(ITEM_BUYER_CARD, "Buyer's Card", 100, true); // What to do with it?
+    items[ITEM_BUYER_CARD] =           new Item(ITEM_BUYER_CARD, "Buyer's Card", 150, true);
     items[ITEM_LANTERN] =              new Item(ITEM_LANTERN, "Lantern", 150, true);
     items[ITEM_GARLIC] =               new Item(ITEM_GARLIC, "Garlic", 150, true);
     items[ITEM_ANTI_PARALYZE] =        new Item(ITEM_ANTI_PARALYZE, "Anti Paralyze", 20, true);
-    items[ITEM_STATUE_JYPTA] =         new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 2000, true); // What to do with it?
+    items[ITEM_STATUE_JYPTA] =         new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 2000, true); // What to do with it? Bonus golds?
     items[ITEM_SUN_STONE] =            new Item(ITEM_SUN_STONE, "Sun Stone", 400, true);
     items[ITEM_ARMLET] =               new Item(ITEM_ARMLET, "Armlet", 300, true);
     items[ITEM_EINSTEIN_WHISTLE] =     new Item(ITEM_EINSTEIN_WHISTLE, "Einstein Whistle", 300, true);
-    items[ITEM_SPELL_BOOK] =           new Item(ITEM_SPELL_BOOK, "Spell Book", 50, true); // What to do with it?
-    items[ITEM_LITHOGRAPH] =           new Item(ITEM_LITHOGRAPH, "Lithograph", 100, true); // What to do with it?
-    items[ITEM_RED_JEWEL] =            new Item(ITEM_RED_JEWEL, "Red Jewel", 100, true); // What to do with it?
+    items[ITEM_SPELL_BOOK] =           new Item(ITEM_SPELL_BOOK, "Spell Book", 50, true); // What to do with it? Teleport back to spawn?
+    items[ITEM_LITHOGRAPH] =           new Item(ITEM_LITHOGRAPH, "Lithograph", 50, true); // What to do with it? Hint item?
+    items[ITEM_RED_JEWEL] =            new Item(ITEM_RED_JEWEL, "Red Jewel", 500, true);
     items[ITEM_PAWN_TICKET] =          new Item(ITEM_PAWN_TICKET, "Pawn Ticket", 100, true);
-    items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 100); // What to do with it?
+    items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 500, true);
     items[ITEM_GOLA_EYE] =             new Item(ITEM_GOLA_EYE, "Gola's Eye", 500, true);
     items[ITEM_DEATH_STATUE] =         new Item(ITEM_DEATH_STATUE, "Death Statue", 150, true);
     items[ITEM_DAHL] =                 new Item(ITEM_DAHL, "Dahl", 100);
     items[ITEM_RESTORATION] =          new Item(ITEM_RESTORATION, "Restoration", 40, true);
     items[ITEM_LOGS] =                 new Item(ITEM_LOGS, "Logs", 200, true);
-    items[ITEM_ORACLE_STONE] =         new Item(ITEM_ORACLE_STONE, "Oracle Stone", 100, true); // What to do with it?
+    items[ITEM_ORACLE_STONE] =         new Item(ITEM_ORACLE_STONE, "Oracle Stone", 100, true); // What to do with it? Hint item?
     items[ITEM_IDOL_STONE] =           new Item(ITEM_IDOL_STONE, "Idol Stone", 200, true);
     items[ITEM_KEY] =                  new Item(ITEM_KEY, "Key", 150, true);
     items[ITEM_SAFETY_PASS] =          new Item(ITEM_SAFETY_PASS, "Safety Pass", 300, true);
     items[ITEM_BELL] =                 new Item(ITEM_BELL, "Bell", 200, true);
-    items[ITEM_SHORT_CAKE] =           new Item(ITEM_SHORT_CAKE, "Short Cake", 100, true); // What to do with it?
+    items[ITEM_SHORT_CAKE] =           new Item(ITEM_SHORT_CAKE, "Short Cake", 150, true);
     items[ITEM_GOLA_NAIL] =            new Item(ITEM_GOLA_NAIL, "Gola's Nail", 1000, true);
     items[ITEM_GOLA_HORN] =            new Item(ITEM_GOLA_HORN, "Gola's Horn", 1000, true);
     items[ITEM_GOLA_FANG] =            new Item(ITEM_GOLA_FANG, "Gola's Fang", 1000, true);
@@ -911,7 +911,7 @@ void World::initRegionPaths()
 	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::GREENMAZE_BEHIND_TREES], items[ITEM_EINSTEIN_WHISTLE]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE]);
-	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT]);
+	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL] });
 	regions[RegionCode::KAZALT]->addPathTo(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
 	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], items[ITEM_LOGS]);
