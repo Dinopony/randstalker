@@ -615,6 +615,60 @@ void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
     rom.injectWord(OPCODE_RTS);
 }
 
+void addStatueOfJyptaGoldsOverTime(GameROM& rom)
+{
+    constexpr uint16_t goldsPerCycle = 0x0002;
+
+    for(uint32_t addr = 0x16696 ; addr <= 0x1669E ; addr += 0x2)
+        rom.setWord(addr, OPCODE_NOP);
+
+    rom.setWord(0x166D0, OPCODE_JSR);
+    rom.setLong(0x166D2, rom.getCurrentInjectionAddress());
+
+    for (uint32_t addr = 0x166D6; addr <= 0x166DC; addr += 0x2)
+        rom.setWord(addr, OPCODE_NOP);
+
+    // btst #$5, ($FF104E)    - Test if statue of jypta is owned
+    rom.injectWord(0x0839);
+    rom.injectWord(0x0005);
+    rom.injectLong(0x00FF104E);
+
+    // beq to next condition
+    rom.injectWord(0x670A);
+
+    // move.w 2, D0
+    rom.injectWord(0x303C);
+    rom.injectWord(goldsPerCycle);
+
+    // jsr $177DC
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x000177DC);
+
+    // cmpi.b $7, ($FF1150)
+    rom.injectWord(0x0C39);
+    rom.injectWord(0x0007);
+    rom.injectLong(0x00FF1150);
+
+    // bne to rts
+    rom.injectWord(0x6610);
+
+    // move.w 100, D0
+    rom.injectWord(0x303C);
+    rom.injectWord(0x0100);
+    
+    // lea $FF5400, A5
+    rom.injectWord(0x4BF9);
+    rom.injectLong(0x00FF5400);
+
+    // jsr $1780E
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x0001780E);
+
+    // rts
+    rom.injectWord(OPCODE_RTS);
+}
+
+
 void replaceLumberjackByChest(GameROM& rom)
 {
     // Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
@@ -970,6 +1024,7 @@ void alterROM(GameROM& rom, const RandomizerOptions& options)
     removeSailorInDarkPort(rom);
 
     addJewelsCheckForTeleporterToKazalt(rom);
+    addStatueOfJyptaGoldsOverTime(rom);
 
     // Glitch prevention
     fixArmletSkip(rom);
