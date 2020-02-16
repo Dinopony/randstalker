@@ -138,11 +138,11 @@ void WorldRandomizer::initFillerItems()
 	_fillerItems.push_back(_world.items[ITEM_SPELL_BOOK]);
 	_fillerItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
 
-	for (uint8_t i = 0; i < 76; ++i)
+	for (uint8_t i = 0; i < 75; ++i)
 		_fillerItems.push_back(_world.items[ITEM_LIFESTOCK]);
 	for (uint8_t i = 0; i < 55; ++i)
 		_fillerItems.push_back(_world.items[ITEM_EKEEKE]);
-	for (uint8_t i = 0; i < 15; ++i)
+	for (uint8_t i = 0; i < 16; ++i)
 		_fillerItems.push_back(_world.items[ITEM_DAHL]);
 	for (uint8_t i = 0; i < 12; ++i)
 		_fillerItems.push_back(_world.items[ITEM_GAIA_STATUE]);
@@ -150,11 +150,11 @@ void WorldRandomizer::initFillerItems()
 		_fillerItems.push_back(_world.items[ITEM_GOLDEN_STATUE]);
 	for (uint8_t i = 0; i < 10; ++i)
 		_fillerItems.push_back(_world.items[ITEM_RESTORATION]);
-	for (uint8_t i = 0; i < 10; ++i)
+	for (uint8_t i = 0; i < 12; ++i)
 		_fillerItems.push_back(_world.items[ITEM_DETOX_GRASS]);
-	for (uint8_t i = 0; i < 5; ++i)
+	for (uint8_t i = 0; i < 7; ++i)
 		_fillerItems.push_back(_world.items[ITEM_MIND_REPAIR]);
-	for (uint8_t i = 0; i < 5; ++i)
+	for (uint8_t i = 0; i < 7; ++i)
 		_fillerItems.push_back(_world.items[ITEM_ANTI_PARALYZE]);
 
 	for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)

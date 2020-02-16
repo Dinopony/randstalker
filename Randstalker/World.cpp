@@ -469,6 +469,7 @@ void World::initShops()
     itemSources[ItemSourceCode::SHOP_KAZALT_DAHL] = new ItemInShop(0x022105, "Kazalt shop: Dahl slot", kazaltShop);
     itemSources[ItemSourceCode::SHOP_KAZALT_GOLDEN_STATUE] = new ItemInShop(0x02211D, "Kazalt shop: Golden Statue slot", kazaltShop);
     itemSources[ItemSourceCode::SHOP_KAZALT_RESTORATION] = new ItemInShop(0x02210D, "Kazalt shop: Restoration slot", kazaltShop);
+    itemSources[ItemSourceCode::SHOP_KAZALT_LIFESTOCK] = new ItemInShop(0x0220F5, "Kazalt shop: Life Stock slot", kazaltShop);
     shops.push_back(kazaltShop);
 }
 
@@ -686,7 +687,8 @@ void World::initRegions()
 	    itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK],
 	    itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE],
 	    itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS],
-	    itemSources[ItemSourceCode::SHOP_VERLA_DAHL]
+	    itemSources[ItemSourceCode::SHOP_VERLA_DAHL],
+        itemSources[ItemSourceCode::SHOP_VERLA_MAP]
     });
 
     regions[RegionCode::VERLA_MINES] = new WorldRegion("Verla Mines", {
@@ -820,7 +822,8 @@ void World::initRegions()
 	    itemSources[ItemSourceCode::SHOP_KAZALT_EKEEKE],
 	    itemSources[ItemSourceCode::SHOP_KAZALT_DAHL],
 	    itemSources[ItemSourceCode::SHOP_KAZALT_GOLDEN_STATUE],
-	    itemSources[ItemSourceCode::SHOP_KAZALT_RESTORATION]
+	    itemSources[ItemSourceCode::SHOP_KAZALT_RESTORATION],
+        itemSources[ItemSourceCode::SHOP_KAZALT_LIFESTOCK]
     });
 
     regions[RegionCode::KN_LABYRINTH_PRE_SPIKES] = new WorldRegion("King Nole's Labyrinth (pre-spikes)", {
