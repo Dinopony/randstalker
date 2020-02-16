@@ -85,7 +85,7 @@ void World::initItems()
     items[ITEM_LANTERN] =              new Item(ITEM_LANTERN, "Lantern", 150, true);
     items[ITEM_GARLIC] =               new Item(ITEM_GARLIC, "Garlic", 150, true);
     items[ITEM_ANTI_PARALYZE] =        new Item(ITEM_ANTI_PARALYZE, "Anti Paralyze", 20, true);
-    items[ITEM_STATUE_JYPTA] =         new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 2000, true); // What to do with it? Bonus golds?
+    items[ITEM_STATUE_JYPTA] =         new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 1000, true);
     items[ITEM_SUN_STONE] =            new Item(ITEM_SUN_STONE, "Sun Stone", 400, true);
     items[ITEM_ARMLET] =               new Item(ITEM_ARMLET, "Armlet", 300, true);
     items[ITEM_EINSTEIN_WHISTLE] =     new Item(ITEM_EINSTEIN_WHISTLE, "Einstein Whistle", 300, true);
