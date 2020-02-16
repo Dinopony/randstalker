@@ -10,7 +10,7 @@
 
 #include "RandomizerOptions.h"
 #include "Item.h"
-#include "ItemSource.h"
+#include "AbstractItemSource.h"
 #include "World.h"
 #include "WorldRegion.h"
 

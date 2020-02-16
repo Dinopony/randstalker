@@ -19,12 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractItemSource.h" />
     <ClInclude Include="Constants\ItemCodes.h" />
     <ClInclude Include="Constants\ItemSourceCodes.h" />
     <ClInclude Include="Constants\RegionCodes.h" />
     <ClInclude Include="Constants\SpawnLocations.h" />
     <ClInclude Include="GameAlterations.h" />
-    <ClInclude Include="ItemSource.h" />
+    <ClInclude Include="ItemChest.h" />
+    <ClInclude Include="ItemInShop.h" />
+    <ClInclude Include="ItemOnGround.h" />
+    <ClInclude Include="ItemReward.h" />
+    <ClInclude Include="ItemShop.h" />
     <ClInclude Include="GameROM.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="RandomizerOptions.h" />

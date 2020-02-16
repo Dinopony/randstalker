@@ -4,7 +4,11 @@
 #include "Constants/ItemSourceCodes.h"
 #include "Constants/RegionCodes.h"
 #include "Item.h"
-#include "ItemSource.h"
+
+#include "ItemChest.h"
+#include "ItemOnGround.h"
+#include "ItemInShop.h"
+#include "ItemReward.h"
 
 World::World(const RandomizerOptions& options) :
     spawnMapID(0x258), spawnX(0x1F), spawnZ(0x19)
@@ -33,6 +37,8 @@ World::~World()
 		delete itemSource;
     for (auto& [key, region] : regions)
 		delete region;
+    for (ItemShop* shop : shops)
+        delete shop;
 }
 
 void World::writeToROM(GameROM& rom)
@@ -92,7 +98,7 @@ void World::initItems()
     items[ITEM_DEATH_STATUE] =         new Item(ITEM_DEATH_STATUE, "Death Statue", 150, true);
     items[ITEM_DAHL] =                 new Item(ITEM_DAHL, "Dahl", 100);
     items[ITEM_RESTORATION] =          new Item(ITEM_RESTORATION, "Restoration", 40, true);
-    items[ITEM_LOGS] =                 new Item(ITEM_LOGS, "Logs", 150, true);
+    items[ITEM_LOGS] =                 new Item(ITEM_LOGS, "Logs", 200, true);
     items[ITEM_ORACLE_STONE] =         new Item(ITEM_ORACLE_STONE, "Oracle Stone", 100, true); // What to do with it?
     items[ITEM_IDOL_STONE] =           new Item(ITEM_IDOL_STONE, "Idol Stone", 200, true);
     items[ITEM_KEY] =                  new Item(ITEM_KEY, "Key", 150, true);
@@ -371,60 +377,99 @@ void World::initGroundItems()
     itemSources[ItemSourceCode::GROUND_LOGS_2] = new ItemOnGround(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs on ground");
     itemSources[ItemSourceCode::GROUND_FIREDEMON_EKEEKE] = new ItemOnGround(0x01F8E1, "King Nole's Labyrinth (-3F): EkeEke on ground before Firedemon");
 
-    // This ground item is special in the sense that it can only be taken once, so we take advantage of this to authorize Lifestocks inside
-    itemSources[ItemSourceCode::GROUND_FALLING_RIBBON] = new ItemOnGround(0x01BFDF, "Mercator: falling ribbon in castle court", true);
+    // This ground item is special in the sense that it can only be taken once, so we take advantage of this to consider it as a shop.
+    // It will allow putting special items usually not allowed on ground (e.g. Lifestock) inside.
+    itemSources[ItemSourceCode::GROUND_FALLING_RIBBON] = new ItemInShop(0x01BFDF, "Mercator: falling ribbon in castle court", nullptr);
 }
 
 void World::initShops()
 {
-    itemSources[ItemSourceCode::SHOP_MASSAN_LIFESTOCK] = new ItemOnGround(0x02101D, "Massan shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_1] = new ItemOnGround(0x021015, "Massan shop: first EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_2] = new ItemOnGround(0x02100D, "Massan shop: second EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_GUMI_LIFESTOCK] = new ItemOnGround(0x0211E5, "Gumi shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_GUMI_EKEEKE] = new ItemOnGround(0x0211D5, "Gumi shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_LIFESTOCK] = new ItemOnGround(0x0212D9, "Ryuma shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_GAIA_STATUE] = new ItemOnGround(0x0212C9, "Ryuma shop: Statue of Gaia slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_GOLDEN_STATUE] = new ItemOnGround(0x0212B9, "Ryuma shop: Golden Statue slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_EKEEKE] = new ItemOnGround(0x0212D1, "Ryuma shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_DETOX_GRASS] = new ItemOnGround(0x0212C1, "Ryuma shop: Detox Grass slot", true);
-    itemSources[ItemSourceCode::SHOP_RYUMA_INN_EKEEKE] = new ItemOnGround(0x02139F, "Ryuma inn: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_ARMOR] = new ItemOnGround(0x021B7B, "Mercator shop: Steel Breast slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_BELL] = new ItemOnGround(0x021B83, "Mercator shop: Bell slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_EKEEKE] = new ItemOnGround(0x021B73, "Mercator shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_DETOX_GRASS] = new ItemOnGround(0x021B6B, "Mercator shop: Detox Grass slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_GAIA_STATUE] = new ItemOnGround(0x021B63, "Mercator shop: Statue of Gaia slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_GOLDEN_STATUE] = new ItemOnGround(0x021B5B, "Mercator shop: Golden Statue slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_1] = new ItemOnGround({ 0x0216BD, 0x02168B }, "Mercator docks shop: left EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_2] = new ItemOnGround({ 0x0216C5, 0x021693 }, "Mercator docks shop: middle EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_3] = new ItemOnGround({ 0x0216CD, 0x02169B }, "Mercator docks shop: right EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_MIND_REPAIR] = new ItemOnGround(0x021CDF, "Mercator special shop: Mind Repair slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_ANTIPARALYZE] = new ItemOnGround(0x021CD7, "Mercator special shop: Anti Paralyze slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_DAHL] = new ItemOnGround(0x021CCF, "Mercator special shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_RESTORATION] = new ItemOnGround(0x021CC7, "Mercator special shop: Restoration slot", true);
-    itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK] = new ItemOnGround(0x021F57, "Verla shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE] = new ItemOnGround(0x021F37, "Verla shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS] = new ItemOnGround(0x021F3F, "Verla shop: Detox Grass slot", true);
-    itemSources[ItemSourceCode::SHOP_VERLA_DAHL] = new ItemOnGround(0x021F47, "Verla shop: Dahl slot", true);
-//    itemSources[ItemSourceCode::SHOP_VERLA_MAP] = new ItemOnGround(0x021F4F, "Verla shop: Map slot", true);
-    itemSources[ItemSourceCode::SHOP_KELKETO_LIFESTOCK] = new ItemOnGround(0x020861, "Kelketo Waterfalls shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_KELKETO_EKEEKE] = new ItemOnGround(0x020869, "Kelketo Waterfalls shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_KELKETO_DETOX_GRASS] = new ItemOnGround(0x020871, "Kelketo Waterfalls shop: Detox Grass slot", true);
-    itemSources[ItemSourceCode::SHOP_KELKETO_DAHL] = new ItemOnGround(0x020879, "Kelketo Waterfalls shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_KELKETO_RESTORATION] = new ItemOnGround(0x020881, "Kelketo Waterfalls shop: Restoration slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_INN_EKEEKE] = new ItemOnGround(0x022017, "Destel inn: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_EKEEKE] = new ItemOnGround(0x022055, "Destel shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_DETOX_GRASS] = new ItemOnGround(0x02206D, "Destel shop: Detox Grass slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_RESTORATION] = new ItemOnGround(0x022065, "Destel shop: Restoration slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_DAHL] = new ItemOnGround(0x02205D, "Destel shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_DESTEL_LIFE_STOCK] = new ItemOnGround(0x022075, "Destel shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_GREEDLY_GAIA_STATUE] = new ItemOnGround(0x0209C7, "Greedly's shop: Statue of Gaia slot", true);
-    itemSources[ItemSourceCode::SHOP_GREEDLY_GOLDEN_STATUE] = new ItemOnGround(0x0209BF, "Greedly's shop: Golden Statue slot", true);
-    itemSources[ItemSourceCode::SHOP_GREEDLY_DAHL] = new ItemOnGround(0x0209CF, "Greedly's shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_GREEDLY_LIFE_STOCK] = new ItemOnGround(0x0209AF, "Greedly's shop: Life Stock slot", true);
-    itemSources[ItemSourceCode::SHOP_KAZALT_EKEEKE] = new ItemOnGround(0x022115, "Kazalt shop: EkeEke slot", true);
-    itemSources[ItemSourceCode::SHOP_KAZALT_DAHL] = new ItemOnGround(0x022105, "Kazalt shop: Dahl slot", true);
-    itemSources[ItemSourceCode::SHOP_KAZALT_GOLDEN_STATUE] = new ItemOnGround(0x02211D, "Kazalt shop: Golden Statue slot", true);
-    itemSources[ItemSourceCode::SHOP_KAZALT_RESTORATION] = new ItemOnGround(0x02210D, "Kazalt shop: Restoration slot", true);
+    ItemShop* massanShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_MASSAN_LIFESTOCK] = new ItemInShop(0x02101D, "Massan shop: Life Stock slot", massanShop);
+    itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_1] = new ItemInShop(0x021015, "Massan shop: first EkeEke slot", massanShop);
+    itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_2] = new ItemInShop(0x02100D, "Massan shop: second EkeEke slot", massanShop);
+    shops.push_back(massanShop);
+
+    ItemShop* gumiInn = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_GUMI_LIFESTOCK] = new ItemInShop(0x0211E5, "Gumi shop: Life Stock slot", gumiInn);
+    itemSources[ItemSourceCode::SHOP_GUMI_EKEEKE] = new ItemInShop(0x0211D5, "Gumi shop: EkeEke slot", gumiInn);
+    shops.push_back(gumiInn);
+
+    ItemShop* ryumaShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_RYUMA_LIFESTOCK] = new ItemInShop(0x0212D9, "Ryuma shop: Life Stock slot", ryumaShop);
+    itemSources[ItemSourceCode::SHOP_RYUMA_GAIA_STATUE] = new ItemInShop(0x0212C9, "Ryuma shop: Statue of Gaia slot", ryumaShop);
+    itemSources[ItemSourceCode::SHOP_RYUMA_GOLDEN_STATUE] = new ItemInShop(0x0212B9, "Ryuma shop: Golden Statue slot", ryumaShop);
+    itemSources[ItemSourceCode::SHOP_RYUMA_EKEEKE] = new ItemInShop(0x0212D1, "Ryuma shop: EkeEke slot", ryumaShop);
+    itemSources[ItemSourceCode::SHOP_RYUMA_DETOX_GRASS] = new ItemInShop(0x0212C1, "Ryuma shop: Detox Grass slot", ryumaShop);
+    shops.push_back(ryumaShop);
+
+    ItemShop* ryumaInn = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_RYUMA_INN_EKEEKE] = new ItemInShop(0x02139F, "Ryuma inn: EkeEke slot", ryumaInn);
+    shops.push_back(ryumaInn);
+
+    ItemShop* mercatorShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_MERCATOR_ARMOR] = new ItemInShop(0x021B7B, "Mercator shop: Steel Breast slot", mercatorShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_BELL] = new ItemInShop(0x021B83, "Mercator shop: Bell slot", mercatorShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_EKEEKE] = new ItemInShop(0x021B73, "Mercator shop: EkeEke slot", mercatorShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_DETOX_GRASS] = new ItemInShop(0x021B6B, "Mercator shop: Detox Grass slot", mercatorShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_GAIA_STATUE] = new ItemInShop(0x021B63, "Mercator shop: Statue of Gaia slot", mercatorShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_GOLDEN_STATUE] = new ItemInShop(0x021B5B, "Mercator shop: Golden Statue slot", mercatorShop);
+    shops.push_back(mercatorShop);
+
+    ItemShop* mercatorDocksShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_1] = new ItemInShop({ 0x0216BD, 0x02168B }, "Mercator docks shop: left EkeEke slot", mercatorDocksShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_2] = new ItemInShop({ 0x0216C5, 0x021693 }, "Mercator docks shop: middle EkeEke slot", mercatorDocksShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_3] = new ItemInShop({ 0x0216CD, 0x02169B }, "Mercator docks shop: right EkeEke slot", mercatorDocksShop);
+    shops.push_back(mercatorDocksShop);
+
+    ItemShop* mercatorSpecialShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_MIND_REPAIR] = new ItemInShop(0x021CDF, "Mercator special shop: Mind Repair slot", mercatorSpecialShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_ANTIPARALYZE] = new ItemInShop(0x021CD7, "Mercator special shop: Anti Paralyze slot", mercatorSpecialShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_DAHL] = new ItemInShop(0x021CCF, "Mercator special shop: Dahl slot", mercatorSpecialShop);
+    itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_RESTORATION] = new ItemInShop(0x021CC7, "Mercator special shop: Restoration slot", mercatorSpecialShop);
+    shops.push_back(mercatorSpecialShop);
+
+    ItemShop* verlaShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK] = new ItemInShop(0x021F57, "Verla shop: Life Stock slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE] = new ItemInShop(0x021F37, "Verla shop: EkeEke slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS] = new ItemInShop(0x021F3F, "Verla shop: Detox Grass slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_DAHL] = new ItemInShop(0x021F47, "Verla shop: Dahl slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_MAP] = new ItemInShop(0x021F4F, "Verla shop: Map slot", verlaShop);
+    shops.push_back(verlaShop);
+
+    ItemShop* kelketoShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_KELKETO_LIFESTOCK] = new ItemInShop(0x020861, "Kelketo Waterfalls shop: Life Stock slot", kelketoShop);
+    itemSources[ItemSourceCode::SHOP_KELKETO_EKEEKE] = new ItemInShop(0x020869, "Kelketo Waterfalls shop: EkeEke slot", kelketoShop);
+    itemSources[ItemSourceCode::SHOP_KELKETO_DETOX_GRASS] = new ItemInShop(0x020871, "Kelketo Waterfalls shop: Detox Grass slot", kelketoShop);
+    itemSources[ItemSourceCode::SHOP_KELKETO_DAHL] = new ItemInShop(0x020879, "Kelketo Waterfalls shop: Dahl slot", kelketoShop);
+    itemSources[ItemSourceCode::SHOP_KELKETO_RESTORATION] = new ItemInShop(0x020881, "Kelketo Waterfalls shop: Restoration slot", kelketoShop);
+    shops.push_back(kelketoShop);
+
+    ItemShop* destelInn = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_DESTEL_INN_EKEEKE] = new ItemInShop(0x022017, "Destel inn: EkeEke slot", destelInn);
+    shops.push_back(destelInn);
+
+    ItemShop* destelShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_DESTEL_EKEEKE] = new ItemInShop(0x022055, "Destel shop: EkeEke slot", destelShop);
+    itemSources[ItemSourceCode::SHOP_DESTEL_DETOX_GRASS] = new ItemInShop(0x02206D, "Destel shop: Detox Grass slot", destelShop);
+    itemSources[ItemSourceCode::SHOP_DESTEL_RESTORATION] = new ItemInShop(0x022065, "Destel shop: Restoration slot", destelShop);
+    itemSources[ItemSourceCode::SHOP_DESTEL_DAHL] = new ItemInShop(0x02205D, "Destel shop: Dahl slot", destelShop);
+    itemSources[ItemSourceCode::SHOP_DESTEL_LIFE_STOCK] = new ItemInShop(0x022075, "Destel shop: Life Stock slot", destelShop);
+    shops.push_back(destelShop);
+
+    ItemShop* greedlyShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_GREEDLY_GAIA_STATUE] = new ItemInShop(0x0209C7, "Greedly's shop: Statue of Gaia slot", greedlyShop);
+    itemSources[ItemSourceCode::SHOP_GREEDLY_GOLDEN_STATUE] = new ItemInShop(0x0209BF, "Greedly's shop: Golden Statue slot", greedlyShop);
+    itemSources[ItemSourceCode::SHOP_GREEDLY_DAHL] = new ItemInShop(0x0209CF, "Greedly's shop: Dahl slot", greedlyShop);
+    itemSources[ItemSourceCode::SHOP_GREEDLY_LIFE_STOCK] = new ItemInShop(0x0209AF, "Greedly's shop: Life Stock slot", greedlyShop);
+    shops.push_back(greedlyShop);
+
+    ItemShop* kazaltShop = new ItemShop();
+    itemSources[ItemSourceCode::SHOP_KAZALT_EKEEKE] = new ItemInShop(0x022115, "Kazalt shop: EkeEke slot", kazaltShop);
+    itemSources[ItemSourceCode::SHOP_KAZALT_DAHL] = new ItemInShop(0x022105, "Kazalt shop: Dahl slot", kazaltShop);
+    itemSources[ItemSourceCode::SHOP_KAZALT_GOLDEN_STATUE] = new ItemInShop(0x02211D, "Kazalt shop: Golden Statue slot", kazaltShop);
+    itemSources[ItemSourceCode::SHOP_KAZALT_RESTORATION] = new ItemInShop(0x02210D, "Kazalt shop: Restoration slot", kazaltShop);
+    shops.push_back(kazaltShop);
 }
 
 void World::initNPCRewards()

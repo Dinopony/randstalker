@@ -16,6 +16,9 @@
     <Filter Include="Fichiers sources\Constants">
       <UniqueIdentifier>{a8d083b0-bd8c-4692-b20f-2ddf5cb4fb34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers sources\Item Sources">
+      <UniqueIdentifier>{6cc6c6c7-1bc2-44b3-a24f-33d6f65870a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameROM.h">
@@ -34,9 +37,6 @@
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="WorldRegion.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemSource.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="Constants\ItemCodes.h">
@@ -59,6 +59,24 @@
     </ClInclude>
     <ClInclude Include="Constants\SpawnLocations.h">
       <Filter>Fichiers sources\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemShop.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractItemSource.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemChest.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemOnGround.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemInShop.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemReward.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

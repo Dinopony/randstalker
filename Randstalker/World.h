@@ -3,10 +3,11 @@
 #include "Constants/ItemSourceCodes.h"
 #include "Constants/RegionCodes.h"
 #include "Item.h"
-#include "ItemSource.h"
+#include "AbstractItemSource.h"
 #include "WorldRegion.h"
 #include "RandomizerOptions.h"
 #include "TreeMap.h"
+#include "ItemShop.h"
 
 constexpr auto GOLD_SOURCES_COUNT = 40;
 
@@ -36,6 +37,7 @@ public:
 	std::map<uint8_t, Item*> items;
 	std::map<ItemSourceCode, AbstractItemSource*> itemSources;
     std::map<RegionCode, WorldRegion*> regions;
+    std::vector<ItemShop*> shops;
 
     std::vector<TreeMap> treeMaps;
 
