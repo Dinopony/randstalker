@@ -78,6 +78,9 @@
     <ClInclude Include="ItemReward.h">
       <Filter>Fichiers sources\Item Sources</Filter>
     </ClInclude>
+    <ClInclude Include="GameText.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -93,6 +96,12 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="RandomizerOptions.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameText.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameROM.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,4 +4,5 @@
 #include "GameROM.h"
 #include "RandomizerOptions.h"
 
-void alterROM(GameROM& rom, const RandomizerOptions& options);
+void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options);
+void alterRomAfterRandomization(GameROM& rom, const RandomizerOptions& options);

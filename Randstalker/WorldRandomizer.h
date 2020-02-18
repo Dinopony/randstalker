@@ -27,9 +27,11 @@ public:
 private:
 	void setSpawnPoint();
 	void randomizeGoldValues();
+
+	void randomizeDarkRooms();
+
 	void initPriorityItems();
 	void initFillerItems();
-
 	void randomizeItems();
 
 	std::vector<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
@@ -38,6 +40,9 @@ private:
 	void fillSourcesWithFillerItems(std::vector<AbstractItemSource*>::iterator begin, std::vector<AbstractItemSource*>::iterator end);
 
 	void writeItemSourcesBreakdownInLog();
+
+	void randomizeLithographHints();
+	std::string getRandomHintForItem(Item* item);
 
 	void randomizeTiborTrees();
 

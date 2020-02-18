@@ -20,13 +20,18 @@ public:
 		_requiredItems(requiredItems)
 	{}
 
+	void addRequiredItem(Item* requiredItem) { _requiredItems.push_back(requiredItem); }
+
 	WorldRegion* getDestination() const { return _destination; }
 	const std::vector<Item*> getRequiredItems() const { return _requiredItems; }
 
 private:
 	WorldRegion* _destination;
 	std::vector<Item*> _requiredItems;
+	std::vector<uint16_t> _darkRooms;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 class WorldRegion
 {
@@ -58,20 +63,43 @@ public:
 		return allItemSources;
 	}
 
-	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr) {
-		_outgoingPaths.push_back(new WorldPath(otherRegion, requiredItem));
-	}
-	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems) {
-		_outgoingPaths.push_back(new WorldPath(otherRegion, requiredItems));
+	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr) 
+	{
+		WorldPath* newPath = new WorldPath(otherRegion, requiredItem);
+		_outgoingPaths.push_back(newPath);
+		otherRegion->_ingoingPaths.push_back(newPath);
 	}
 
+	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems) 
+	{
+		WorldPath* newPath = new WorldPath(otherRegion, requiredItems);
+		_outgoingPaths.push_back(newPath);
+		otherRegion->_ingoingPaths.push_back(newPath);
+	}
+
+	const std::vector<WorldPath*>& getIngoingPaths() const { return _ingoingPaths; }
 	const std::vector<WorldPath*>& getOutgoingPaths() const { return _outgoingPaths; }
+
+	void addHint(const std::string& hint) { _hints.push_back(hint); }
+	const std::vector<std::string>& getHints() const { return _hints; }
+
+	void setDarkRooms(const std::vector<uint16_t>& darkRooms) { _darkRooms = darkRooms; }
+	void setDarkRooms(uint16_t lowerBound, uint16_t upperBound)
+	{ 
+		_darkRooms.clear();
+		for (uint16_t i = lowerBound; i <= upperBound; ++i)
+			_darkRooms.push_back(i);
+	}
+	const std::vector<uint16_t>& getDarkRooms() const { return _darkRooms; }
 
 private:
 	std::string _name;
 	std::vector<AbstractItemSource*> _itemSources;
 	std::vector<std::pair<AbstractItemSource*, Item*>> _restrictedItemSources;
 
+	std::vector<WorldPath*> _ingoingPaths;
 	std::vector<WorldPath*> _outgoingPaths;
-
+	
+	std::vector<std::string> _hints;
+	std::vector<uint16_t> _darkRooms;
 };

@@ -8,7 +8,9 @@ public:
     ItemReward(uint32_t addressInROM, const std::string& name) :
         AbstractItemSource(name),
         _addressInROM(addressInROM)
-    {}
+    {
+        this->addHint("owned by someone willing to give it to the brave");
+    }
 
     virtual bool isItemCompatible(Item* item) const
     {

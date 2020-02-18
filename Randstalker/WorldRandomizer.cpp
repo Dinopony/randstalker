@@ -1,5 +1,6 @@
 #include "WorldRandomizer.h"
 #include "Tools.h"
+#include "GameText.h"
 #include <algorithm>
 #include <sstream>
 
@@ -19,9 +20,12 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
 void WorldRandomizer::randomize()
 {
 	this->randomizeGoldValues();
+	this->randomizeDarkRooms();
+
 	this->randomizeItems();
 	
 	this->setSpawnPoint();
+	this->randomizeLithographHints();
 
 	if(_options.shuffleTiborTrees())
 		this->randomizeTiborTrees();
@@ -96,6 +100,25 @@ void WorldRandomizer::randomizeGoldValues()
 		goldItem->setName(goldName.str());
 		goldItem->setGoldWorth((uint8_t)goldValue);
 	}
+}
+
+void WorldRandomizer::randomizeDarkRooms()
+{
+	std::vector<WorldRegion*> darkenableRegions;
+	for (auto& [key, region] : _world.regions)
+	{
+		if (!region->getDarkRooms().empty())
+			darkenableRegions.push_back(region);
+	}
+
+	Tools::shuffle(darkenableRegions, _rng);
+	_world.darkenedRegion = *darkenableRegions.begin();
+
+	_logFile << "Dark region: " << _world.darkenedRegion->getName() << "\n\n";
+
+	const std::vector<WorldPath*>& ingoingPaths = _world.darkenedRegion->getIngoingPaths();
+	for (WorldPath* path : ingoingPaths)
+		path->addRequiredItem(_world.items[ITEM_LANTERN]);
 }
 
 void WorldRandomizer::initPriorityItems()
@@ -393,6 +416,40 @@ void WorldRandomizer::writeItemSourcesBreakdownInLog()
 
 	for (Item* item : _fillerItems)
 		_logFile << "- [" << item->getName() << "]\n";
+}
+
+void WorldRandomizer::randomizeLithographHints()
+{
+	std::string redJewelHint = this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]);
+	std::string purpleJewelHint = this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]);
+
+	std::string completeHint = "Red Jewel is " + redJewelHint + ".\n\tPurple Jewel is " + purpleJewelHint + ".\t";
+	_world.lithographHint = GameText(completeHint);
+}
+
+std::string WorldRandomizer::getRandomHintForItem(Item* item)
+{
+	for (auto& [key, region] : _world.regions)
+	{
+		std::vector<AbstractItemSource*> sources = region->getAllItemSources();
+		for (AbstractItemSource* source : sources)
+		{
+			if (source->getItem() == item)
+			{
+				const std::vector<std::string>& regionHints = region->getHints();
+				const std::vector<std::string>& sourceHints = source->getHints();
+				
+				std::vector<std::string> allHints;
+				allHints.insert(allHints.end(), regionHints.begin(), regionHints.end());
+				allHints.insert(allHints.end(), sourceHints.begin(), sourceHints.end());
+				Tools::shuffle(allHints, _rng);
+
+				return *allHints.begin();
+			}
+		}
+	}
+
+	return "in an unknown place";
 }
 
 void WorldRandomizer::randomizeTiborTrees()

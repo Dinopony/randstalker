@@ -25,6 +25,7 @@
     <ClInclude Include="Constants\RegionCodes.h" />
     <ClInclude Include="Constants\SpawnLocations.h" />
     <ClInclude Include="GameAlterations.h" />
+    <ClInclude Include="GameText.h" />
     <ClInclude Include="ItemChest.h" />
     <ClInclude Include="ItemInShop.h" />
     <ClInclude Include="ItemOnGround.h" />
@@ -40,6 +41,8 @@
     <ClInclude Include="WorldRegion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameROM.cpp" />
+    <ClCompile Include="GameText.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameAlterations.cpp" />
     <ClCompile Include="RandomizerOptions.cpp" />

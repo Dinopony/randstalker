@@ -11,7 +11,7 @@
 #include "ItemReward.h"
 
 World::World(const RandomizerOptions& options) :
-    spawnMapID(0x258), spawnX(0x1F), spawnZ(0x19)
+    spawnMapID(0x258), spawnX(0x1F), spawnZ(0x19), darkenedRegion(nullptr)
 {
     this->initItems();
     if (options.useArmorUpgrades())
@@ -24,6 +24,10 @@ World::World(const RandomizerOptions& options) :
 
     this->initRegions();
     this->initRegionPaths();
+
+    this->initHints();
+
+    this->initDarkRooms();
 
     if(options.shuffleTiborTrees())
         this->initTreeMaps();
@@ -43,16 +47,33 @@ World::~World()
 
 void World::writeToROM(GameROM& rom)
 {
-	for (auto& [key, item] : items)
+    // Reserve a data block for gold values which will be filled when gold items will be encountered
+    rom.reserveDataBlock(GOLD_SOURCES_COUNT, "data_gold_values");
+	
+    for (auto& [key, item] : items)
 		item->writeToROM(rom);
+
 	for (auto& [key, itemSource] : itemSources)
 		itemSource->writeToROM(rom);
+
 	for (const TreeMap& treeMap : treeMaps)
 		treeMap.writeToROM(rom);
 
 	rom.setWord(0x0027F4, spawnMapID);
 	rom.setByte(0x0027FD, spawnX);
 	rom.setByte(0x002805, spawnZ);
+
+    // Inject dark rooms as a data block
+    const std::vector<uint16_t>& darkRooms = darkenedRegion->getDarkRooms();
+    uint16_t darkRoomsByteCount = static_cast<uint16_t>(darkRooms.size() + 1) * 0x02;
+    uint32_t darkRoomsArrayAddress = rom.reserveDataBlock(darkRoomsByteCount, "dark_rooms_array");
+    uint8_t i = 0;
+    for (uint16_t roomID : darkRooms)
+        rom.setWord(darkRoomsArrayAddress + (i++) * 0x2, roomID);
+    rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
+ 
+    // Inject lithograph hint as a data block
+    rom.injectDataBlock(lithographHint.getBytes(), "data_lithograph_hint_text");
 }
 
 void World::initItems()
@@ -146,7 +167,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_SWAMP_SHRINE_2F_SPIKE_KEY] =                 new ItemChest(0x07, ITEM_KEY,               "Swamp Shrine (2F): key chest in spike room");
     itemSources[ItemSourceCode::CHEST_SWAMP_SHRINE_3F_REWARD] =                    new ItemChest(0x08, ITEM_LIFESTOCK,         "Swamp Shrine (3F): lifestock chest in Fara's room");
     itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_LIFESTOCK] =    new ItemChest(0x09, ITEM_LIFESTOCK,         "Mercator Dungeon (-1F): lifestock chest after key door");
-    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_KEY] =                      new ItemChest(0x0A, ITEM_KEY,               "Mercator Dungeon (-1F): key chest in Moralis's cell");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_KEY] =          new ItemChest(0x0A, ITEM_KEY,               "Mercator Dungeon (-1F): key chest in Moralis's cell");
     itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_DUAL_EKEEKE_LEFT] = new ItemChest(0x0B, ITEM_EKEEKE,        "Mercator Dungeon (-1F): left ekeeke chest in double chest room");
     itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_DUAL_EKEEKE_RIGHT] = new ItemChest(0x0C, ITEM_EKEEKE,       "Mercator Dungeon (-1F): right ekeeke chest in double chest room");
     itemSources[ItemSourceCode::CHEST_MERCATOR_CASTLE_KITCHEN] =                   new ItemChest(0x0D, ITEM_LIFESTOCK,         "Mercator: castle kitchen chest");
@@ -614,7 +635,7 @@ void World::initRegions()
     });
 
     regions[RegionCode::MERCATOR_DUNGEON] = new WorldRegion("Mercator Dungeon", { 
-        itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_KEY],
+        itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_KEY],
         itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_LIFESTOCK],
         itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_DUAL_EKEEKE_LEFT],
         itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_DUAL_EKEEKE_RIGHT],
@@ -674,20 +695,21 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS],
         itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION]
     });
-
-    regions[RegionCode::GREENMAZE_BEHIND_TREES] = new WorldRegion("Greenmaze (behind sacred trees)", {
-        itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL],
-        itemSources[ItemSourceCode::GROUND_SUN_STONE]
-    });
+    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::GROUND_LOGS_1], items[ITEM_EINSTEIN_WHISTLE]);
+    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::GROUND_LOGS_2], items[ITEM_EINSTEIN_WHISTLE]);
 
     regions[RegionCode::VERLA_SECTOR] = new WorldRegion("Verla sector", {
-	    itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN],
-	    itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_ANGLE_PROMONTORY],
-	    itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_CLIFF_CHEST],
-	    itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK],
-	    itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE],
-	    itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS],
-	    itemSources[ItemSourceCode::SHOP_VERLA_DAHL],
+        itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN],
+        itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_ANGLE_PROMONTORY],
+        itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_CLIFF_CHEST],
+    });
+
+    regions[RegionCode::VERLA] = new WorldRegion("Verla", {
+        itemSources[ItemSourceCode::CHEST_VERLA_WELL],
+        itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK],
+        itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE],
+        itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS],
+        itemSources[ItemSourceCode::SHOP_VERLA_DAHL],
         itemSources[ItemSourceCode::SHOP_VERLA_MAP]
     });
 
@@ -703,7 +725,6 @@ void World::initRegions()
 	    itemSources[ItemSourceCode::CHEST_VERLA_MINES_ELEVATOR_RIGHT],
 	    itemSources[ItemSourceCode::CHEST_VERLA_MINES_ELEVATOR_LEFT],
 	    itemSources[ItemSourceCode::CHEST_VERLA_MINES_LAVA_WALKING],
-	    itemSources[ItemSourceCode::CHEST_VERLA_WELL],
 	    itemSources[ItemSourceCode::GROUND_CHROME_BREAST]
     });
 
@@ -901,6 +922,7 @@ void World::initRegionPaths()
 	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
 	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathTo(regions[RegionCode::MIR_TOWER_POST_GARLIC], items[ITEM_GARLIC]);
 	regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA_MINES]);
+    regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA]);
 	regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
 	regions[RegionCode::ROUTE_VERLA_DESTEL]->addPathTo(regions[RegionCode::DESTEL]);
 	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::ROUTE_AFTER_DESTEL]);
@@ -908,7 +930,6 @@ void World::initRegionPaths()
 	regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE]);
 	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::LAKE_SHRINE], items[ITEM_GAIA_STATUE]);
 	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::GREENMAZE_BEHIND_TREES], items[ITEM_EINSTEIN_WHISTLE]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE]);
 	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL] });
@@ -917,6 +938,175 @@ void World::initRegionPaths()
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], items[ITEM_LOGS]);
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_PALACE]);
 	regions[RegionCode::KN_PALACE]->addPathTo(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] });
+}
+
+void World::initHints()
+{
+    regions[RegionCode::MASSAN]->addHint("in a village");
+    regions[RegionCode::GUMI]->addHint("in a village");
+    regions[RegionCode::DESTEL]->addHint("in a village");
+    itemSources[ItemSourceCode::GROUND_TWINKLE_VILLAGE_EKEEKE_1]->addHint("in a village");
+    itemSources[ItemSourceCode::GROUND_TWINKLE_VILLAGE_EKEEKE_2]->addHint("in a village");
+    itemSources[ItemSourceCode::GROUND_TWINKLE_VILLAGE_EKEEKE_3]->addHint("in a village");
+
+    regions[RegionCode::RYUMA]->addHint("in a town");
+    regions[RegionCode::MERCATOR]->addHint("in a town");
+    regions[RegionCode::VERLA]->addHint("in a town");
+
+    regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("on a route");
+    regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("on a route");
+    regions[RegionCode::MIR_TOWER_SECTOR]->addHint("on a route");
+    regions[RegionCode::VERLA_SECTOR]->addHint("on a route");
+    regions[RegionCode::ROUTE_VERLA_DESTEL]->addHint("on a route");
+    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("on a route");
+    regions[RegionCode::ROUTE_LAKE_SHRINE]->addHint("on a route");
+
+    regions[RegionCode::WATERFALL_SHRINE]->addHint("in a shrine");
+    regions[RegionCode::SWAMP_SHRINE]->addHint("in a shrine");
+    regions[RegionCode::LAKE_SHRINE]->addHint("in a shrine");
+
+    regions[RegionCode::WATERFALL_SHRINE]->addHint("close to a waterfall");
+    regions[RegionCode::THIEVES_HIDEOUT]->addHint("close to a waterfall");
+    regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR]->addHint("close to a waterfall");
+
+    regions[RegionCode::GREENMAZE]->addHint("resting among the trees");
+    regions[RegionCode::TIBOR]->addHint("resting among the trees");
+    itemSources[ItemSourceCode::GROUND_LOGS_1]->addHint("resting among the trees");
+    itemSources[ItemSourceCode::GROUND_LOGS_2]->addHint("resting among the trees");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL]->addHint("resting among the trees");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK]->addHint("resting among the trees");
+
+    regions[RegionCode::SWAMP_SHRINE]->addHint("near a swamp");
+    regions[RegionCode::WITCH_HELGA_HUT]->addHint("near a swamp");
+    itemSources[ItemSourceCode::CHEST_ROUTE_MASSAN_GUMI_PROMONTORY]->addHint("near a swamp");
+
+    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("near a lake");
+    regions[RegionCode::ROUTE_LAKE_SHRINE]->addHint("near a lake");
+    regions[RegionCode::LAKE_SHRINE]->addHint("near a lake");
+    
+    regions[RegionCode::MASSAN]->addHint("close to the bears");
+    regions[RegionCode::GUMI]->addHint("close to the bears");
+    regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("close to the bears");
+    regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("close to the bears");
+    regions[RegionCode::WATERFALL_SHRINE]->addHint("close to the bears");
+    regions[RegionCode::SWAMP_SHRINE]->addHint("close to the bears");
+
+    regions[RegionCode::DESTEL]->addHint("close to the dwarves");
+    regions[RegionCode::DESTEL_WELL]->addHint("close to the dwarves");
+    regions[RegionCode::KAZALT]->addHint("close to the dwarves");
+    regions[RegionCode::ROUTE_VERLA_DESTEL]->addHint("close to the dwarves");
+    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("close to the dwarves");
+
+    regions[RegionCode::CRYPT]->addHint("hidden in the depths of Mercator");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_KEY]->addHint("hidden in the depths of Mercator");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_LIFESTOCK]->addHint("hidden in the depths of Mercator");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_DUAL_EKEEKE_LEFT]->addHint("hidden in the depths of Mercator");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_DUAL_EKEEKE_RIGHT]->addHint("hidden in the depths of Mercator");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_CASINO]->addHint("hidden in the depths of Mercator");
+
+    regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addHint("inside a tower");
+    regions[RegionCode::MIR_TOWER_POST_GARLIC]->addHint("inside a tower");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_TOWER_DUAL_EKEEKE_LEFT]->addHint("inside a tower");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_TOWER_DUAL_EKEEKE_RIGHT]->addHint("inside a tower");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_TOWER_LIFESTOCK]->addHint("inside a tower");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_ARTHUR_KEY]->addHint("inside a tower");
+
+    regions[RegionCode::MASSAN_CAVE]->addHint("in a small cave");
+    regions[RegionCode::KN_CAVE]->addHint("in a small cave");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_HIDDEN]->addHint("in a small cave");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_VISIBLE]->addHint("in a small cave");
+    itemSources[ItemSourceCode::GROUND_MOON_STONE]->addHint("in a small cave");
+
+    regions[RegionCode::VERLA_MINES]->addHint("in a large cave");
+    regions[RegionCode::DESTEL_WELL]->addHint("in a large cave");
+    regions[RegionCode::THIEVES_HIDEOUT]->addHint("in a large cave");
+
+    regions[RegionCode::MOUNTAINOUS_AREA]->addHint("in the mountains");
+    regions[RegionCode::KN_CAVE]->addHint("in the mountains");
+
+    regions[RegionCode::KAZALT]->addHint("in a place forgotten from all");
+    regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addHint("in a place forgotten from all");
+    regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addHint("in a place forgotten from all");
+    regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR]->addHint("in a place forgotten from all");
+    regions[RegionCode::KN_PALACE]->addHint("in a place forgotten from all");
+
+    itemSources[ItemSourceCode::CHEST_MASSAN_DOG_STATUE]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_MERCATOR_CASINO]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_VERLA_WELL]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_HIDDEN_LIFESTOCK]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_ROUTE_AFTER_DESTEL_HIDDEN_LIFESTOCK]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_BELOW_ROCKY_ARCH]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_HIDDEN_GOLDEN_STATUE]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_HIDDEN_GAIA_STATUE]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_HIDDEN]->addHint("in a well-hidden chest");
+
+    itemSources[ItemSourceCode::GROUND_HEALING_BOOTS]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_MIRO_REWARD]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_SPINNER_REWARD]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_SPINNER_KEY]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::GROUND_HYPER_BREAST]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_FIREDEMON_REWARD]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::NPC_ZAK_GOLA_EYE]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_VERLA_MINES_SLASHER_KEY]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B3_REWARD_LEFT]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B3_REWARD_MIDDLE]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B3_REWARD_RIGHT]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_REWARD_PURPLE_JEWEL]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_REWARD_LEFT_EKEEKE]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_REWARD_RIGHT_EKEEKE]->addHint("kept by a threatening guardian");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_REWARD_LIFESTOCK]->addHint("kept by a threatening guardian");
+}
+
+void World::initDarkRooms()
+{
+    regions[RegionCode::WATERFALL_SHRINE]->setDarkRooms(0xAE, 0xB6);
+
+    regions[RegionCode::SWAMP_SHRINE]->setDarkRooms({
+        0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xC, 0xD, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1B, 0x1E
+    });
+    
+    regions[RegionCode::THIEVES_HIDEOUT]->setDarkRooms({
+        0xB9, 0xBA, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 
+        0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD2, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE
+    });
+
+    regions[RegionCode::MASSAN_CAVE]->setDarkRooms(0x323, 0x327);
+
+    regions[RegionCode::VERLA_MINES]->setDarkRooms({
+        0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xED, 0xEF, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF6, 0xF7, 0xF8, 0xFA, 0xFD, 0xFE, 0xFF, 
+        0x100, 0x102, 0x103, 0x10A, 0x10C, 0x10D
+    });
+
+    regions[RegionCode::MERCATOR_DUNGEON]->setDarkRooms({
+        0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x4C, 0x50, 0x51, 0x52, 0x5B, 0x5C
+    });
+
+    regions[RegionCode::MIR_TOWER_PRE_GARLIC]->setDarkRooms(0x2EE, 0x310);
+
+    regions[RegionCode::CRYPT]->setDarkRooms(0x286, 0x293);
+
+    regions[RegionCode::DESTEL_WELL]->setDarkRooms(0x10E, 0x122);
+
+    regions[RegionCode::LAKE_SHRINE]->setDarkRooms(0x123, 0x162);
+
+    regions[RegionCode::KN_CAVE]->setDarkRooms({
+        0x91, 0x93, 0x96, 0x98, 0x9A, 0x9B, 0x9C, 0x9E, 0xA0, 0xA1, 0xA2, 0xA4, 0xA6, 0xAA, 0xAB, 0xAC
+    });
+
+    regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->setDarkRooms({
+        0x163, 0x164, 0x165, 0x166, 0x167, 0x168, 0x169, 0x16B, 0x16C, 0x16D, 0x16E, 0x16F, 0x170, 0x171, 
+        0x172, 0x173, 0x174, 0x175, 0x176, 0x177, 0x178, 0x179, 0x17A, 0x17B, 0x17C, 0x17D, 0x17E, 0x17F, 
+        0x180, 0x181, 0x182, 0x183, 0x184, 0x185, 0x186, 0x187, 0x188, 0x189, 0x18A, 0x18B, 0x18C, 0x18D, 
+        0x18E, 0x195, 0x196, 0x198, 0x199, 0x19A, 0x19B, 0x19C, 0x19D, 0x19E, 0x19F, 0x1A0, 0x1A1, 0x1A2, 
+        0x1A3, 0x1A4, 0x1A6, 0x1A7
+    });
+    
+    regions[RegionCode::KN_PALACE]->setDarkRooms(0x73, 0x8A);
+
+    regions[RegionCode::WITCH_HELGA_HUT]->setDarkRooms(0x311, 0x322);
+
+    regions[RegionCode::TIBOR]->setDarkRooms(0x328, 0x32F);
 }
 
 void World::initTreeMaps()

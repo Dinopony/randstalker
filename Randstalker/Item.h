@@ -25,10 +25,15 @@ public:
 
     void writeToROM(GameROM& rom) const
     {
-        if(_itemID < ITEM_GOLDS_START)
+        if (_itemID < ITEM_GOLDS_START)
+        {
             rom.setWord(0x029306 + _itemID * 0x04, _goldWorth);
+        }
         else
-            rom.setByte(0x01FFFC0 + (_itemID - ITEM_GOLDS_START), (uint8_t)_goldWorth);
+        {
+            uint32_t baseGoldValuesAddress = rom.getStoredAddress("data_gold_values");
+            rom.setByte(baseGoldValuesAddress + (_itemID - ITEM_GOLDS_START), (uint8_t)_goldWorth);
+        }
     }
 
 private:

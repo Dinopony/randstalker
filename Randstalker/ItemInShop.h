@@ -15,6 +15,8 @@ public:
         _addressesInROM.push_back(addressInROM);
         if (_shop)
             _shop->addItemSource(this);
+
+        this->addHint("owned by someone trying to make profit out of it");
     }
 
     ItemInShop(std::vector<uint32_t> addressesInROM, const std::string& name, ItemShop* shop) :
@@ -24,6 +26,8 @@ public:
     {
         if (_shop)
             _shop->addItemSource(this);
+
+        this->addHint("owned by someone trying to make profit out of it");
     }
 
     void addOtherAddress(uint32_t addressInROM)

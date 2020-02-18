@@ -511,7 +511,7 @@ void alterGoldRewardsHandling(GameROM& rom)
      
     // lea $1FFFC0, A0
     rom.injectWord(0x41F9);
-    rom.injectLong(0x001FFFC0);
+    rom.injectLong(rom.getStoredAddress("data_gold_values"));
 
     // move.b (A0, D0), D0
     rom.injectWord(0x1030);
@@ -992,7 +992,7 @@ void addFunctionToRecordBook(GameROM& rom)
     rom.injectWord(OPCODE_RTS);
 }
 
-void alterROM(GameROM& rom, const RandomizerOptions& options)
+void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
 {
     // Rando core
     alterGameStart(rom, options);
@@ -1003,9 +1003,7 @@ void alterROM(GameROM& rom, const RandomizerOptions& options)
     alterMercatorDocksShopCheck(rom);
     alterMercatorSecondaryShopCheck(rom);
     alterArthurCheck(rom);
-    alterLanternIntoPassiveItem(rom);
     alterItemOrderInMenu(rom);
-    alterGoldRewardsHandling(rom);
     alterLifestockHandlingInShops(rom);
 
     fixAxeMagicCheck(rom);
@@ -1039,4 +1037,12 @@ void alterROM(GameROM& rom, const RandomizerOptions& options)
         handleArmorUpgrades(rom);
 
     addFunctionToRecordBook(rom);
+}
+
+void alterRomAfterRandomization(GameROM& rom, const RandomizerOptions& options)
+{
+    alterGoldRewardsHandling(rom);
+    alterLanternIntoPassiveItem(rom);
+    // TODO: Make lantern check code point to address "dark_rooms_array"
+    // TODO: Make lithograph code point to address "data_lithograph_hint_text"
 }

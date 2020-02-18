@@ -66,19 +66,21 @@ int main(int argc, char* argv[])
 	RandomizerOptions options(argc, argv);
 
 	GameROM* rom = getInputROM(options.getInputROMPath());
-
-
-	// ------------ Randomization -------------
-	// Perform game changes unrelated with the randomization part
-	alterROM(*rom, options);
+	
+	// Perform game changes unrelated with the randomization part. This is mostly changing the game mechanics or altering slightly
+	// a few maps by removing or changing NPCs.
+	alterRomBeforeRandomization(*rom, options);
 	
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM	
 	World landstalkerWorld(options);
-
 	WorldRandomizer randomizer(landstalkerWorld, options);
 	randomizer.randomize();
-
 	landstalkerWorld.writeToROM(*rom);
+
+	// Perform game changes after the actual randomization. This is usually required when we need to point on a data block
+	// which we don't know the exact position before it is actually written.
+	alterRomAfterRandomization(*rom, options);
+
 	rom->saveAs(options.getOutputROMPath());
 
 	std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";

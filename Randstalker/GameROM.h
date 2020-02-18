@@ -1,124 +1,45 @@
 ﻿#pragma once
 
 #include <string>
-#include <fstream>
-
-constexpr auto ROM_SIZE = 2097152;
-constexpr auto CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAD0;
+#include <vector>
+#include <map>
 
 class GameROM 
 {
 public:
-	GameROM(const std::string& inputPath) : _wasOpen(false), _currentInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS)
-	{
-		_byteArray = new char[ROM_SIZE];
-
-		std::ifstream file(inputPath, std::ios::binary);
-		if (file.is_open())
-		{
-			file.read(_byteArray, ROM_SIZE);
-			file.close();
-			_wasOpen = true;
-		}
-	}
-
-	GameROM(const GameROM& otherROM)
-	{
-		_wasOpen = otherROM._wasOpen;
-
-		_currentInjectionAddress = otherROM._currentInjectionAddress;
-
-		_byteArray = new char[ROM_SIZE];
-		for (uint32_t i = 0; i < ROM_SIZE; ++i)
-			_byteArray[i] = otherROM._byteArray[i];
-	}
-
-	~GameROM()
-	{
-		delete[] _byteArray;
-	}
+	GameROM(const std::string& inputPath);
+	GameROM(const GameROM& otherROM);
+	~GameROM();
 
 	bool isValid() const { return _wasOpen; }
 
 	uint8_t getByte(uint32_t address) const { return _byteArray[address]; }
 
-	void setByte(uint32_t address, uint8_t byte)
-	{
-		if(address >= ROM_SIZE)
-			return;
+	void setByte(uint32_t address, uint8_t byte);
+	void setWord(uint32_t address, uint16_t word);
+	void setLong(uint32_t address, uint32_t longWord);
+	void setBytes(uint32_t address, std::vector<uint8_t> bytes);
 
-		_byteArray[address] = byte;
-	}
+	uint32_t injectByte(uint8_t byte);
+	uint32_t injectWord(uint16_t word);
+	uint32_t injectLong(uint32_t longWord);
 
-	void setWord(uint32_t address, uint16_t word)
-	{
-		if(address >= ROM_SIZE-1)
-			return;
+	uint32_t injectDataBlock(std::vector<uint8_t> bytes, const std::string& name);
+	uint32_t reserveDataBlock(uint16_t byteCount, const std::string& name);
 
-		this->setByte(address, (word >> 8));
-		this->setByte(address+1, (word & 0xFF));
-	}
-
-	void setLong(uint32_t address, uint32_t longWord)
-	{
-		if (address >= ROM_SIZE - 3)
-			return;
-
-		this->setWord(address, (longWord >> 16));
-		this->setWord(address+2, (longWord & 0xFFFF));
-	}
-
-	uint32_t injectByte(uint8_t byte) 
-	{
-		uint32_t injectionAddressOnStart = _currentInjectionAddress;
-		this->setByte(_currentInjectionAddress, byte);
-		_currentInjectionAddress += 0x01;
-		return injectionAddressOnStart;
-	}
-
-	uint32_t injectWord(uint16_t word) 
-	{
-		uint32_t injectionAddressOnStart = _currentInjectionAddress;
-		this->setWord(_currentInjectionAddress, word);
-		_currentInjectionAddress += 0x02;
-		return injectionAddressOnStart;
-	}
-
-	uint32_t injectLong(uint32_t longWord) 
-	{
-		uint32_t injectionAddressOnStart = _currentInjectionAddress;
-		this->setLong(_currentInjectionAddress, longWord);
-		_currentInjectionAddress += 0x04;
-		return injectionAddressOnStart;
-	}
+	void storeAddress(const std::string& name, uint32_t address) { _storedAddresses[name] = address; }
+	uint32_t getStoredAddress(const std::string& name) { return _storedAddresses.at(name); }
 
 	uint32_t getCurrentInjectionAddress() { return _currentInjectionAddress; }
 
-	void saveAs(const std::string& outputPath)
-	{
-		this->updateChecksum();
-
-		std::ofstream file(outputPath, std::ios::binary);
-		file.write(_byteArray, ROM_SIZE);
-		file.close();
-	}
+	void saveAs(const std::string& outputPath);
 
 private:
-	void updateChecksum()
-	{
-		uint16_t checksum = 0;
-		for(uint32_t addr = 0x200 ; addr < ROM_SIZE ; addr += 0x02 )
-		{
-			uint8_t msb = _byteArray[addr];
-			uint8_t lsb = _byteArray[addr + 1];
-			uint16_t word = (uint16_t)(msb << 8) | lsb;
-			checksum += word;
-		}
-
-		this->setWord(0x18E, checksum);
-	}
+	void updateChecksum();
 
 	bool _wasOpen;
 	char* _byteArray;
 	uint32_t _currentInjectionAddress;
+	uint32_t _currentDataInjectionAddress;
+	std::map<std::string, uint32_t> _storedAddresses;
 };
