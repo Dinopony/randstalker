@@ -6,6 +6,7 @@
 
 constexpr auto OPCODE_MOVB =	0x13FC;
 constexpr auto OPCODE_MOVW =	0x33FC;
+constexpr auto OPCODE_MOVL =    0x23FC;
 constexpr auto OPCODE_RTS =		0x4E75;
 constexpr auto OPCODE_JSR =		0x4EB9;
 constexpr auto OPCODE_JMP =		0x4EF9;
@@ -450,11 +451,42 @@ void alterMercatorDocksShopCheck(GameROM& rom)
     rom.setWord(0x01AA28, 0x5FE2);
 }
 
+
 void alterLanternIntoPassiveItem(GameROM& rom)
 {
+ 
+    std::vector<uint16_t> darkRooms = {
+        0x0170, 0x017D, 0x017F, 0x0178, 0x0185, 0x018D,
+        0x018E, 0x0187, 0x01A0, 0x01A1, 0x0176, 0x017B
+    };
+
     // Change all "is room lit" flags by "is lantern owned"
-    for (uint32_t addr = 0x008802; addr < 0x008830; addr += 0x04)
-        rom.setWord(addr, 0x4D01);
+    for (uint8_t i = 0; i < 24; ++i)
+    {
+        uint32_t address = 0x8800 + i * 0x2;
+        if (i < darkRooms.size())
+            rom.setWord(address, darkRooms[i]);
+        else
+            rom.setWord(address, 0xFFFF);
+    }
+ 
+    // addq #2,A0 (instead of adding 4)
+    rom.setWord(0x0087D2, 0x5488);
+
+    // btst #1, $FF104D (0839 0005 00FF1045)
+    rom.setWord(0x0087D6, 0x0839);
+    rom.setWord(0x0087D8, 0x0001);
+    rom.setLong(0x0087DA, 0x00FF104D);
+
+    for (uint32_t addr = 0x87DE; addr <= 0x87E8; addr += 0x02)
+        rom.setWord(addr, OPCODE_NOP);
+
+//    for (uint32_t addr = 0x87DD; addr >= 0x87C2; addr -= 0x01)
+//        rom.setByte(addr + 2, rom.getByte(addr));
+
+    // lea ADDR_DARK_ROOMS, A0
+//    rom.setWord(0x0087BE, 0x41F9);
+//    rom.setLong(0x0087C0, rom.getStoredAddress("data_dark_rooms"));
 }
 
 void alterItemOrderInMenu(GameROM& rom)
@@ -949,12 +981,33 @@ void handleArmorUpgrades(GameROM& rom)
     rom.setWord(0x019642, OPCODE_NOP);
 }
 
-void addFunctionToRecordBook(GameROM& rom)
+void addFunctionToItemsOnUse(GameROM& rom)
 {
-    // To remove the "Nothing happened..." text, the item must be put in a list which has a finite size.
-    // We replace the Blue Ribbon (0x18) by the Record Book (0x23) to do so.
-    rom.setByte(0x008642, 0x23);
+    // ------------- Lithograph hint function -------------
+    uint32_t lithographHintFunctionAddr = rom.getCurrentInjectionAddress();
 
+    // move.w 1B, D0
+    rom.injectWord(0x303C);
+    rom.injectWord(0xFFFF);
+
+    // movem D0-A6, -(A7)
+    rom.injectWord(0x48E7);
+    rom.injectWord(0xFFFE);
+
+    // jsr ($22FCC)
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x00022FCC);
+
+    // set hint addr ($FF1844)
+    rom.injectWord(OPCODE_MOVL);
+    rom.injectLong(rom.getStoredAddress("data_lithograph_hint_text"));
+    rom.injectLong(0x00FF1844);
+
+    // jmp ($22F34)
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x00022F34);
+
+    // ------------- Extended item handling function -------------
 
     rom.setWord(0x00DBA8, OPCODE_JSR);
     rom.setLong(0x00DBAA, rom.getCurrentInjectionAddress());
@@ -981,15 +1034,37 @@ void addFunctionToRecordBook(GameROM& rom)
     rom.injectWord(0x0C00);
     rom.injectWord(ITEM_SPELL_BOOK);
 
-    // bne to no match
-    rom.injectWord(0x6606);
+    // bne to next case
+    rom.injectWord(0x6608);
 
     // jsr $DC1C       ("Abracadabra...")
     rom.injectWord(OPCODE_JSR);
     rom.injectLong(0x0000DC1C);
 
+    // Eject out to the "success" address
+    rom.injectWord(OPCODE_RTS);
+
+    // cmpi.b #27, D0
+    rom.injectWord(0x0C00);
+    rom.injectWord(ITEM_LITHOGRAPH);
+
+    // bne to next case
+    rom.injectWord(0x6606);
+
+    // jsr LITHOGRAPH HINT FUNCTION
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(lithographHintFunctionAddr);
+
     // rts
     rom.injectWord(OPCODE_RTS);
+
+    // -------------------- Other modifications ---------------------
+
+    // To remove the "Nothing happened..." text, the item must be put in a list which has a finite size.
+    // We replace the Blue Ribbon (0x18) by the Record Book (0x23) to do so.
+    rom.setByte(0x008642, 0x23);
+    // Same for Lithograph (0x27) remplacing Lantern (0x1A)
+    rom.setWord(0x008647, 0x6627);
 }
 
 void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
@@ -1035,14 +1110,11 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
 
     if(options.useArmorUpgrades())
         handleArmorUpgrades(rom);
-
-    addFunctionToRecordBook(rom);
 }
 
 void alterRomAfterRandomization(GameROM& rom, const RandomizerOptions& options)
 {
+    addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
     alterLanternIntoPassiveItem(rom);
-    // TODO: Make lantern check code point to address "dark_rooms_array"
-    // TODO: Make lithograph code point to address "data_lithograph_hint_text"
 }

@@ -64,13 +64,13 @@ void World::writeToROM(GameROM& rom)
 	rom.setByte(0x002805, spawnZ);
 
     // Inject dark rooms as a data block
-    const std::vector<uint16_t>& darkRooms = darkenedRegion->getDarkRooms();
-    uint16_t darkRoomsByteCount = static_cast<uint16_t>(darkRooms.size() + 1) * 0x02;
-    uint32_t darkRoomsArrayAddress = rom.reserveDataBlock(darkRoomsByteCount, "dark_rooms_array");
-    uint8_t i = 0;
-    for (uint16_t roomID : darkRooms)
-        rom.setWord(darkRoomsArrayAddress + (i++) * 0x2, roomID);
-    rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
+//    const std::vector<uint16_t>& darkRooms = darkenedRegion->getDarkRooms();
+//    uint16_t darkRoomsByteCount = static_cast<uint16_t>(darkRooms.size() + 1) * 0x02;
+//    uint32_t darkRoomsArrayAddress = rom.reserveDataBlock(darkRoomsByteCount, "data_dark_rooms");
+//    uint8_t i = 0;
+//    for (uint16_t roomID : darkRooms)
+//        rom.setWord(darkRoomsArrayAddress + (i++) * 0x2, roomID);
+//    rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
  
     // Inject lithograph hint as a data block
     rom.injectDataBlock(lithographHint.getBytes(), "data_lithograph_hint_text");

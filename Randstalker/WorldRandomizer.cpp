@@ -20,7 +20,7 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
 void WorldRandomizer::randomize()
 {
 	this->randomizeGoldValues();
-	this->randomizeDarkRooms();
+//	this->randomizeDarkRooms();
 
 	this->randomizeItems();
 	
@@ -146,8 +146,7 @@ void WorldRandomizer::initPriorityItems()
 	_priorityItems.push_back(_world.items[ITEM_DEATH_STATUE]);
 	_priorityItems.push_back(_world.items[ITEM_BELL]);
 	_priorityItems.push_back(_world.items[ITEM_LANTERN]);
-	_priorityItems.push_back(_world.items[ITEM_BLUE_RIBBON]);
-	_priorityItems.push_back(_world.items[ITEM_ORACLE_STONE]);
+	_priorityItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
 }
 
 void WorldRandomizer::initFillerItems()
@@ -155,11 +154,9 @@ void WorldRandomizer::initFillerItems()
 	_fillerItems.push_back(_world.items[ITEM_GARLIC]);
 	_fillerItems.push_back(_world.items[ITEM_PAWN_TICKET]);
 	_fillerItems.push_back(_world.items[ITEM_SHORT_CAKE]);
-	_fillerItems.push_back(_world.items[ITEM_RED_JEWEL]);
-	_fillerItems.push_back(_world.items[ITEM_PURPLE_JEWEL]);
-	_fillerItems.push_back(_world.items[ITEM_LITHOGRAPH]);
 	_fillerItems.push_back(_world.items[ITEM_SPELL_BOOK]);
-	_fillerItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
+	_fillerItems.push_back(_world.items[ITEM_BLUE_RIBBON]);
+	_fillerItems.push_back(_world.items[ITEM_ORACLE_STONE]);
 
 	for (uint8_t i = 0; i < 75; ++i)
 		_fillerItems.push_back(_world.items[ITEM_LIFESTOCK]);
