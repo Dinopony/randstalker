@@ -22,7 +22,7 @@ void GameText::addCharacter(char character)
 	else if (character == '\n')
 	{
 		_bytes.push_back(0x00);
-		_bytes.push_back(0x6A);	// TODO: Handle char 6A as line feed in game code
+		_bytes.push_back(0x6C);
 		_currentLineLength = 0;
 	}
 	else

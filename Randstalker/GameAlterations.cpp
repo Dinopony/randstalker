@@ -4,18 +4,18 @@
 #include <cstdint>
 #include <vector>
 
-constexpr auto OPCODE_MOVB =	0x13FC;
-constexpr auto OPCODE_MOVW =	0x33FC;
-constexpr auto OPCODE_MOVL =    0x23FC;
-constexpr auto OPCODE_RTS =		0x4E75;
-constexpr auto OPCODE_JSR =		0x4EB9;
-constexpr auto OPCODE_JMP =		0x4EF9;
-constexpr auto OPCODE_NOP =		0x4E71;
-constexpr auto OPCODE_BRA =		0x6000;
-constexpr auto OPCODE_BNE =		0x6600;
-constexpr auto OPCODE_BEQ =		0x6700;
-constexpr auto OPCODE_BLT =		0x6D00;
-constexpr auto OPCODE_BGT =		0x6E00;
+constexpr uint16_t OPCODE_MOVB =	0x13FC;
+constexpr uint16_t OPCODE_MOVW =	0x33FC;
+constexpr uint16_t OPCODE_MOVL =    0x23FC;
+constexpr uint16_t OPCODE_RTS =		0x4E75;
+constexpr uint16_t OPCODE_JSR =		0x4EB9;
+constexpr uint16_t OPCODE_JMP =		0x4EF9;
+constexpr uint16_t OPCODE_NOP =		0x4E71;
+constexpr uint16_t OPCODE_BRA =		0x6000;
+constexpr uint16_t OPCODE_BNE =		0x6600;
+constexpr uint16_t OPCODE_BEQ =		0x6700;
+constexpr uint16_t OPCODE_BLT =		0x6D00;
+constexpr uint16_t OPCODE_BGT =		0x6E00;
 
 void alterGameStart(GameROM& rom, const RandomizerOptions& options)
 {
@@ -591,6 +591,43 @@ void removeSailorInDarkPort(GameROM& rom)
     rom.setWord(0x021646, 0x0000);
 }
 
+void addNewlineHandlingInDynamicText(GameROM& rom)
+{
+    // Inject a new condition in characters processing to handle newlines in dynamic text when 0x6C character is encountered
+    rom.setWord(0x0230A2, OPCODE_JMP);
+    rom.setLong(0x0230A4, rom.getCurrentInjectionAddress());
+
+    // cmpi.w #FFFF, D0
+    rom.injectWord(0x0C40);
+    rom.injectWord(0xFFFF);
+
+    // bne to next case
+    rom.injectWord(OPCODE_BNE + 0x06);
+
+    // jmp to 230C0
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x000230C0);
+
+    // cmpi.w #006C, D0
+    rom.injectWord(0x0C40);
+    rom.injectWord(0x006C);
+
+    // bne to next case
+    rom.injectWord(OPCODE_BNE + 0x0C);
+
+    // jsr "add newline" function
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x00022F7C);
+
+    // jmp to 23094 (process next character)
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x00023094);
+
+    // jmp to 230A8 (resume back to usual code)
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x000230A8);
+}
+
 void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
 {
     // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
@@ -1096,6 +1133,7 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
 
+    addNewlineHandlingInDynamicText(rom);
     addJewelsCheckForTeleporterToKazalt(rom);
     addStatueOfJyptaGoldsOverTime(rom);
 

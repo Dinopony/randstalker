@@ -147,6 +147,7 @@ void WorldRandomizer::initPriorityItems()
 	_priorityItems.push_back(_world.items[ITEM_BELL]);
 	_priorityItems.push_back(_world.items[ITEM_LANTERN]);
 	_priorityItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
+	_priorityItems.push_back(_world.items[ITEM_LITHOGRAPH]);
 }
 
 void WorldRandomizer::initFillerItems()
@@ -420,7 +421,7 @@ void WorldRandomizer::randomizeLithographHints()
 	std::string redJewelHint = this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]);
 	std::string purpleJewelHint = this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]);
 
-	std::string completeHint = "Red Jewel is " + redJewelHint + ".\n\tPurple Jewel is " + purpleJewelHint + ".\t";
+	std::string completeHint = "Red Jewel is " + redJewelHint + ".\t\nPurple Jewel is " + purpleJewelHint + ".\t";
 	_world.lithographHint = GameText(completeHint);
 }
 

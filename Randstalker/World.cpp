@@ -111,7 +111,7 @@ void World::initItems()
     items[ITEM_ARMLET] =               new Item(ITEM_ARMLET, "Armlet", 300, true);
     items[ITEM_EINSTEIN_WHISTLE] =     new Item(ITEM_EINSTEIN_WHISTLE, "Einstein Whistle", 300, true);
     items[ITEM_SPELL_BOOK] =           new Item(ITEM_SPELL_BOOK, "Spell Book", 50, true); // What to do with it? Teleport back to spawn?
-    items[ITEM_LITHOGRAPH] =           new Item(ITEM_LITHOGRAPH, "Lithograph", 50, true); // What to do with it? Hint item?
+    items[ITEM_LITHOGRAPH] =           new Item(ITEM_LITHOGRAPH, "Lithograph", 100, true);
     items[ITEM_RED_JEWEL] =            new Item(ITEM_RED_JEWEL, "Red Jewel", 500, true);
     items[ITEM_PAWN_TICKET] =          new Item(ITEM_PAWN_TICKET, "Pawn Ticket", 100, true);
     items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 500, true);
