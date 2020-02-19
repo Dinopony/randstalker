@@ -737,6 +737,25 @@ void addStatueOfJyptaGoldsOverTime(GameROM& rom)
     rom.injectWord(OPCODE_RTS);
 }
 
+void addLithographChestInKazaltTeleporterRoom(GameROM& rom)
+{
+    // Negate map trigger removing entities once the Duke cutscene was seen in OG
+    rom.setWord(0x01AA0E, 0x7F7F);
+    
+    // Replace the first entity in the map by a chest
+    rom.setWord(0x01CFA6, 0x1D9D);  // X&Z pos, orientation and palette info
+    rom.setWord(0x01CFA8, 0x0000);
+    rom.setWord(0x01CFAA, 0x0012);  // Type 0x0012 = chest
+    rom.setWord(0x01CFAC, 0x0100);  // Y pos = 0x10
+
+    // Remove other entities in the map
+    for (uint32_t addr = 0x1CFAE; addr <= 0x1CFC5; ++addr)
+        rom.setByte(addr, 0xFF);
+
+    // Change the map base chest ID
+    rom.setByte(0x09E838, 0x1E);
+}
+
 
 void replaceLumberjackByChest(GameROM& rom)
 {
@@ -1136,6 +1155,7 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
     addNewlineHandlingInDynamicText(rom);
     addJewelsCheckForTeleporterToKazalt(rom);
     addStatueOfJyptaGoldsOverTime(rom);
+    addLithographChestInKazaltTeleporterRoom(rom);
 
     // Glitch prevention
     fixArmletSkip(rom);

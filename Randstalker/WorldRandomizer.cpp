@@ -147,7 +147,6 @@ void WorldRandomizer::initPriorityItems()
 	_priorityItems.push_back(_world.items[ITEM_BELL]);
 	_priorityItems.push_back(_world.items[ITEM_LANTERN]);
 	_priorityItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
-	_priorityItems.push_back(_world.items[ITEM_LITHOGRAPH]);
 }
 
 void WorldRandomizer::initFillerItems()

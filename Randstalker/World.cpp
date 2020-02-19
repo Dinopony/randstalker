@@ -187,6 +187,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_GREENMAZE_LUMBERJACK_WHISTLE] =              new ItemChest(0x1B, ITEM_EINSTEIN_WHISTLE,  "Greenmaze: chest replacing lumberjack");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_THIRD_GOLD] =                        new ItemChest(0x1C, ITEM_5_GOLDS,           "King Nole's Cave: gold chest in isolated room");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_SECOND_LIFESTOCK] =                  new ItemChest(0x1D, ITEM_LIFESTOCK,         "King Nole's Cave: lifestock chest in crate room");
+    itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM] =            new ItemChest(0x1E, ITEM_LITHOGRAPH,        "King Nole's Cave: chest in teleporter room to Kazalt");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_BOULDER_CHASE_LIFESTOCK] =           new ItemChest(0x1F, ITEM_LIFESTOCK,         "King Nole's Cave: boulder chase corridor chest");
     itemSources[ItemSourceCode::CHEST_WATERFALL_SHRINE_ENTRANCE_LIFESTOCK] =       new ItemChest(0x21, ITEM_LIFESTOCK,         "Waterfall Shrine: lifestock chest under entrance (accessible after talking with Prospero)");
     itemSources[ItemSourceCode::CHEST_WATERFALL_SHRINE_END_LIFESTOCK] =            new ItemChest(0x22, ITEM_LIFESTOCK,         "Waterfall Shrine: lifestock chest near Prospero");
@@ -362,6 +363,9 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_TIBOR_SPIKEBALLS_ROOM] =                     new ItemChest(0xDB, ITEM_20_GOLDS,          "Tibor: chest in spike balls room");
     itemSources[ItemSourceCode::CHEST_TIBOR_DUAL_LEFT] =                           new ItemChest(0xDC, ITEM_GAIA_STATUE,       "Tibor: left chest on 2 chest group");
     itemSources[ItemSourceCode::CHEST_TIBOR_DUAL_RIGHT] =                          new ItemChest(0xDD, ITEM_20_GOLDS,          "Tibor: right chest on 2 chest group");
+
+    // Force the contents of a few specific chests
+    itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM]->setItem(items[ITEM_LITHOGRAPH]);
 
     // The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
     // 0x0E, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
