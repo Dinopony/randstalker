@@ -988,18 +988,17 @@ void World::initHints()
     regions[RegionCode::ROUTE_LAKE_SHRINE]->addHint("near a lake");
     regions[RegionCode::LAKE_SHRINE]->addHint("near a lake");
     
-    regions[RegionCode::MASSAN]->addHint("close to the bears");
-    regions[RegionCode::GUMI]->addHint("close to the bears");
-    regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("close to the bears");
-    regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("close to the bears");
-    regions[RegionCode::WATERFALL_SHRINE]->addHint("close to the bears");
-    regions[RegionCode::SWAMP_SHRINE]->addHint("close to the bears");
+    regions[RegionCode::MASSAN]->addHint("in a region inhabited by bears");
+    regions[RegionCode::GUMI]->addHint("in a region inhabited by bears");
+    regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("in a region inhabited by bears");
+    regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("in a region inhabited by bears");
+    regions[RegionCode::WATERFALL_SHRINE]->addHint("in a region inhabited by bears");
+    regions[RegionCode::SWAMP_SHRINE]->addHint("in a region inhabited by bears");
 
-    regions[RegionCode::DESTEL]->addHint("close to the dwarves");
-    regions[RegionCode::DESTEL_WELL]->addHint("close to the dwarves");
-    regions[RegionCode::KAZALT]->addHint("close to the dwarves");
-    regions[RegionCode::ROUTE_VERLA_DESTEL]->addHint("close to the dwarves");
-    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("close to the dwarves");
+    regions[RegionCode::DESTEL]->addHint("in Destel region");
+    regions[RegionCode::DESTEL_WELL]->addHint("in Destel region");
+    regions[RegionCode::ROUTE_VERLA_DESTEL]->addHint("in Destel region");
+    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("in Destel region");
 
     regions[RegionCode::CRYPT]->addHint("hidden in the depths of Mercator");
     itemSources[ItemSourceCode::CHEST_MERCATOR_DUNGEON_UNDERGROUND_KEY]->addHint("hidden in the depths of Mercator");
