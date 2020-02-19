@@ -103,19 +103,19 @@ void World::initItems()
     items[ITEM_AXE_MAGIC] =            new Item(ITEM_AXE_MAGIC, "Axe Magic", 400, true);
     items[ITEM_BLUE_RIBBON] =          new Item(ITEM_BLUE_RIBBON, "Blue Ribbon", 50, true); // What to do with it?
     items[ITEM_BUYER_CARD] =           new Item(ITEM_BUYER_CARD, "Buyer's Card", 150, true);
-    items[ITEM_LANTERN] =              new Item(ITEM_LANTERN, "Lantern", 150, true);
-    items[ITEM_GARLIC] =               new Item(ITEM_GARLIC, "Garlic", 150, true);
+    items[ITEM_LANTERN] =              new Item(ITEM_LANTERN, "Lantern", 100, true);
+    items[ITEM_GARLIC] =               new Item(ITEM_GARLIC, "Garlic", 200, true);
     items[ITEM_ANTI_PARALYZE] =        new Item(ITEM_ANTI_PARALYZE, "Anti Paralyze", 20, true);
-    items[ITEM_STATUE_JYPTA] =         new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 1000, true);
-    items[ITEM_SUN_STONE] =            new Item(ITEM_SUN_STONE, "Sun Stone", 400, true);
+    items[ITEM_STATUE_JYPTA] =         new Item(ITEM_STATUE_JYPTA, "Statue of Jypta", 2000, true);
+    items[ITEM_SUN_STONE] =            new Item(ITEM_SUN_STONE, "Sun Stone", 300, true);
     items[ITEM_ARMLET] =               new Item(ITEM_ARMLET, "Armlet", 300, true);
-    items[ITEM_EINSTEIN_WHISTLE] =     new Item(ITEM_EINSTEIN_WHISTLE, "Einstein Whistle", 300, true);
+    items[ITEM_EINSTEIN_WHISTLE] =     new Item(ITEM_EINSTEIN_WHISTLE, "Einstein Whistle", 200, true);
     items[ITEM_SPELL_BOOK] =           new Item(ITEM_SPELL_BOOK, "Spell Book", 50, true); // What to do with it? Teleport back to spawn?
     items[ITEM_LITHOGRAPH] =           new Item(ITEM_LITHOGRAPH, "Lithograph", 100, true);
-    items[ITEM_RED_JEWEL] =            new Item(ITEM_RED_JEWEL, "Red Jewel", 500, true);
+    items[ITEM_RED_JEWEL] =            new Item(ITEM_RED_JEWEL, "Red Jewel", 400, true);
     items[ITEM_PAWN_TICKET] =          new Item(ITEM_PAWN_TICKET, "Pawn Ticket", 100, true);
-    items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 500, true);
-    items[ITEM_GOLA_EYE] =             new Item(ITEM_GOLA_EYE, "Gola's Eye", 500, true);
+    items[ITEM_PURPLE_JEWEL] =         new Item(ITEM_PURPLE_JEWEL, "Purple Jewel", 400, true);
+    items[ITEM_GOLA_EYE] =             new Item(ITEM_GOLA_EYE, "Gola's Eye", 400, true);
     items[ITEM_DEATH_STATUE] =         new Item(ITEM_DEATH_STATUE, "Death Statue", 150, true);
     items[ITEM_DAHL] =                 new Item(ITEM_DAHL, "Dahl", 100);
     items[ITEM_RESTORATION] =          new Item(ITEM_RESTORATION, "Restoration", 40, true);
@@ -126,10 +126,10 @@ void World::initItems()
     items[ITEM_SAFETY_PASS] =          new Item(ITEM_SAFETY_PASS, "Safety Pass", 300, true);
     items[ITEM_BELL] =                 new Item(ITEM_BELL, "Bell", 200, true);
     items[ITEM_SHORT_CAKE] =           new Item(ITEM_SHORT_CAKE, "Short Cake", 150, true);
-    items[ITEM_GOLA_NAIL] =            new Item(ITEM_GOLA_NAIL, "Gola's Nail", 1000, true);
-    items[ITEM_GOLA_HORN] =            new Item(ITEM_GOLA_HORN, "Gola's Horn", 1000, true);
-    items[ITEM_GOLA_FANG] =            new Item(ITEM_GOLA_FANG, "Gola's Fang", 1000, true);
-    items[ITEM_LIFESTOCK] =            new Item(ITEM_LIFESTOCK, "Life Stock", 200);
+    items[ITEM_GOLA_NAIL] =            new Item(ITEM_GOLA_NAIL, "Gola's Nail", 800, true);
+    items[ITEM_GOLA_HORN] =            new Item(ITEM_GOLA_HORN, "Gola's Horn", 800, true);
+    items[ITEM_GOLA_FANG] =            new Item(ITEM_GOLA_FANG, "Gola's Fang", 800, true);
+    items[ITEM_LIFESTOCK] =            new Item(ITEM_LIFESTOCK, "Life Stock", 250);
     items[ITEM_NONE] =                 new Item(ITEM_NONE, "No Item", 0);
 
     for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
@@ -321,8 +321,8 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_GREENMAZE_ELBOW_CAVE_LEFT] =                 new ItemChest(0xAC, ITEM_LIFESTOCK,         "Greenmaze: left chest in elbow cave");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_ELBOW_CAVE_RIGHT] =                new ItemChest(0xAD, ITEM_DAHL,              "Greenmaze: right chest in elbow cave");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_DAHL] =             new ItemChest(0xAE, ITEM_DAHL,              "Greenmaze: chest in waterfall cave");
-    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK] =        new ItemChest(0xAF, ITEM_LIFESTOCK,         "Greenmaze: left chest in hidden room behind waterfall ");
-    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS] =            new ItemChest(0xB0, ITEM_20_GOLDS,          "Greenmaze: right chest in hidden room behind waterfall ");
+    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK] =        new ItemChest(0xAF, ITEM_LIFESTOCK,         "Greenmaze: left chest in hidden room behind waterfall");
+    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS] =            new ItemChest(0xB0, ITEM_20_GOLDS,          "Greenmaze: right chest in hidden room behind waterfall");
     itemSources[ItemSourceCode::CHEST_MASSAN_DOG_STATUE] =                         new ItemChest(0xB1, ITEM_LIFESTOCK,         "Massan: chest triggered by dog statue");
     itemSources[ItemSourceCode::CHEST_MASSAN_EKEEKE_1] =                           new ItemChest(0xB2, ITEM_EKEEKE,            "Massan: chest in house nearest to elder house");
     itemSources[ItemSourceCode::CHEST_MASSAN_HOUSE_LIFESTOCK] =                    new ItemChest(0xB3, ITEM_LIFESTOCK,         "Massan: lifestock chest in house");
@@ -699,8 +699,8 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS],
         itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION]
     });
-    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::GROUND_LOGS_1], items[ITEM_EINSTEIN_WHISTLE]);
-    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::GROUND_LOGS_2], items[ITEM_EINSTEIN_WHISTLE]);
+    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::GROUND_SUN_STONE], items[ITEM_EINSTEIN_WHISTLE]);
+    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL], items[ITEM_EINSTEIN_WHISTLE]);
 
     regions[RegionCode::VERLA_SECTOR] = new WorldRegion("Verla sector", {
         itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN],
@@ -906,25 +906,25 @@ void World::initRegions()
 
 void World::initRegionPaths()
 {
-	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC]);
+	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC], 1);
 	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::ROUTE_MASSAN_GUMI]);
 	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::WATERFALL_SHRINE]);
-	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::SWAMP_SHRINE], items[ITEM_IDOL_STONE]);
+	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::SWAMP_SHRINE], items[ITEM_IDOL_STONE], 2);
 	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::GUMI]);
 	regions[RegionCode::GUMI]->addPathTo(regions[RegionCode::ROUTE_GUMI_RYUMA]);
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::TIBOR]);
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::RYUMA]);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::MERCATOR], items[ITEM_SAFETY_PASS]);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE]);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::MERCATOR], items[ITEM_SAFETY_PASS], 3);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE], 1);
 	regions[RegionCode::RYUMA]->addPathTo(regions[RegionCode::THIEVES_HIDEOUT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_DUNGEON]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::CRYPT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE], items[ITEM_KEY]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE]);
-	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
-	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathTo(regions[RegionCode::MIR_TOWER_POST_GARLIC], items[ITEM_GARLIC]);
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD], 1);
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE], items[ITEM_KEY], 2);
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE], 1);
+	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET], 1);
+	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathTo(regions[RegionCode::MIR_TOWER_POST_GARLIC], items[ITEM_GARLIC], 1);
 	regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA_MINES]);
     regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA]);
 	regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
@@ -932,16 +932,22 @@ void World::initRegionPaths()
 	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::ROUTE_AFTER_DESTEL]);
 	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::DESTEL_WELL]);
 	regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE]);
-	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::LAKE_SHRINE], items[ITEM_GAIA_STATUE]);
-	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE]);
-	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL] });
+	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::LAKE_SHRINE], items[ITEM_GAIA_STATUE], 1);
+	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC], 1);
+	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC], 1);
+	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
+	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL] }, 3);
 	regions[RegionCode::KAZALT]->addPathTo(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
-	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
-	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], items[ITEM_LOGS]);
+	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS], 1);
+	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], items[ITEM_LOGS], 1);
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_PALACE]);
-	regions[RegionCode::KN_PALACE]->addPathTo(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] });
+	regions[RegionCode::KN_PALACE]->addPathTo(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] }, 1);
+
+    regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::DESTEL_WELL]);
+    regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::DESTEL]);
+    regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
+    regions[RegionCode::ROUTE_VERLA_DESTEL]->addPathTo(regions[RegionCode::VERLA_MINES]);
+    regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::VERLA_SECTOR]);
 }
 
 void World::initHints()

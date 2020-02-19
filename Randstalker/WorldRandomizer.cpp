@@ -6,7 +6,6 @@
 
 constexpr auto FILLING_RATE = 0.20;
 
-
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
 	_options			(options),
@@ -241,7 +240,7 @@ void WorldRandomizer::randomizeItems()
 		playerInventory.push_back(randomKeyItem);
 
 		// Fill additionnal item sources with "filler items"
-		int additionnalSourcesToFill = static_cast<int>(reachableItemSources.size() * FILLING_RATE);
+		size_t additionnalSourcesToFill = static_cast<size_t>(reachableItemSources.size() * FILLING_RATE);
 		_logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
 		this->fillSourcesWithFillerItems(reachableItemSources.begin(), reachableItemSources.begin() + additionnalSourcesToFill);
 	}
@@ -289,10 +288,10 @@ std::vector<WorldRegion*> WorldRandomizer::evaluateReachableRegions(const std::v
 				out_reachableSources.push_back(source);
 			}
 			// Otherwise, add the required item to the list of needed items to progress (if it's not already inside)
-			else if (std::find(out_keyItems.begin(), out_keyItems.end(), requiredItem) == out_keyItems.end())
-			{
-				out_keyItems.push_back(requiredItem);
-			}
+			// else if (std::find(out_keyItems.begin(), out_keyItems.end(), requiredItem) == out_keyItems.end())
+			// {
+			//	out_keyItems.push_back(requiredItem);
+			//}
 		}
 
 		// Analyze outgoing paths to check for other regions to explore
@@ -319,7 +318,7 @@ std::vector<WorldRegion*> WorldRandomizer::evaluateReachableRegions(const std::v
 
 					if (!hasItem)
 					{
-						if (std::find(out_keyItems.begin(), out_keyItems.end(), requiredItem) == out_keyItems.end())
+						for(uint16_t i=0 ; i< path->getRandomWeight() ; ++i)
 							out_keyItems.push_back(requiredItem);
 						canReachRegion = false;
 						break;

@@ -10,7 +10,7 @@
 #include "TreeMap.h"
 #include "ItemShop.h"
 
-constexpr auto GOLD_SOURCES_COUNT = 36;
+constexpr auto GOLD_SOURCES_COUNT = 30;
 
 struct World
 {
