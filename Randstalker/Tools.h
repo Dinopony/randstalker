@@ -8,17 +8,29 @@
 
 namespace Tools 
 {
+    inline uint32_t getUniformInteger(uint32_t number, uint32_t rangeLow, uint32_t rangeHigh)
+    {
+        double proportion = static_cast<double>(number) / (1.0 + UINT32_MAX);
+        uint32_t range = rangeHigh - rangeLow + 1;
+        return static_cast<uint32_t>(proportion * range) + rangeLow;
+    }
+
     template<typename T>
     void shuffle(std::vector<T>& vector, std::mt19937& rng)
     {
-        std::map<uint32_t, T> elems;
-        for (T elem : vector)
-            elems[rng()] = elem;
+        std::vector<T> elems;
 
-        vector.clear();
-        for (auto [key, value] : elems)
-            vector.push_back(value);
+        while (vector.size() > 1)
+        {
+            uint32_t randomPosition = getUniformInteger(rng(), 0, static_cast<uint32_t>(vector.size()-1));
+            elems.push_back(vector[randomPosition]);
+            vector.erase(vector.begin() + randomPosition);
+        }
+          
+        elems.push_back(*vector.begin());
+        vector = elems;
     }
+
 
     // trim from start (in place)
     inline void ltrim(std::string& s) {
