@@ -1,6 +1,7 @@
 #include "GameAlterations.h"
 #include "Constants/ItemCodes.h"
 #include "RandomizerOptions.h"
+#include "GameText.h"
 #include <cstdint>
 #include <vector>
 
@@ -630,21 +631,39 @@ void addNewlineHandlingInDynamicText(GameROM& rom)
 
 void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
 {
+    GameText text("King Nole: Only the bearers of \nthe jewels are worthy of \nentering my domain...\t");
+    rom.injectDataBlock(text.getBytes(), "data_text_jewels_alert");
+
+    // ----------- Hijack text with dynamic text func ----------------------
+    uint32_t hijackTextFunc = rom.getCurrentInjectionAddress();
+
+    // move.w FFFF, D0
+    rom.injectWord(0x303C);
+    rom.injectWord(0xFFFF);
+
+    // movem D0-A6, -(A7)
+    rom.injectWord(0x48E7);
+    rom.injectWord(0xFFFE);
+
+
+    // jsr ($22FCC)
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x00022FCC);
+
+    // set hint addr ($FF1844)
+    rom.injectWord(OPCODE_MOVL);
+    rom.injectLong(rom.getStoredAddress("data_text_jewels_alert"));
+    rom.injectLong(0x00FF1844);
+
+    // jmp ($22F34)
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x00022F34);
+
+
+    // ----------- Jewel textbox handling ----------------------
     // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
-    constexpr uint16_t wrongWarpMapID = 0x0061;
-    constexpr uint16_t wrongWarpPosition = 0x1516;
-
-    rom.setWord(0x0025C6, OPCODE_JSR);
-    rom.setLong(0x0025C8, rom.getCurrentInjectionAddress());
-    rom.setWord(0x0025CC, OPCODE_NOP);
-
-    // cmpi.w #$AA, ($FF1204)
-    rom.injectWord(0x0C79);
-    rom.injectWord(0x00AA);
-    rom.injectLong(0x00FF1204);
-
-    // bne to EXIT
-    rom.injectWord(0x6626);
+    rom.setWord(0x0062F4, OPCODE_JMP);
+    rom.setLong(0x0062F6, rom.getCurrentInjectionAddress());
 
     // btst #$1, ($FF1054)    - Test if red jewel is owned
     rom.injectWord(0x0839);
@@ -652,36 +671,49 @@ void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
     rom.injectLong(0x00FF1054);
 
     // beq to REMOVEPORTAL
-    rom.injectWord(0x670C);
+    rom.injectWord(OPCODE_BEQ + 0x0A);
 
     // btst #$1, ($FF1055)    - Test if purple jewel is owned
     rom.injectWord(0x0839);
     rom.injectWord(0x0001);
     rom.injectLong(0x00FF1055);
 
-    // beq to REMOVEPORTAL
-    rom.injectWord(0x6702);
+    // bne to TELEPORT
+    rom.injectWord(OPCODE_BNE + 0x1C);
 
-    // bra to EXIT
-    rom.injectWord(0x6010);
+    // movem(store registers) [48E7 FFFE] [REMOVEPORTAL:]
+    rom.injectWord(0x48E7);
+    rom.injectWord(0xFFFE);
 
-    // move.w #0061, $(FF1226)  [REMOVEPORTAL:]
-    rom.injectWord(0x33FC);
-    rom.injectWord(wrongWarpMapID);
-    rom.injectLong(0x00FF1226);
+    // jsr OPEN TEXTBOX
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x22EE8);
 
-    // move.w #1516, $(FF1228)
-    rom.injectWord(0x33FC);
-    rom.injectWord(wrongWarpPosition);
-    rom.injectLong(0x00FF1228);
+    // jsr hijackTextFunc
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(hijackTextFunc);
 
-    // cmpi.w #$20C, ($FF1204)  [EXIT:]
-    rom.injectWord(0x0C79);
-    rom.injectWord(0x020C);
-    rom.injectLong(0x00FF1204);
+    // jsr CLOSE TEXTBOX
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x22EA0);
+
+    // movem(restore registers) [4CDF 7FFF]
+    rom.injectWord(0x4CDF);
+    rom.injectWord(0x7FFF);
 
     // rts
     rom.injectWord(OPCODE_RTS);
+
+    // moveq 7, D0  [TELEPORT:]
+    rom.injectWord(0x7007);
+    
+    // jsr E110
+    rom.injectWord(OPCODE_JSR);
+    rom.injectLong(0x00E110);
+
+    // jmp back to the regular code
+    rom.injectWord(OPCODE_JMP);
+    rom.injectLong(0x0062FA);
 }
 
 void addStatueOfJyptaGoldsOverTime(GameROM& rom)
@@ -1042,7 +1074,7 @@ void addFunctionToItemsOnUse(GameROM& rom)
     // ------------- Lithograph hint function -------------
     uint32_t lithographHintFunctionAddr = rom.getCurrentInjectionAddress();
 
-    // move.w 1B, D0
+    // move.w FFFF, D0
     rom.injectWord(0x303C);
     rom.injectWord(0xFFFF);
 
