@@ -28,7 +28,7 @@ private:
 	void setSpawnPoint();
 	void randomizeGoldValues();
 
-	void randomizeDarkRooms();
+//	void randomizeDarkRooms();
 
 	void initPriorityItems();
 	void initFillerItems();
@@ -41,7 +41,7 @@ private:
 
 	void writeItemSourcesBreakdownInLog();
 
-	void randomizeLithographHints();
+	void randomizeHints();
 	std::string getRandomHintForItem(Item* item);
 
 	void randomizeTiborTrees();

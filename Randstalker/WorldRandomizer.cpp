@@ -24,7 +24,7 @@ void WorldRandomizer::randomize()
 	this->randomizeItems();
 	
 	this->setSpawnPoint();
-	this->randomizeLithographHints();
+	this->randomizeHints();
 
 	if(_options.shuffleTiborTrees())
 		this->randomizeTiborTrees();
@@ -101,6 +101,7 @@ void WorldRandomizer::randomizeGoldValues()
 	}
 }
 
+/*
 void WorldRandomizer::randomizeDarkRooms()
 {
 	std::vector<WorldRegion*> darkenableRegions;
@@ -119,6 +120,7 @@ void WorldRandomizer::randomizeDarkRooms()
 	for (WorldPath* path : ingoingPaths)
 		path->addRequiredItem(_world.items[ITEM_LANTERN]);
 }
+*/
 
 void WorldRandomizer::initPriorityItems()
 {
@@ -414,13 +416,18 @@ void WorldRandomizer::writeItemSourcesBreakdownInLog()
 		_logFile << "- [" << item->getName() << "]\n";
 }
 
-void WorldRandomizer::randomizeLithographHints()
+void WorldRandomizer::randomizeHints()
 {
-	std::string redJewelHint = this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]);
-	std::string purpleJewelHint = this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]);
+	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
+	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
+	std::string completeHint = redJewelHint + "\t\n" + purpleJewelHint + "\t";
 
-	std::string completeHint = "Red Jewel is " + redJewelHint + ".\t\nPurple Jewel is " + purpleJewelHint + ".\t";
 	_world.lithographHint = GameText(completeHint);
+
+	_logFile << "\n-------------------------------\n";
+	_logFile << "Hints: " << "\n";
+	_logFile << "- " << redJewelHint << "\n";
+	_logFile << "- " << purpleJewelHint << "\n";
 }
 
 std::string WorldRandomizer::getRandomHintForItem(Item* item)
