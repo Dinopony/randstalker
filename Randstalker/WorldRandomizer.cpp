@@ -255,6 +255,11 @@ void WorldRandomizer::randomizeItems()
 
 	_logFile << "\t > Trying to fill the " << emptyItemSources.size() << " remaining sources...\n";
 	this->fillSourcesWithFillerItems(emptyItemSources.begin(), emptyItemSources.end());
+	
+	// Fill empty sources caused by lack of items with Ekeeke
+	for (AbstractItemSource* source : emptyItemSources)
+		if(!source->getItem())
+			source->setItem(_world.items[ITEM_EKEEKE]);
 
 	// Write down the complete item list in the log file
 	this->writeItemSourcesBreakdownInLog();
@@ -373,22 +378,18 @@ void WorldRandomizer::fillSourcesWithFillerItems(std::vector<AbstractItemSource*
 	for (auto it = begin ; it != end && !_fillerItems.empty() ; ++it)
 	{
 		AbstractItemSource* itemSource = *it;
-		Item* randomFillerItem = nullptr;
+		
 		for (uint32_t j = 0; j < _fillerItems.size(); ++j)
 		{
 			if (itemSource->isItemCompatible(_fillerItems[j]))
 			{
-				randomFillerItem = _fillerItems[j];
+				Item* randomFillerItem = _fillerItems[j];
+				itemSource->setItem(randomFillerItem);
+				_logFile << "\t\t >>> Filling \"" << itemSource->getName() << "\" with [" << randomFillerItem->getName() << "]\n";
 				_fillerItems.erase(_fillerItems.begin() + j);
 				break;
 			}
 		}
-
-		if (!randomFillerItem)
-			randomFillerItem = _world.items[ITEM_EKEEKE];
-
-		itemSource->setItem(randomFillerItem);
-		_logFile << "\t\t >>> Filling \"" << itemSource->getName() << "\" with [" << randomFillerItem->getName() << "]\n";
 	}
 }
 
