@@ -455,7 +455,6 @@ void alterMercatorDocksShopCheck(GameROM& rom)
 
 void alterLanternIntoPassiveItem(GameROM& rom)
 {
- 
     std::vector<uint16_t> darkRooms = {
         0x0170, 0x017D, 0x017F, 0x0178, 0x0185, 0x018D,
         0x018E, 0x0187, 0x01A0, 0x01A1, 0x0176, 0x017B
@@ -641,10 +640,14 @@ void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
     rom.injectWord(0x303C);
     rom.injectWord(0xFFFF);
 
+    // move.b 0x0, ($FF1144)  to reset textbox state 
+    rom.injectWord(OPCODE_MOVB);
+    rom.injectWord(0x0000);
+    rom.injectLong(0x00FF1144);
+
     // movem D0-A6, -(A7)
     rom.injectWord(0x48E7);
     rom.injectWord(0xFFFE);
-
 
     // jsr ($22FCC)
     rom.injectWord(OPCODE_JSR);
