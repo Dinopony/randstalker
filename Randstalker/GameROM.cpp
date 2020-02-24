@@ -1,5 +1,5 @@
 #include "GameROM.h"
-
+#include "AsmCode.h"
 #include <fstream>
 
 constexpr uint32_t ROM_SIZE = 2097152;
@@ -8,7 +8,7 @@ constexpr uint32_t CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAD0;
 
 GameROM::GameROM(const std::string& inputPath) :
 	_wasOpen(false),
-	_currentInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS),
+	_currentCodeInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS),
 	_currentDataInjectionAddress(ROM_SIZE)
 {
 	_byteArray = new char[ROM_SIZE];
@@ -26,7 +26,7 @@ GameROM::GameROM(const GameROM& otherROM)
 {
 	_wasOpen = otherROM._wasOpen;
 
-	_currentInjectionAddress = otherROM._currentInjectionAddress;
+	_currentCodeInjectionAddress = otherROM._currentCodeInjectionAddress;
 	_currentDataInjectionAddress = otherROM._currentDataInjectionAddress;
 
 	_byteArray = new char[ROM_SIZE];
@@ -76,27 +76,45 @@ void GameROM::setBytes(uint32_t address, std::vector<uint8_t> bytes)
 	}
 }
 
+void GameROM::setCode(uint32_t address, AsmCode& code)
+{
+	this->setBytes(address, code.getBytes());
+}
+
 uint32_t GameROM::injectByte(uint8_t byte)
 {
-	uint32_t injectionAddressOnStart = _currentInjectionAddress;
-	this->setByte(_currentInjectionAddress, byte);
-	_currentInjectionAddress += 0x01;
+	uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
+	this->setByte(_currentCodeInjectionAddress, byte);
+	_currentCodeInjectionAddress += 0x01;
 	return injectionAddressOnStart;
 }
 
 uint32_t GameROM::injectWord(uint16_t word)
 {
-	uint32_t injectionAddressOnStart = _currentInjectionAddress;
-	this->setWord(_currentInjectionAddress, word);
-	_currentInjectionAddress += 0x02;
+	uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
+	this->setWord(_currentCodeInjectionAddress, word);
+	_currentCodeInjectionAddress += 0x02;
 	return injectionAddressOnStart;
 }
 
 uint32_t GameROM::injectLong(uint32_t longWord)
 {
-	uint32_t injectionAddressOnStart = _currentInjectionAddress;
-	this->setLong(_currentInjectionAddress, longWord);
-	_currentInjectionAddress += 0x04;
+	uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
+	this->setLong(_currentCodeInjectionAddress, longWord);
+	_currentCodeInjectionAddress += 0x04;
+	return injectionAddressOnStart;
+}
+
+uint32_t GameROM::injectCode(AsmCode& code, const std::string& label)
+{
+	uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
+
+	const std::vector<uint8_t>& bytes = code.getBytes();
+	this->setBytes(_currentCodeInjectionAddress, bytes);
+	_currentCodeInjectionAddress += static_cast<uint32_t>(bytes.size());
+	
+	if (!label.empty())
+		this->storeAddress(label, injectionAddressOnStart);
 	return injectionAddressOnStart;
 }
 

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractItemSource.h" />
+    <ClInclude Include="AsmCode.h" />
     <ClInclude Include="Constants\ItemCodes.h" />
     <ClInclude Include="Constants\ItemSourceCodes.h" />
     <ClInclude Include="Constants\RegionCodes.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="WorldRegion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AsmCode.cpp" />
     <ClCompile Include="GameROM.cpp" />
     <ClCompile Include="GameText.cpp" />
     <ClCompile Include="main.cpp" />

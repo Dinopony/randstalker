@@ -81,6 +81,9 @@
     <ClInclude Include="GameText.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="AsmCode.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -102,6 +105,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="GameROM.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AsmCode.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
