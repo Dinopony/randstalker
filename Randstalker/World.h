@@ -34,7 +34,7 @@ private:
 
     void initHints();
 
-    void initDarkRooms();
+//    void initDarkRooms();
 
     void initTreeMaps();
 
