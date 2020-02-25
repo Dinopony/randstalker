@@ -4,11 +4,10 @@
 #include <string>
 #include <random>
 
-#include "Constants/ItemCodes.h"
-#include "Constants/ItemSourceCodes.h"
-#include "Constants/RegionCodes.h"
-#include "ItemSources/AbstractItemSource.h"
-
+#include "ItemCodes.h"
+#include "ItemSourceCodes.h"
+#include "RegionCodes.h"
+#include "AbstractItemSource.h"
 #include "RandomizerOptions.h"
 #include "Item.h"
 #include "World.h"

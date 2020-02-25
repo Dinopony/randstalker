@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Constants/ItemSourceCodes.h"
-#include "Constants/RegionCodes.h"
-#include "ItemSources/AbstractItemSource.h"
-
+#include "ItemSourceCodes.h"
+#include "RegionCodes.h"
+#include "AbstractItemSource.h"
 #include "Item.h"
 #include "GameText.h"
 #include "WorldRegion.h"

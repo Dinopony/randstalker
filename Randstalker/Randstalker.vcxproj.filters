@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Fichiers sources\Constants">
-      <UniqueIdentifier>{a8d083b0-bd8c-4692-b20f-2ddf5cb4fb34}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Fichiers sources\Item Sources">
-      <UniqueIdentifier>{6cc6c6c7-1bc2-44b3-a24f-33d6f65870a8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Fichiers sources\Megadrive Tools">
       <UniqueIdentifier>{71aee359-cc76-4520-bdaa-cd69de4e2895}</UniqueIdentifier>
     </Filter>
@@ -39,15 +33,6 @@
     <ClInclude Include="WorldRegion.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="Constants\ItemCodes.h">
-      <Filter>Fichiers sources\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="Constants\ItemSourceCodes.h">
-      <Filter>Fichiers sources\Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="Constants\RegionCodes.h">
-      <Filter>Fichiers sources\Constants</Filter>
-    </ClInclude>
     <ClInclude Include="GameAlterations.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
@@ -57,29 +42,11 @@
     <ClInclude Include="RandomizerOptions.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="Constants\SpawnLocations.h">
-      <Filter>Fichiers sources\Constants</Filter>
-    </ClInclude>
     <ClInclude Include="ItemShop.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="GameText.h">
       <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemSources\AbstractItemSource.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemSources\ItemChest.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemSources\ItemInShop.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemSources\ItemOnGround.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemSources\ItemReward.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
     </ClInclude>
     <ClInclude Include="MegadriveTools\MdCode.h">
       <Filter>Fichiers sources\Megadrive Tools</Filter>
@@ -89,6 +56,33 @@
     </ClInclude>
     <ClInclude Include="MegadriveTools\MdRom.h">
       <Filter>Fichiers sources\Megadrive Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractItemSource.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemChest.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemInShop.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemOnGround.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemReward.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemCodes.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemSourceCodes.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="RegionCodes.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnLocations.h">
+      <Filter>Fichiers sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

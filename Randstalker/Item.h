@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MegadriveTools/MdRom.h"
-#include "Constants/ItemCodes.h"
+#include "ItemCodes.h"
 
 class Item
 {

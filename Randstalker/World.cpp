@@ -1,14 +1,13 @@
 #include "World.h"
 
-#include "Constants/ItemCodes.h"
-#include "Constants/ItemSourceCodes.h"
-#include "Constants/RegionCodes.h"
+#include "ItemCodes.h"
+#include "ItemSourceCodes.h"
+#include "RegionCodes.h"
 #include "Item.h"
-
-#include "ItemSources/ItemChest.h"
-#include "ItemSources/ItemOnGround.h"
-#include "ItemSources/ItemInShop.h"
-#include "ItemSources/ItemReward.h"
+#include "ItemChest.h"
+#include "ItemOnGround.h"
+#include "ItemInShop.h"
+#include "ItemReward.h"
 
 World::World(const RandomizerOptions& options) :
     spawnMapID(0x258), spawnX(0x1F), spawnZ(0x19), darkenedRegion(nullptr)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ItemSources/AbstractItemSource.h"
+#include "AbstractItemSource.h"
 
 class ItemShop 
 {

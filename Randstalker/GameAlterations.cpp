@@ -1,5 +1,5 @@
 #include "GameAlterations.h"
-#include "Constants/ItemCodes.h"
+#include "ItemCodes.h"
 #include "RandomizerOptions.h"
 #include "GameText.h"
 #include "MegadriveTools/MdRom.h"

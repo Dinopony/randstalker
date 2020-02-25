@@ -19,23 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constants\ItemCodes.h" />
-    <ClInclude Include="Constants\ItemSourceCodes.h" />
-    <ClInclude Include="Constants\RegionCodes.h" />
-    <ClInclude Include="Constants\SpawnLocations.h" />
+    <ClInclude Include="AbstractItemSource.h" />
     <ClInclude Include="GameAlterations.h" />
     <ClInclude Include="GameText.h" />
+    <ClInclude Include="ItemChest.h" />
+    <ClInclude Include="ItemCodes.h" />
+    <ClInclude Include="ItemInShop.h" />
+    <ClInclude Include="ItemOnGround.h" />
+    <ClInclude Include="ItemReward.h" />
     <ClInclude Include="ItemShop.h" />
     <ClInclude Include="Item.h" />
-    <ClInclude Include="ItemSources\AbstractItemSource.h" />
-    <ClInclude Include="ItemSources\ItemChest.h" />
-    <ClInclude Include="ItemSources\ItemInShop.h" />
-    <ClInclude Include="ItemSources\ItemOnGround.h" />
-    <ClInclude Include="ItemSources\ItemReward.h" />
+    <ClInclude Include="ItemSourceCodes.h" />
     <ClInclude Include="MegadriveTools\MdCode.h" />
     <ClInclude Include="MegadriveTools\MdRom.h" />
     <ClInclude Include="MegadriveTools\MdTypes.h" />
     <ClInclude Include="RandomizerOptions.h" />
+    <ClInclude Include="RegionCodes.h" />
+    <ClInclude Include="SpawnLocations.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TreeMap.h" />
     <ClInclude Include="World.h" />

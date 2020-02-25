@@ -6,7 +6,7 @@
 #include <chrono>
 #include <fstream>
 #include "Tools.h"
-#include "Constants/SpawnLocations.h"
+#include "SpawnLocations.h"
 
 class RandomizerOptions 
 {
