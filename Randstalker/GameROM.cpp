@@ -76,7 +76,7 @@ void GameROM::setBytes(uint32_t address, std::vector<uint8_t> bytes)
 	}
 }
 
-void GameROM::setCode(uint32_t address, AsmCode& code)
+void GameROM::setCode(uint32_t address, const asm68k::Code& code)
 {
 	this->setBytes(address, code.getBytes());
 }
@@ -105,7 +105,7 @@ uint32_t GameROM::injectLong(uint32_t longWord)
 	return injectionAddressOnStart;
 }
 
-uint32_t GameROM::injectCode(AsmCode& code, const std::string& label)
+uint32_t GameROM::injectCode(const asm68k::Code& code, const std::string& label)
 {
 	uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
 

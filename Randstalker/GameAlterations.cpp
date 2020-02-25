@@ -6,21 +6,6 @@
 #include <cstdint>
 #include <vector>
 
-/*
-constexpr uint16_t OPCODE_MOVB =	0x13FC;
-constexpr uint16_t OPCODE_MOVW =	0x33FC;
-constexpr uint16_t OPCODE_MOVL =    0x23FC;
-constexpr uint16_t OPCODE_RTS =		0x4E75;
-constexpr uint16_t OPCODE_JSR =		0x4EB9;
-constexpr uint16_t OPCODE_JMP =		0x4EF9;
-constexpr uint16_t OPCODE_NOP =		0x4E71;
-constexpr uint16_t OPCODE_BRA =		0x6000;
-constexpr uint16_t OPCODE_BNE =		0x6600;
-constexpr uint16_t OPCODE_BEQ =		0x6700;
-constexpr uint16_t OPCODE_BLT =		0x6D00;
-constexpr uint16_t OPCODE_BGT =		0x6E00;
-*/
-
 void alterGameStart(GameROM& rom, const RandomizerOptions& options)
 {
     // ------- Inject flags init function ---------
@@ -73,16 +58,16 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
         flagArray[0x5C] |= 0x11;
     }
 
-    AsmCode funcInitFlags;
+    asm68k::Code funcInitFlags;
 
     // Set the orientation byte of Nigel to 88 (south-west) on game start
-    funcInitFlags.moveb(0x88, 0xFF5404);
+    funcInitFlags.moveb(0x88, addr_(0xFF5404));
 
     for(int i=0 ; i<0x60 ; i+=0x2)
     {
         uint16_t value = (static_cast<uint16_t>(flagArray[i]) << 8) + static_cast<uint16_t>(flagArray[i+1]);
         if(value)
-            funcInitFlags.movew(value, 0xFF1000 + static_cast<uint32_t>(i));
+            funcInitFlags.movew(value, addr_(0xFF1000+i));
     }
 
     funcInitFlags.rts();
@@ -95,7 +80,7 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
     // 0x002700:
         // Before: 	[08F9] bset 3 -> $FF1027
         // After:	[4EB9] jsr $1FFAD0 ; [4E71] nop
-    rom.setCode(0x002700, AsmCode().jsr(funcInitFlagsAddr).nop());
+    rom.setCode(0x002700, asm68k::Code().jsr(funcInitFlagsAddr).nop());
 
     // ------- Remove cutscene flag (no input allowed) ---------
     // Usually, when starting a new game, it is automatically put into "cutscene mode" to let the intro roll without allowing the player
@@ -104,7 +89,7 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
     // 0x00281A:
         // Before:	[33FC] move.w 0x00FE -> $FF12DE
         // After:	[4E71] nop (4 times)
-    rom.setCode(0x281A, AsmCode().nop(4));
+    rom.setCode(0x281A, asm68k::Code().nop(4));
 }
 
 void fixAxeMagicCheck(GameROM& rom)
@@ -145,7 +130,7 @@ void fixArmletCheck(GameROM& rom)
     // 0x013A80: put a RTS instead of the armlet removal and all (not exactly sure why it works perfectly, but it does)
         // Before:  4E F9
         // After:	4E 75 (rts)
-    rom.setCode(0x013A8A, AsmCode().rts());
+    rom.setCode(0x013A8A, asm68k::Code().rts());
 }
 
 void fixSunstoneCheck(GameROM& rom)
@@ -172,14 +157,14 @@ void fixCryptBehavior(GameROM& rom)
     // 0x019DF6:
         // Before:	0839 0006 00FF1014 (btst bit 6 in FF1014) ; 66 14 (bne $19E14)
         // After:	4EB9 00019E14 (jsr $19E14; 4E71 4E71 (nop nop)
-    rom.setCode(0x19DF6, AsmCode().nop(5));
+    rom.setCode(0x19DF6, asm68k::Code().nop(5));
 
     // 2) Change the room exit check and shadow mummy appearance from "if armlet is owned" to "chest was opened"
     // 0x0117E8:
         // Before:	103C 001F ; 4EB9 00022ED0 ; 4A41 ; 6B00 F75C (bmi $10F52)
         // After:	0839 0002 00FF1097 (btst 2 FF1097)	; 6700 F75C (bne $10F52)
-    AsmCode injectChangeCryptExitCheck;
-    injectChangeCryptExitCheck.btst(0x2, 0xFF1097);
+    asm68k::Code injectChangeCryptExitCheck;
+    injectChangeCryptExitCheck.btst(0x2, addr_(0xFF1097));
     injectChangeCryptExitCheck.nop(2);
     injectChangeCryptExitCheck.beq(); // beq $10F52
     rom.setCode(0x117E8, injectChangeCryptExitCheck);
@@ -201,7 +186,7 @@ void fixMirAfterLakeShrineCheck(GameROM& rom)
 void fixLogsRoomExitCheck(GameROM& rom)
 {
     // Remove logs check
-    rom.setCode(0x011EC4, AsmCode().bra());
+    rom.setCode(0x011EC4, asm68k::Code().bra());
 }
 
 void fixArmletSkip(GameROM& rom)
@@ -215,19 +200,13 @@ void fixArmletSkip(GameROM& rom)
 
 void fixTreeCuttingGlitch(GameROM& rom)
 {
-    AsmCode funcFixTreeCuttingGlitch;
-
     // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
-    // tst.b ($36,A5) [4A2D 0036]
-    funcFixTreeCuttingGlitch.addOpcode(0x4A2D);
-    funcFixTreeCuttingGlitch.addWord(0x0036);
-
+    asm68k::Code funcFixTreeCuttingGlitch;
+ 
+    funcFixTreeCuttingGlitch.tstb(addroffset_(reg_A5, 0x36));  // tst.b ($36,A5) [4A2D 0036]
     funcFixTreeCuttingGlitch.beq(4);
-        // cmpi.w #0126, ($A,A5) [0C6D 0126]    - Only allow the "killable because holding money" check if the enemy is not a tree
-        funcFixTreeCuttingGlitch.addOpcode(0x0C6D);
-        funcFixTreeCuttingGlitch.addWord(0x0126);
-        funcFixTreeCuttingGlitch.addWord(0x000A);
-        
+        // Only allow the "killable because holding money" check if the enemy is not a tree
+        funcFixTreeCuttingGlitch.cmpiw(0x126, addroffset_(reg_A5, 0xA));
         funcFixTreeCuttingGlitch.beq(2);
             funcFixTreeCuttingGlitch.jmp(0x16284);
     funcFixTreeCuttingGlitch.rts();
@@ -235,7 +214,7 @@ void fixTreeCuttingGlitch(GameROM& rom)
     uint32_t funcAddr = rom.injectCode(funcFixTreeCuttingGlitch);
 
     // Call the injected function when killing an enemy
-    rom.setCode(0x01625C, AsmCode().jsr(funcAddr));
+    rom.setCode(0x01625C, asm68k::Code().jsr(funcAddr));
 }
 
 void fixMirTowerPriestRoomItems(GameROM& rom)
@@ -266,25 +245,22 @@ void fixFaraLifestockChest(GameROM& rom)
     // Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
 
     // --------- Function to remove all entities but the chest when coming back in the room ---------
-    AsmCode funcRemoveAllEntitiesButChestInFaraRoom;
+    asm68k::Code funcRemoveAllEntitiesButChestInFaraRoom;
 
-    funcRemoveAllEntitiesButChestInFaraRoom.movemToStack();
-    funcRemoveAllEntitiesButChestInFaraRoom.leaToAx(0xFF5480, REG_A0);
-    funcRemoveAllEntitiesButChestInFaraRoom.moveqToDx(0xD, REG_D0);
-    funcRemoveAllEntitiesButChestInFaraRoom.movewToAddressInAx(0x7F7F, REG_A0);
-    funcRemoveAllEntitiesButChestInFaraRoom.addaToAx(0x80, REG_A0);
-    
-    // dbra D0, -12 [51C8 FFF4]
-    funcRemoveAllEntitiesButChestInFaraRoom.addOpcode(0x51C8);
-    funcRemoveAllEntitiesButChestInFaraRoom.addWord(0xFFF4);
-
-    funcRemoveAllEntitiesButChestInFaraRoom.movemFromStack();
+    funcRemoveAllEntitiesButChestInFaraRoom.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
+    funcRemoveAllEntitiesButChestInFaraRoom.lea(0xFF5480, reg_A0);
+    funcRemoveAllEntitiesButChestInFaraRoom.moveq(0xD, reg_D0);
+    funcRemoveAllEntitiesButChestInFaraRoom.label("loop_remove_entities");
+    funcRemoveAllEntitiesButChestInFaraRoom.movew(0x7F7F, addrin_(reg_A0));
+    funcRemoveAllEntitiesButChestInFaraRoom.adda(0x80, reg_A0);
+    funcRemoveAllEntitiesButChestInFaraRoom.dbra(reg_D0, "loop_remove_entities");
+    funcRemoveAllEntitiesButChestInFaraRoom.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
     funcRemoveAllEntitiesButChestInFaraRoom.rts();
 
     uint32_t funcAddr = rom.injectCode(funcRemoveAllEntitiesButChestInFaraRoom);
 
     // Call the injected function
-    rom.setCode(0x019BE0, AsmCode().jsr(funcAddr).nop());
+    rom.setCode(0x019BE0, asm68k::Code().jsr(funcAddr).nop());
 
     // --------- Moving the chest to the ground ---------
     rom.setWord(0x01BF6C, 0x1A93);
@@ -385,13 +361,10 @@ void alterKingNolesCaveTeleporterCheck(GameROM& rom)
     // We need to inject a procedure checking "is D0 equal to FF" to replace the "bmi" previously used which was preventing
     // from checking flags above 0x80 (the one we need to check is 0xD0).
 
-    AsmCode procImproveFlagCheck;
+    asm68k::Code procImproveFlagCheck;
 
-    // move.b ($2,A0), D0
-    procImproveFlagCheck.addOpcode(0x1028);
-    procImproveFlagCheck.addWord(0x0002);
-
-    procImproveFlagCheck.cmpibWithDx(0xFF, REG_D0);
+    procImproveFlagCheck.moveb(addroffset_(reg_A0,0x2), reg_D0);     // 1028 0002
+    procImproveFlagCheck.cmpib(0xFF, reg_D0);
     procImproveFlagCheck.bne(2);
     procImproveFlagCheck.jmp(0x4E2E);
     procImproveFlagCheck.jmp(0x4E20);
@@ -399,7 +372,7 @@ void alterKingNolesCaveTeleporterCheck(GameROM& rom)
     uint32_t procAddr = rom.injectCode(procImproveFlagCheck);
 
     // Replace the (move.b, bmi, ext.w) by a jmp to the injected procedure
-    rom.setCode(0x004E18, AsmCode().clrwDx(REG_D0).jmp(procAddr));
+    rom.setCode(0x004E18, asm68k::Code().clrw(reg_D0).jmp(procAddr));
 }
 
 void alterMercatorDocksShopCheck(GameROM& rom)
@@ -432,7 +405,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
     rom.setWord(0x0087D2, 0x5488);
 
     // btst #1, $FF104D (0839 0005 00FF1045)
-    rom.setCode(0x0087D6, AsmCode().btst(0x1, 0xFF104D).nop(6));
+    rom.setCode(0x0087D6, asm68k::Code().btst(0x1, addr_(0xFF104D)).nop(6));
 
 //    for (uint32_t addr = 0x87DD; addr >= 0x87C2; addr -= 0x01)
 //        rom.setByte(addr + 2, rom.getByte(addr));
@@ -485,22 +458,12 @@ void alterGoldRewardsHandling(GameROM& rom)
     // Input: D0 = gold reward ID (offset from 0x40)
     // Output: D0 = gold reward value
 
-    AsmCode funcGetGoldReward;
+    asm68k::Code funcGetGoldReward;
 
-    // movem A0 into -(A7)
-    funcGetGoldReward.addOpcode(0x48E7);
-    funcGetGoldReward.addWord(0x0080);
-
-    funcGetGoldReward.leaToAx(rom.getStoredAddress("data_gold_values"), REG_A0);
-
-    // move.b (A0, D0), D0
-    funcGetGoldReward.addOpcode(0x1030);
-    funcGetGoldReward.addWord(0x0000);
-
-    // movem A0 from (A7)+
-    funcGetGoldReward.addOpcode(0x4CDF);
-    funcGetGoldReward.addWord(0x0100);
-
+    funcGetGoldReward.movemToStack({}, { reg_A0 });
+    funcGetGoldReward.lea(rom.getStoredAddress("data_gold_values"), reg_A0);
+    funcGetGoldReward.moveb(addroffset_(reg_A0, reg_D0, asm68k::Size::WORD), reg_D0);  // move.b (A0, D0.w), D0 : 1030 0000
+    funcGetGoldReward.movemFromStack({}, { reg_A0 });
     funcGetGoldReward.rts();
 
     uint32_t funcAddr = rom.injectCode(funcGetGoldReward);
@@ -508,7 +471,7 @@ void alterGoldRewardsHandling(GameROM& rom)
     // Set the call to the injected function
     // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
     // After:       jsr to injected function
-    rom.setCode(0x0070E8, AsmCode().jsr(funcAddr));
+    rom.setCode(0x0070E8, asm68k::Code().jsr(funcAddr));
 }
 
 void alterLifestockHandlingInShops(GameROM& rom)
@@ -548,12 +511,12 @@ void removeSailorInDarkPort(GameROM& rom)
 void addNewlineHandlingInDynamicText(GameROM& rom)
 {
     // Inject a new condition in characters processing to handle newlines in dynamic text when 0x6C character is encountered
-    AsmCode procHandleNewlineInCustomText;
+    asm68k::Code procHandleNewlineInCustomText;
 
-    procHandleNewlineInCustomText.cmpiwWithDx(0xFFFF, REG_D0);
+    procHandleNewlineInCustomText.cmpiw(0xFFFF, reg_D0);
     procHandleNewlineInCustomText.bne(2);
         procHandleNewlineInCustomText.jmp(0x230C0);
-    procHandleNewlineInCustomText.cmpiwWithDx(0x006C, REG_D0);
+    procHandleNewlineInCustomText.cmpiw(0x006C, reg_D0);
     procHandleNewlineInCustomText.bne(3);
         procHandleNewlineInCustomText.jsr(0x22F7C);   // "func_textbox_line_feed"
         procHandleNewlineInCustomText.jmp(0x23094);   // process next character
@@ -562,7 +525,7 @@ void addNewlineHandlingInDynamicText(GameROM& rom)
     uint32_t procAddr = rom.injectCode(procHandleNewlineInCustomText, "proc_handle_newline_in_custom_text");
 
     // Jump to the injected procedure
-    rom.setCode(0x0230A2, AsmCode().jmp(procAddr));
+    rom.setCode(0x0230A2, asm68k::Code().jmp(procAddr));
 }
 
 void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
@@ -571,38 +534,38 @@ void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
     rom.injectDataBlock(text.getBytes(), "data_text_jewels_alert");
 
     // ----------- Handle custom text func ----------------------
-    AsmCode funcHandleCustomText;
+    asm68k::Code funcHandleCustomText;
 
-    funcHandleCustomText.movewToDx(0xFFFF, REG_D0);
-    funcHandleCustomText.moveb(0x0, 0xFF1144);  // to reset textbox state
-    funcHandleCustomText.movemToStack();
+    funcHandleCustomText.movew(0xFFFF, reg_D0);
+    funcHandleCustomText.moveb(0x00, addr_(0xFF1144));  // to reset textbox state
+    funcHandleCustomText.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
     funcHandleCustomText.jsr(0x22FCC);  // preconfigure textbox writing
-    funcHandleCustomText.movel(rom.getStoredAddress("data_text_jewels_alert"), 0xFF1844);
+    funcHandleCustomText.movel(rom.getStoredAddress("data_text_jewels_alert"), addr_(0xFF1844));
     funcHandleCustomText.jmp(0x22F34);  // handle text loop
 
     rom.injectCode(funcHandleCustomText, "func_handle_custom_text");
 
     // ----------- Jewel textbox handling ----------------------
-    AsmCode procHandleJewelsCheck;
+    asm68k::Code procHandleJewelsCheck;
 
-    procHandleJewelsCheck.btst(0x1, 0xFF1054); // Test if red jewel is owned
+    procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
     procHandleJewelsCheck.beq(3);
-    procHandleJewelsCheck.btst(0x1, 0xFF1055); // Test if purple jewel is owned
+    procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
     procHandleJewelsCheck.bne(7);
-        procHandleJewelsCheck.movemToStack();
+        procHandleJewelsCheck.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
         procHandleJewelsCheck.jsr(0x22EE8);  // "func_open_textbox"
         procHandleJewelsCheck.jsr(rom.getStoredAddress("func_handle_custom_text"));
         procHandleJewelsCheck.jsr(0x22EA0);  // "func_close_textbox"
-        procHandleJewelsCheck.movemFromStack();
+        procHandleJewelsCheck.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
         procHandleJewelsCheck.rts();
-    procHandleJewelsCheck.moveqToDx(0x7, REG_D0);
+    procHandleJewelsCheck.moveq(0x7, reg_D0);
     procHandleJewelsCheck.jsr(0xE110);  // "func_teleport_kazalt"
     procHandleJewelsCheck.jmp(0x62FA);
 
     uint32_t procHandleJewelsAddr = rom.injectCode(procHandleJewelsCheck, "proc_handle_jewels_check");
 
     // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
-    rom.setCode(0x62F4, AsmCode().jmp(procHandleJewelsAddr));
+    rom.setCode(0x62F4, asm68k::Code().jmp(procHandleJewelsAddr));
 }
 
 void addStatueOfJyptaGoldsOverTime(GameROM& rom)
@@ -610,19 +573,19 @@ void addStatueOfJyptaGoldsOverTime(GameROM& rom)
     constexpr uint16_t goldsPerCycle = 0x0002;
 
     // ============== Function to handle walk abilities (healing boots, jypta statue...) ==============
-    AsmCode funcHandleWalkAbilities;
+    asm68k::Code funcHandleWalkAbilities;
 
     // If Statue of Jypta is owned, gain gold over time
-    funcHandleWalkAbilities.btst(0x5, 0xFF104E);
+    funcHandleWalkAbilities.btst(0x5, addr_(0xFF104E));
     funcHandleWalkAbilities.beq(3);
-        funcHandleWalkAbilities.movewToDx(goldsPerCycle, REG_D0);
+        funcHandleWalkAbilities.movew(goldsPerCycle, reg_D0);
         funcHandleWalkAbilities.jsr(0x177DC);   // rom.getStoredAddress("func_earn_gold");
 
     // If Healing boots are equipped, gain life over time
-    funcHandleWalkAbilities.cmpib(0x7, 0xFF1150);
+    funcHandleWalkAbilities.cmpib(0x7, addr_(0xFF1150));
     funcHandleWalkAbilities.bne(4);
-        funcHandleWalkAbilities.movewToDx(0x100, REG_D0);
-        funcHandleWalkAbilities.leaToAx(0xFF5400, REG_A5);
+        funcHandleWalkAbilities.movew(0x100, reg_D0);
+        funcHandleWalkAbilities.lea(0xFF5400, reg_A5);
         funcHandleWalkAbilities.jsr(0x1780E);   // rom.getStoredAddress("func_heal_hp");
 
     funcHandleWalkAbilities.rts();
@@ -631,9 +594,9 @@ void addStatueOfJyptaGoldsOverTime(GameROM& rom)
 
     // ============== Hook the function inside game code ==============
     
-    rom.setCode(0x16696, AsmCode().nop(5));
+    rom.setCode(0x16696, asm68k::Code().nop(5));
 
-    rom.setCode(0x166D0, AsmCode().jsr(funcAddr).nop(4));
+    rom.setCode(0x166D0, asm68k::Code().jsr(funcAddr).nop(4));
 }
 
 void addLithographChestInKazaltTeleporterRoom(GameROM& rom)
@@ -721,31 +684,31 @@ void replaceFaraInElderHouseByChest(GameROM& rom)
 void handleArmorUpgrades(GameROM& rom)
 {
     // --------------- Alter item in D0 register function ---------------
-    AsmCode funcAlterItemInD0;
+    asm68k::Code funcAlterItemInD0;
 
     // Check if item ID is between 09 and 0C (armors). If not, branch to return.
-    funcAlterItemInD0.cmpibWithDx(0x09, REG_D0);
+    funcAlterItemInD0.cmpib(ITEM_STEEL_BREAST, reg_D0);
     funcAlterItemInD0.blt(13);
-    funcAlterItemInD0.cmpibWithDx(0x0C, REG_D0);
+    funcAlterItemInD0.cmpib(ITEM_HYPER_BREAST, reg_D0);
     funcAlterItemInD0.bgt(11);
 
     // By default, put Hyper breast as given armor
-    funcAlterItemInD0.movewToDx(0x0C, REG_D0);
+    funcAlterItemInD0.movew(ITEM_HYPER_BREAST, reg_D0);
 
     // If Shell breast is not owned, put Shell breast
-    funcAlterItemInD0.btst(0x05, 0xFF1045);
+    funcAlterItemInD0.btst(0x05, addr_(0xFF1045));
     funcAlterItemInD0.bne(2);
-    funcAlterItemInD0.movewToDx(0x0B, REG_D0);
+    funcAlterItemInD0.movew(ITEM_SHELL_BREAST, reg_D0);
 
     // If Chrome breast is not owned, put Chrome breast
-    funcAlterItemInD0.btst(0x01, 0xFF1045);
+    funcAlterItemInD0.btst(0x01, addr_(0xFF1045));
     funcAlterItemInD0.bne(2);
-    funcAlterItemInD0.movewToDx(0x0A, REG_D0);
+    funcAlterItemInD0.movew(ITEM_CHROME_BREAST, reg_D0);
 
     // If Steel breast is not owned, put Steel breast
-    funcAlterItemInD0.btst(0x05, 0xFF1044);
+    funcAlterItemInD0.btst(0x05, addr_(0xFF1044));
     funcAlterItemInD0.bne(2);
-    funcAlterItemInD0.movewToDx(0x09, REG_D0);
+    funcAlterItemInD0.movew(ITEM_STEEL_BREAST, reg_D0);
 
     funcAlterItemInD0.rts();
 
@@ -753,102 +716,78 @@ void handleArmorUpgrades(GameROM& rom)
 
 
     // --------------- Change item in reward box function ---------------
-    AsmCode funcChangeItemRewardBox;
+    asm68k::Code funcChangeItemRewardBox;
 
     funcChangeItemRewardBox.jsr(funcAlterItemInD0Addr);
-    funcChangeItemRewardBox.movewRegToAddress(REG_D0, 0xFF1196);
+    funcChangeItemRewardBox.movew(reg_D0, addr_(0xFF1196));
     funcChangeItemRewardBox.rts();
 
     uint32_t funcChangeItemRewardBoxAddr = rom.injectCode(funcChangeItemRewardBox);
 
     // --------------- Change item given by taking item on ground function ---------------
-    AsmCode funcAlterItemGivenByGroundSource;
+    asm68k::Code funcAlterItemGivenByGroundSource;
 
-    // movem D7,A0 -(A7)	(48E7 0180)
-    funcAlterItemGivenByGroundSource.addOpcode(0x48E7);
-    funcAlterItemGivenByGroundSource.addWord(0x0180);
-    
-    funcAlterItemGivenByGroundSource.cmpibWithDx(0xC, REG_D0);
-    funcAlterItemGivenByGroundSource.bgt(11); // to movem
-    funcAlterItemGivenByGroundSource.cmpibWithDx(0x9, REG_D0);
-    funcAlterItemGivenByGroundSource.blt(9);  // to movem
+    funcAlterItemGivenByGroundSource.movemToStack({ reg_D7 }, { reg_A0 }); // movem D7,A0 -(A7)	(48E7 0180)
 
+    funcAlterItemGivenByGroundSource.cmpib(ITEM_HYPER_BREAST, reg_D0);
+    funcAlterItemGivenByGroundSource.bgt(9); // to movem
+    funcAlterItemGivenByGroundSource.cmpib(ITEM_STEEL_BREAST, reg_D0);
+    funcAlterItemGivenByGroundSource.blt(7);  // to movem
+  
     funcAlterItemGivenByGroundSource.jsr(funcAlterItemInD0Addr);
-
-    // move ($3B,A5), D7	(1E2D 003B)
-    funcAlterItemGivenByGroundSource.addOpcode(0x1E2D);
-    funcAlterItemGivenByGroundSource.addWord(0x003B);
-
-    funcAlterItemGivenByGroundSource.subibFromDx(0xC9, REG_D7);
-    funcAlterItemGivenByGroundSource.cmpaWithAx(0xFF5400, REG_A5);
-    funcAlterItemGivenByGroundSource.blt(3);    // to movem
-
-    funcAlterItemGivenByGroundSource.bsetDxOnAddress(REG_D7, 0xFF103F);
-
-    // movem (A7)+, D7,A0	(4CDF 0180)
-    funcAlterItemGivenByGroundSource.addOpcode(0x4CDF);
-    funcAlterItemGivenByGroundSource.addWord(0x0180);
-     
-    funcAlterItemGivenByGroundSource.leaToAx(0xFF1040, REG_A0);
+        funcAlterItemGivenByGroundSource.moveb(addroffset_(reg_A5, 0x3B), reg_D7);  // move ($3B,A5), D7	(1E2D 003B)
+        funcAlterItemGivenByGroundSource.subib(0xC9, reg_D7);
+        funcAlterItemGivenByGroundSource.cmpa(l_(0xFF5400), reg_A5);
+        funcAlterItemGivenByGroundSource.blt(2);    // to movem
+            funcAlterItemGivenByGroundSource.bset(reg_D7, addr_(0xFF103F)); // set a flag when an armor is taken on the ground for it to disappear afterwards
+ 
+    funcAlterItemGivenByGroundSource.movemFromStack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
+    funcAlterItemGivenByGroundSource.lea(0xFF1040, reg_A0);
     funcAlterItemGivenByGroundSource.rts();
 
     uint32_t funcAlterItemGivenByGroundSourceAddr = rom.injectCode(funcAlterItemGivenByGroundSource);
 
     // --------------- Change visible item for items on ground function ---------------
-    AsmCode funcAlterItemVisibleForGroundSource;
+    asm68k::Code funcAlterItemVisibleForGroundSource;
 
-    // movem D7,A0 -(A7)
-    funcAlterItemVisibleForGroundSource.addOpcode(0x48E7);
-    funcAlterItemVisibleForGroundSource.addWord(0x0180);
+    funcAlterItemVisibleForGroundSource.movemToStack({ reg_D7 }, { reg_A0 });  // movem D7,A0 -(A7)
 
-    funcAlterItemVisibleForGroundSource.subibFromDx(0xC0, REG_D0);
-    funcAlterItemVisibleForGroundSource.cmpibWithDx(0x0C, REG_D0);
-    funcAlterItemVisibleForGroundSource.bgt(11);
-    funcAlterItemVisibleForGroundSource.cmpibWithDx(0x09, REG_D0);
-    funcAlterItemVisibleForGroundSource.blt(9);
-
-    // move D0, D7
-    funcAlterItemVisibleForGroundSource.addOpcode(0x1E00);
-
-    funcAlterItemVisibleForGroundSource.subibFromDx(0x9, REG_D7);
-
-    // btest D7, FF103F
-    funcAlterItemVisibleForGroundSource.addOpcode(0x0F39);
-    funcAlterItemVisibleForGroundSource.addLong(0x00FF103F);
-
-    funcAlterItemVisibleForGroundSource.bne(3);
-        funcAlterItemVisibleForGroundSource.jsr(funcAlterItemInD0Addr);
-        funcAlterItemVisibleForGroundSource.bra(2);
-    funcAlterItemVisibleForGroundSource.movewToDx(0x3F, REG_D0);
-
-    // move D0, ($36,A1) (1340 0036)
-    funcAlterItemVisibleForGroundSource.addOpcode(0x1340);
-    funcAlterItemVisibleForGroundSource.addWord(0x0036);
-
-    // movem (A7)+, D7,A0	(4CDF 0180)
-    funcAlterItemVisibleForGroundSource.addOpcode(0x4CDF);
-    funcAlterItemVisibleForGroundSource.addWord(0x0180);
-    
+    funcAlterItemVisibleForGroundSource.subib(0xC0, reg_D0);
+    funcAlterItemVisibleForGroundSource.cmpib(ITEM_HYPER_BREAST, reg_D0);
+    funcAlterItemVisibleForGroundSource.bgt(10); // to move D0 in item slot
+    funcAlterItemVisibleForGroundSource.cmpib(ITEM_STEEL_BREAST, reg_D0);
+    funcAlterItemVisibleForGroundSource.blt(8); // to move D0 in item slot
+        funcAlterItemVisibleForGroundSource.moveb(reg_D0, reg_D7);
+        funcAlterItemVisibleForGroundSource.subib(ITEM_STEEL_BREAST, reg_D7);
+        funcAlterItemVisibleForGroundSource.btst(reg_D7, addr_(0xFF103F));
+        funcAlterItemVisibleForGroundSource.bne(3);
+            // Item was not already taken, alter the armor inside
+            funcAlterItemVisibleForGroundSource.jsr(funcAlterItemInD0Addr);
+            funcAlterItemVisibleForGroundSource.bra(2);
+            // Item was already taken, remove it by filling it with an empty item
+            funcAlterItemVisibleForGroundSource.movew(ITEM_NONE, reg_D0);
+    funcAlterItemVisibleForGroundSource.moveb(reg_D0, addroffset_(reg_A1, 0x36)); // move D0, ($36,A1) (1340 0036)
+    funcAlterItemVisibleForGroundSource.movemFromStack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
     funcAlterItemVisibleForGroundSource.rts();
     
     uint32_t funcAlterItemVisibleForGroundSourceAddr = rom.injectCode(funcAlterItemVisibleForGroundSource);
 
     // --------------- Hooks ---------------
     // In 'chest reward' function, replace the item ID move by the injected function
-    rom.setCode(0x0070BE, AsmCode().jsr(funcChangeItemRewardBoxAddr));
+    rom.setCode(0x0070BE, asm68k::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // In 'NPC reward' function, replace the item ID move by the injected function
-    rom.setCode(0x028DD8, AsmCode().jsr(funcChangeItemRewardBoxAddr));
+    rom.setCode(0x028DD8, asm68k::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // In 'item on ground reward' function, replace the item ID move by the injected function
     rom.setWord(0x024ADC, 0x3002); // put the move D2,D0 before the jsr because it helps us while changing nothing to the usual logic
-    rom.setCode(0x024ADE, AsmCode().jsr(funcChangeItemRewardBoxAddr));
+    rom.setCode(0x024ADE, asm68k::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // Replace 2928C lea (41F9 00FF1040) by a jsr to injected function
-    rom.setCode(0x02928C, AsmCode().jsr(funcAlterItemGivenByGroundSourceAddr));
+    rom.setCode(0x02928C, asm68k::Code().jsr(funcAlterItemGivenByGroundSourceAddr));
 
     // Replace 1963C - 19644 (0400 00C0 ; 1340 0036) by a jsr to a replacement function
-    rom.setCode(0x01963C, AsmCode().jsr(funcAlterItemVisibleForGroundSourceAddr).nop());
+    rom.setCode(0x01963C, asm68k::Code().jsr(funcAlterItemVisibleForGroundSourceAddr).nop());
 }
 
 void addFunctionToItemsOnUse(GameROM& rom)
@@ -856,36 +795,36 @@ void addFunctionToItemsOnUse(GameROM& rom)
     // ------------- Lithograph hint function -------------
     uint32_t lithographHintFunctionAddr = rom.getCurrentInjectionAddress();
 
-    AsmCode funcLithographHint;
+    asm68k::Code funcLithographHint;
 
-    funcLithographHint.movewToDx(0xFFFF, REG_D0);
-    funcLithographHint.movemToStack();
+    funcLithographHint.movew(0xFFFF, reg_D0);
+    funcLithographHint.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
     funcLithographHint.jsr(0x22FCC);
-    funcLithographHint.movel(rom.getStoredAddress("data_lithograph_hint_text"), 0xFF1844);
+    funcLithographHint.movel(rom.getStoredAddress("data_lithograph_hint_text"), addr_(0xFF1844));
     funcLithographHint.jmp(0x22F34);
 
     uint32_t funcLithographHintAddr = rom.injectCode(funcLithographHint);
 
     // ------------- Extended item handling function -------------
 
-    AsmCode funcExtendedItemHandling;
+    asm68k::Code funcExtendedItemHandling;
 
-    funcExtendedItemHandling.cmpibWithDx(ITEM_RECORD_BOOK, REG_D0);
+    funcExtendedItemHandling.cmpib(ITEM_RECORD_BOOK, reg_D0);
     funcExtendedItemHandling.bne(3);
         funcExtendedItemHandling.jsr(0x1592); // "func_save_game"
         funcExtendedItemHandling.rts();
-    funcExtendedItemHandling.cmpibWithDx(ITEM_SPELL_BOOK, REG_D0);
+    funcExtendedItemHandling.cmpib(ITEM_SPELL_BOOK, reg_D0);
     funcExtendedItemHandling.bne(3);
         funcExtendedItemHandling.jsr(0xDC1C); // "func_abracadabra"
         funcExtendedItemHandling.rts();
-    funcExtendedItemHandling.cmpibWithDx(ITEM_LITHOGRAPH, REG_D0);
+    funcExtendedItemHandling.cmpib(ITEM_LITHOGRAPH, reg_D0);
     funcExtendedItemHandling.bne(2);
         funcExtendedItemHandling.jsr(lithographHintFunctionAddr);
     funcExtendedItemHandling.rts();
     
     uint32_t funcExtendedItemHandlingAddr = rom.injectCode(funcExtendedItemHandling);
 
-    rom.setCode(0x00DBA8, AsmCode().jsr(funcExtendedItemHandlingAddr).nop(4));
+    rom.setCode(0x00DBA8, asm68k::Code().jsr(funcExtendedItemHandlingAddr).nop(4));
 
     // -------------------- Other modifications ---------------------
 
@@ -910,6 +849,7 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
     alterItemOrderInMenu(rom);
     alterLifestockHandlingInShops(rom);
 
+    // Item check fixes
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
     fixArmletCheck(rom);

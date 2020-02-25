@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-class AsmCode;
+namespace asm68k { class Code; }
 
 class GameROM 
 {
@@ -21,12 +21,12 @@ public:
 	void setWord(uint32_t address, uint16_t word);
 	void setLong(uint32_t address, uint32_t longWord);
 	void setBytes(uint32_t address, std::vector<uint8_t> bytes);
-	void setCode(uint32_t address, AsmCode& code);
+	void setCode(uint32_t address, const asm68k::Code& code);
 
 	uint32_t injectByte(uint8_t byte);
 	uint32_t injectWord(uint16_t word);
 	uint32_t injectLong(uint32_t longWord);
-	uint32_t injectCode(AsmCode& code, const std::string& label="");
+	uint32_t injectCode(const asm68k::Code& code, const std::string& label="");
 
 	uint32_t injectDataBlock(std::vector<uint8_t> bytes, const std::string& name);
 	uint32_t reserveDataBlock(uint16_t byteCount, const std::string& name);
