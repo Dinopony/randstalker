@@ -1,15 +1,9 @@
-#include "AsmCode.h"
+#include "MdCode.h"
 
 #include <set>
 
-namespace asm68k
+namespace md
 {
-
-    static uint16_t bytesToWord(uint8_t msb, uint8_t lsb)
-    {
-        return (static_cast<uint16_t>(msb) << 8) + static_cast<uint16_t>(lsb);
-    }
-
     void Code::addByte(uint8_t byte)
     {
         _bytes.push_back(byte);
@@ -53,7 +47,7 @@ namespace asm68k
         return *this;
     }
 
-    Code& Code::cmpi(const Data& value, const Param& other, Size size)
+    Code& Code::cmpi(const ImmediateValue& value, const Param& other, Size size)
     {
         uint16_t sizeCode = 0x0;
         if (size == Size::WORD)
@@ -235,7 +229,7 @@ namespace asm68k
         return *this;
     }
 
-    Code& Code::subi(const Data& value, const Param& target, Size size)
+    Code& Code::subi(const ImmediateValue& value, const Param& target, Size size)
     {
         uint16_t sizeCode = 0x0;
         if (size == Size::WORD)

@@ -2,9 +2,10 @@
 
 #include "Constants/ItemSourceCodes.h"
 #include "Constants/RegionCodes.h"
+#include "ItemSources/AbstractItemSource.h"
+
 #include "Item.h"
 #include "GameText.h"
-#include "AbstractItemSource.h"
 #include "WorldRegion.h"
 #include "RandomizerOptions.h"
 #include "TreeMap.h"
@@ -18,7 +19,7 @@ public:
     World(const RandomizerOptions& options);
     ~World();
 
-    void writeToROM(GameROM& rom);
+    void writeToROM(md::ROM& rom);
 
 private:
     void initItems();

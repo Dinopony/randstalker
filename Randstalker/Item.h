@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameROM.h"
+#include "MegadriveTools/MdRom.h"
 #include "Constants/ItemCodes.h"
 
 class Item
@@ -23,7 +23,7 @@ public:
 
     bool isAllowedOnGround() const { return _isAllowedOnGround; }
 
-    void writeToROM(GameROM& rom) const
+    void writeToROM(md::ROM& rom) const
     {
         if (_itemID < ITEM_GOLDS_START)
         {

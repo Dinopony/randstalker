@@ -19,21 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbstractItemSource.h" />
-    <ClInclude Include="AsmCode.h" />
     <ClInclude Include="Constants\ItemCodes.h" />
     <ClInclude Include="Constants\ItemSourceCodes.h" />
     <ClInclude Include="Constants\RegionCodes.h" />
     <ClInclude Include="Constants\SpawnLocations.h" />
     <ClInclude Include="GameAlterations.h" />
     <ClInclude Include="GameText.h" />
-    <ClInclude Include="ItemChest.h" />
-    <ClInclude Include="ItemInShop.h" />
-    <ClInclude Include="ItemOnGround.h" />
-    <ClInclude Include="ItemReward.h" />
     <ClInclude Include="ItemShop.h" />
-    <ClInclude Include="GameROM.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemSources\AbstractItemSource.h" />
+    <ClInclude Include="ItemSources\ItemChest.h" />
+    <ClInclude Include="ItemSources\ItemInShop.h" />
+    <ClInclude Include="ItemSources\ItemOnGround.h" />
+    <ClInclude Include="ItemSources\ItemReward.h" />
+    <ClInclude Include="MegadriveTools\MdCode.h" />
+    <ClInclude Include="MegadriveTools\MdRom.h" />
+    <ClInclude Include="MegadriveTools\MdTypes.h" />
     <ClInclude Include="RandomizerOptions.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TreeMap.h" />
@@ -42,11 +43,11 @@
     <ClInclude Include="WorldRegion.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AsmCode.cpp" />
-    <ClCompile Include="GameROM.cpp" />
     <ClCompile Include="GameText.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameAlterations.cpp" />
+    <ClCompile Include="MegadriveTools\MdCode.cpp" />
+    <ClCompile Include="MegadriveTools\MdRom.cpp" />
     <ClCompile Include="RandomizerOptions.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="WorldRandomizer.cpp" />

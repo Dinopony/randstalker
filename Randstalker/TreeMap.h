@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <string>
-#include "GameROM.h"
+#include "MegadriveTools/MdRom.h"
 
 class TreeMap {
 public:
@@ -17,7 +17,7 @@ public:
     void setTree(uint16_t treeMapID) { _treeMapID = treeMapID; }
     const std::string& getName() const { return _name; }
 
-    void writeToROM(GameROM& rom) const
+    void writeToROM(md::ROM& rom) const
     {
         rom.setWord(_leftTreeEntranceMapAddress, _treeMapID);
         rom.setWord(_rightTreeEntranceMapAddress, _treeMapID);

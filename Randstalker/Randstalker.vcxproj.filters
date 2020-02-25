@@ -19,11 +19,11 @@
     <Filter Include="Fichiers sources\Item Sources">
       <UniqueIdentifier>{6cc6c6c7-1bc2-44b3-a24f-33d6f65870a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers sources\Megadrive Tools">
+      <UniqueIdentifier>{71aee359-cc76-4520-bdaa-cd69de4e2895}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameROM.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
@@ -63,26 +63,32 @@
     <ClInclude Include="ItemShop.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="AbstractItemSource.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemChest.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemOnGround.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemInShop.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemReward.h">
-      <Filter>Fichiers sources\Item Sources</Filter>
-    </ClInclude>
     <ClInclude Include="GameText.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="AsmCode.h">
-      <Filter>Fichiers sources</Filter>
+    <ClInclude Include="ItemSources\AbstractItemSource.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemSources\ItemChest.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemSources\ItemInShop.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemSources\ItemOnGround.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemSources\ItemReward.h">
+      <Filter>Fichiers sources\Item Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="MegadriveTools\MdCode.h">
+      <Filter>Fichiers sources\Megadrive Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="MegadriveTools\MdTypes.h">
+      <Filter>Fichiers sources\Megadrive Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="MegadriveTools\MdRom.h">
+      <Filter>Fichiers sources\Megadrive Tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -104,11 +110,11 @@
     <ClCompile Include="GameText.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameROM.cpp">
-      <Filter>Fichiers sources</Filter>
+    <ClCompile Include="MegadriveTools\MdCode.cpp">
+      <Filter>Fichiers sources\Megadrive Tools</Filter>
     </ClCompile>
-    <ClCompile Include="AsmCode.cpp">
-      <Filter>Fichiers sources</Filter>
+    <ClCompile Include="MegadriveTools\MdRom.cpp">
+      <Filter>Fichiers sources\Megadrive Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

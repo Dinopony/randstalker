@@ -17,7 +17,7 @@ public:
         return (item->getID() < ITEM_NONE);
     }
 
-    virtual void writeToROM(GameROM& rom) const
+    virtual void writeToROM(md::ROM& rom) const
     {
         rom.setByte(_addressInROM, this->getItemID());
     }

@@ -2,11 +2,12 @@
 #include "Constants/ItemCodes.h"
 #include "RandomizerOptions.h"
 #include "GameText.h"
-#include "AsmCode.h"
+#include "MegadriveTools/MdRom.h"
+#include "MegadriveTools/MdCode.h"
 #include <cstdint>
 #include <vector>
 
-void alterGameStart(GameROM& rom, const RandomizerOptions& options)
+void alterGameStart(md::ROM& rom, const RandomizerOptions& options)
 {
     // ------- Inject flags init function ---------
     // Init function used to set story flags to specific values at the very beginning of the game, opening some usually closed paths
@@ -58,7 +59,7 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
         flagArray[0x5C] |= 0x11;
     }
 
-    asm68k::Code funcInitFlags;
+    md::Code funcInitFlags;
 
     // Set the orientation byte of Nigel to 88 (south-west) on game start
     funcInitFlags.moveb(0x88, addr_(0xFF5404));
@@ -80,7 +81,7 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
     // 0x002700:
         // Before: 	[08F9] bset 3 -> $FF1027
         // After:	[4EB9] jsr $1FFAD0 ; [4E71] nop
-    rom.setCode(0x002700, asm68k::Code().jsr(funcInitFlagsAddr).nop());
+    rom.setCode(0x002700, md::Code().jsr(funcInitFlagsAddr).nop());
 
     // ------- Remove cutscene flag (no input allowed) ---------
     // Usually, when starting a new game, it is automatically put into "cutscene mode" to let the intro roll without allowing the player
@@ -89,10 +90,10 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
     // 0x00281A:
         // Before:	[33FC] move.w 0x00FE -> $FF12DE
         // After:	[4E71] nop (4 times)
-    rom.setCode(0x281A, asm68k::Code().nop(4));
+    rom.setCode(0x281A, md::Code().nop(4));
 }
 
-void fixAxeMagicCheck(GameROM& rom)
+void fixAxeMagicCheck(md::ROM& rom)
 {
     // Changes the Axe Magic check when slashing a tree from bit 0 of flag 1003 to "Axe Magic owned"
     // 0x16262:
@@ -102,7 +103,7 @@ void fixAxeMagicCheck(GameROM& rom)
     rom.setWord(0x016268, 0x104B);
 }
 
-void fixSafetyPassCheck(GameROM& rom)
+void fixSafetyPassCheck(md::ROM& rom)
 {
     // Change Mercator door opened check from bit 7 of flag 1004 to "Safety Pass owned"
     // 0x004FF8:
@@ -111,7 +112,7 @@ void fixSafetyPassCheck(GameROM& rom)
     rom.setWord(0x004FF8, 0x590D);
 }
 
-void fixArmletCheck(GameROM& rom)
+void fixArmletCheck(md::ROM& rom)
 {
     // Change Armlet check from bit 6 of flag 1014 to "Armlet owned".
     // This one was tricky because there are TWO checks to change (the one to remove the "repelled" textbox + tornado, 
@@ -130,10 +131,10 @@ void fixArmletCheck(GameROM& rom)
     // 0x013A80: put a RTS instead of the armlet removal and all (not exactly sure why it works perfectly, but it does)
         // Before:  4E F9
         // After:	4E 75 (rts)
-    rom.setCode(0x013A8A, asm68k::Code().rts());
+    rom.setCode(0x013A8A, md::Code().rts());
 }
 
-void fixSunstoneCheck(GameROM& rom)
+void fixSunstoneCheck(md::ROM& rom)
 {
     // Change Sunstone check for repairing the lighthouse from bit 2 of flag 1026 to "Susntone owned"
     // 0x09D091:
@@ -142,7 +143,7 @@ void fixSunstoneCheck(GameROM& rom)
     rom.setWord(0x09D091, 0x4F01);
 }
 
-void fixDogTalkingCheck(GameROM& rom)
+void fixDogTalkingCheck(md::ROM& rom)
 {
     // Change doggo talking check from bit 4 of flag 1024 to "Einstein Whistle owned"
     // 0x0253C0:
@@ -151,26 +152,26 @@ void fixDogTalkingCheck(GameROM& rom)
     rom.setWord(0x0253C0, 0x0281);
 }
 
-void fixCryptBehavior(GameROM& rom)
+void fixCryptBehavior(md::ROM& rom)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
     // 0x019DF6:
         // Before:	0839 0006 00FF1014 (btst bit 6 in FF1014) ; 66 14 (bne $19E14)
         // After:	4EB9 00019E14 (jsr $19E14; 4E71 4E71 (nop nop)
-    rom.setCode(0x19DF6, asm68k::Code().nop(5));
+    rom.setCode(0x19DF6, md::Code().nop(5));
 
     // 2) Change the room exit check and shadow mummy appearance from "if armlet is owned" to "chest was opened"
     // 0x0117E8:
         // Before:	103C 001F ; 4EB9 00022ED0 ; 4A41 ; 6B00 F75C (bmi $10F52)
         // After:	0839 0002 00FF1097 (btst 2 FF1097)	; 6700 F75C (bne $10F52)
-    asm68k::Code injectChangeCryptExitCheck;
+    md::Code injectChangeCryptExitCheck;
     injectChangeCryptExitCheck.btst(0x2, addr_(0xFF1097));
     injectChangeCryptExitCheck.nop(2);
     injectChangeCryptExitCheck.beq(); // beq $10F52
     rom.setCode(0x117E8, injectChangeCryptExitCheck);
 }
 
-void fixMirAfterLakeShrineCheck(GameROM& rom)
+void fixMirAfterLakeShrineCheck(md::ROM& rom)
 {
     // In the original game, coming back to Mir room after Lake Shrine would softlock you because Mir
     // would not be there. This check is removed to prevent any softlock and allow fighting Mir after having
@@ -183,13 +184,13 @@ void fixMirAfterLakeShrineCheck(GameROM& rom)
     rom.setWord(0x01AA24, 0x5FE2);
 }
 
-void fixLogsRoomExitCheck(GameROM& rom)
+void fixLogsRoomExitCheck(md::ROM& rom)
 {
     // Remove logs check
-    rom.setCode(0x011EC4, asm68k::Code().bra());
+    rom.setCode(0x011EC4, md::Code().bra());
 }
 
-void fixArmletSkip(GameROM& rom)
+void fixArmletSkip(md::ROM& rom)
 {
     // Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
     // 0x02030C:
@@ -198,15 +199,15 @@ void fixArmletSkip(GameROM& rom)
     rom.setByte(0x02030C, 0x85);
 }
 
-void fixTreeCuttingGlitch(GameROM& rom)
+void fixTreeCuttingGlitch(md::ROM& rom)
 {
     // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
-    asm68k::Code funcFixTreeCuttingGlitch;
+    md::Code funcFixTreeCuttingGlitch;
  
-    funcFixTreeCuttingGlitch.tstb(addroffset_(reg_A5, 0x36));  // tst.b ($36,A5) [4A2D 0036]
+    funcFixTreeCuttingGlitch.tstb(addr_(reg_A5, 0x36));  // tst.b ($36,A5) [4A2D 0036]
     funcFixTreeCuttingGlitch.beq(4);
         // Only allow the "killable because holding money" check if the enemy is not a tree
-        funcFixTreeCuttingGlitch.cmpiw(0x126, addroffset_(reg_A5, 0xA));
+        funcFixTreeCuttingGlitch.cmpiw(0x126, addr_(reg_A5, 0xA));
         funcFixTreeCuttingGlitch.beq(2);
             funcFixTreeCuttingGlitch.jmp(0x16284);
     funcFixTreeCuttingGlitch.rts();
@@ -214,10 +215,10 @@ void fixTreeCuttingGlitch(GameROM& rom)
     uint32_t funcAddr = rom.injectCode(funcFixTreeCuttingGlitch);
 
     // Call the injected function when killing an enemy
-    rom.setCode(0x01625C, asm68k::Code().jsr(funcAddr));
+    rom.setCode(0x01625C, md::Code().jsr(funcAddr));
 }
 
-void fixMirTowerPriestRoomItems(GameROM& rom)
+void fixMirTowerPriestRoomItems(md::ROM& rom)
 {
     // Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
     // 0x024E5A:
@@ -226,7 +227,7 @@ void fixMirTowerPriestRoomItems(GameROM& rom)
     rom.setWord(0x024E5A, 0x7F7F);
 }
 
-void fixKingNolesLabyrinthRafts(GameROM& rom)
+void fixKingNolesLabyrinthRafts(md::ROM& rom)
 {
     // Change the rafts logic so we can take them several times in a row, preventing from getting softlocked by missing chests
     // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene while discarding the "raft already taken" state 
@@ -240,18 +241,18 @@ void fixKingNolesLabyrinthRafts(GameROM& rom)
     rom.setByte(0x0293C0, 0x01);
 }
 
-void fixFaraLifestockChest(GameROM& rom)
+void fixFaraLifestockChest(md::ROM& rom)
 {
     // Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
 
     // --------- Function to remove all entities but the chest when coming back in the room ---------
-    asm68k::Code funcRemoveAllEntitiesButChestInFaraRoom;
+    md::Code funcRemoveAllEntitiesButChestInFaraRoom;
 
     funcRemoveAllEntitiesButChestInFaraRoom.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
     funcRemoveAllEntitiesButChestInFaraRoom.lea(0xFF5480, reg_A0);
     funcRemoveAllEntitiesButChestInFaraRoom.moveq(0xD, reg_D0);
     funcRemoveAllEntitiesButChestInFaraRoom.label("loop_remove_entities");
-    funcRemoveAllEntitiesButChestInFaraRoom.movew(0x7F7F, addrin_(reg_A0));
+    funcRemoveAllEntitiesButChestInFaraRoom.movew(0x7F7F, addr_(reg_A0));
     funcRemoveAllEntitiesButChestInFaraRoom.adda(0x80, reg_A0);
     funcRemoveAllEntitiesButChestInFaraRoom.dbra(reg_D0, "loop_remove_entities");
     funcRemoveAllEntitiesButChestInFaraRoom.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
@@ -260,7 +261,7 @@ void fixFaraLifestockChest(GameROM& rom)
     uint32_t funcAddr = rom.injectCode(funcRemoveAllEntitiesButChestInFaraRoom);
 
     // Call the injected function
-    rom.setCode(0x019BE0, asm68k::Code().jsr(funcAddr).nop());
+    rom.setCode(0x019BE0, md::Code().jsr(funcAddr).nop());
 
     // --------- Moving the chest to the ground ---------
     rom.setWord(0x01BF6C, 0x1A93);
@@ -269,7 +270,7 @@ void fixFaraLifestockChest(GameROM& rom)
     rom.setWord(0x01BF72, 0x0400);
 }
 
-void alterArthurCheck(GameROM& rom)
+void alterArthurCheck(md::ROM& rom)
 {
     // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
 
@@ -284,7 +285,7 @@ void alterArthurCheck(GameROM& rom)
     rom.setWord(0x01A908, 0x8001);
 }
 
-void alterMercatorSecondaryShopCheck(GameROM& rom)
+void alterMercatorSecondaryShopCheck(md::ROM& rom)
 {
     // Change the Mercator secondary shop check so that it sells item as long as you own Buyer's Card
 
@@ -294,7 +295,7 @@ void alterMercatorSecondaryShopCheck(GameROM& rom)
     rom.setWord(0x00A574, 0x4C05);
 }
 
-void alterWaterfallShrineSecretStairsCheck(GameROM& rom)
+void alterWaterfallShrineSecretStairsCheck(md::ROM& rom)
 {
     // Change Waterfall Shrine entrance check from "Talked to Prospero" to "What a noisy boy!", removing the need
     // of talking to Prospero (which we couldn't do anyway because of the story flags).
@@ -305,7 +306,7 @@ void alterWaterfallShrineSecretStairsCheck(GameROM& rom)
     rom.setWord(0x005014, 0x0209);
 }
 
-void alterVerlaBoulderCheck(GameROM& rom)
+void alterVerlaBoulderCheck(md::ROM& rom)
 {
     // Change the removal check for the boulder between Verla and Mercator so that it disappears as soon as you sail with the boat.
     // This means you don't need to do anything in Verla to be able to go back to the rest of the island, preventing any softlock there
@@ -323,7 +324,7 @@ void alterVerlaBoulderCheck(GameROM& rom)
     rom.setByte(0x01A965, 0x86);
 }
 
-void alterBlueRibbonStoryCheck(GameROM& rom)
+void alterBlueRibbonStoryCheck(md::ROM& rom)
 {
     // The "falling ribbon" item source is pretty dependant from the scenario to happen. In the original game,
     // the timeframe to get it is really tight. We try to get rid of any conditions here, apart from checking
@@ -346,7 +347,7 @@ void alterBlueRibbonStoryCheck(GameROM& rom)
     rom.setWord(0x01BFCA, 0x0000);
 }
 
-void alterKingNolesCaveTeleporterCheck(GameROM& rom)
+void alterKingNolesCaveTeleporterCheck(md::ROM& rom)
 {
     // Change the flag checked for teleporter appearance from "saw the duke Kazalt cutscene" to "has visited four white golems room in King Nole's Cave"
     // 0x0050A0:
@@ -361,9 +362,9 @@ void alterKingNolesCaveTeleporterCheck(GameROM& rom)
     // We need to inject a procedure checking "is D0 equal to FF" to replace the "bmi" previously used which was preventing
     // from checking flags above 0x80 (the one we need to check is 0xD0).
 
-    asm68k::Code procImproveFlagCheck;
+    md::Code procImproveFlagCheck;
 
-    procImproveFlagCheck.moveb(addroffset_(reg_A0,0x2), reg_D0);     // 1028 0002
+    procImproveFlagCheck.moveb(addr_(reg_A0,0x2), reg_D0);     // 1028 0002
     procImproveFlagCheck.cmpib(0xFF, reg_D0);
     procImproveFlagCheck.bne(2);
     procImproveFlagCheck.jmp(0x4E2E);
@@ -372,10 +373,10 @@ void alterKingNolesCaveTeleporterCheck(GameROM& rom)
     uint32_t procAddr = rom.injectCode(procImproveFlagCheck);
 
     // Replace the (move.b, bmi, ext.w) by a jmp to the injected procedure
-    rom.setCode(0x004E18, asm68k::Code().clrw(reg_D0).jmp(procAddr));
+    rom.setCode(0x004E18, md::Code().clrw(reg_D0).jmp(procAddr));
 }
 
-void alterMercatorDocksShopCheck(GameROM& rom)
+void alterMercatorDocksShopCheck(md::ROM& rom)
 {
     // 0x01AA26:
         // Before:	0284 2A A2 (in map 284, check bit 5 of flag 102A)
@@ -384,7 +385,7 @@ void alterMercatorDocksShopCheck(GameROM& rom)
     rom.setWord(0x01AA28, 0x5FE2);
 }
 
-void alterLanternIntoPassiveItem(GameROM& rom)
+void alterLanternIntoPassiveItem(md::ROM& rom)
 {
     std::vector<uint16_t> darkRooms = {
         0x0170, 0x017D, 0x017F, 0x0178, 0x0185, 0x018D,
@@ -405,7 +406,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
     rom.setWord(0x0087D2, 0x5488);
 
     // btst #1, $FF104D (0839 0005 00FF1045)
-    rom.setCode(0x0087D6, asm68k::Code().btst(0x1, addr_(0xFF104D)).nop(6));
+    rom.setCode(0x0087D6, md::Code().btst(0x1, addr_(0xFF104D)).nop(6));
 
 //    for (uint32_t addr = 0x87DD; addr >= 0x87C2; addr -= 0x01)
 //        rom.setByte(addr + 2, rom.getByte(addr));
@@ -415,7 +416,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
 //    rom.setLong(0x0087C0, rom.getStoredAddress("data_dark_rooms"));
 }
 
-void alterItemOrderInMenu(GameROM& rom)
+void alterItemOrderInMenu(md::ROM& rom)
 {
     std::vector<uint8_t> itemOrder = {
         ITEM_EKEEKE,        ITEM_RECORD_BOOK,
@@ -445,7 +446,7 @@ void alterItemOrderInMenu(GameROM& rom)
         rom.setByte(baseAddress + i, itemOrder[i]);
 }
 
-void alterGoldRewardsHandling(GameROM& rom)
+void alterGoldRewardsHandling(md::ROM& rom)
 {
     // In the original game, only 3 item IDs are reserved for gold rewards (3A, 3B, 3C)
     // Here, we moved the table of gold rewards to the end of the ROM so that we can handle 64 rewards up to 255 golds each.
@@ -458,11 +459,11 @@ void alterGoldRewardsHandling(GameROM& rom)
     // Input: D0 = gold reward ID (offset from 0x40)
     // Output: D0 = gold reward value
 
-    asm68k::Code funcGetGoldReward;
+    md::Code funcGetGoldReward;
 
     funcGetGoldReward.movemToStack({}, { reg_A0 });
     funcGetGoldReward.lea(rom.getStoredAddress("data_gold_values"), reg_A0);
-    funcGetGoldReward.moveb(addroffset_(reg_A0, reg_D0, asm68k::Size::WORD), reg_D0);  // move.b (A0, D0.w), D0 : 1030 0000
+    funcGetGoldReward.moveb(addr_(reg_A0, reg_D0, md::Size::WORD), reg_D0);  // move.b (A0, D0.w), D0 : 1030 0000
     funcGetGoldReward.movemFromStack({}, { reg_A0 });
     funcGetGoldReward.rts();
 
@@ -471,10 +472,10 @@ void alterGoldRewardsHandling(GameROM& rom)
     // Set the call to the injected function
     // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
     // After:       jsr to injected function
-    rom.setCode(0x0070E8, asm68k::Code().jsr(funcAddr));
+    rom.setCode(0x0070E8, md::Code().jsr(funcAddr));
 }
 
-void alterLifestockHandlingInShops(GameROM& rom)
+void alterLifestockHandlingInShops(md::ROM& rom)
 {
     // Make Lifestock prices the same over all shops
     for (uint32_t addr = 0x024D34; addr <= 0x024EAE; addr += 0xE)
@@ -485,7 +486,7 @@ void alterLifestockHandlingInShops(GameROM& rom)
         rom.setByte(addr, 0xFF);
 }
 
-void removeMercatorCastleBackdoorGuard(GameROM& rom)
+void removeMercatorCastleBackdoorGuard(md::ROM& rom)
 {
     // There is a guard staying in front of the Mercator castle backdoor to prevent you from using
     // Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
@@ -497,7 +498,7 @@ void removeMercatorCastleBackdoorGuard(GameROM& rom)
     rom.setWord(0x0215A6, 0x0000);
 }
 
-void removeSailorInDarkPort(GameROM& rom)
+void removeSailorInDarkPort(md::ROM& rom)
 {
     // There is a sailor NPC in the "dark" version of Mercator port who responds badly to story triggers, allowing us to sail to Verla
     // even without having repaired the lighthouse. To prevent this from being exploited, we removed him altogether.
@@ -508,10 +509,10 @@ void removeSailorInDarkPort(GameROM& rom)
     rom.setWord(0x021646, 0x0000);
 }
 
-void addNewlineHandlingInDynamicText(GameROM& rom)
+void addNewlineHandlingInDynamicText(md::ROM& rom)
 {
     // Inject a new condition in characters processing to handle newlines in dynamic text when 0x6C character is encountered
-    asm68k::Code procHandleNewlineInCustomText;
+    md::Code procHandleNewlineInCustomText;
 
     procHandleNewlineInCustomText.cmpiw(0xFFFF, reg_D0);
     procHandleNewlineInCustomText.bne(2);
@@ -525,16 +526,16 @@ void addNewlineHandlingInDynamicText(GameROM& rom)
     uint32_t procAddr = rom.injectCode(procHandleNewlineInCustomText, "proc_handle_newline_in_custom_text");
 
     // Jump to the injected procedure
-    rom.setCode(0x0230A2, asm68k::Code().jmp(procAddr));
+    rom.setCode(0x0230A2, md::Code().jmp(procAddr));
 }
 
-void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
+void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
 {
     GameText text("King Nole: Only the bearers of \nthe jewels are worthy of \nentering my domain...\t");
     rom.injectDataBlock(text.getBytes(), "data_text_jewels_alert");
 
     // ----------- Handle custom text func ----------------------
-    asm68k::Code funcHandleCustomText;
+    md::Code funcHandleCustomText;
 
     funcHandleCustomText.movew(0xFFFF, reg_D0);
     funcHandleCustomText.moveb(0x00, addr_(0xFF1144));  // to reset textbox state
@@ -546,7 +547,7 @@ void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
     rom.injectCode(funcHandleCustomText, "func_handle_custom_text");
 
     // ----------- Jewel textbox handling ----------------------
-    asm68k::Code procHandleJewelsCheck;
+    md::Code procHandleJewelsCheck;
 
     procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
     procHandleJewelsCheck.beq(3);
@@ -565,15 +566,15 @@ void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
     uint32_t procHandleJewelsAddr = rom.injectCode(procHandleJewelsCheck, "proc_handle_jewels_check");
 
     // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
-    rom.setCode(0x62F4, asm68k::Code().jmp(procHandleJewelsAddr));
+    rom.setCode(0x62F4, md::Code().jmp(procHandleJewelsAddr));
 }
 
-void addStatueOfJyptaGoldsOverTime(GameROM& rom)
+void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
 {
     constexpr uint16_t goldsPerCycle = 0x0002;
 
     // ============== Function to handle walk abilities (healing boots, jypta statue...) ==============
-    asm68k::Code funcHandleWalkAbilities;
+    md::Code funcHandleWalkAbilities;
 
     // If Statue of Jypta is owned, gain gold over time
     funcHandleWalkAbilities.btst(0x5, addr_(0xFF104E));
@@ -594,12 +595,12 @@ void addStatueOfJyptaGoldsOverTime(GameROM& rom)
 
     // ============== Hook the function inside game code ==============
     
-    rom.setCode(0x16696, asm68k::Code().nop(5));
+    rom.setCode(0x16696, md::Code().nop(5));
 
-    rom.setCode(0x166D0, asm68k::Code().jsr(funcAddr).nop(4));
+    rom.setCode(0x166D0, md::Code().jsr(funcAddr).nop(4));
 }
 
-void addLithographChestInKazaltTeleporterRoom(GameROM& rom)
+void addLithographChestInKazaltTeleporterRoom(md::ROM& rom)
 {
     // Negate map trigger removing entities once the Duke cutscene was seen in OG
     rom.setWord(0x01AA0E, 0x7F7F);
@@ -619,7 +620,7 @@ void addLithographChestInKazaltTeleporterRoom(GameROM& rom)
 }
 
 
-void replaceLumberjackByChest(GameROM& rom)
+void replaceLumberjackByChest(md::ROM& rom)
 {
     // Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
     for (uint32_t addr = 0x9E9BA; addr <= 0x9E9BE; ++addr)
@@ -632,7 +633,7 @@ void replaceLumberjackByChest(GameROM& rom)
     rom.setWord(0x020BA2, 0x8000);  // Fourth word: behavior (00C1 => 8000 works for some reason)
 }
 
-void replaceSickMerchantByChest(GameROM& rom)
+void replaceSickMerchantByChest(md::ROM& rom)
 {
     // Neutralize map entrance triggers for both the shop and the backroom to remove the "sidequest complete" check.
     // Either we forced them to be always true or always false
@@ -654,7 +655,7 @@ void replaceSickMerchantByChest(GameROM& rom)
     rom.setWord(0x021D16, 0x5055);
 }
 
-void replaceFaraInElderHouseByChest(GameROM& rom)
+void replaceFaraInElderHouseByChest(md::ROM& rom)
 {
     // Neutralize a map specific trigger which broke chests inside it
     // 0x019C82:
@@ -681,10 +682,10 @@ void replaceFaraInElderHouseByChest(GameROM& rom)
     rom.setByte(0x09E9DF, 0x17);
 }
 
-void handleArmorUpgrades(GameROM& rom)
+void handleArmorUpgrades(md::ROM& rom)
 {
     // --------------- Alter item in D0 register function ---------------
-    asm68k::Code funcAlterItemInD0;
+    md::Code funcAlterItemInD0;
 
     // Check if item ID is between 09 and 0C (armors). If not, branch to return.
     funcAlterItemInD0.cmpib(ITEM_STEEL_BREAST, reg_D0);
@@ -716,7 +717,7 @@ void handleArmorUpgrades(GameROM& rom)
 
 
     // --------------- Change item in reward box function ---------------
-    asm68k::Code funcChangeItemRewardBox;
+    md::Code funcChangeItemRewardBox;
 
     funcChangeItemRewardBox.jsr(funcAlterItemInD0Addr);
     funcChangeItemRewardBox.movew(reg_D0, addr_(0xFF1196));
@@ -725,7 +726,7 @@ void handleArmorUpgrades(GameROM& rom)
     uint32_t funcChangeItemRewardBoxAddr = rom.injectCode(funcChangeItemRewardBox);
 
     // --------------- Change item given by taking item on ground function ---------------
-    asm68k::Code funcAlterItemGivenByGroundSource;
+    md::Code funcAlterItemGivenByGroundSource;
 
     funcAlterItemGivenByGroundSource.movemToStack({ reg_D7 }, { reg_A0 }); // movem D7,A0 -(A7)	(48E7 0180)
 
@@ -735,9 +736,9 @@ void handleArmorUpgrades(GameROM& rom)
     funcAlterItemGivenByGroundSource.blt(7);  // to movem
   
     funcAlterItemGivenByGroundSource.jsr(funcAlterItemInD0Addr);
-        funcAlterItemGivenByGroundSource.moveb(addroffset_(reg_A5, 0x3B), reg_D7);  // move ($3B,A5), D7	(1E2D 003B)
+        funcAlterItemGivenByGroundSource.moveb(addr_(reg_A5, 0x3B), reg_D7);  // move ($3B,A5), D7	(1E2D 003B)
         funcAlterItemGivenByGroundSource.subib(0xC9, reg_D7);
-        funcAlterItemGivenByGroundSource.cmpa(l_(0xFF5400), reg_A5);
+        funcAlterItemGivenByGroundSource.cmpa(lval_(0xFF5400), reg_A5);
         funcAlterItemGivenByGroundSource.blt(2);    // to movem
             funcAlterItemGivenByGroundSource.bset(reg_D7, addr_(0xFF103F)); // set a flag when an armor is taken on the ground for it to disappear afterwards
  
@@ -748,7 +749,7 @@ void handleArmorUpgrades(GameROM& rom)
     uint32_t funcAlterItemGivenByGroundSourceAddr = rom.injectCode(funcAlterItemGivenByGroundSource);
 
     // --------------- Change visible item for items on ground function ---------------
-    asm68k::Code funcAlterItemVisibleForGroundSource;
+    md::Code funcAlterItemVisibleForGroundSource;
 
     funcAlterItemVisibleForGroundSource.movemToStack({ reg_D7 }, { reg_A0 });  // movem D7,A0 -(A7)
 
@@ -766,7 +767,7 @@ void handleArmorUpgrades(GameROM& rom)
             funcAlterItemVisibleForGroundSource.bra(2);
             // Item was already taken, remove it by filling it with an empty item
             funcAlterItemVisibleForGroundSource.movew(ITEM_NONE, reg_D0);
-    funcAlterItemVisibleForGroundSource.moveb(reg_D0, addroffset_(reg_A1, 0x36)); // move D0, ($36,A1) (1340 0036)
+    funcAlterItemVisibleForGroundSource.moveb(reg_D0, addr_(reg_A1, 0x36)); // move D0, ($36,A1) (1340 0036)
     funcAlterItemVisibleForGroundSource.movemFromStack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
     funcAlterItemVisibleForGroundSource.rts();
     
@@ -774,28 +775,28 @@ void handleArmorUpgrades(GameROM& rom)
 
     // --------------- Hooks ---------------
     // In 'chest reward' function, replace the item ID move by the injected function
-    rom.setCode(0x0070BE, asm68k::Code().jsr(funcChangeItemRewardBoxAddr));
+    rom.setCode(0x0070BE, md::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // In 'NPC reward' function, replace the item ID move by the injected function
-    rom.setCode(0x028DD8, asm68k::Code().jsr(funcChangeItemRewardBoxAddr));
+    rom.setCode(0x028DD8, md::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // In 'item on ground reward' function, replace the item ID move by the injected function
     rom.setWord(0x024ADC, 0x3002); // put the move D2,D0 before the jsr because it helps us while changing nothing to the usual logic
-    rom.setCode(0x024ADE, asm68k::Code().jsr(funcChangeItemRewardBoxAddr));
+    rom.setCode(0x024ADE, md::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // Replace 2928C lea (41F9 00FF1040) by a jsr to injected function
-    rom.setCode(0x02928C, asm68k::Code().jsr(funcAlterItemGivenByGroundSourceAddr));
+    rom.setCode(0x02928C, md::Code().jsr(funcAlterItemGivenByGroundSourceAddr));
 
     // Replace 1963C - 19644 (0400 00C0 ; 1340 0036) by a jsr to a replacement function
-    rom.setCode(0x01963C, asm68k::Code().jsr(funcAlterItemVisibleForGroundSourceAddr).nop());
+    rom.setCode(0x01963C, md::Code().jsr(funcAlterItemVisibleForGroundSourceAddr).nop());
 }
 
-void addFunctionToItemsOnUse(GameROM& rom)
+void addFunctionToItemsOnUse(md::ROM& rom)
 {
     // ------------- Lithograph hint function -------------
     uint32_t lithographHintFunctionAddr = rom.getCurrentInjectionAddress();
 
-    asm68k::Code funcLithographHint;
+    md::Code funcLithographHint;
 
     funcLithographHint.movew(0xFFFF, reg_D0);
     funcLithographHint.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
@@ -807,7 +808,7 @@ void addFunctionToItemsOnUse(GameROM& rom)
 
     // ------------- Extended item handling function -------------
 
-    asm68k::Code funcExtendedItemHandling;
+    md::Code funcExtendedItemHandling;
 
     funcExtendedItemHandling.cmpib(ITEM_RECORD_BOOK, reg_D0);
     funcExtendedItemHandling.bne(3);
@@ -824,7 +825,7 @@ void addFunctionToItemsOnUse(GameROM& rom)
     
     uint32_t funcExtendedItemHandlingAddr = rom.injectCode(funcExtendedItemHandling);
 
-    rom.setCode(0x00DBA8, asm68k::Code().jsr(funcExtendedItemHandlingAddr).nop(4));
+    rom.setCode(0x00DBA8, md::Code().jsr(funcExtendedItemHandlingAddr).nop(4));
 
     // -------------------- Other modifications ---------------------
 
@@ -835,7 +836,7 @@ void addFunctionToItemsOnUse(GameROM& rom)
     rom.setWord(0x008647, 0x6627);
 }
 
-void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
+void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 {
     // Rando core
     alterGameStart(rom, options);
@@ -883,7 +884,7 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
         handleArmorUpgrades(rom);
 }
 
-void alterRomAfterRandomization(GameROM& rom, const RandomizerOptions& options)
+void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
 {
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
