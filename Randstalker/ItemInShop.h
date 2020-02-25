@@ -50,7 +50,7 @@ public:
         return true;
     }
 
-    virtual void writeToROM(GameROM& rom) const
+    virtual void writeToROM(md::ROM& rom) const
     {
         for (uint32_t address : _addressesInROM)
             rom.setByte(address, this->getItemID() + 0xC0);

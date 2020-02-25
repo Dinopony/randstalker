@@ -1,45 +1,14 @@
 #include "GameAlterations.h"
-#include "Constants/ItemCodes.h"
+#include "ItemCodes.h"
 #include "RandomizerOptions.h"
 #include "GameText.h"
+#include "MegadriveTools/MdRom.h"
+#include "MegadriveTools/MdCode.h"
 #include <cstdint>
 #include <vector>
 
-constexpr uint16_t OPCODE_MOVB =	0x13FC;
-constexpr uint16_t OPCODE_MOVW =	0x33FC;
-constexpr uint16_t OPCODE_MOVL =    0x23FC;
-constexpr uint16_t OPCODE_RTS =		0x4E75;
-constexpr uint16_t OPCODE_JSR =		0x4EB9;
-constexpr uint16_t OPCODE_JMP =		0x4EF9;
-constexpr uint16_t OPCODE_NOP =		0x4E71;
-constexpr uint16_t OPCODE_BRA =		0x6000;
-constexpr uint16_t OPCODE_BNE =		0x6600;
-constexpr uint16_t OPCODE_BEQ =		0x6700;
-constexpr uint16_t OPCODE_BLT =		0x6D00;
-constexpr uint16_t OPCODE_BGT =		0x6E00;
-
-void alterGameStart(GameROM& rom, const RandomizerOptions& options)
+void alterGameStart(md::ROM& rom, const RandomizerOptions& options)
 {
-    // ------- Remove no music flag ---------
-    // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom
-    
-    // 0x002700:
-        // Before: 	[08F9] bset 3 -> $FF1027
-        // After:	[4EB9] jsr $1FFAD0 ; [4E71] nop
-    rom.setWord(0x002700, OPCODE_JSR);
-    rom.setLong(0x002702, rom.getCurrentInjectionAddress());
-    rom.setWord(0x002706, OPCODE_NOP); // transform last two bytes into a NOP to keep the ROM padding intact
-    
-    // ------- Remove cutscene flag (no input allowed) ---------
-    // Usually, when starting a new game, it is automatically put into "cutscene mode" to let the intro roll without allowing the player
-    // to move or pause, or do anything at all. We need to remove that cutscene flag to enable the player actually playing the game.
-
-    // 0x00281A:
-        // Before:	[33FC] move.w 0x00FE -> $FF12DE
-        // After:	[4E71] nop (4 times)
-    for(uint32_t addr=0x00281A ; addr <= 0x002820 ; addr += 0x2)
-        rom.setWord(addr, OPCODE_NOP);
-    
     // ------- Inject flags init function ---------
     // Init function used to set story flags to specific values at the very beginning of the game, opening some usually closed paths
     // and removing some useless cutscenes (considering them as "already seen").
@@ -90,27 +59,41 @@ void alterGameStart(GameROM& rom, const RandomizerOptions& options)
         flagArray[0x5C] |= 0x11;
     }
 
-    for(int i=0 ; i<0x60 ; i+=0x2)
-    {
-        if( flagArray[i] != 0 || flagArray[i+1] != 0)
-        {
-            rom.injectWord(OPCODE_MOVW);
-            rom.injectByte(flagArray[i]);
-            rom.injectByte(flagArray[i+1]);
-            rom.injectLong(0x00FF1000 + i);
-        }
-    }
+    md::Code funcInitFlags;
 
     // Set the orientation byte of Nigel to 88 (south-west) on game start
-    rom.injectWord(OPCODE_MOVB);
-    rom.injectWord(0x0088);
-    rom.injectLong(0x00FF5404);
+    funcInitFlags.moveb(0x88, addr_(0xFF5404));
 
-    // rts (return from function)
-    rom.injectWord(OPCODE_RTS);
+    for(int i=0 ; i<0x60 ; i+=0x2)
+    {
+        uint16_t value = (static_cast<uint16_t>(flagArray[i]) << 8) + static_cast<uint16_t>(flagArray[i+1]);
+        if(value)
+            funcInitFlags.movew(value, addr_(0xFF1000+i));
+    }
+
+    funcInitFlags.rts();
+
+    uint32_t funcInitFlagsAddr = rom.injectCode(funcInitFlags);
+
+    // ------- Remove no music flag ---------
+    // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom
+
+    // 0x002700:
+        // Before: 	[08F9] bset 3 -> $FF1027
+        // After:	[4EB9] jsr $1FFAD0 ; [4E71] nop
+    rom.setCode(0x002700, md::Code().jsr(funcInitFlagsAddr).nop());
+
+    // ------- Remove cutscene flag (no input allowed) ---------
+    // Usually, when starting a new game, it is automatically put into "cutscene mode" to let the intro roll without allowing the player
+    // to move or pause, or do anything at all. We need to remove that cutscene flag to enable the player actually playing the game.
+
+    // 0x00281A:
+        // Before:	[33FC] move.w 0x00FE -> $FF12DE
+        // After:	[4E71] nop (4 times)
+    rom.setCode(0x281A, md::Code().nop(4));
 }
 
-void fixAxeMagicCheck(GameROM& rom)
+void fixAxeMagicCheck(md::ROM& rom)
 {
     // Changes the Axe Magic check when slashing a tree from bit 0 of flag 1003 to "Axe Magic owned"
     // 0x16262:
@@ -120,7 +103,7 @@ void fixAxeMagicCheck(GameROM& rom)
     rom.setWord(0x016268, 0x104B);
 }
 
-void fixSafetyPassCheck(GameROM& rom)
+void fixSafetyPassCheck(md::ROM& rom)
 {
     // Change Mercator door opened check from bit 7 of flag 1004 to "Safety Pass owned"
     // 0x004FF8:
@@ -129,7 +112,7 @@ void fixSafetyPassCheck(GameROM& rom)
     rom.setWord(0x004FF8, 0x590D);
 }
 
-void fixArmletCheck(GameROM& rom)
+void fixArmletCheck(md::ROM& rom)
 {
     // Change Armlet check from bit 6 of flag 1014 to "Armlet owned".
     // This one was tricky because there are TWO checks to change (the one to remove the "repelled" textbox + tornado, 
@@ -148,10 +131,10 @@ void fixArmletCheck(GameROM& rom)
     // 0x013A80: put a RTS instead of the armlet removal and all (not exactly sure why it works perfectly, but it does)
         // Before:  4E F9
         // After:	4E 75 (rts)
-    rom.setWord(0x013A8A, OPCODE_RTS);
+    rom.setCode(0x013A8A, md::Code().rts());
 }
 
-void fixSunstoneCheck(GameROM& rom)
+void fixSunstoneCheck(md::ROM& rom)
 {
     // Change Sunstone check for repairing the lighthouse from bit 2 of flag 1026 to "Susntone owned"
     // 0x09D091:
@@ -160,7 +143,7 @@ void fixSunstoneCheck(GameROM& rom)
     rom.setWord(0x09D091, 0x4F01);
 }
 
-void fixDogTalkingCheck(GameROM& rom)
+void fixDogTalkingCheck(md::ROM& rom)
 {
     // Change doggo talking check from bit 4 of flag 1024 to "Einstein Whistle owned"
     // 0x0253C0:
@@ -169,31 +152,26 @@ void fixDogTalkingCheck(GameROM& rom)
     rom.setWord(0x0253C0, 0x0281);
 }
 
-void fixCryptBehavior(GameROM& rom)
+void fixCryptBehavior(md::ROM& rom)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
     // 0x019DF6:
         // Before:	0839 0006 00FF1014 (btst bit 6 in FF1014) ; 66 14 (bne $19E14)
         // After:	4EB9 00019E14 (jsr $19E14; 4E71 4E71 (nop nop)
-    rom.setWord(0x019DF6, OPCODE_NOP);
-    rom.setWord(0x019DF8, OPCODE_NOP);
-    rom.setLong(0x019DFA, OPCODE_NOP);
-    rom.setWord(0x019DFC, OPCODE_NOP);
-    rom.setWord(0x019DFE, OPCODE_NOP);
+    rom.setCode(0x19DF6, md::Code().nop(5));
 
     // 2) Change the room exit check and shadow mummy appearance from "if armlet is owned" to "chest was opened"
     // 0x0117E8:
         // Before:	103C 001F ; 4EB9 00022ED0 ; 4A41 ; 6B00 F75C (bmi $10F52)
         // After:	0839 0002 00FF1097 (btst 2 FF1097)	; 6700 F75C (bne $10F52)
-    rom.setWord(0x0117E8, 0x0839);		// btst
-    rom.setWord(0x0117EA, 0x0002);		// bit 2
-    rom.setLong(0x0117EC, 0x00FF1097);	// of flag FF1097
-    rom.setWord(0x0117F0, OPCODE_NOP);	// nop
-    rom.setWord(0x0117F2, OPCODE_NOP);	// nop
-    rom.setWord(0x0117F4, OPCODE_BEQ);	// beq $10F52
+    md::Code injectChangeCryptExitCheck;
+    injectChangeCryptExitCheck.btst(0x2, addr_(0xFF1097));
+    injectChangeCryptExitCheck.nop(2);
+    injectChangeCryptExitCheck.beq(); // beq $10F52
+    rom.setCode(0x117E8, injectChangeCryptExitCheck);
 }
 
-void fixMirAfterLakeShrineCheck(GameROM& rom)
+void fixMirAfterLakeShrineCheck(md::ROM& rom)
 {
     // In the original game, coming back to Mir room after Lake Shrine would softlock you because Mir
     // would not be there. This check is removed to prevent any softlock and allow fighting Mir after having
@@ -206,13 +184,13 @@ void fixMirAfterLakeShrineCheck(GameROM& rom)
     rom.setWord(0x01AA24, 0x5FE2);
 }
 
-void fixLogsRoomExitCheck(GameROM& rom)
+void fixLogsRoomExitCheck(md::ROM& rom)
 {
     // Remove logs check
-    rom.setWord(0x011EC4, OPCODE_BRA);
+    rom.setCode(0x011EC4, md::Code().bra());
 }
 
-void fixArmletSkip(GameROM& rom)
+void fixArmletSkip(md::ROM& rom)
 {
     // Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
     // 0x02030C:
@@ -221,37 +199,26 @@ void fixArmletSkip(GameROM& rom)
     rom.setByte(0x02030C, 0x85);
 }
 
-void fixTreeCuttingGlitch(GameROM& rom)
+void fixTreeCuttingGlitch(md::ROM& rom)
 {
-    // Call the injected function when killing an enemy
-    rom.setWord(0x01625C, OPCODE_JSR);
-    rom.setLong(0x01625E, rom.getCurrentInjectionAddress());
-
     // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
-    // tst.b ($36,A5) [4A2D 0036]
-    rom.injectWord(0x4A2D);
-    rom.injectWord(0x0036);
+    md::Code funcFixTreeCuttingGlitch;
+ 
+    funcFixTreeCuttingGlitch.tstb(addr_(reg_A5, 0x36));  // tst.b ($36,A5) [4A2D 0036]
+    funcFixTreeCuttingGlitch.beq(4);
+        // Only allow the "killable because holding money" check if the enemy is not a tree
+        funcFixTreeCuttingGlitch.cmpiw(0x126, addr_(reg_A5, 0xA));
+        funcFixTreeCuttingGlitch.beq(2);
+            funcFixTreeCuttingGlitch.jmp(0x16284);
+    funcFixTreeCuttingGlitch.rts();
 
-    // beq to rts +0x0E
-    rom.injectWord(0x670E);
+    uint32_t funcAddr = rom.injectCode(funcFixTreeCuttingGlitch);
 
-    // cmpi.w #0126, ($A,A5) [0C6D 0126]
-    rom.injectWord(0x0C6D);
-    rom.injectWord(0x0126);
-    rom.injectWord(0x000A);
-
-    // beq to rts +0x6
-    rom.injectWord(0x6706);
-
-    // jmp to $16284
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x00016284);
-
-    // rts
-    rom.injectWord(OPCODE_RTS);
+    // Call the injected function when killing an enemy
+    rom.setCode(0x01625C, md::Code().jsr(funcAddr));
 }
 
-void fixMirTowerPriestRoomItems(GameROM& rom)
+void fixMirTowerPriestRoomItems(md::ROM& rom)
 {
     // Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
     // 0x024E5A:
@@ -260,7 +227,7 @@ void fixMirTowerPriestRoomItems(GameROM& rom)
     rom.setWord(0x024E5A, 0x7F7F);
 }
 
-void fixKingNolesLabyrinthRafts(GameROM& rom)
+void fixKingNolesLabyrinthRafts(md::ROM& rom)
 {
     // Change the rafts logic so we can take them several times in a row, preventing from getting softlocked by missing chests
     // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene while discarding the "raft already taken" state 
@@ -274,46 +241,27 @@ void fixKingNolesLabyrinthRafts(GameROM& rom)
     rom.setByte(0x0293C0, 0x01);
 }
 
-void fixFaraLifestockChest(GameROM& rom)
+void fixFaraLifestockChest(md::ROM& rom)
 {
     // Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
-    // jsr FUNC
-    rom.setWord(0x019BE0, OPCODE_JSR);
-    rom.setLong(0x019BE2, rom.getCurrentInjectionAddress());
-
-    // nop (for padding)
-    rom.setLong(0x019BE6, OPCODE_NOP);
 
     // --------- Function to remove all entities but the chest when coming back in the room ---------
-    // movem(store registers) [48E7 FFFE]
-    rom.injectWord(0x48E7);
-    rom.injectWord(0xFFFE);
+    md::Code funcRemoveAllEntitiesButChestInFaraRoom;
 
-    // lea $FF5480, A0 [41F9 00FF5480] 
-    rom.injectWord(0x41F9);
-    rom.injectLong(0x00FF5480);
+    funcRemoveAllEntitiesButChestInFaraRoom.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
+    funcRemoveAllEntitiesButChestInFaraRoom.lea(0xFF5480, reg_A0);
+    funcRemoveAllEntitiesButChestInFaraRoom.moveq(0xD, reg_D0);
+    funcRemoveAllEntitiesButChestInFaraRoom.label("loop_remove_entities");
+    funcRemoveAllEntitiesButChestInFaraRoom.movew(0x7F7F, addr_(reg_A0));
+    funcRemoveAllEntitiesButChestInFaraRoom.adda(0x80, reg_A0);
+    funcRemoveAllEntitiesButChestInFaraRoom.dbra(reg_D0, "loop_remove_entities");
+    funcRemoveAllEntitiesButChestInFaraRoom.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
+    funcRemoveAllEntitiesButChestInFaraRoom.rts();
 
-    // moveq.b #D, D0 [7012]
-    rom.injectWord(0x700D);
+    uint32_t funcAddr = rom.injectCode(funcRemoveAllEntitiesButChestInFaraRoom);
 
-    // move.w $7F7F, (A0) [30BC 7F7F]
-    rom.injectWord(0x30BC);
-    rom.injectWord(0x7F7F);
-
-    // adda $80, A0 [D1FC 0080]
-    rom.injectWord(0xD1FC);
-    rom.injectLong(0x00000080);
-
-    // dbra D0, -12 [51C8 FFF4]
-    rom.injectWord(0x51C8);
-    rom.injectWord(0xFFF4);
-
-    // movem(restore registers) [4CDF 7FFF]
-    rom.injectWord(0x4CDF);
-    rom.injectWord(0x7FFF);
-
-    // rts (4E75)
-    rom.injectWord(OPCODE_RTS);
+    // Call the injected function
+    rom.setCode(0x019BE0, md::Code().jsr(funcAddr).nop());
 
     // --------- Moving the chest to the ground ---------
     rom.setWord(0x01BF6C, 0x1A93);
@@ -322,7 +270,7 @@ void fixFaraLifestockChest(GameROM& rom)
     rom.setWord(0x01BF72, 0x0400);
 }
 
-void alterArthurCheck(GameROM& rom)
+void alterArthurCheck(md::ROM& rom)
 {
     // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
 
@@ -337,7 +285,7 @@ void alterArthurCheck(GameROM& rom)
     rom.setWord(0x01A908, 0x8001);
 }
 
-void alterMercatorSecondaryShopCheck(GameROM& rom)
+void alterMercatorSecondaryShopCheck(md::ROM& rom)
 {
     // Change the Mercator secondary shop check so that it sells item as long as you own Buyer's Card
 
@@ -347,7 +295,7 @@ void alterMercatorSecondaryShopCheck(GameROM& rom)
     rom.setWord(0x00A574, 0x4C05);
 }
 
-void alterWaterfallShrineSecretStairsCheck(GameROM& rom)
+void alterWaterfallShrineSecretStairsCheck(md::ROM& rom)
 {
     // Change Waterfall Shrine entrance check from "Talked to Prospero" to "What a noisy boy!", removing the need
     // of talking to Prospero (which we couldn't do anyway because of the story flags).
@@ -358,7 +306,7 @@ void alterWaterfallShrineSecretStairsCheck(GameROM& rom)
     rom.setWord(0x005014, 0x0209);
 }
 
-void alterVerlaBoulderCheck(GameROM& rom)
+void alterVerlaBoulderCheck(md::ROM& rom)
 {
     // Change the removal check for the boulder between Verla and Mercator so that it disappears as soon as you sail with the boat.
     // This means you don't need to do anything in Verla to be able to go back to the rest of the island, preventing any softlock there
@@ -376,7 +324,7 @@ void alterVerlaBoulderCheck(GameROM& rom)
     rom.setByte(0x01A965, 0x86);
 }
 
-void alterBlueRibbonStoryCheck(GameROM& rom)
+void alterBlueRibbonStoryCheck(md::ROM& rom)
 {
     // The "falling ribbon" item source is pretty dependant from the scenario to happen. In the original game,
     // the timeframe to get it is really tight. We try to get rid of any conditions here, apart from checking
@@ -399,7 +347,7 @@ void alterBlueRibbonStoryCheck(GameROM& rom)
     rom.setWord(0x01BFCA, 0x0000);
 }
 
-void alterKingNolesCaveTeleporterCheck(GameROM& rom)
+void alterKingNolesCaveTeleporterCheck(md::ROM& rom)
 {
     // Change the flag checked for teleporter appearance from "saw the duke Kazalt cutscene" to "has visited four white golems room in King Nole's Cave"
     // 0x0050A0:
@@ -414,36 +362,21 @@ void alterKingNolesCaveTeleporterCheck(GameROM& rom)
     // We need to inject a procedure checking "is D0 equal to FF" to replace the "bmi" previously used which was preventing
     // from checking flags above 0x80 (the one we need to check is 0xD0).
 
+    md::Code procImproveFlagCheck;
+
+    procImproveFlagCheck.moveb(addr_(reg_A0,0x2), reg_D0);     // 1028 0002
+    procImproveFlagCheck.cmpib(0xFF, reg_D0);
+    procImproveFlagCheck.bne(2);
+    procImproveFlagCheck.jmp(0x4E2E);
+    procImproveFlagCheck.jmp(0x4E20);
+
+    uint32_t procAddr = rom.injectCode(procImproveFlagCheck);
+
     // Replace the (move.b, bmi, ext.w) by a jmp to the injected procedure
-    // clr.w D0
-    rom.setWord(0x004E18, 0x4240);
-    
-    // jmp to procedure
-    rom.setWord(0x004E1A, OPCODE_JMP);
-    rom.setLong(0x004E1C, rom.getCurrentInjectionAddress());
-
-    // Inject the actual procedure
-    // move.b ($2,A0), D0
-    rom.injectWord(0x1028);
-    rom.injectWord(0x0002);
-
-    // cmpi.b #FF, D0
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x00FF);
-
-    // bne $(PC,0x06)
-    rom.injectWord(0x6606);
-
-    // jmp $4E2E
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x00004E2E);
-
-    // jmp $4E1E
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x00004E20);
+    rom.setCode(0x004E18, md::Code().clrw(reg_D0).jmp(procAddr));
 }
 
-void alterMercatorDocksShopCheck(GameROM& rom)
+void alterMercatorDocksShopCheck(md::ROM& rom)
 {
     // 0x01AA26:
         // Before:	0284 2A A2 (in map 284, check bit 5 of flag 102A)
@@ -452,8 +385,7 @@ void alterMercatorDocksShopCheck(GameROM& rom)
     rom.setWord(0x01AA28, 0x5FE2);
 }
 
-
-void alterLanternIntoPassiveItem(GameROM& rom)
+void alterLanternIntoPassiveItem(md::ROM& rom)
 {
     std::vector<uint16_t> darkRooms = {
         0x0170, 0x017D, 0x017F, 0x0178, 0x0185, 0x018D,
@@ -474,12 +406,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
     rom.setWord(0x0087D2, 0x5488);
 
     // btst #1, $FF104D (0839 0005 00FF1045)
-    rom.setWord(0x0087D6, 0x0839);
-    rom.setWord(0x0087D8, 0x0001);
-    rom.setLong(0x0087DA, 0x00FF104D);
-
-    for (uint32_t addr = 0x87DE; addr <= 0x87E8; addr += 0x02)
-        rom.setWord(addr, OPCODE_NOP);
+    rom.setCode(0x0087D6, md::Code().btst(0x1, addr_(0xFF104D)).nop(6));
 
 //    for (uint32_t addr = 0x87DD; addr >= 0x87C2; addr -= 0x01)
 //        rom.setByte(addr + 2, rom.getByte(addr));
@@ -489,7 +416,7 @@ void alterLanternIntoPassiveItem(GameROM& rom)
 //    rom.setLong(0x0087C0, rom.getStoredAddress("data_dark_rooms"));
 }
 
-void alterItemOrderInMenu(GameROM& rom)
+void alterItemOrderInMenu(md::ROM& rom)
 {
     std::vector<uint8_t> itemOrder = {
         ITEM_EKEEKE,        ITEM_RECORD_BOOK,
@@ -519,7 +446,7 @@ void alterItemOrderInMenu(GameROM& rom)
         rom.setByte(baseAddress + i, itemOrder[i]);
 }
 
-void alterGoldRewardsHandling(GameROM& rom)
+void alterGoldRewardsHandling(md::ROM& rom)
 {
     // In the original game, only 3 item IDs are reserved for gold rewards (3A, 3B, 3C)
     // Here, we moved the table of gold rewards to the end of the ROM so that we can handle 64 rewards up to 255 golds each.
@@ -528,36 +455,27 @@ void alterGoldRewardsHandling(GameROM& rom)
     rom.setByte(0x0070DF, 0x40); // cmpi 3A, D0 >>> cmpi 40, D0
     rom.setByte(0x0070E5, 0x40); // subi 3A, D0 >>> subi 40, D0
 
-    // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
-    // After:       jsr to new procedure
-    rom.setWord(0x0070E8, OPCODE_JSR);
-    rom.setLong(0x0070EA, rom.getCurrentInjectionAddress());
-
-    // ------------- Procedure to put gold reward value in D0 ----------------
+    // ------------- Function to put gold reward value in D0 ----------------
     // Input: D0 = gold reward ID (offset from 0x40)
     // Output: D0 = gold reward value
 
-    // store A0 into -(A7)
-    rom.injectWord(0x48E7);
-    rom.injectWord(0x0080);
-     
-    // lea $1FFFC0, A0
-    rom.injectWord(0x41F9);
-    rom.injectLong(rom.getStoredAddress("data_gold_values"));
+    md::Code funcGetGoldReward;
 
-    // move.b (A0, D0), D0
-    rom.injectWord(0x1030);
-    rom.injectWord(0x0000);
+    funcGetGoldReward.movemToStack({}, { reg_A0 });
+    funcGetGoldReward.lea(rom.getStoredAddress("data_gold_values"), reg_A0);
+    funcGetGoldReward.moveb(addr_(reg_A0, reg_D0, md::Size::WORD), reg_D0);  // move.b (A0, D0.w), D0 : 1030 0000
+    funcGetGoldReward.movemFromStack({}, { reg_A0 });
+    funcGetGoldReward.rts();
 
-    // restore A0 from (A7)+
-    rom.injectWord(0x4CDF);
-    rom.injectWord(0x0100);
+    uint32_t funcAddr = rom.injectCode(funcGetGoldReward);
 
-    // rts
-    rom.injectWord(OPCODE_RTS);
+    // Set the call to the injected function
+    // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
+    // After:       jsr to injected function
+    rom.setCode(0x0070E8, md::Code().jsr(funcAddr));
 }
 
-void alterLifestockHandlingInShops(GameROM& rom)
+void alterLifestockHandlingInShops(md::ROM& rom)
 {
     // Make Lifestock prices the same over all shops
     for (uint32_t addr = 0x024D34; addr <= 0x024EAE; addr += 0xE)
@@ -568,7 +486,7 @@ void alterLifestockHandlingInShops(GameROM& rom)
         rom.setByte(addr, 0xFF);
 }
 
-void removeMercatorCastleBackdoorGuard(GameROM& rom)
+void removeMercatorCastleBackdoorGuard(md::ROM& rom)
 {
     // There is a guard staying in front of the Mercator castle backdoor to prevent you from using
     // Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
@@ -580,7 +498,7 @@ void removeMercatorCastleBackdoorGuard(GameROM& rom)
     rom.setWord(0x0215A6, 0x0000);
 }
 
-void removeSailorInDarkPort(GameROM& rom)
+void removeSailorInDarkPort(md::ROM& rom)
 {
     // There is a sailor NPC in the "dark" version of Mercator port who responds badly to story triggers, allowing us to sail to Verla
     // even without having repaired the lighthouse. To prevent this from being exploited, we removed him altogether.
@@ -591,188 +509,98 @@ void removeSailorInDarkPort(GameROM& rom)
     rom.setWord(0x021646, 0x0000);
 }
 
-void addNewlineHandlingInDynamicText(GameROM& rom)
+void addNewlineHandlingInDynamicText(md::ROM& rom)
 {
     // Inject a new condition in characters processing to handle newlines in dynamic text when 0x6C character is encountered
-    rom.setWord(0x0230A2, OPCODE_JMP);
-    rom.setLong(0x0230A4, rom.getCurrentInjectionAddress());
+    md::Code procHandleNewlineInCustomText;
 
-    // cmpi.w #FFFF, D0
-    rom.injectWord(0x0C40);
-    rom.injectWord(0xFFFF);
+    procHandleNewlineInCustomText.cmpiw(0xFFFF, reg_D0);
+    procHandleNewlineInCustomText.bne(2);
+        procHandleNewlineInCustomText.jmp(0x230C0);
+    procHandleNewlineInCustomText.cmpiw(0x006C, reg_D0);
+    procHandleNewlineInCustomText.bne(3);
+        procHandleNewlineInCustomText.jsr(0x22F7C);   // "func_textbox_line_feed"
+        procHandleNewlineInCustomText.jmp(0x23094);   // process next character
+    procHandleNewlineInCustomText.jmp(0x230A8); // resume to calling code
 
-    // bne to next case
-    rom.injectWord(OPCODE_BNE + 0x06);
+    uint32_t procAddr = rom.injectCode(procHandleNewlineInCustomText, "proc_handle_newline_in_custom_text");
 
-    // jmp to 230C0
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x000230C0);
-
-    // cmpi.w #006C, D0
-    rom.injectWord(0x0C40);
-    rom.injectWord(0x006C);
-
-    // bne to next case
-    rom.injectWord(OPCODE_BNE + 0x0C);
-
-    // jsr "add newline" function
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x00022F7C);
-
-    // jmp to 23094 (process next character)
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x00023094);
-
-    // jmp to 230A8 (resume back to usual code)
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x000230A8);
+    // Jump to the injected procedure
+    rom.setCode(0x0230A2, md::Code().jmp(procAddr));
 }
 
-void addJewelsCheckForTeleporterToKazalt(GameROM& rom)
+void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
 {
     GameText text("King Nole: Only the bearers of \nthe jewels are worthy of \nentering my domain...\t");
     rom.injectDataBlock(text.getBytes(), "data_text_jewels_alert");
 
-    // ----------- Hijack text with dynamic text func ----------------------
-    uint32_t hijackTextFunc = rom.getCurrentInjectionAddress();
+    // ----------- Handle custom text func ----------------------
+    md::Code funcHandleCustomText;
 
-    // move.w FFFF, D0
-    rom.injectWord(0x303C);
-    rom.injectWord(0xFFFF);
+    funcHandleCustomText.movew(0xFFFF, reg_D0);
+    funcHandleCustomText.moveb(0x00, addr_(0xFF1144));  // to reset textbox state
+    funcHandleCustomText.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
+    funcHandleCustomText.jsr(0x22FCC);  // preconfigure textbox writing
+    funcHandleCustomText.movel(rom.getStoredAddress("data_text_jewels_alert"), addr_(0xFF1844));
+    funcHandleCustomText.jmp(0x22F34);  // handle text loop
 
-    // move.b 0x0, ($FF1144)  to reset textbox state 
-    rom.injectWord(OPCODE_MOVB);
-    rom.injectWord(0x0000);
-    rom.injectLong(0x00FF1144);
-
-    // movem D0-A6, -(A7)
-    rom.injectWord(0x48E7);
-    rom.injectWord(0xFFFE);
-
-    // jsr ($22FCC)
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x00022FCC);
-
-    // set hint addr ($FF1844)
-    rom.injectWord(OPCODE_MOVL);
-    rom.injectLong(rom.getStoredAddress("data_text_jewels_alert"));
-    rom.injectLong(0x00FF1844);
-
-    // jmp ($22F34)
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x00022F34);
-
+    rom.injectCode(funcHandleCustomText, "func_handle_custom_text");
 
     // ----------- Jewel textbox handling ----------------------
+    md::Code procHandleJewelsCheck;
+
+    procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
+    procHandleJewelsCheck.beq(3);
+    procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
+    procHandleJewelsCheck.bne(7);
+        procHandleJewelsCheck.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
+        procHandleJewelsCheck.jsr(0x22EE8);  // "func_open_textbox"
+        procHandleJewelsCheck.jsr(rom.getStoredAddress("func_handle_custom_text"));
+        procHandleJewelsCheck.jsr(0x22EA0);  // "func_close_textbox"
+        procHandleJewelsCheck.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
+        procHandleJewelsCheck.rts();
+    procHandleJewelsCheck.moveq(0x7, reg_D0);
+    procHandleJewelsCheck.jsr(0xE110);  // "func_teleport_kazalt"
+    procHandleJewelsCheck.jmp(0x62FA);
+
+    uint32_t procHandleJewelsAddr = rom.injectCode(procHandleJewelsCheck, "proc_handle_jewels_check");
+
     // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
-    rom.setWord(0x0062F4, OPCODE_JMP);
-    rom.setLong(0x0062F6, rom.getCurrentInjectionAddress());
-
-    // btst #$1, ($FF1054)    - Test if red jewel is owned
-    rom.injectWord(0x0839);
-    rom.injectWord(0x0001);
-    rom.injectLong(0x00FF1054);
-
-    // beq to REMOVEPORTAL
-    rom.injectWord(OPCODE_BEQ + 0x0A);
-
-    // btst #$1, ($FF1055)    - Test if purple jewel is owned
-    rom.injectWord(0x0839);
-    rom.injectWord(0x0001);
-    rom.injectLong(0x00FF1055);
-
-    // bne to TELEPORT
-    rom.injectWord(OPCODE_BNE + 0x1C);
-
-    // movem(store registers) [48E7 FFFE] [REMOVEPORTAL:]
-    rom.injectWord(0x48E7);
-    rom.injectWord(0xFFFE);
-
-    // jsr OPEN TEXTBOX
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x22EE8);
-
-    // jsr hijackTextFunc
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(hijackTextFunc);
-
-    // jsr CLOSE TEXTBOX
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x22EA0);
-
-    // movem(restore registers) [4CDF 7FFF]
-    rom.injectWord(0x4CDF);
-    rom.injectWord(0x7FFF);
-
-    // rts
-    rom.injectWord(OPCODE_RTS);
-
-    // moveq 7, D0  [TELEPORT:]
-    rom.injectWord(0x7007);
-    
-    // jsr E110
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x00E110);
-
-    // jmp back to the regular code
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x0062FA);
+    rom.setCode(0x62F4, md::Code().jmp(procHandleJewelsAddr));
 }
 
-void addStatueOfJyptaGoldsOverTime(GameROM& rom)
+void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
 {
     constexpr uint16_t goldsPerCycle = 0x0002;
 
-    for(uint32_t addr = 0x16696 ; addr <= 0x1669E ; addr += 0x2)
-        rom.setWord(addr, OPCODE_NOP);
+    // ============== Function to handle walk abilities (healing boots, jypta statue...) ==============
+    md::Code funcHandleWalkAbilities;
 
-    rom.setWord(0x166D0, OPCODE_JSR);
-    rom.setLong(0x166D2, rom.getCurrentInjectionAddress());
+    // If Statue of Jypta is owned, gain gold over time
+    funcHandleWalkAbilities.btst(0x5, addr_(0xFF104E));
+    funcHandleWalkAbilities.beq(3);
+        funcHandleWalkAbilities.movew(goldsPerCycle, reg_D0);
+        funcHandleWalkAbilities.jsr(0x177DC);   // rom.getStoredAddress("func_earn_gold");
 
-    for (uint32_t addr = 0x166D6; addr <= 0x166DC; addr += 0x2)
-        rom.setWord(addr, OPCODE_NOP);
+    // If Healing boots are equipped, gain life over time
+    funcHandleWalkAbilities.cmpib(0x7, addr_(0xFF1150));
+    funcHandleWalkAbilities.bne(4);
+        funcHandleWalkAbilities.movew(0x100, reg_D0);
+        funcHandleWalkAbilities.lea(0xFF5400, reg_A5);
+        funcHandleWalkAbilities.jsr(0x1780E);   // rom.getStoredAddress("func_heal_hp");
 
-    // btst #$5, ($FF104E)    - Test if statue of jypta is owned
-    rom.injectWord(0x0839);
-    rom.injectWord(0x0005);
-    rom.injectLong(0x00FF104E);
+    funcHandleWalkAbilities.rts();
 
-    // beq to next condition
-    rom.injectWord(0x670A);
+    uint32_t funcAddr = rom.injectCode(funcHandleWalkAbilities);
 
-    // move.w 2, D0
-    rom.injectWord(0x303C);
-    rom.injectWord(goldsPerCycle);
-
-    // jsr $177DC
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x000177DC);
-
-    // cmpi.b $7, ($FF1150)
-    rom.injectWord(0x0C39);
-    rom.injectWord(0x0007);
-    rom.injectLong(0x00FF1150);
-
-    // bne to rts
-    rom.injectWord(0x6610);
-
-    // move.w 100, D0
-    rom.injectWord(0x303C);
-    rom.injectWord(0x0100);
+    // ============== Hook the function inside game code ==============
     
-    // lea $FF5400, A5
-    rom.injectWord(0x4BF9);
-    rom.injectLong(0x00FF5400);
+    rom.setCode(0x16696, md::Code().nop(5));
 
-    // jsr $1780E
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x0001780E);
-
-    // rts
-    rom.injectWord(OPCODE_RTS);
+    rom.setCode(0x166D0, md::Code().jsr(funcAddr).nop(4));
 }
 
-void addLithographChestInKazaltTeleporterRoom(GameROM& rom)
+void addLithographChestInKazaltTeleporterRoom(md::ROM& rom)
 {
     // Negate map trigger removing entities once the Duke cutscene was seen in OG
     rom.setWord(0x01AA0E, 0x7F7F);
@@ -792,7 +620,7 @@ void addLithographChestInKazaltTeleporterRoom(GameROM& rom)
 }
 
 
-void replaceLumberjackByChest(GameROM& rom)
+void replaceLumberjackByChest(md::ROM& rom)
 {
     // Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
     for (uint32_t addr = 0x9E9BA; addr <= 0x9E9BE; ++addr)
@@ -805,7 +633,7 @@ void replaceLumberjackByChest(GameROM& rom)
     rom.setWord(0x020BA2, 0x8000);  // Fourth word: behavior (00C1 => 8000 works for some reason)
 }
 
-void replaceSickMerchantByChest(GameROM& rom)
+void replaceSickMerchantByChest(md::ROM& rom)
 {
     // Neutralize map entrance triggers for both the shop and the backroom to remove the "sidequest complete" check.
     // Either we forced them to be always true or always false
@@ -827,7 +655,7 @@ void replaceSickMerchantByChest(GameROM& rom)
     rom.setWord(0x021D16, 0x5055);
 }
 
-void replaceFaraInElderHouseByChest(GameROM& rom)
+void replaceFaraInElderHouseByChest(md::ROM& rom)
 {
     // Neutralize a map specific trigger which broke chests inside it
     // 0x019C82:
@@ -854,300 +682,150 @@ void replaceFaraInElderHouseByChest(GameROM& rom)
     rom.setByte(0x09E9DF, 0x17);
 }
 
-void handleArmorUpgrades(GameROM& rom)
+void handleArmorUpgrades(md::ROM& rom)
 {
     // --------------- Alter item in D0 register function ---------------
-    uint32_t alterItemInD0Function = rom.getCurrentInjectionAddress();
+    md::Code funcAlterItemInD0;
 
-    // Inject the function
-    // cmpi.b #09, D0 (0C00 0009)
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x0009);
+    // Check if item ID is between 09 and 0C (armors). If not, branch to return.
+    funcAlterItemInD0.cmpib(ITEM_STEEL_BREAST, reg_D0);
+    funcAlterItemInD0.blt(13);
+    funcAlterItemInD0.cmpib(ITEM_HYPER_BREAST, reg_D0);
+    funcAlterItemInD0.bgt(11);
 
-    // blt (+0x34 [to rts]) (6D3A)
-    rom.injectWord(0x6D34);
+    // By default, put Hyper breast as given armor
+    funcAlterItemInD0.movew(ITEM_HYPER_BREAST, reg_D0);
 
-    // cmpi.b #0C, D0 (0C00 000C)
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x000C);
+    // If Shell breast is not owned, put Shell breast
+    funcAlterItemInD0.btst(0x05, addr_(0xFF1045));
+    funcAlterItemInD0.bne(2);
+    funcAlterItemInD0.movew(ITEM_SHELL_BREAST, reg_D0);
 
-    // bgt (+0x2E [to rts]) (6E2E)
-    rom.injectWord(0x6E2E);
+    // If Chrome breast is not owned, put Chrome breast
+    funcAlterItemInD0.btst(0x01, addr_(0xFF1045));
+    funcAlterItemInD0.bne(2);
+    funcAlterItemInD0.movew(ITEM_CHROME_BREAST, reg_D0);
 
-    // move.w #C, D0 (303C 000C)
-    rom.injectWord(0x303C);
-    rom.injectWord(0x000C);
+    // If Steel breast is not owned, put Steel breast
+    funcAlterItemInD0.btst(0x05, addr_(0xFF1044));
+    funcAlterItemInD0.bne(2);
+    funcAlterItemInD0.movew(ITEM_STEEL_BREAST, reg_D0);
 
-    // btst #5, $FF1045 (0839 0005 00FF1045)
-    rom.injectWord(0x0839);
-    rom.injectWord(0x0005);
-    rom.injectLong(0x00FF1045);
+    funcAlterItemInD0.rts();
 
-    // bne +0x04 (6604)
-    rom.injectWord(0x6604);
+    uint32_t funcAlterItemInD0Addr = rom.injectCode(funcAlterItemInD0);
 
-    // move.w #B, D0 (303C 000B)
-    rom.injectWord(0x303C);
-    rom.injectWord(0x000B);
-
-    // btst #1, $FF1045 (0839 0001 00FF1045)
-    rom.injectWord(0x0839);
-    rom.injectWord(0x0001);
-    rom.injectLong(0x00FF1045);
-
-    // bne +0x04 (6604)
-    rom.injectWord(0x6604);
-
-    // move.w #A, D0 (303C 000A)
-    rom.injectWord(0x303C);
-    rom.injectWord(0x000A);
-
-    // btst #5, $FF1044 (0839 0005 00FF1044)
-    rom.injectWord(0x0839);
-    rom.injectWord(0x0005);
-    rom.injectLong(0x00FF1044);
-
-    // bne +0x04 (6604)
-    rom.injectWord(0x6604);
-
-    // move.w #9, D0 (303C 0009)
-    rom.injectWord(0x303C);
-    rom.injectWord(0x0009);
-
-    // rts (4E75)
-    rom.injectWord(OPCODE_RTS);
 
     // --------------- Change item in reward box function ---------------
-    uint32_t changeItemInRewardBoxFunction = rom.getCurrentInjectionAddress();
+    md::Code funcChangeItemRewardBox;
 
-    // jsr ALTERATION FUNC
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(alterItemInD0Function);
+    funcChangeItemRewardBox.jsr(funcAlterItemInD0Addr);
+    funcChangeItemRewardBox.movew(reg_D0, addr_(0xFF1196));
+    funcChangeItemRewardBox.rts();
 
-    // move.w D0, $FF1196 (33C0 00FF1196)
-    rom.injectWord(0x33C0);
-    rom.injectLong(0x00FF1196);
-
-    // rts (4E75)
-    rom.injectWord(OPCODE_RTS);
+    uint32_t funcChangeItemRewardBoxAddr = rom.injectCode(funcChangeItemRewardBox);
 
     // --------------- Change item given by taking item on ground function ---------------
-    uint32_t changeItemGivenByItemOnGroundFunction = rom.getCurrentInjectionAddress();
+    md::Code funcAlterItemGivenByGroundSource;
 
-    // movem D7,A0 -(A7)	(48E7 0180)
-    rom.injectWord(0x48E7);
-    rom.injectWord(0x0180);
-    
-    // cmpi.b #0C, D0 (0C00 000C)
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x000C);
+    funcAlterItemGivenByGroundSource.movemToStack({ reg_D7 }, { reg_A0 }); // movem D7,A0 -(A7)	(48E7 0180)
 
-    // bgt to movem (6E22)
-    rom.injectWord(OPCODE_BGT + 0x22);
+    funcAlterItemGivenByGroundSource.cmpib(ITEM_HYPER_BREAST, reg_D0);
+    funcAlterItemGivenByGroundSource.bgt(9); // to movem
+    funcAlterItemGivenByGroundSource.cmpib(ITEM_STEEL_BREAST, reg_D0);
+    funcAlterItemGivenByGroundSource.blt(7);  // to movem
+  
+    funcAlterItemGivenByGroundSource.jsr(funcAlterItemInD0Addr);
+        funcAlterItemGivenByGroundSource.moveb(addr_(reg_A5, 0x3B), reg_D7);  // move ($3B,A5), D7	(1E2D 003B)
+        funcAlterItemGivenByGroundSource.subib(0xC9, reg_D7);
+        funcAlterItemGivenByGroundSource.cmpa(lval_(0xFF5400), reg_A5);
+        funcAlterItemGivenByGroundSource.blt(2);    // to movem
+            funcAlterItemGivenByGroundSource.bset(reg_D7, addr_(0xFF103F)); // set a flag when an armor is taken on the ground for it to disappear afterwards
+ 
+    funcAlterItemGivenByGroundSource.movemFromStack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
+    funcAlterItemGivenByGroundSource.lea(0xFF1040, reg_A0);
+    funcAlterItemGivenByGroundSource.rts();
 
-    // cmpi.b #09, D0 (0C00 0009)
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x0009);
-
-    // blt to movem (6D1C)
-    rom.injectWord(OPCODE_BLT + 0x1C);
-
-    // jsr ALTERATION FUNC
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(alterItemInD0Function);
-
-    // move ($3B,A5), D7	(1E2D 003B)
-    rom.injectWord(0x1E2D);
-    rom.injectWord(0x003B);
-
-    // subi #C9, D7	 (0407)
-    rom.injectWord(0x0407);
-    rom.injectWord(0x00C9);
-
-    // cmpa #00FF5400, A5	(BBF9 5400)
-    rom.injectWord(0xBBFC);
-    rom.injectLong(0x00FF5400);
-
-    // blt to movem (6D06)
-    rom.injectWord(OPCODE_BLT + 0x06);
-
-    // bset D7, FF103F	(0FF9 00FF103F)
-    rom.injectWord(0x0FF9);
-    rom.injectLong(0x00FF103F);
-
-    // movem (A7)+, D7,A0	(4CDF 0180)
-    rom.injectWord(0x4CDF);
-    rom.injectWord(0x0180);
-     
-    // lea FF1040, A0 (41F9 00FF1040)
-    rom.injectWord(0x41F9);
-    rom.injectLong(0x00FF1040);
-
-    // rts (4E75)
-    rom.injectWord(OPCODE_RTS);
+    uint32_t funcAlterItemGivenByGroundSourceAddr = rom.injectCode(funcAlterItemGivenByGroundSource);
 
     // --------------- Change visible item for items on ground function ---------------
-    uint32_t changeItemVisibleOnGroundFunction = rom.getCurrentInjectionAddress();
+    md::Code funcAlterItemVisibleForGroundSource;
 
-    // movem D7,A0 -(A7)	(48E7 0180)
-    rom.injectWord(0x48E7);
-    rom.injectWord(0x0180);
+    funcAlterItemVisibleForGroundSource.movemToStack({ reg_D7 }, { reg_A0 });  // movem D7,A0 -(A7)
 
-    // subi #C0, D0  (0400 00C0)
-    rom.injectWord(0x0400);
-    rom.injectWord(0x00C0);
-
-    // cmpi.b #0C, D0 (0C00 000C)
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x000C);
-
-    // bgt (+0x20 [to movem]) (6E20)
-    rom.injectWord(OPCODE_BGT + 0x20);
-
-    // cmpi.b #09, D0 (0C00 0009)
-    rom.injectWord(0x0C00);
-    rom.injectWord(0x0009);
-
-    // blt (+0x1A [to movem]) (6D1A)
-    rom.injectWord(OPCODE_BLT + 0x1A);
-
-    // move D0, D7 (001E)
-    rom.injectWord(0x1E00);
-
-    // subi #9, D7	 (0407)
-    rom.injectWord(0x0407);
-    rom.injectWord(0x0009);
-
-    // btest D7, FF103F	(0F39 00FF103F)
-    rom.injectWord(0x0F39);
-    rom.injectLong(0x00FF103F);
-
-    // bne (+0x08 [to move 3F into item]) (6608)
-    rom.injectWord(OPCODE_BNE + 0x08);
-
-    // jsr ALTERATION FUNC
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(alterItemInD0Function);
-
-    // bra +0x04
-    rom.injectWord(OPCODE_BRA + 0x04);
-
-    // move.w #3F, D0 (303C 003F)
-    rom.injectWord(0x303C);
-    rom.injectWord(0x003F);
-
-    // move D0, ($36,A1) (1340 0036)
-    rom.injectWord(0x1340);
-    rom.injectWord(0x0036);
-
-    // movem (A7)+, D7,A0	(4CDF 0180)
-    rom.injectWord(0x4CDF);
-    rom.injectWord(0x0180);
-
-    // rts (4E75)
-    rom.injectWord(OPCODE_RTS);
+    funcAlterItemVisibleForGroundSource.subib(0xC0, reg_D0);
+    funcAlterItemVisibleForGroundSource.cmpib(ITEM_HYPER_BREAST, reg_D0);
+    funcAlterItemVisibleForGroundSource.bgt(10); // to move D0 in item slot
+    funcAlterItemVisibleForGroundSource.cmpib(ITEM_STEEL_BREAST, reg_D0);
+    funcAlterItemVisibleForGroundSource.blt(8); // to move D0 in item slot
+        funcAlterItemVisibleForGroundSource.moveb(reg_D0, reg_D7);
+        funcAlterItemVisibleForGroundSource.subib(ITEM_STEEL_BREAST, reg_D7);
+        funcAlterItemVisibleForGroundSource.btst(reg_D7, addr_(0xFF103F));
+        funcAlterItemVisibleForGroundSource.bne(3);
+            // Item was not already taken, alter the armor inside
+            funcAlterItemVisibleForGroundSource.jsr(funcAlterItemInD0Addr);
+            funcAlterItemVisibleForGroundSource.bra(2);
+            // Item was already taken, remove it by filling it with an empty item
+            funcAlterItemVisibleForGroundSource.movew(ITEM_NONE, reg_D0);
+    funcAlterItemVisibleForGroundSource.moveb(reg_D0, addr_(reg_A1, 0x36)); // move D0, ($36,A1) (1340 0036)
+    funcAlterItemVisibleForGroundSource.movemFromStack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
+    funcAlterItemVisibleForGroundSource.rts();
+    
+    uint32_t funcAlterItemVisibleForGroundSourceAddr = rom.injectCode(funcAlterItemVisibleForGroundSource);
 
     // --------------- Hooks ---------------
-
     // In 'chest reward' function, replace the item ID move by the injected function
-    rom.setWord(0x0070BE, OPCODE_JSR);
-    rom.setLong(0x0070C0, changeItemInRewardBoxFunction);
+    rom.setCode(0x0070BE, md::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // In 'NPC reward' function, replace the item ID move by the injected function
-    rom.setWord(0x028DD8, OPCODE_JSR);
-    rom.setLong(0x028DDA, changeItemInRewardBoxFunction);
+    rom.setCode(0x028DD8, md::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // In 'item on ground reward' function, replace the item ID move by the injected function
     rom.setWord(0x024ADC, 0x3002); // put the move D2,D0 before the jsr because it helps us while changing nothing to the usual logic
-    rom.setWord(0x024ADE, OPCODE_JSR);
-    rom.setLong(0x024AE0, changeItemInRewardBoxFunction);
+    rom.setCode(0x024ADE, md::Code().jsr(funcChangeItemRewardBoxAddr));
 
     // Replace 2928C lea (41F9 00FF1040) by a jsr to injected function
-    rom.setWord(0x02928C, OPCODE_JSR);
-    rom.setLong(0x02928E, changeItemGivenByItemOnGroundFunction);
+    rom.setCode(0x02928C, md::Code().jsr(funcAlterItemGivenByGroundSourceAddr));
 
     // Replace 1963C - 19644 (0400 00C0 ; 1340 0036) by a jsr to a replacement function
-    rom.setWord(0x01963C, OPCODE_JSR);
-    rom.setLong(0x01963E, changeItemVisibleOnGroundFunction);
-    rom.setWord(0x019642, OPCODE_NOP);
+    rom.setCode(0x01963C, md::Code().jsr(funcAlterItemVisibleForGroundSourceAddr).nop());
 }
 
-void addFunctionToItemsOnUse(GameROM& rom)
+void addFunctionToItemsOnUse(md::ROM& rom)
 {
     // ------------- Lithograph hint function -------------
     uint32_t lithographHintFunctionAddr = rom.getCurrentInjectionAddress();
 
-    // move.w FFFF, D0
-    rom.injectWord(0x303C);
-    rom.injectWord(0xFFFF);
+    md::Code funcLithographHint;
 
-    // movem D0-A6, -(A7)
-    rom.injectWord(0x48E7);
-    rom.injectWord(0xFFFE);
+    funcLithographHint.movew(0xFFFF, reg_D0);
+    funcLithographHint.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
+    funcLithographHint.jsr(0x22FCC);
+    funcLithographHint.movel(rom.getStoredAddress("data_lithograph_hint_text"), addr_(0xFF1844));
+    funcLithographHint.jmp(0x22F34);
 
-    // jsr ($22FCC)
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x00022FCC);
-
-    // set hint addr ($FF1844)
-    rom.injectWord(OPCODE_MOVL);
-    rom.injectLong(rom.getStoredAddress("data_lithograph_hint_text"));
-    rom.injectLong(0x00FF1844);
-
-    // jmp ($22F34)
-    rom.injectWord(OPCODE_JMP);
-    rom.injectLong(0x00022F34);
+    uint32_t funcLithographHintAddr = rom.injectCode(funcLithographHint);
 
     // ------------- Extended item handling function -------------
 
-    rom.setWord(0x00DBA8, OPCODE_JSR);
-    rom.setLong(0x00DBAA, rom.getCurrentInjectionAddress());
-    rom.setWord(0x00DBAE, OPCODE_NOP);
-    rom.setWord(0x00DBB0, OPCODE_NOP);
-    rom.setWord(0x00DBB2, OPCODE_NOP);
-    rom.setWord(0x00DBB4, OPCODE_NOP);
+    md::Code funcExtendedItemHandling;
 
-    // cmpi.b #23, D0
-    rom.injectWord(0x0C00);
-    rom.injectWord(ITEM_RECORD_BOOK);
+    funcExtendedItemHandling.cmpib(ITEM_RECORD_BOOK, reg_D0);
+    funcExtendedItemHandling.bne(3);
+        funcExtendedItemHandling.jsr(0x1592); // "func_save_game"
+        funcExtendedItemHandling.rts();
+    funcExtendedItemHandling.cmpib(ITEM_SPELL_BOOK, reg_D0);
+    funcExtendedItemHandling.bne(3);
+        funcExtendedItemHandling.jsr(0xDC1C); // "func_abracadabra"
+        funcExtendedItemHandling.rts();
+    funcExtendedItemHandling.cmpib(ITEM_LITHOGRAPH, reg_D0);
+    funcExtendedItemHandling.bne(2);
+        funcExtendedItemHandling.jsr(lithographHintFunctionAddr);
+    funcExtendedItemHandling.rts();
+    
+    uint32_t funcExtendedItemHandlingAddr = rom.injectCode(funcExtendedItemHandling);
 
-    // bne to next case
-    rom.injectWord(0x6608);
-
-    // Call the "save game" function
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x00001592);
-
-    // Eject out to the "success" address
-    rom.injectWord(OPCODE_RTS);
-
-    // cmpi.b #18, D0
-    rom.injectWord(0x0C00);
-    rom.injectWord(ITEM_SPELL_BOOK);
-
-    // bne to next case
-    rom.injectWord(0x6608);
-
-    // jsr $DC1C       ("Abracadabra...")
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(0x0000DC1C);
-
-    // Eject out to the "success" address
-    rom.injectWord(OPCODE_RTS);
-
-    // cmpi.b #27, D0
-    rom.injectWord(0x0C00);
-    rom.injectWord(ITEM_LITHOGRAPH);
-
-    // bne to next case
-    rom.injectWord(0x6606);
-
-    // jsr LITHOGRAPH HINT FUNCTION
-    rom.injectWord(OPCODE_JSR);
-    rom.injectLong(lithographHintFunctionAddr);
-
-    // rts
-    rom.injectWord(OPCODE_RTS);
+    rom.setCode(0x00DBA8, md::Code().jsr(funcExtendedItemHandlingAddr).nop(4));
 
     // -------------------- Other modifications ---------------------
 
@@ -1158,7 +836,7 @@ void addFunctionToItemsOnUse(GameROM& rom)
     rom.setWord(0x008647, 0x6627);
 }
 
-void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
+void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 {
     // Rando core
     alterGameStart(rom, options);
@@ -1172,6 +850,7 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
     alterItemOrderInMenu(rom);
     alterLifestockHandlingInShops(rom);
 
+    // Item check fixes
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
     fixArmletCheck(rom);
@@ -1205,7 +884,7 @@ void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options)
         handleArmorUpgrades(rom);
 }
 
-void alterRomAfterRandomization(GameROM& rom, const RandomizerOptions& options)
+void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
 {
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);

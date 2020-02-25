@@ -1,10 +1,9 @@
 #include "World.h"
 
-#include "Constants/ItemCodes.h"
-#include "Constants/ItemSourceCodes.h"
-#include "Constants/RegionCodes.h"
+#include "ItemCodes.h"
+#include "ItemSourceCodes.h"
+#include "RegionCodes.h"
 #include "Item.h"
-
 #include "ItemChest.h"
 #include "ItemOnGround.h"
 #include "ItemInShop.h"
@@ -45,7 +44,7 @@ World::~World()
         delete shop;
 }
 
-void World::writeToROM(GameROM& rom)
+void World::writeToROM(md::ROM& rom)
 {
     // Reserve a data block for gold values which will be filled when gold items will be encountered
     rom.reserveDataBlock(GOLD_SOURCES_COUNT, "data_gold_values");

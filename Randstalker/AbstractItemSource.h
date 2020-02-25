@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "Item.h"
 
 class AbstractItemSource
@@ -20,7 +21,7 @@ public:
     const std::vector<std::string>& getHints() const { return _hints; }
 
     virtual bool isItemCompatible(Item* item) const = 0;
-    virtual void writeToROM(GameROM& rom) const = 0;
+    virtual void writeToROM(md::ROM& rom) const = 0;
 
 private:
     std::string _name;

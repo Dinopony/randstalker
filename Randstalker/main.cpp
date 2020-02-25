@@ -35,7 +35,7 @@
 #include <string>
 #include <iostream>
 
-#include "GameROM.h"
+#include "MegadriveTools/MdRom.h"
 #include "GameAlterations.h"
 #include "Tools.h"
 #include "World.h"
@@ -43,9 +43,9 @@
 
 constexpr auto RELEASE = "0.9e";
 
-GameROM* getInputROM(std::string inputRomPath)
+md::ROM* getInputROM(std::string inputRomPath)
 {
-	GameROM* rom = new GameROM(inputRomPath);
+	md::ROM* rom = new md::ROM(inputRomPath);
 	while (!rom->isValid())
 	{
 		delete rom;
@@ -53,7 +53,7 @@ GameROM* getInputROM(std::string inputRomPath)
 			std::cout << "[ERROR] ROM input path \"" << inputRomPath << "\" is wrong, and no ROM could be opened this way.\n\n";
 		std::cout << "Please specify input ROM path (or drag ROM on Randstalker.exe icon before launching): ";
 		std::getline(std::cin, inputRomPath);
-		rom = new GameROM(inputRomPath);
+		rom = new md::ROM(inputRomPath);
 	}
 
 	return rom;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
 	RandomizerOptions options(argc, argv);
 
-	GameROM* rom = getInputROM(options.getInputROMPath());
+	md::ROM* rom = getInputROM(options.getInputROMPath());
 	
 	// Perform game changes unrelated with the randomization part. This is mostly changing the game mechanics or altering slightly
 	// a few maps by removing or changing NPCs.

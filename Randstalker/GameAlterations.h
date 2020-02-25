@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
-#include "GameROM.h"
-#include "RandomizerOptions.h"
+namespace md { class ROM; }
+class RandomizerOptions;
 
-void alterRomBeforeRandomization(GameROM& rom, const RandomizerOptions& options);
-void alterRomAfterRandomization(GameROM& rom, const RandomizerOptions& options);
+void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options);
+void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options);

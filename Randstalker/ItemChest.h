@@ -17,7 +17,7 @@ public:
         return true;
     }
 
-    virtual void writeToROM(GameROM& rom) const
+    virtual void writeToROM(md::ROM& rom) const
     {
         rom.setByte(0x9EABE + _chestID, this->getItemID());
     }
