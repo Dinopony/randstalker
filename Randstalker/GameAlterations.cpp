@@ -169,6 +169,15 @@ void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
     rom.setCode(0x166D0, md::Code().jsr(funcAddr).nop(4));
 }
 
+void quickenGaiaEffect(md::ROM& rom)
+{
+    constexpr uint8_t factor = 3;
+
+    rom.setWord(0x1686C, rom.getWord(0x1686C) * factor);
+    rom.setWord(0x16878, rom.getWord(0x16878) * factor);
+    rom.setWord(0x16884, rom.getWord(0x16884) * factor);
+}
+
 void handleArmorUpgrades(md::ROM& rom)
 {
     // --------------- Alter item in D0 register function ---------------
@@ -905,6 +914,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     alterItemOrderInMenu(rom);
     alterLifestockHandlingInShops(rom);
     addStatueOfJyptaGoldsOverTime(rom);
+    quickenGaiaEffect(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
