@@ -57,6 +57,7 @@ namespace md
         Code& movemToStack(const std::vector<DataRegister>& dataRegs, const std::vector<AddressRegister>& addrRegs);
         Code& movemFromStack(const std::vector<DataRegister>& dataRegs, const std::vector<AddressRegister>& addrRegs);
 
+        Code& bset(uint8_t bitID, const Param& target);
         Code& bset(const DataRegister& Dx, const Param& target);
         Code& btst(uint8_t bitID, const Param& target);
         Code& btst(const DataRegister& Dx, const Param& target);

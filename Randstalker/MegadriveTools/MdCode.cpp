@@ -205,6 +205,14 @@ namespace md
         return *this;
     }
 
+    Code& Code::bset(uint8_t bitID, const Param& target)
+    {
+        this->addOpcode(0x08C0 + target.getMXn());
+        this->addWord(static_cast<uint16_t>(bitID));
+        this->addBytes(target.getAdditionnalData());
+        return *this;
+    }
+
     Code& Code::bset(const DataRegister& Dx, const Param& target)
     {
         uint16_t opcode = 0x01C0 + (Dx.getXn() << 9) + target.getMXn();
