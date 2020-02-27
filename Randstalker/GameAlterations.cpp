@@ -365,7 +365,7 @@ void alterMercatorSecondaryShopCheck(md::ROM& rom)
 
 void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
 {
-    GameText text("King Nole: Only the bearers of \nthe jewels are worthy of \nentering my domain...\t");
+    GameText text("King Nole: Only the bearers of the jewels are worthy of entering my domain...");
     rom.injectDataBlock(text.getBytes(), "data_text_jewels_alert");
 
     // ----------- Handle custom text func ----------------------

@@ -1,33 +1,70 @@
 #include "GameText.h"
+#include <sstream>
 
-
-GameText::GameText() : _currentLineLength(0)
+GameText::GameText() : _currentLineLength(0), _currentLineCount(0)
 {}
 
-GameText::GameText(const std::string& text) : _currentLineLength(0)
+GameText::GameText(const std::string& text) : _currentLineLength(0), _currentLineCount(0)
 {
-	for (uint16_t i = 0; i < text.size(); ++i)
-		this->addCharacter(text[i]);
-	_bytes.push_back(0xFF);
-	_bytes.push_back(0xFF);
+	this->setText(text);
+}
+
+void GameText::setText(const std::string& text)
+{
+	_bytes.clear();
+	for (size_t i = 0; i < text.size(); ++i)
+		this->addCharacter(text, i);
+	this->addCharacter('\0');
+}
+
+void GameText::addCharacter(const std::string& text, size_t i)
+{
+	char character = text[i];
+
+	// If we start a new word, check if we can finish it on the same line
+	if (!_bytes.empty() && character != ' ' && (*_bytes.rbegin()) == 0x00)
+	{
+		uint16_t wordWidth = 0;
+		char currentWordChar = character;
+		while (currentWordChar != '\n' && currentWordChar != ' ' && currentWordChar != '\0')
+		{
+			wordWidth += getCharacterWidth(currentWordChar);
+			currentWordChar = text[++i];
+		}
+
+		// Word is too big to fit on the line, skip a line
+		if (_currentLineLength + wordWidth >= 0x105)
+			this->addCharacter('\n');
+	}
+
+	this->addCharacter(character);
 }
 
 void GameText::addCharacter(char character)
 {
-	if (character == '\t')
+	if (character == '\0')
+	{
+		this->addCharacter('\t');
+		_bytes.push_back(0xFF);
+		_bytes.push_back(0xFF);
+	}
+	else if (character == '\t')
 	{
 		_bytes.push_back(0xFF);
 		_bytes.push_back(0xF0);
+		_currentLineCount = 0;
 	}
 	else if (character == '\n')
 	{
+		if (++_currentLineCount == 3)
+			this->addCharacter('\t'); // Add a 'wait for input' character if textbox is going to scroll
 		_bytes.push_back(0x00);
 		_bytes.push_back(0x6C);
 		_currentLineLength = 0;
 	}
 	else
 	{
-		if (_currentLineLength >= 0x110)
+		if (_currentLineLength >= 0x105)
 		{
 			uint8_t previousByte = *_bytes.rbegin();
 			bool needsHyphen = (previousByte >= 0x0B && previousByte <= 0x3E);

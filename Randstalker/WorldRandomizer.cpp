@@ -421,8 +421,8 @@ void WorldRandomizer::randomizeHints()
 {
 	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
 	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
-	std::string completeHint = redJewelHint + "\t\n" + purpleJewelHint + "\t";
-
+	std::string completeHint = redJewelHint + "\t\n" + purpleJewelHint;
+	
 	_world.lithographHint = GameText(completeHint);
 
 	_logFile << "\n-------------------------------\n";

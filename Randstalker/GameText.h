@@ -9,7 +9,10 @@ class GameText
 public: 
 	GameText();
 	GameText(const std::string& text);
+	
+	void setText(const std::string& text);
 
+	void addCharacter(const std::string& text, size_t i);
 	void addCharacter(char character);
 
 	const std::vector<uint8_t>& getBytes() const { return _bytes; }
@@ -20,4 +23,5 @@ public:
 private:
 	std::vector<uint8_t> _bytes;
 	uint16_t _currentLineLength;
+	uint8_t _currentLineCount;
 };
