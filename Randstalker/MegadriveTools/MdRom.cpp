@@ -3,7 +3,8 @@
 #include <fstream>
 
 constexpr uint32_t ROM_SIZE = 2097152;
-constexpr uint32_t CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAD0;
+constexpr uint32_t CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAC0;
+constexpr uint32_t DATE_INJECTION_SECTOR_START_ADDRESS = 0x11FFF0;
 
 namespace md 
 {
@@ -11,7 +12,7 @@ namespace md
 	ROM::ROM(const std::string& inputPath) :
 		_wasOpen(false),
 		_currentCodeInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS),
-		_currentDataInjectionAddress(ROM_SIZE)
+		_currentDataInjectionAddress(DATE_INJECTION_SECTOR_START_ADDRESS)
 	{
 		_byteArray = new char[ROM_SIZE];
 
@@ -130,7 +131,8 @@ namespace md
 	uint32_t ROM::reserveDataBlock(uint16_t byteCount, const std::string& name)
 	{
 		_currentDataInjectionAddress -= byteCount;
-		this->storeAddress(name, _currentDataInjectionAddress);
+		if (!name.empty())
+			this->storeAddress(name, _currentDataInjectionAddress);
 		return _currentDataInjectionAddress;
 	}
 

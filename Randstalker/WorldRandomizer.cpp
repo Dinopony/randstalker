@@ -419,12 +419,23 @@ void WorldRandomizer::writeItemSourcesBreakdownInLog()
 
 void WorldRandomizer::randomizeHints()
 {
+	// Lithograph hint
 	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
 	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
 	std::string completeHint = redJewelHint + "\t\n" + purpleJewelHint;
 	
 	_world.lithographHint = GameText(completeHint);
 
+	// Sign hints
+	_world.signHints[0x1A9] = GameText("This is the Waterfall Shrine crossroad sign. Hints are soon to be put on this sign!");
+	_world.signHints[0x1B8] = GameText("This is the Swamp Shrine crossroad sign. Hints are soon to be put on this sign!");
+	_world.signHints[0x1C3] = GameText("This is the Tibor crossroad sign. Hints are soon to be put on this sign!");
+	_world.signHints[0x1CA] = GameText("This is the Mir Tower crossroad sign. Hints are soon to be put on this sign!");
+	_world.signHints[0x1DA] = GameText("This is the Verla crossroad sign. Hints are soon to be put on this sign!");
+	_world.signHints[0x1DE] = GameText("This is the Destel crossroad sign. Hints are soon to be put on this sign!");
+	_world.signHints[0x203] = GameText("This is the Lake Shrine / Mountainous crossroad sign. Hints are soon to be put on this sign!");
+
+	// Write hints in spoiler log
 	_logFile << "\n-------------------------------\n";
 	_logFile << "Hints: " << "\n";
 	_logFile << "- " << redJewelHint << "\n";

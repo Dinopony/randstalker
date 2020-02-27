@@ -20,6 +20,11 @@ namespace md
         Code& jsr(uint32_t address);
         Code& jmp(uint32_t address);
 
+        Code& cmp(const Param& value, const DataRegister& Dx, Size size);
+        Code& cmpb(const Param& value, const DataRegister& Dx) { return this->cmp(value, Dx, Size::BYTE); }
+        Code& cmpw(const Param& value, const DataRegister& Dx) { return this->cmp(value, Dx, Size::WORD); }
+        Code& cmpl(const Param& value, const DataRegister& Dx) { return this->cmp(value, Dx, Size::LONG); }
+
         Code& cmpi(const ImmediateValue& value, const Param& other, Size size);
         Code& cmpib(uint8_t value, const Param& other) { return this->cmpi(ImmediateValue(value), other, Size::BYTE); }
         Code& cmpiw(uint16_t value, const Param& other) { return this->cmpi(ImmediateValue(value), other, Size::WORD); }
@@ -37,6 +42,8 @@ namespace md
         Code& bne(uint16_t instructionCount = 0);
         Code& blt(uint16_t instructionCount = 0);
         Code& bgt(uint16_t instructionCount = 0);
+        Code& bmi(uint16_t instructionCount = 0);
+        Code& bra(const std::string& label);
         Code& dbra(const DataRegister& Dx, const std::string& label);
 
         Code& clr(const Register& reg, Size size);

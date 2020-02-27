@@ -46,6 +46,7 @@ public:
 
     WorldRegion* darkenedRegion;
     GameText lithographHint;
+    std::map<uint16_t, GameText> signHints;
 
     std::vector<TreeMap> treeMaps;
 

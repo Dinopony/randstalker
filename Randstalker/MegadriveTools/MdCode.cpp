@@ -47,6 +47,21 @@ namespace md
         return *this;
     }
 
+    Code& Code::cmp(const Param& value, const DataRegister& Dx, Size size)
+    {
+        uint16_t sizeCode = 0x0;
+        if (size == Size::WORD)
+            sizeCode = 0x1;
+        else if (size == Size::LONG)
+            sizeCode = 0x2;
+
+        uint16_t opcode = 0xB000 + (Dx.getXn() << 9) + (sizeCode << 6) + value.getMXn();
+        this->addOpcode(opcode);
+        this->addBytes(value.getAdditionnalData());
+
+        return *this;
+    }
+
     Code& Code::cmpi(const ImmediateValue& value, const Param& other, Size size)
     {
         uint16_t sizeCode = 0x0;
@@ -126,6 +141,26 @@ namespace md
         this->addOpcode(0x6E00);
         if (instructionCount > 0)
             _pendingBranches[static_cast<uint32_t>(_bytes.size())] = instructionCount;
+        return *this;
+    }
+
+    Code& Code::bmi(uint16_t instructionCount)
+    {
+        this->addOpcode(0x6B00);
+        if (instructionCount > 0)
+            _pendingBranches[static_cast<uint32_t>(_bytes.size())] = instructionCount;
+        return *this;
+    }
+
+    Code& Code::bra(const std::string& label)
+    {
+        this->addOpcode(0x6000);
+
+        uint32_t thisAddress = static_cast<uint32_t>(_bytes.size());
+        uint32_t labelAddress = _labels.at(label);
+        uint16_t offset = static_cast<uint16_t>(labelAddress - thisAddress);
+        this->addWord(offset);
+
         return *this;
     }
 

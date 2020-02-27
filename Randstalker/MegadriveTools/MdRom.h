@@ -32,7 +32,7 @@ namespace md {
 		uint32_t injectLong(uint32_t longWord);
 		uint32_t injectCode(const Code& code, const std::string& label = "");
 
-		uint32_t injectDataBlock(std::vector<uint8_t> bytes, const std::string& name);
+		uint32_t injectDataBlock(std::vector<uint8_t> bytes, const std::string& name = "");
 		uint32_t reserveDataBlock(uint16_t byteCount, const std::string& name);
 
 		void storeAddress(const std::string& name, uint32_t address) { _storedAddresses[name] = address; }

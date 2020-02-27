@@ -73,6 +73,16 @@ void World::writeToROM(md::ROM& rom)
  
     // Inject lithograph hint as a data block
     rom.injectDataBlock(lithographHint.getBytes(), "data_lithograph_hint_text");
+
+    // Inject sign hints
+    uint32_t dataSignsTableAddr = rom.reserveDataBlock((static_cast<uint16_t>(signHints.size()) * 0x6) + 0x2, "data_signs_table");
+    for (const auto& [mapID, text] : signHints)
+    {
+        rom.setWord(dataSignsTableAddr, mapID);
+        uint32_t textAddr = rom.injectDataBlock(text.getBytes());
+        rom.setLong(dataSignsTableAddr+2, textAddr);
+        dataSignsTableAddr += 0x6;
+    }
 }
 
 void World::initItems()
