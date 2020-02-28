@@ -12,9 +12,13 @@ GameText::GameText(const std::string& text) : _currentLineLength(0), _currentLin
 void GameText::setText(const std::string& text)
 {
 	_bytes.clear();
-	for (size_t i = 0; i < text.size(); ++i)
-		this->addCharacter(text, i);
-	this->addCharacter('\0');
+
+	if (!text.empty())
+	{
+		for (size_t i = 0; i < text.size(); ++i)
+			this->addCharacter(text, i);
+		this->addCharacter('\0');
+	}
 }
 
 void GameText::addCharacter(const std::string& text, size_t i)

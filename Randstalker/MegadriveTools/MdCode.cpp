@@ -152,6 +152,14 @@ namespace md
         return *this;
     }
 
+    Code& Code::bpl(uint16_t instructionCount)
+    {
+        this->addOpcode(0x6A00);
+        if (instructionCount > 0)
+            _pendingBranches[static_cast<uint32_t>(_bytes.size())] = instructionCount;
+        return *this;
+    }
+
     Code& Code::bra(const std::string& label)
     {
         this->addOpcode(0x6000);

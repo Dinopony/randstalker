@@ -74,14 +74,26 @@ void World::writeToROM(md::ROM& rom)
     // Inject lithograph hint as a data block
     rom.injectDataBlock(lithographHint.getBytes(), "data_lithograph_hint_text");
 
-    // Inject sign hints
-    uint32_t dataSignsTableAddr = rom.reserveDataBlock((static_cast<uint16_t>(signHints.size()) * 0x6) + 0x2, "data_signs_table");
-    for (const auto& [mapID, text] : signHints)
+    // Inject text replacements
+    constexpr uint32_t regularTextTableAddress = 0x277F6;
+    uint32_t textReplacementTableAddr = rom.reserveDataBlock((static_cast<uint16_t>(ingameTexts.size()) * 0x6) + 0x2, "data_text_replacement_table");
+    for (const auto& [textAddress, replacementText] : ingameTexts)
     {
-        rom.setWord(dataSignsTableAddr, mapID);
-        uint32_t textAddr = rom.injectDataBlock(text.getBytes());
-        rom.setLong(dataSignsTableAddr+2, textAddr);
-        dataSignsTableAddr += 0x6;
+        uint32_t textOffset = textAddress - regularTextTableAddress;
+        rom.setWord(textReplacementTableAddr, static_cast<uint16_t>(textOffset));
+
+        if (!replacementText.isEmpty())
+        {
+            uint32_t replacementTextAddr = rom.injectDataBlock(replacementText.getBytes());
+            rom.setLong(textReplacementTableAddr + 2, replacementTextAddr);
+        }
+        else
+        {
+            // Empty text
+            rom.setLong(textReplacementTableAddr + 2, 0xFFFFFFFF);
+        }
+
+        textReplacementTableAddr += 0x6;
     }
 }
 
@@ -989,6 +1001,9 @@ void World::initHints()
     regions[RegionCode::WATERFALL_SHRINE]->addHint("close to a waterfall");
     regions[RegionCode::THIEVES_HIDEOUT]->addHint("close to a waterfall");
     regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR]->addHint("close to a waterfall");
+    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_DAHL]->addHint("close to a waterfall");
+    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS]->addHint("close to a waterfall");
+    itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK]->addHint("close to a waterfall");
 
     regions[RegionCode::GREENMAZE]->addHint("resting among the trees");
     regions[RegionCode::TIBOR]->addHint("resting among the trees");

@@ -4,12 +4,14 @@
 #include <vector>
 #include <cstdint>
 
-class GameText 
+class GameText
 {
 public: 
 	GameText();
 	GameText(const std::string& text);
 	
+	bool isEmpty() const { return _bytes.empty(); }
+
 	void setText(const std::string& text);
 
 	void addCharacter(const std::string& text, size_t i);

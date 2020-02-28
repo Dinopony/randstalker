@@ -54,4 +54,5 @@ private:
 
 	std::vector<Item*> _priorityItems;
 	std::vector<Item*> _fillerItems;
+	std::vector<Item*> _keyItems;
 };

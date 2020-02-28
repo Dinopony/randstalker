@@ -44,7 +44,12 @@ void addCustomTextHandling(md::ROM& rom)
     procHandleCustomText.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
     procHandleCustomText.nop(3); // Let some space to insert the custom text usage function (check addCustomTextUsage())
     procHandleCustomText.tstl(addr_(customTextStorageMemoryAddress));
-    procHandleCustomText.beq(7);
+    procHandleCustomText.beq(11);
+        // If memory address stored is negative (e.g. 0xFFFFFFFF), it means we don't want to display text
+        procHandleCustomText.bpl(4);
+            procHandleCustomText.movel(0x00000000, addr_(customTextStorageMemoryAddress));
+            procHandleCustomText.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
+            procHandleCustomText.rts();
         // If there is already custom text address in 0xFF0014, use it
         procHandleCustomText.movew(0xFFFF, reg_D0);
         procHandleCustomText.moveb(0x00, addr_(0xFF1144));  // to reset textbox state
@@ -76,14 +81,39 @@ void addCustomTextHandling(md::ROM& rom)
     rom.injectCode(funcDisplayTextWithTextbox, "func_display_text_with_textbox");
 }
 
-void addCustomTextUsage(md::ROM& rom)
+void addTextReplacementFunction(md::ROM& rom)
 {
-    // --------------- Custom text usage function ---------------------
-    // This function analyzes the context of the text being displayed to replace it by custom text in appropriate cases.
+    constexpr uint32_t regularTextTableAddress = 0x277F6;
+    constexpr uint32_t regularTextEnd = 0x29000;
+
+    // --------------- Text replacement function ---------------------
+    // This function analyzes the text about to be displayed in the textbox and replaces it with custom text
+    // if it's appropriate to do so.
     // For instance, if we interact with a road sign, it puts a hint instead of the usual sign indications.
 
     md::Code funcFindCustomText;
-    funcFindCustomText.movemToStack({ reg_D0 }, { reg_A0 });
+
+    funcFindCustomText.movemToStack({ reg_D0, reg_D1 }, { reg_A1 });
+    funcFindCustomText.cmpa(lval_(0x29000), reg_A0);
+    funcFindCustomText.bgt(12);
+        // Iterate over text replacement table to find the related text
+        funcFindCustomText.movel(reg_A0, reg_D0);
+        funcFindCustomText.subil(regularTextTableAddress, reg_D0);
+        funcFindCustomText.movel(rom.getStoredAddress("data_text_replacement_table"), reg_A1);
+        funcFindCustomText.label("loop_start");
+        funcFindCustomText.movew(addr_(reg_A1), reg_D1);
+        funcFindCustomText.bmi(7);
+            funcFindCustomText.cmpw(reg_D1, reg_D0);
+            funcFindCustomText.bne(3);
+                funcFindCustomText.movel(addr_(reg_A1, 0x2), addr_(customTextStorageMemoryAddress));
+                funcFindCustomText.bra(3);
+            funcFindCustomText.adda(0x6, reg_A1);
+            funcFindCustomText.bra("loop_start");
+    funcFindCustomText.movemFromStack({ reg_D0, reg_D1 }, { reg_A1 });
+    funcFindCustomText.rts();
+
+/*    
+    funcFindCustomText.movemToStack({ reg_D0 }, { reg_A1 });
     funcFindCustomText.cmpa(lval_(0xFF5480), reg_A4);
     funcFindCustomText.blt(12);
         // If this is a road sign...
@@ -100,9 +130,9 @@ void addCustomTextUsage(md::ROM& rom)
                     funcFindCustomText.bra(3);
                 funcFindCustomText.adda(0x6, reg_A0);
                 funcFindCustomText.bra("loop_start");
-    funcFindCustomText.movemFromStack({ reg_D0 }, { reg_A0 });
+    funcFindCustomText.movemFromStack({ reg_D0, reg_D1 }, { reg_A1 });
     funcFindCustomText.rts();
-
+    */
     uint32_t funcFindCustomTextAddr = rom.injectCode(funcFindCustomText);
     uint32_t injectionAddress = rom.getStoredAddress("proc_handle_custom_text") + 0x4;
     rom.setCode(injectionAddress, md::Code().jsr(funcFindCustomTextAddr)); // Try to find an appropriate custom text for this context
@@ -1017,5 +1047,5 @@ void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
     alterLanternIntoPassiveItem(rom);
-    addCustomTextUsage(rom);
+    addTextReplacementFunction(rom);
 }

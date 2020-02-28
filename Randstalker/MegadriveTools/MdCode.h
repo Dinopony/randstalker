@@ -43,6 +43,7 @@ namespace md
         Code& blt(uint16_t instructionCount = 0);
         Code& bgt(uint16_t instructionCount = 0);
         Code& bmi(uint16_t instructionCount = 0);
+        Code& bpl(uint16_t instructionCount = 0);
         Code& bra(const std::string& label);
         Code& dbra(const DataRegister& Dx, const std::string& label);
 

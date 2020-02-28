@@ -194,6 +194,7 @@ void WorldRandomizer::randomizeItems()
 	Tools::shuffle(_fillerItems, _rng);
 
 	std::vector<Item*> playerInventory;
+	size_t previousReachableRegionsCount = 0;
 
 	this->fillSourcesWithPriorityItems();
 
@@ -207,6 +208,17 @@ void WorldRandomizer::randomizeItems()
 		std::vector<WorldRegion*> reachableRegions = this->evaluateReachableRegions(playerInventory, keyItemsNeededToProgress, reachableItemSources);
 		if (keyItemsNeededToProgress.empty())
 			break;
+		
+		bool newRegionsUnlocked = false;
+		if (previousReachableRegionsCount == 0)
+		{
+			previousReachableRegionsCount = reachableRegions.size();
+		}
+		else if (reachableRegions.size() > previousReachableRegionsCount)
+		{
+			newRegionsUnlocked = true;
+			previousReachableRegionsCount = reachableRegions.size();
+		}
 
 		Tools::shuffle(reachableItemSources, _rng);
 
@@ -240,11 +252,15 @@ void WorldRandomizer::randomizeItems()
 		_logFile << "\t > Key item is [" << randomKeyItem->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
 		randomItemSource->setItem(randomKeyItem);
 		playerInventory.push_back(randomKeyItem);
+		_keyItems.push_back(randomKeyItem);
 
-		// Fill additionnal item sources with "filler items"
-		size_t additionnalSourcesToFill = static_cast<size_t>(reachableItemSources.size() * FILLING_RATE);
-		_logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
-		this->fillSourcesWithFillerItems(reachableItemSources.begin(), reachableItemSources.begin() + additionnalSourcesToFill);
+		// Fill additionnal item sources with "filler items" if we unlocked new regions
+		if (newRegionsUnlocked)
+		{
+			size_t additionnalSourcesToFill = static_cast<size_t>(reachableItemSources.size() * FILLING_RATE);
+			_logFile << "\t > Filling " << additionnalSourcesToFill << " additionnal sources with filler items\n";
+			this->fillSourcesWithFillerItems(reachableItemSources.begin(), reachableItemSources.begin() + additionnalSourcesToFill);
+		}
 	}
 
 	// If no key items are remaining, this means we are in go-mode and we can fill all remaining item sources
@@ -419,27 +435,87 @@ void WorldRandomizer::writeItemSourcesBreakdownInLog()
 
 void WorldRandomizer::randomizeHints()
 {
-	// Lithograph hint
-	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
-	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
-	std::string completeHint = redJewelHint + "\t\n" + purpleJewelHint;
-	
-	_world.lithographHint = GameText(completeHint);
-
-	// Sign hints
-	_world.signHints[0x1A9] = GameText("This is the Waterfall Shrine crossroad sign. Hints are soon to be put on this sign!");
-	_world.signHints[0x1B8] = GameText("This is the Swamp Shrine crossroad sign. Hints are soon to be put on this sign!");
-	_world.signHints[0x1C3] = GameText("This is the Tibor crossroad sign. Hints are soon to be put on this sign!");
-	_world.signHints[0x1CA] = GameText("This is the Mir Tower crossroad sign. Hints are soon to be put on this sign!");
-	_world.signHints[0x1DA] = GameText("This is the Verla crossroad sign. Hints are soon to be put on this sign!");
-	_world.signHints[0x1DE] = GameText("This is the Destel crossroad sign. Hints are soon to be put on this sign!");
-	_world.signHints[0x203] = GameText("This is the Lake Shrine / Mountainous crossroad sign. Hints are soon to be put on this sign!");
-
-	// Write hints in spoiler log
 	_logFile << "\n-------------------------------\n";
 	_logFile << "Hints: " << "\n";
-	_logFile << "- " << redJewelHint << "\n";
-	_logFile << "- " << purpleJewelHint << "\n";
+
+	// =============== Lithograph hint ===============
+	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
+	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
+	std::string completeLithographHint = redJewelHint + "\t\n" + purpleJewelHint;
+	
+	_world.lithographHint = GameText(completeLithographHint);
+	_logFile << "- Lithograph: \"" << redJewelHint << " " << purpleJewelHint << "\"\n";
+
+	// =============== Fortune Teller hint ===============
+	std::vector<Item*> hintableItemsByFortuneTeller = { _world.items[ITEM_GOLA_EYE], _world.items[ITEM_GOLA_NAIL], _world.items[ITEM_GOLA_FANG], _world.items[ITEM_GOLA_HORN] };
+	Tools::shuffle(hintableItemsByFortuneTeller, _rng);
+	Item* fortuneHintedItem = *(hintableItemsByFortuneTeller.begin());
+
+	std::string fortuneItemName;
+	if (fortuneHintedItem == _world.items[ITEM_GOLA_EYE]) 
+		fortuneItemName = "an eye";
+	else if (fortuneHintedItem == _world.items[ITEM_GOLA_NAIL]) 
+		fortuneItemName = "a nail";
+	else if (fortuneHintedItem == _world.items[ITEM_GOLA_FANG]) 
+		fortuneItemName = "a fang";
+	else if (fortuneHintedItem == _world.items[ITEM_GOLA_HORN])
+		fortuneItemName = "a horn";
+
+	std::string fortuneItemHint = this->getRandomHintForItem(fortuneHintedItem);
+	std::string completeFortuneHint = "I see " + fortuneItemName + " " + fortuneItemHint + ".";
+
+	_world.ingameTexts[0x27CE4] = GameText("Fortune Teller: Hello dear, let me look what your future is made of.");
+	_world.ingameTexts[0x27CE6] = GameText("I see... I see... " + completeFortuneHint);
+	_logFile << "- Fortune Teller: \"" << completeFortuneHint << "\"\n";
+
+	// =============== Road sign hints ===============
+	std::vector<std::string> vectorOfTruths;
+	for (int i = 0; i < 50; ++i)
+		vectorOfTruths.push_back("This is not a hint.");
+	Tools::shuffle(vectorOfTruths, _rng);
+
+	_world.ingameTexts[0x27960] = GameText(vectorOfTruths[0]);
+	_logFile << "- Waterfall Shrine crossroad sign: \"" << vectorOfTruths[0] << "\"\n";
+	
+	_world.ingameTexts[0x27962] = GameText(vectorOfTruths[1]);
+	_logFile << "- Swamp Shrine crossroad sign: \"" << vectorOfTruths[1] << "\"\n";
+
+	_world.ingameTexts[0x27964] = GameText(vectorOfTruths[2]);
+	_logFile << "- Tibor crossroad sign: \"" << vectorOfTruths[2] << "\"\n";
+
+	_world.ingameTexts[0x27966] = GameText(vectorOfTruths[3]);
+	_logFile << "- Mir Tower crossroad sign: \"" << vectorOfTruths[3] << "\"\n";
+
+	_world.ingameTexts[0x27A0A] = GameText(vectorOfTruths[4]);
+	_logFile << "- Verla crossroad sign: \"" << vectorOfTruths[4] << "\"\n";
+
+	_world.ingameTexts[0x27A08] = GameText(vectorOfTruths[5]);
+	_logFile << "- Destel crossroad sign: \"" << vectorOfTruths[5] << "\"\n";
+
+	_world.ingameTexts[0x27A06] = GameText(vectorOfTruths[6]);
+	_logFile << "- Lake Shrine / Mountainous crossroad sign: \"" << vectorOfTruths[6] << "\"\n";
+
+	_world.ingameTexts[0x27A04] = GameText(vectorOfTruths[7]);
+	_logFile << "- Greenmaze / Mountainous crossroad sign: \"" << vectorOfTruths[7] << "\"\n";
+
+	_world.ingameTexts[0x279F0] = GameText(vectorOfTruths[8]);
+	_logFile << "- Center of Greenmaze sign: \"" << vectorOfTruths[8] << "\"\n";
+
+	_world.ingameTexts[0x279F2] = GameText(vectorOfTruths[9]);
+	_logFile << "- Greenmaze / Massan shortcut tunnel sign: \"" << vectorOfTruths[9] << "\"\n";
+
+	// =============== Crypt sign hints ===============
+	_world.ingameTexts[0x2797A] = GameText("This is the Crypt #0 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x27982] = GameText("This is the Crypt #1 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x2798A] = GameText("This is the Crypt #2 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x27992] = GameText("This is the Crypt #3 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x27998] = GameText("This is the Crypt #4 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x279A0] = GameText("This is the Crypt #5 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x279A8] = GameText("This is the Crypt #6 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x279B0] = GameText("This is the Crypt #7 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x279B8] = GameText("This is the Crypt #8 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x279C0] = GameText("This is the Crypt #9 sign. Hints are soon to be put on this sign!");
+	_world.ingameTexts[0x279E8] = GameText("This is the Crypt #10 sign. Hints are soon to be put on this sign!");
 }
 
 std::string WorldRandomizer::getRandomHintForItem(Item* item)
