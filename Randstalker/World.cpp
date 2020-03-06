@@ -986,13 +986,13 @@ void World::initHints()
     regions[RegionCode::MERCATOR]->addHint("in a town");
     regions[RegionCode::VERLA]->addHint("in a town");
 
-//    regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("on a route");
-//    regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("on a route");
-//    regions[RegionCode::MIR_TOWER_SECTOR]->addHint("on a route");
-//    regions[RegionCode::VERLA_SECTOR]->addHint("on a route");
-//    regions[RegionCode::ROUTE_VERLA_DESTEL]->addHint("on a route");
-//    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("on a route");
-//    regions[RegionCode::ROUTE_LAKE_SHRINE]->addHint("on a route");
+    regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("on a route");
+    regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("on a route");
+    regions[RegionCode::MIR_TOWER_SECTOR]->addHint("on a route");
+    regions[RegionCode::VERLA_SECTOR]->addHint("on a route");
+    regions[RegionCode::ROUTE_VERLA_DESTEL]->addHint("on a route");
+    regions[RegionCode::ROUTE_AFTER_DESTEL]->addHint("on a route");
+    regions[RegionCode::ROUTE_LAKE_SHRINE]->addHint("on a route");
 
     regions[RegionCode::WATERFALL_SHRINE]->addHint("in a shrine");
     regions[RegionCode::SWAMP_SHRINE]->addHint("in a shrine");

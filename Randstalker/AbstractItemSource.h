@@ -3,12 +3,15 @@
 #include <string>
 #include "Item.h"
 
+class WorldRegion;
+
 class AbstractItemSource
 {
 public:
     AbstractItemSource(const std::string& name) :
         _name(name),
-        _item(nullptr)
+        _item(nullptr),
+        _region(nullptr)
     {}
 
     const std::string& getName() const { return _name; }
@@ -20,6 +23,9 @@ public:
     void addHint(const std::string& hint) { _hints.push_back(hint); }
     const std::vector<std::string>& getHints() const { return _hints; }
 
+    void setRegion(WorldRegion* region) { _region = region; }
+    WorldRegion* getRegion() const { return _region; }
+
     virtual bool isItemCompatible(Item* item) const = 0;
     virtual void writeToROM(md::ROM& rom) const = 0;
 
@@ -28,4 +34,5 @@ private:
     Item* _item;
 
     std::vector<std::string> _hints;
+    WorldRegion* _region;
 };

@@ -44,8 +44,12 @@ class WorldRegion
 public:
 	WorldRegion(const std::string& name, const std::vector<AbstractItemSource*> itemSources) :
 		_name		(name),
-		_itemSources(itemSources)
-	{}
+		_itemSources(itemSources),
+		_isBarren	(true)
+	{
+		for (AbstractItemSource* source : itemSources)
+			source->setRegion(this);
+	}
 
 	~WorldRegion() 
 	{
@@ -55,10 +59,18 @@ public:
 
 	const std::string& getName() const { return _name; }
 
-	void addItemSource(AbstractItemSource* itemSource) 				{ _itemSources.push_back(itemSource); }
+	void addItemSource(AbstractItemSource* itemSource) 
+	{ 
+		_itemSources.push_back(itemSource); 
+		itemSource->setRegion(this);
+	}
 	const std::vector<AbstractItemSource*>& getItemSources() const 	{ return _itemSources; }
 
-	void addItemSource(AbstractItemSource* itemSource, Item* requiredItem) { _restrictedItemSources.push_back(std::make_pair(itemSource, requiredItem)); }
+	void addItemSource(AbstractItemSource* itemSource, Item* requiredItem) 
+	{
+		_restrictedItemSources.push_back(std::make_pair(itemSource, requiredItem));
+		itemSource->setRegion(this);
+	}
 	const std::vector<std::pair<AbstractItemSource*, Item*>>& getRestrictedItemSources() const { return _restrictedItemSources; }
 
 	std::vector<AbstractItemSource*> getAllItemSources() const 
@@ -98,6 +110,9 @@ public:
 	}
 	const std::vector<uint16_t>& getDarkRooms() const { return _darkRooms; }
 
+	void setBarren(bool isBarren) { _isBarren = isBarren; }
+	bool isBarren() const { return _isBarren; }
+
 private:
 	std::string _name;
 	std::vector<AbstractItemSource*> _itemSources;
@@ -108,4 +123,6 @@ private:
 	
 	std::vector<std::string> _hints;
 	std::vector<uint16_t> _darkRooms;
+
+	bool _isBarren;
 };

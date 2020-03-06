@@ -252,6 +252,7 @@ void WorldRandomizer::randomizeItems()
 		_logFile << "\t > Key item is [" << randomKeyItem->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
 		randomItemSource->setItem(randomKeyItem);
 		playerInventory.push_back(randomKeyItem);
+		randomItemSource->getRegion()->setBarren(false);
 		_keyItems.push_back(randomKeyItem);
 
 		// Fill additionnal item sources with "filler items" if we unlocked new regions
@@ -469,40 +470,68 @@ void WorldRandomizer::randomizeHints()
 	_logFile << "- Fortune Teller: \"" << completeFortuneHint << "\"\n";
 
 	// =============== Road sign hints ===============
-	std::vector<std::string> vectorOfTruths;
-	for (int i = 0; i < 50; ++i)
-		vectorOfTruths.push_back("This is not a hint.");
-	Tools::shuffle(vectorOfTruths, _rng);
 
-	_world.ingameTexts[0x27960] = GameText(vectorOfTruths[0]);
-	_logFile << "- Waterfall Shrine crossroad sign: \"" << vectorOfTruths[0] << "\"\n";
-	
-	_world.ingameTexts[0x27962] = GameText(vectorOfTruths[1]);
-	_logFile << "- Swamp Shrine crossroad sign: \"" << vectorOfTruths[1] << "\"\n";
+	const std::map<std::string, std::vector<WorldRegion*>> macroRegions = {
+		{ "the village of Massan",		{ _world.regions[RegionCode::MASSAN] } },
+		{ "the cave near Massan",		{ _world.regions[RegionCode::MASSAN_CAVE] } },
+		{ "the waterfall shrine",		{ _world.regions[RegionCode::WATERFALL_SHRINE] } },
+		{ "the village of Gumi",		{ _world.regions[RegionCode::GUMI] } },
+		{ "the swamp shrine",			{ _world.regions[RegionCode::SWAMP_SHRINE] } },
+		{ "Tibor",						{ _world.regions[RegionCode::TIBOR] } },
+		{ "the town of Ryuma",			{ _world.regions[RegionCode::RYUMA] } },
+		{ "the thieves' hideout",		{ _world.regions[RegionCode::THIEVES_HIDEOUT] } },
+		{ "witch Helga's hut",			{ _world.regions[RegionCode::WITCH_HELGA_HUT] } },
+		{ "the town of Mercator",		{ _world.regions[RegionCode::MERCATOR], _world.regions[RegionCode::MERCATOR_SPECIAL_SHOP] } },
+		{ "the crypt of Mercator",		{ _world.regions[RegionCode::CRYPT] } },
+		{ "the dungeon of Mercator",	{ _world.regions[RegionCode::MERCATOR_DUNGEON] } },
+		{ "Mir Tower",					{ _world.regions[RegionCode::MIR_TOWER_PRE_GARLIC], _world.regions[RegionCode::MIR_TOWER_POST_GARLIC] } },
+		{ "Greenmaze",					{ _world.regions[RegionCode::GREENMAZE] } },
+		{ "the town of Verla",			{ _world.regions[RegionCode::VERLA] } },
+		{ "Verla mine",					{ _world.regions[RegionCode::VERLA_MINES] } },
+		{ "the village of Destel",		{ _world.regions[RegionCode::DESTEL] } },
+		{ "Destel well",				{ _world.regions[RegionCode::DESTEL_WELL] } },
+		{ "the lake shrine",			{ _world.regions[RegionCode::LAKE_SHRINE] } },
+		{ "the mountainous area",		{ _world.regions[RegionCode::MOUNTAINOUS_AREA] } },
+		{ "King Nole's cave",			{ _world.regions[RegionCode::KN_CAVE] } },
+		{ "the town of Kazalt",			{ _world.regions[RegionCode::KAZALT] } },
+		{ "King Nole's labyrinth",		{ _world.regions[RegionCode::KN_LABYRINTH_PRE_SPIKES], _world.regions[RegionCode::KN_LABYRINTH_POST_SPIKES], _world.regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] } },
+		{ "King Nole's palace",			{ _world.regions[RegionCode::KN_PALACE] } },
+	};
 
-	_world.ingameTexts[0x27964] = GameText(vectorOfTruths[2]);
-	_logFile << "- Tibor crossroad sign: \"" << vectorOfTruths[2] << "\"\n";
+	const std::map<uint16_t, std::string> roadSigns = {
+		{ 0x27960, "Waterfall Shrine crossroad sign" },
+		{ 0x27962, "Swamp Shrine crossroad sign" },
+		{ 0x27964, "Tibor crossroad sign" },
+		{ 0x27966, "Mir Tower crossroad sign" },
+		{ 0x27A0A, "Verla crossroad sign" },
+		{ 0x27A08, "Destel crossroad sign" },
+		{ 0x27A06, "Lake Shrine / Mountainous crossroad sign" },
+		{ 0x27A04, "Greenmaze / Mountainous crossroad sign" },
+		{ 0x279F0, "Center of Greenmaze sign" },
+		{ 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
+	};
 
-	_world.ingameTexts[0x27966] = GameText(vectorOfTruths[3]);
-	_logFile << "- Mir Tower crossroad sign: \"" << vectorOfTruths[3] << "\"\n";
+	std::vector<std::string> roadSignHintsVector;
+	for (const auto& [name, regions] : macroRegions)
+	{
+		bool isBarren = true;
+		for (WorldRegion* region : regions)
+			if (!region->isBarren())
+				isBarren = false;
+		if (isBarren)
+			roadSignHintsVector.push_back("\"If you are looking for King Nole's treasure, what you are looking for is not in " + name + ".\"");
+		else
+			roadSignHintsVector.push_back("\"Don't forget going to " + name + ". You might have a pleasant surprise.\"");
+	}
+	Tools::shuffle(roadSignHintsVector, _rng);
 
-	_world.ingameTexts[0x27A0A] = GameText(vectorOfTruths[4]);
-	_logFile << "- Verla crossroad sign: \"" << vectorOfTruths[4] << "\"\n";
-
-	_world.ingameTexts[0x27A08] = GameText(vectorOfTruths[5]);
-	_logFile << "- Destel crossroad sign: \"" << vectorOfTruths[5] << "\"\n";
-
-	_world.ingameTexts[0x27A06] = GameText(vectorOfTruths[6]);
-	_logFile << "- Lake Shrine / Mountainous crossroad sign: \"" << vectorOfTruths[6] << "\"\n";
-
-	_world.ingameTexts[0x27A04] = GameText(vectorOfTruths[7]);
-	_logFile << "- Greenmaze / Mountainous crossroad sign: \"" << vectorOfTruths[7] << "\"\n";
-
-	_world.ingameTexts[0x279F0] = GameText(vectorOfTruths[8]);
-	_logFile << "- Center of Greenmaze sign: \"" << vectorOfTruths[8] << "\"\n";
-
-	_world.ingameTexts[0x279F2] = GameText(vectorOfTruths[9]);
-	_logFile << "- Greenmaze / Massan shortcut tunnel sign: \"" << vectorOfTruths[9] << "\"\n";
+	uint8_t i = 0;
+	for (const auto& [addr, name] : roadSigns)
+	{
+		_world.ingameTexts[addr] = GameText(roadSignHintsVector[i]);
+		_logFile << "- " << name << ": \"" << roadSignHintsVector[i] << "\"\n";
+		++i;
+	}
 
 	// =============== Crypt sign hints ===============
 	_world.ingameTexts[0x2797A] = GameText("This is the Crypt #0 sign. Hints are soon to be put on this sign!");
