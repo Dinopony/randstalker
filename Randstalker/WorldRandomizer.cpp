@@ -503,6 +503,7 @@ void WorldRandomizer::randomizeHints()
 		{ 0x27962, "Swamp Shrine crossroad sign" },
 		{ 0x27964, "Tibor crossroad sign" },
 		{ 0x27966, "Mir Tower crossroad sign" },
+		{ 0x279E6, "Mir Tower map sign" },
 		{ 0x27A0A, "Verla crossroad sign" },
 		{ 0x27A08, "Destel crossroad sign" },
 		{ 0x27A06, "Lake Shrine / Mountainous crossroad sign" },
