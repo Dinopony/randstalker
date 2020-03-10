@@ -20,8 +20,6 @@ void WorldRandomizer::randomize()
 {
 	_rng.seed(_options.getSeed());
 	this->randomizeGoldValues();
-	this->randomizeGoldValues();
-//	this->randomizeDarkRooms();
 
 	_rng.seed(_options.getSeed());
 	this->randomizeItems();
@@ -259,7 +257,7 @@ void WorldRandomizer::randomizeItems()
 		randomItemSource->getRegion()->setBarren(false);
 		_keyItems.push_back(randomKeyItem);
 
-		// Fill additionnal item sources with "filler items" if we unlocked new regions
+		// Fill additionnal item sources with "filler items" if we unlocked new regions on previous step
 		if (newRegionsUnlocked)
 		{
 			size_t additionnalSourcesToFill = static_cast<size_t>(reachableItemSources.size() * FILLING_RATE);
@@ -447,6 +445,7 @@ void WorldRandomizer::randomizeHints()
 	_logFile << "Hints: " << "\n";
 
 	// =============== Lithograph hint ===============
+
 	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
 	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
 	std::string completeLithographHint = redJewelHint + "\t\n" + purpleJewelHint;
@@ -455,6 +454,7 @@ void WorldRandomizer::randomizeHints()
 	_logFile << "- Lithograph: \"" << redJewelHint << " " << purpleJewelHint << "\"\n";
 
 	// =============== Fortune Teller hint ===============
+
 	std::vector<Item*> hintableItemsByFortuneTeller = { _world.items[ITEM_GOLA_EYE], _world.items[ITEM_GOLA_NAIL], _world.items[ITEM_GOLA_FANG], _world.items[ITEM_GOLA_HORN] };
 	Tools::shuffle(hintableItemsByFortuneTeller, _rng);
 	Item* fortuneHintedItem = *(hintableItemsByFortuneTeller.begin());
@@ -477,6 +477,22 @@ void WorldRandomizer::randomizeHints()
 	_logFile << "- Fortune Teller: \"" << completeFortuneHint << "\"\n";
 
 	// =============== Road sign hints ===============
+
+	std::vector<std::string> roadSignHintsVector;
+
+	const std::map<uint16_t, std::string> roadSigns = {
+		{ 0x27960, "Waterfall Shrine crossroad sign" },
+		{ 0x27962, "Swamp Shrine crossroad sign" },
+		{ 0x27964, "Tibor crossroad sign" },
+		{ 0x27966, "Mir Tower crossroad sign" },
+		{ 0x279E6, "Mir Tower map sign" },
+		{ 0x27A0A, "Verla crossroad sign" },
+		{ 0x27A08, "Destel crossroad sign" },
+		{ 0x27A06, "Lake Shrine / Mountainous crossroad sign" },
+		{ 0x27A04, "Greenmaze / Mountainous crossroad sign" },
+		{ 0x279F0, "Center of Greenmaze sign" },
+		{ 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
+	};
 
 	const std::map<std::string, std::vector<WorldRegion*>> macroRegions = {
 		{ "the village of Massan",		{ _world.regions[RegionCode::MASSAN] } },
@@ -502,24 +518,10 @@ void WorldRandomizer::randomizeHints()
 		{ "King Nole's cave",			{ _world.regions[RegionCode::KN_CAVE] } },
 		{ "the town of Kazalt",			{ _world.regions[RegionCode::KAZALT] } },
 		{ "King Nole's labyrinth",		{ _world.regions[RegionCode::KN_LABYRINTH_PRE_SPIKES], _world.regions[RegionCode::KN_LABYRINTH_POST_SPIKES], _world.regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] } },
-		{ "King Nole's palace",			{ _world.regions[RegionCode::KN_PALACE] } },
+		{ "King Nole's palace",			{ _world.regions[RegionCode::KN_PALACE] } }
 	};
 
-	const std::map<uint16_t, std::string> roadSigns = {
-		{ 0x27960, "Waterfall Shrine crossroad sign" },
-		{ 0x27962, "Swamp Shrine crossroad sign" },
-		{ 0x27964, "Tibor crossroad sign" },
-		{ 0x27966, "Mir Tower crossroad sign" },
-		{ 0x279E6, "Mir Tower map sign" },
-		{ 0x27A0A, "Verla crossroad sign" },
-		{ 0x27A08, "Destel crossroad sign" },
-		{ 0x27A06, "Lake Shrine / Mountainous crossroad sign" },
-		{ 0x27A04, "Greenmaze / Mountainous crossroad sign" },
-		{ 0x279F0, "Center of Greenmaze sign" },
-		{ 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
-	};
-
-	std::vector<std::string> roadSignHintsVector;
+	// Barren / key hints
 	for (const auto& [name, regions] : macroRegions)
 	{
 		bool isBarren = true;
@@ -527,9 +529,21 @@ void WorldRandomizer::randomizeHints()
 			if (!region->isBarren())
 				isBarren = false;
 		if (isBarren)
-			roadSignHintsVector.push_back("\"If you are looking for King Nole's treasure, what you are looking for is not in " + name + ".\"");
+			roadSignHintsVector.push_back("What you are looking for is not in " + name + ".");
 		else
-			roadSignHintsVector.push_back("\"Don't forget going to " + name + ". You might have a pleasant surprise.\"");
+			roadSignHintsVector.push_back("You might have a pleasant surprise wandering in " + name + ".");
+	}
+
+	// Key items location hints
+	const std::vector<uint8_t> hintableItems = {
+		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,	ITEM_BUYER_CARD,	ITEM_GARLIC,	ITEM_SUN_STONE,
+		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,	ITEM_IDOL_STONE,	ITEM_KEY,		ITEM_SAFETY_PASS
+	};
+
+	for (uint8_t itemID : hintableItems)
+	{
+		Item* hintedItem = _world.items[itemID];
+		roadSignHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
 	}
 	Tools::shuffle(roadSignHintsVector, _rng);
 
