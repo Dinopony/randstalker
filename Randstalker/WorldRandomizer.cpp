@@ -9,7 +9,7 @@ constexpr auto FILLING_RATE = 0.21;
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
 	_options			(options),
-	_rng				(options.getSeed()),
+	_rng				(),
 	_logFile			()
 {
 	_logFile.open(options.getSpoilerLogPath());
@@ -18,11 +18,15 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
 
 void WorldRandomizer::randomize()
 {
+	_rng.seed(_options.getSeed());
+	this->randomizeGoldValues();
 	this->randomizeGoldValues();
 //	this->randomizeDarkRooms();
 
+	_rng.seed(_options.getSeed());
 	this->randomizeItems();
 	
+	_rng.seed(_options.getSeed());
 	this->setSpawnPoint();
 	this->randomizeHints();
 
