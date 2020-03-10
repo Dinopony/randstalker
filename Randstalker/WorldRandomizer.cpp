@@ -427,11 +427,14 @@ void WorldRandomizer::writeItemSourcesBreakdownInLog()
 		}
 	}
 
-	_logFile << "\n-------------------------------\n";
-	_logFile << "Unplaced items:" << "\n";
+	if (!_fillerItems.empty())
+	{
+		_logFile << "\n-------------------------------\n";
+		_logFile << "Unplaced items:" << "\n";
 
-	for (Item* item : _fillerItems)
-		_logFile << "- [" << item->getName() << "]\n";
+		for (Item* item : _fillerItems)
+			_logFile << "- [" << item->getName() << "]\n";
+	}
 }
 
 void WorldRandomizer::randomizeHints()
