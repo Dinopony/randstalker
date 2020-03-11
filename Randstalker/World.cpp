@@ -9,6 +9,8 @@
 #include "ItemInShop.h"
 #include "ItemReward.h"
 
+#include <sstream>
+
 World::World(const RandomizerOptions& options) :
     spawnMapID(0x258), spawnX(0x1F), spawnZ(0x19), darkenedRegion(nullptr)
 {
@@ -30,6 +32,16 @@ World::World(const RandomizerOptions& options) :
 
     if(options.shuffleTiborTrees())
         this->initTreeMaps();
+
+    uint32_t seed = options.getSeed();
+    while (seed && seedHashText.size() < 8)
+    {
+        uint32_t mod = seed % 0x3E;
+        if (mod)
+            seedHashText.push_back((uint8_t)mod);
+        seed -= 0x3E;
+        seed /= 0x3E;
+    }   
 }
 
 World::~World()
@@ -95,6 +107,10 @@ void World::writeToROM(md::ROM& rom)
 
         textReplacementTableAddr += 0x6;
     }
+
+    // Write seed hash as text replacing the "New Game" string
+    for (uint8_t i = 0; i < seedHashText.size()-1; ++i)
+        rom.setByte(0x29A11+i, seedHashText[i]);
 }
 
 void World::initItems()

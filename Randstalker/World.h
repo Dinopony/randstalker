@@ -52,4 +52,6 @@ public:
 
     uint16_t spawnMapID;
     uint8_t spawnX, spawnZ;
+
+    std::vector<uint8_t> seedHashText;
 };

@@ -923,7 +923,7 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
 //       Post-generation stuff
 ///////////////////////////////////////////////////////////////////////////////////
 
-void alterLanternIntoPassiveItem(md::ROM& rom)
+void alterLanternHandling(md::ROM& rom)
 {
 //    rom.storeAddress("data_dark_rooms", 0x8800);
 
@@ -994,7 +994,7 @@ void alterLanternIntoPassiveItem(md::ROM& rom)
         funcChangeMapPalette.clrw(addr_(0xFF0080));
         funcChangeMapPalette.movew(0x0CCC, addr_(0xFF0082));
         funcChangeMapPalette.clrw(addr_(0xFF009E));
-        funcChangeMapPalette.jsr(0x87BE);
+        funcChangeMapPalette.jsr(0x87BE); // TOOD: This call could be moved to the function which calls this one on menu exit
     funcChangeMapPalette.rts();
 
     rom.setCode(0x2D64, funcChangeMapPalette);
@@ -1144,6 +1144,6 @@ void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
     // Post-generation stuff
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
-    alterLanternIntoPassiveItem(rom);
+    alterLanternHandling(rom);
     addTextReplacementFunction(rom);
 }
