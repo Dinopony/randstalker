@@ -477,10 +477,10 @@ void World::initShops()
 
     ItemShop* verlaShop = new ItemShop();
     itemSources[ItemSourceCode::SHOP_VERLA_LIFESTOCK] = new ItemInShop(0x021F57, "Verla shop: Life Stock slot", verlaShop);
-    itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE] = new ItemInShop(0x021F37, "Verla shop: EkeEke slot", verlaShop);
-    itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS] = new ItemInShop(0x021F3F, "Verla shop: Detox Grass slot", verlaShop);
-    itemSources[ItemSourceCode::SHOP_VERLA_DAHL] = new ItemInShop(0x021F47, "Verla shop: Dahl slot", verlaShop);
-    itemSources[ItemSourceCode::SHOP_VERLA_MAP] = new ItemInShop(0x021F4F, "Verla shop: Map slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_EKEEKE] = new ItemInShop({ 0x021F05, 0x021F37 }, "Verla shop: EkeEke slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_DETOX_GRASS] = new ItemInShop({ 0x021F0D, 0x021F3F }, "Verla shop: Detox Grass slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_DAHL] = new ItemInShop({ 0x021F15, 0x021F47 }, "Verla shop: Dahl slot", verlaShop);
+    itemSources[ItemSourceCode::SHOP_VERLA_MAP] = new ItemInShop({ 0x021F25, 0x021F4F }, "Verla shop: Map slot", verlaShop);
     shops.push_back(verlaShop);
 
     ItemShop* kelketoShop = new ItemShop();
