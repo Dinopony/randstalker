@@ -25,8 +25,10 @@ public:
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool useRecordBook() const { return _saveAnywhereBook; }
-	bool addIngameItemTracker() const { return _addIngameItemTracker; }
 	SpawnLocation getSpawnLocation() const { return _spawnLocation;  }
+
+	bool addIngameItemTracker() const { return _addIngameItemTracker; }
+	const std::string getHUDColor() const { return _hudColor; }
 
 private:
 	void parseOptionsDictionaryFromArgs(int argc, char* argv[]);
@@ -48,8 +50,10 @@ private:
 	bool _armorUpgrades;
 	bool _shuffleTiborTrees;
 	bool _saveAnywhereBook;
-	bool _addIngameItemTracker;
 	SpawnLocation _spawnLocation;
-	
+
+	bool _addIngameItemTracker;
+	std::string _hudColor;
+
 	// record book in inventory / record book findable in chests / record book disabled
 };

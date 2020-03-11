@@ -35,8 +35,11 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[])
 	_armorUpgrades			= parseBooleanOption("armorupgrades", true);
 	_shuffleTiborTrees		= parseBooleanOption("shuffletrees", false);
 	_saveAnywhereBook		= parseBooleanOption("recordbook", true);
-	_addIngameItemTracker	= parseBooleanOption("ingametracker", false);
 	_spawnLocation			= parseSpawnLocationEnumOption("spawnlocation", SpawnLocation::MASSAN);
+
+	// Miscellaneous options
+	_addIngameItemTracker	= parseBooleanOption("ingametracker", false);
+	_hudColor				= parseStringOption("hudcolor", "default");
 }
 
 void RandomizerOptions::logToFile(std::ofstream& logFile) const

@@ -890,6 +890,36 @@ void fixTreeCuttingGlitch(md::ROM& rom)
 
 
 ///////////////////////////////////////////////////////////////////////////////////
+//       Miscellaneous
+///////////////////////////////////////////////////////////////////////////////////
+
+void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
+{
+    // 0x824 is the default purple color from the original game
+    uint16_t color = 0x0824;
+
+    std::string hudColor = options.getHUDColor();
+    Tools::toLower(hudColor);
+
+    if (hudColor == "red")              color = 0x228;
+    else if (hudColor == "darkred")     color = 0x226;
+    else if (hudColor == "green")       color = 0x262;
+    else if (hudColor == "blue")        color = 0x842;
+    else if (hudColor == "brown")       color = 0x248;
+    else if (hudColor == "darkpurple")  color = 0x424;
+    else if (hudColor == "darkgray")    color = 0x222;
+    else if (hudColor == "gray")        color = 0x444;
+    else if (hudColor == "lightgray")   color = 0x666;
+
+    rom.setWord(0xF6D0, color);
+    rom.setWord(0xFB36, color);
+    rom.setWord(0x9020, color);
+    rom.setWord(0x903C, color);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////
 //       Post-generation stuff
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -1104,6 +1134,9 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     // Fix original game glitches & bugs
     fixArmletSkip(rom);
     fixTreeCuttingGlitch(rom);
+
+    // Miscellaneous
+    changeHUDColor(rom, options);
 }
 
 void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
