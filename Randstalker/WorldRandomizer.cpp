@@ -115,8 +115,7 @@ void WorldRandomizer::randomizeDarkRooms()
 	}
 
 	Tools::shuffle(darkenableRegions, _rng);
-//	_world.darkenedRegion = *darkenableRegions.begin();
-	_world.darkenedRegion = _world.regions[RegionCode::MASSAN_CAVE];
+	_world.darkenedRegion = *darkenableRegions.begin();
 
 	_logFile << "Dark region: " << _world.darkenedRegion->getName() << "\n\n";
 
