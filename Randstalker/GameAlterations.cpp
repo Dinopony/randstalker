@@ -895,33 +895,98 @@ void fixTreeCuttingGlitch(md::ROM& rom)
 
 void alterLanternIntoPassiveItem(md::ROM& rom)
 {
-    std::vector<uint16_t> darkRooms = {
-        0x0170, 0x017D, 0x017F, 0x0178, 0x0185, 0x018D,
-        0x018E, 0x0187, 0x01A0, 0x01A1, 0x0176, 0x017B
-    };
+//    rom.storeAddress("data_dark_rooms", 0x8800);
 
-    // Change all "is room lit" flags by "is lantern owned"
-    for (uint8_t i = 0; i < 24; ++i)
-    {
-        uint32_t address = 0x8800 + i * 0x2;
-        if (i < darkRooms.size())
-            rom.setWord(address, darkRooms[i]);
-        else
-            rom.setWord(address, 0xFFFF);
-    }
- 
-    // addq #2,A0 (instead of adding 4)
-    rom.setWord(0x0087D2, 0x5488);
+    // ----------------------------------------
+    // Function to darken the color palette currently used to draw the map
+    // Input :  D0 = AND mask to apply to palette
 
-    // btst #1, $FF104D (0839 0005 00FF1045)
-    rom.setCode(0x0087D6, md::Code().btst(0x1, addr_(0xFF104D)).nop(6));
+    md::Code funcAlterPalette; // 0x0402 to darken
 
-//    for (uint32_t addr = 0x87DD; addr >= 0x87C2; addr -= 0x01)
-//        rom.setByte(addr + 2, rom.getByte(addr));
+    funcAlterPalette.movemToStack({ reg_D1, reg_D2 }, { reg_A0 });
+    funcAlterPalette.lea(0xFF0080, reg_A0);
+    funcAlterPalette.movew(0x20, reg_D1);
+    funcAlterPalette.label("loop");
+        funcAlterPalette.movew(addr_(reg_A0), reg_D2);
+        funcAlterPalette.andw(reg_D0, reg_D2);
+        funcAlterPalette.movew(reg_D2, addr_(reg_A0));
+        funcAlterPalette.adda(0x2, reg_A0);
+        funcAlterPalette.dbra(reg_D1, "loop");
+    funcAlterPalette.movemFromStack({ reg_D1, reg_D2 }, { reg_A0 });
+    funcAlterPalette.rts();
 
-    // lea ADDR_DARK_ROOMS, A0
-//    rom.setWord(0x0087BE, 0x41F9);
-//    rom.setLong(0x0087C0, rom.getStoredAddress("data_dark_rooms"));
+    uint32_t funcAlterPaletteAddr = rom.injectCode(funcAlterPalette);
+
+    // ----------------------------------------
+    // Function to check if the current room is supposed to be dark, and process differently 
+    // depending on whether or not we own the lantern
+    md::Code funcLanternCheck;
+
+    funcLanternCheck.lea(rom.getStoredAddress("data_dark_rooms"), reg_A0);
+    funcLanternCheck.label("loop_start");
+    funcLanternCheck.movew(addr_(reg_A0), reg_D0);
+    funcLanternCheck.bmi(14);
+        funcLanternCheck.cmpw(addr_(0xFF1204), reg_D0);
+        funcLanternCheck.bne(10);
+            // We are in a dark room
+            funcLanternCheck.movemToStack({ reg_D0 }, {});
+            funcLanternCheck.btst(0x1, addr_(0xFF104D));
+            funcLanternCheck.bne(3);
+                // Dark room with no lantern ===> darken the palette
+                funcLanternCheck.movew(0x0624, reg_D0);
+                funcLanternCheck.bra(2);
+
+                // Dark room with lantern ===> use lantern palette
+                funcLanternCheck.movew(0x0CCC, reg_D0);
+            funcLanternCheck.jsr(funcAlterPaletteAddr);
+            funcLanternCheck.movemFromStack({ reg_D0 }, {});
+            funcLanternCheck.rts();
+        funcLanternCheck.addql(0x2, reg_A0);
+        funcLanternCheck.bra("loop_start");
+    funcLanternCheck.clrb(reg_D7);
+    funcLanternCheck.rts();
+
+    rom.setCode(0x87BE, funcLanternCheck);
+
+    // ----------------------------------------
+    // Function to change the palette used on map transition (already exist in OG, slightly modified)
+    md::Code funcChangeMapPalette;
+
+    funcChangeMapPalette.cmpb(addr_(0xFF112F), reg_D4);
+    funcChangeMapPalette.beq(12);
+        funcChangeMapPalette.moveb(reg_D4, addr_(0xFF112F));
+        funcChangeMapPalette.lea(0x11C926, reg_A0);
+        funcChangeMapPalette.mulu(bval_(0x1A), reg_D4);
+        funcChangeMapPalette.adda(reg_D4, reg_A0);
+        funcChangeMapPalette.lea(0xFF0084, reg_A1);
+        funcChangeMapPalette.movew(0x000C, reg_D0);
+        funcChangeMapPalette.jsr(0x96A);
+        funcChangeMapPalette.clrw(addr_(0xFF0080));
+        funcChangeMapPalette.movew(0x0CCC, addr_(0xFF0082));
+        funcChangeMapPalette.clrw(addr_(0xFF009E));
+        funcChangeMapPalette.jsr(0x87BE);
+    funcChangeMapPalette.rts();
+
+    rom.setCode(0x2D64, funcChangeMapPalette);
+    
+    // ----------------------------------------
+    // Pseudo-function used to extend the global palette init function, used to call the lantern check
+    // after initing all palettes (both map & entities)
+    md::Code funcExtendPaletteInit;
+
+    funcExtendPaletteInit.movew(0x0CCC, addr_(0xFF00A2));
+    funcExtendPaletteInit.jsr(0x1A4414);
+    funcExtendPaletteInit.jsr(0x87BE);
+    funcExtendPaletteInit.rts();
+
+    rom.setLong(0x19522, rom.injectCode(funcExtendPaletteInit));
+
+    // ----------------------------------------
+    // Replace the "dark room" palette from King Nole's Labyrinth by the lit room palette
+    constexpr uint32_t litRoomPaletteAddr = 0x11CD1C;
+    constexpr uint32_t darkRoomPaletteAddr = 0x11CD36;
+    for (uint8_t i = 0; i < 0x1A; ++i)
+        rom.setByte(darkRoomPaletteAddr + i, rom.getByte(litRoomPaletteAddr + i));
 }
 
 void alterGoldRewardsHandling(md::ROM& rom)

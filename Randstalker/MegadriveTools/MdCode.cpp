@@ -33,6 +33,19 @@ namespace md
         this->addWord(opcode);
     }
 
+    Code& Code::bsr(uint8_t offset)
+    {
+        this->addOpcode(0x6100 + offset);
+        return *this;
+    }
+
+    Code& Code::bsr(uint16_t offset)
+    {
+        this->addOpcode(0x6100);
+        this->addWord(offset);
+        return *this;
+    }
+
     Code& Code::jsr(uint32_t address)
     {
         this->addOpcode(0x4EB9);
@@ -160,6 +173,14 @@ namespace md
         return *this;
     }
 
+    Code& Code::bcc(uint16_t instructionCount)
+    {
+        this->addOpcode(0x6400);
+        if (instructionCount > 0)
+            _pendingBranches[static_cast<uint32_t>(_bytes.size())] = instructionCount;
+        return *this;
+    }
+
     Code& Code::bra(const std::string& label)
     {
         this->addOpcode(0x6000);
@@ -184,7 +205,7 @@ namespace md
         return *this;
     }
 
-    Code& Code::clr(const Register& Dx, Size size)
+    Code& Code::clr(const Param& param, Size size)
     {
         uint16_t sizeCode = 0x0;
         if (size == Size::WORD)
@@ -192,9 +213,9 @@ namespace md
         else if (size == Size::LONG)
             sizeCode = 0x2;
 
-        uint16_t opcode = 0x4200 + (sizeCode << 6) + Dx.getMXn();
+        uint16_t opcode = 0x4200 + (sizeCode << 6) + param.getMXn();
         this->addOpcode(opcode);
-
+        this->addBytes(param.getAdditionnalData());
         return *this;
     }
 
@@ -215,9 +236,22 @@ namespace md
         return *this;
     }
 
-    Code& Code::moveq(uint8_t value, const Register& Dx)
+    Code& Code::moveq(uint8_t value, const DataRegister& Dx)
     {
         uint16_t opcode = 0x7000 + (Dx.getXn() << 9) + value;
+        this->addOpcode(opcode);
+        return *this;
+    }
+
+    Code& Code::addq(uint8_t value, const Register& Rx, Size size)
+    {
+        uint16_t sizeCode = 0x0;
+        if (size == Size::WORD)
+            sizeCode = 0x1;
+        else if (size == Size::LONG)
+            sizeCode = 0x2;
+
+        uint16_t opcode = 0x5000 + ((uint16_t)(value & 0x7) << 9) + (sizeCode << 6) + Rx.getMXn();
         this->addOpcode(opcode);
         return *this;
     }
@@ -295,11 +329,29 @@ namespace md
         return *this;
     }
 
-    Code& Code::adda(uint32_t value, const AddressRegister& Ax)
+    Code& Code::mulu(const Param& value, const DataRegister& Dx)
     {
-        uint16_t opcode = 0xD1FC + (Ax.getXn() << 9);
+        uint16_t opcode = 0xC0C0 + (Dx.getXn() << 9) + value.getMXn();
         this->addOpcode(opcode);
-        this->addLong(value);
+        this->addBytes(value.getAdditionnalData());
+
+        return *this;
+    }
+
+    Code& Code::divu(const Param& value, const DataRegister& Dx)
+    {
+        uint16_t opcode = 0x80C0 + (Dx.getXn() << 9) + value.getMXn();
+        this->addOpcode(opcode);
+        this->addBytes(value.getAdditionnalData());
+
+        return *this;
+    }
+
+    Code& Code::adda(const Param& value, const AddressRegister& Ax)
+    {
+        uint16_t opcode = 0xD1C0 + (Ax.getXn() << 9) + value.getMXn();
+        this->addOpcode(opcode);
+        this->addBytes(value.getAdditionnalData());
         return *this;
     }
 
@@ -308,6 +360,44 @@ namespace md
         uint16_t opcode = 0x41F9 + (Ax.getXn() << 9);
         this->addOpcode(opcode);
         this->addLong(value);
+        return *this;
+    }
+
+    Code& Code::andToDx(const Param& from, const DataRegister& to, Size size)
+    {
+        uint16_t sizeCode = 0x0;
+        if (size == Size::WORD)
+            sizeCode = 0x1;
+        else if (size == Size::LONG)
+            sizeCode = 0x2;
+
+        uint16_t opcode = 0xC000 + (to.getXn() << 9) + (sizeCode << 6) + from.getMXn();
+        this->addOpcode(opcode);
+        this->addBytes(from.getAdditionnalData());
+
+        return *this;
+    }
+
+    Code& Code::andi(const ImmediateValue& value, const Param& target, Size size)
+    {
+        uint16_t sizeCode = 0x0;
+        if (size == Size::WORD)
+            sizeCode = 0x1;
+        else if (size == Size::LONG)
+            sizeCode = 0x2;
+
+        uint16_t opcode = 0x0200 + (sizeCode << 6) + target.getMXn();
+        this->addOpcode(opcode);
+        this->addBytes(value.getAdditionnalData());
+
+        return *this;
+    }
+
+    Code& Code::oriToCCR(uint8_t value)
+    {
+        this->addOpcode(0x003C);
+        this->addByte(0x00);
+        this->addByte(value);
         return *this;
     }
 

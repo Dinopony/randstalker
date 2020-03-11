@@ -20,6 +20,7 @@ void WorldRandomizer::randomize()
 {
 	_rng.seed(_options.getSeed());
 	this->randomizeGoldValues();
+	this->randomizeDarkRooms();
 
 	_rng.seed(_options.getSeed());
 	this->randomizeItems();
@@ -103,7 +104,7 @@ void WorldRandomizer::randomizeGoldValues()
 	}
 }
 
-/*
+
 void WorldRandomizer::randomizeDarkRooms()
 {
 	std::vector<WorldRegion*> darkenableRegions;
@@ -114,7 +115,8 @@ void WorldRandomizer::randomizeDarkRooms()
 	}
 
 	Tools::shuffle(darkenableRegions, _rng);
-	_world.darkenedRegion = *darkenableRegions.begin();
+//	_world.darkenedRegion = *darkenableRegions.begin();
+	_world.darkenedRegion = _world.regions[RegionCode::MASSAN_CAVE];
 
 	_logFile << "Dark region: " << _world.darkenedRegion->getName() << "\n\n";
 
@@ -122,7 +124,6 @@ void WorldRandomizer::randomizeDarkRooms()
 	for (WorldPath* path : ingoingPaths)
 		path->addRequiredItem(_world.items[ITEM_LANTERN]);
 }
-*/
 
 void WorldRandomizer::initPriorityItems()
 {
@@ -148,7 +149,6 @@ void WorldRandomizer::initPriorityItems()
 
 	_priorityItems.push_back(_world.items[ITEM_DEATH_STATUE]);
 	_priorityItems.push_back(_world.items[ITEM_BELL]);
-	_priorityItems.push_back(_world.items[ITEM_LANTERN]);
 	_priorityItems.push_back(_world.items[ITEM_STATUE_JYPTA]);
 }
 

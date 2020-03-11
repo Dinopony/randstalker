@@ -27,7 +27,7 @@ private:
 	void setSpawnPoint();
 	void randomizeGoldValues();
 
-//	void randomizeDarkRooms();
+	void randomizeDarkRooms();
 
 	void initPriorityItems();
 	void initFillerItems();

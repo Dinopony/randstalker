@@ -17,6 +17,8 @@ namespace md
         void addBytes(const std::vector<uint8_t>& bytes);
         void addOpcode(uint16_t opcode);
 
+        Code& bsr(uint8_t offset);
+        Code& bsr(uint16_t offset);
         Code& jsr(uint32_t address);
         Code& jmp(uint32_t address);
 
@@ -44,13 +46,14 @@ namespace md
         Code& bgt(uint16_t instructionCount = 0);
         Code& bmi(uint16_t instructionCount = 0);
         Code& bpl(uint16_t instructionCount = 0);
+        Code& bcc(uint16_t instructionCount = 0);
         Code& bra(const std::string& label);
         Code& dbra(const DataRegister& Dx, const std::string& label);
 
-        Code& clr(const Register& reg, Size size);
-        Code& clrb(const Register& reg) { return this->clr(reg, Size::BYTE); }
-        Code& clrw(const Register& reg) { return this->clr(reg, Size::WORD); }
-        Code& clrl(const Register& reg) { return this->clr(reg, Size::LONG); }
+        Code& clr(const Param& param, Size size);
+        Code& clrb(const Param& param) { return this->clr(param, Size::BYTE); }
+        Code& clrw(const Param& param) { return this->clr(param, Size::WORD); }
+        Code& clrl(const Param& param) { return this->clr(param, Size::LONG); }
 
         Code& move(const Param& from, const Param& to, Size size);
         Code& moveb(uint8_t from, const Param& to) { return this->move(ImmediateValue(from), to, Size::BYTE); }
@@ -60,7 +63,12 @@ namespace md
         Code& movew(const Param& from, const Param& to) { return this->move(from, to, Size::WORD); }
         Code& movel(const Param& from, const Param& to) { return this->move(from, to, Size::LONG); }
 
-        Code& moveq(uint8_t value, const Register& Dx);
+        Code& moveq(uint8_t value, const DataRegister& Dx);
+
+        Code& addq(uint8_t value, const Register& Rx, Size size);
+        Code& addqb(uint8_t value, const Register& Rx) { return this->addq(value, Rx, Size::BYTE); }
+        Code& addqw(uint8_t value, const Register& Rx) { return this->addq(value, Rx, Size::WORD); }
+        Code& addql(uint8_t value, const Register& Rx) { return this->addq(value, Rx, Size::LONG); }
 
         Code& movemToStack(const std::vector<DataRegister>& dataRegs, const std::vector<AddressRegister>& addrRegs);
         Code& movemFromStack(const std::vector<DataRegister>& dataRegs, const std::vector<AddressRegister>& addrRegs);
@@ -75,9 +83,24 @@ namespace md
         Code& subiw(uint16_t value, const Param& target) { return this->subi(ImmediateValue(value), target, Size::WORD); }
         Code& subil(uint32_t value, const Param& target) { return this->subi(ImmediateValue(value), target, Size::LONG); }
 
-        Code& adda(uint32_t value, const AddressRegister& Ax);
+        Code& mulu(const Param& value, const DataRegister& Dx);
+        Code& divu(const Param& value, const DataRegister& Dx);
+
+        Code& adda(const Param& value, const AddressRegister& Ax);
+        Code& adda(uint32_t value, const AddressRegister& Ax) { return this->adda(ImmediateValue(value), Ax); }
 
         Code& lea(uint32_t value, const Register& Ax);
+
+        Code& andToDx(const Param& from, const DataRegister& to, Size size);
+        Code& andb(const Param& from, const DataRegister& to) { return this->andToDx(from, to, Size::BYTE); }
+        Code& andw(const Param& from, const DataRegister& to) { return this->andToDx(from, to, Size::WORD); }
+        Code& andl(const Param& from, const DataRegister& to) { return this->andToDx(from, to, Size::LONG); }
+
+        Code& andi(const ImmediateValue& value, const Param& target, Size size);
+        Code& andib(uint8_t value, const Param& target) { return this->andi(ImmediateValue(value), target, Size::BYTE); }
+        Code& andiw(uint16_t value, const Param& target) { return this->andi(ImmediateValue(value), target, Size::WORD); }
+        Code& andil(uint32_t value, const Param& target) { return this->andi(ImmediateValue(value), target, Size::LONG); }
+        Code& oriToCCR(uint8_t value);
 
         Code& rts();
         Code& nop(uint16_t amount = 1);
