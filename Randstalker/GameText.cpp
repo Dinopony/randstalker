@@ -11,6 +11,7 @@ GameText::GameText(const std::string& text) : _currentLineLength(0), _currentLin
 
 void GameText::setText(const std::string& text)
 {
+	_initialText = text;
 	_bytes.clear();
 
 	if (!text.empty())

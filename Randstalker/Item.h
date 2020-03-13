@@ -6,7 +6,7 @@
 class Item
 {
 public:
-    Item(uint8_t itemID, const std::string& name, uint16_t goldWorth, bool isAllowedOnGround = false) :
+    Item(uint8_t itemID, const std::string& name, uint16_t goldWorth, bool isAllowedOnGround = true) :
         _itemID(itemID),
         _name(name),
         _goldWorth(goldWorth),

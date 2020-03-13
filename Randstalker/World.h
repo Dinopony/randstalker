@@ -18,11 +18,12 @@ public:
     World(const RandomizerOptions& options);
     ~World();
 
+    void addItem(Item* item) { items[item->getID()] = item; }
+
     void writeToROM(md::ROM& rom);
 
 private:
-    void initItems();
-    void replaceArmorsByArmorUpgrades();
+    void initItems(bool useArmorUpgrades);
 
     void initChests();
     void initGroundItems();
@@ -32,7 +33,8 @@ private:
     void initRegions();
     void initRegionPaths();
 
-    void initHints();
+    void initRegionHints();
+    void initRoadSigns();
 
     void initDarkRooms();
 
@@ -44,14 +46,13 @@ public:
     std::map<RegionCode, WorldRegion*> regions;
     std::vector<ItemShop*> shops;
 
+    std::map<uint16_t, std::string> roadSigns;
+
     WorldRegion* darkenedRegion;
     GameText lithographHint;
     std::map<uint32_t, GameText> ingameTexts;
 
     std::vector<TreeMap> treeMaps;
 
-    uint16_t spawnMapID;
-    uint8_t spawnX, spawnZ;
-
-    std::vector<uint8_t> seedHashText;
+    SpawnLocation spawnLocation;
 };

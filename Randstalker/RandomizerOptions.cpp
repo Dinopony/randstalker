@@ -29,6 +29,7 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[])
 	_inputRomPath			= parseStringOption("inputrom", "input.md");
 	_outputRomPath			= parseStringOption("outputrom", "output.md");
 	_spoilerLogPath			= parseStringOption("outputlog", "spoiler.log");
+	_debugLogPath			= parseStringOption("debuglog", "debug.log");
 	_pauseAfterGeneration	= parseBooleanOption("pause", true);
 
 	// Gameplay options

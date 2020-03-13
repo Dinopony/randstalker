@@ -18,6 +18,9 @@ namespace Tools
     template<typename T>
     void shuffle(std::vector<T>& vector, std::mt19937& rng)
     {
+        if (vector.size() == 0)
+            return;
+
         std::vector<T> elems;
 
         while (vector.size() > 1)

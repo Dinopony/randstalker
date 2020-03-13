@@ -917,7 +917,24 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
     rom.setWord(0x903C, color);
 }
 
+void replaceNewGameStringBySeedHash(md::ROM& rom, const RandomizerOptions& options)
+{
+    std::vector<uint8_t> seedHashText;
 
+    uint32_t seed = options.getSeed();
+    while (seed && seedHashText.size() < 8)
+    {
+        uint32_t mod = seed % 0x3E;
+        if (mod)
+            seedHashText.push_back((uint8_t)mod);
+        seed -= 0x3E;
+        seed /= 0x3E;
+    }
+
+    // Write seed hash as text replacing the "New Game" string
+    for (uint8_t i = 0; i < seedHashText.size() - 1; ++i)
+        rom.setByte(0x29A11 + i, seedHashText[i]);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       Post-generation stuff
@@ -1082,8 +1099,6 @@ void addFunctionToItemsOnUse(md::ROM& rom)
 }
 
 
-
-
 void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 {
     // Technical additions
@@ -1137,6 +1152,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 
     // Miscellaneous
     changeHUDColor(rom, options);
+    replaceNewGameStringBySeedHash(rom, options);
 }
 
 void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)

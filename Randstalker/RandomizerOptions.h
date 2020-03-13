@@ -20,6 +20,7 @@ public:
 	const std::string& getInputROMPath() const { return _inputRomPath; }
 	const std::string& getOutputROMPath() const { return _outputRomPath; }
 	const std::string& getSpoilerLogPath() const { return _spoilerLogPath; }
+	const std::string& getDebugLogPath() const { return _debugLogPath; }
 	bool mustPause() const { return _pauseAfterGeneration; }
 
 	bool useArmorUpgrades() const { return _armorUpgrades; }
@@ -45,6 +46,7 @@ private:
 	std::string _inputRomPath;
 	std::string _outputRomPath;
 	std::string _spoilerLogPath;
+	std::string _debugLogPath;
 	bool _pauseAfterGeneration;
 
 	bool _armorUpgrades;

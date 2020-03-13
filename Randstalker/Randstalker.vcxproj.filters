@@ -27,9 +27,6 @@
     <ClInclude Include="World.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="WorldRandomizer.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
     <ClInclude Include="WorldRegion.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
@@ -84,6 +81,9 @@
     <ClInclude Include="SpawnLocations.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="WorldRandomizer.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -93,9 +93,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="GameAlterations.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldRandomizer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="RandomizerOptions.cpp">
@@ -109,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="MegadriveTools\MdRom.cpp">
       <Filter>Fichiers sources\Megadrive Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRandomizer.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

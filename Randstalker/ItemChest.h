@@ -5,7 +5,7 @@
 class ItemChest : public AbstractItemSource
 {
 public:
-    ItemChest(uint8_t chestID, uint8_t defaultItemID, const std::string& name) :
+    ItemChest(uint8_t chestID, const std::string& name) :
         AbstractItemSource(name),
         _chestID(chestID)
     {}

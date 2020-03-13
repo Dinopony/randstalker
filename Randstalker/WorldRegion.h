@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 
 class WorldRegion;
 
@@ -25,7 +26,15 @@ public:
 	void addRequiredItem(Item* requiredItem) { _requiredItems.push_back(requiredItem); }
 
 	WorldRegion* getDestination() const { return _destination; }
-	const std::vector<Item*> getRequiredItems() const { return _requiredItems; }
+	const std::vector<Item*>& getRequiredItems() const { return _requiredItems; }
+
+	bool canBeCrossedWithInventory(const std::set<Item*>& playerInventory)
+	{
+		for (Item* requiredItem : _requiredItems)
+			if (!playerInventory.count(requiredItem))
+				return false;
+		return true;
+	}
 
 	void setRandomWeight(uint16_t randomWeight) { _randomWeight = randomWeight; }
 	uint16_t getRandomWeight() const { return _randomWeight; }
@@ -64,14 +73,14 @@ public:
 		_itemSources.push_back(itemSource); 
 		itemSource->setRegion(this);
 	}
-	const std::vector<AbstractItemSource*>& getItemSources() const 	{ return _itemSources; }
+	const std::vector<AbstractItemSource*>& getUnrestrictedItemSources() const 	{ return _itemSources; }
 
 	void addItemSource(AbstractItemSource* itemSource, Item* requiredItem) 
 	{
-		_restrictedItemSources.push_back(std::make_pair(itemSource, requiredItem));
+		_restrictedItemSources[itemSource] = requiredItem;
 		itemSource->setRegion(this);
 	}
-	const std::vector<std::pair<AbstractItemSource*, Item*>>& getRestrictedItemSources() const { return _restrictedItemSources; }
+	const std::map<AbstractItemSource*, Item*>& getRestrictedItemSources() const { return _restrictedItemSources; }
 
 	std::vector<AbstractItemSource*> getAllItemSources() const 
 	{ 
@@ -116,7 +125,7 @@ public:
 private:
 	std::string _name;
 	std::vector<AbstractItemSource*> _itemSources;
-	std::vector<std::pair<AbstractItemSource*, Item*>> _restrictedItemSources;
+	std::map<AbstractItemSource*, Item*> _restrictedItemSources;
 
 	std::vector<WorldPath*> _ingoingPaths;
 	std::vector<WorldPath*> _outgoingPaths;

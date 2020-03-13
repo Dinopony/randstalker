@@ -19,40 +19,48 @@ class WorldRandomizer
 {
 public:
 	WorldRandomizer(World& world, const RandomizerOptions& options);
-	~WorldRandomizer() {}
+	~WorldRandomizer();
 
 	void randomize();
+	void writeSpoilerLog();
 
 private:
-	void setSpawnPoint();
+	// First pass randomizations (before items)
 	void randomizeGoldValues();
-
 	void randomizeDarkRooms();
 
-	void initPriorityItems();
-	void initFillerItems();
+	// Second pass randomizations (items)
 	void randomizeItems();
 
-	std::vector<WorldRegion*> evaluateReachableRegions(const std::vector<Item*>& playerInventory, std::vector<Item*>& out_keyItems, std::vector<AbstractItemSource*>& out_reachableSources);
-	
-	void fillSourcesWithPriorityItems();
-	void fillSourcesWithFillerItems(std::vector<AbstractItemSource*>::iterator begin, std::vector<AbstractItemSource*>::iterator end);
+	void placePriorityItems();
+	void initFillerItems();
 
-	void writeItemSourcesBreakdownInLog();
+	void placeFillerItemsPhase(size_t count = 0);
+	void explorationPhase();
+	void placeKeyItemPhase();
+	void unlockPhase();
 
+
+	// Third pass randomizations (after items)
+	void randomizeSpawnLocation();
 	void randomizeHints();
 	std::string getRandomHintForItem(Item* item);
-
 	void randomizeTiborTrees();
 
 private:
 	World& _world;
 	const RandomizerOptions& _options;
 
-	std::ofstream _logFile;
+	std::ofstream _debugLog;
 	std::mt19937 _rng;
 
-	std::vector<Item*> _priorityItems;
+	std::set<WorldRegion*> _regionsToExplore;
+	std::set<WorldRegion*> _exploredRegions;
+	std::vector<AbstractItemSource*> _itemSourcesToFill;
+	std::set<Item*> _playerInventory;
+	std::map<AbstractItemSource*, Item*> _pendingItemSources;
+	std::vector<WorldPath*> _pendingPaths;
 	std::vector<Item*> _fillerItems;
+
 	std::vector<Item*> _keyItems;
 };

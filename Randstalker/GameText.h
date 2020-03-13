@@ -12,6 +12,7 @@ public:
 	
 	bool isEmpty() const { return _bytes.empty(); }
 
+	const std::string& getText() const { return _initialText; }
 	void setText(const std::string& text);
 
 	void addCharacter(const std::string& text, size_t i);
@@ -23,6 +24,7 @@ public:
 	static uint8_t getCharacterWidth(char character);
 
 private:
+	std::string _initialText;
 	std::vector<uint8_t> _bytes;
 	uint16_t _currentLineLength;
 	uint8_t _currentLineCount;

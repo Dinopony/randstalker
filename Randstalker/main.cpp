@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
 	World landstalkerWorld(options);
 	WorldRandomizer randomizer(landstalkerWorld, options);
 	randomizer.randomize();
+	randomizer.writeSpoilerLog();
 	landstalkerWorld.writeToROM(*rom);
 
 	// Perform game changes after the actual randomization. This is usually required when we need to point on a data block
