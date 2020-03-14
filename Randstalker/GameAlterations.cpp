@@ -903,18 +903,20 @@ void replaceNewGameStringBySeedHash(md::ROM& rom, const RandomizerOptions& optio
     std::vector<uint8_t> seedHashText;
 
     uint32_t seed = options.getSeed();
-    while (seed && seedHashText.size() < 8)
+    while (seed && seedHashText.size() < 3)
     {
-        uint32_t mod = seed % 0x3E;
+        uint32_t mod = seed % 0x3F;
         if (mod)
             seedHashText.push_back((uint8_t)mod);
-        seed -= 0x3E;
-        seed /= 0x3E;
+        seed /= 0x3F;
     }
 
     // Write seed hash as text replacing the "New Game" string
-    for (uint8_t i = 0; i < seedHashText.size() - 1; ++i)
-        rom.setByte(0x29A11 + i, seedHashText[i]);
+    rom.setBytes(0x29A11, { 0x1D, 0x29, 0x29, 0x28, 0x47 }); // "Seed:"
+    for (size_t i = 0; i < seedHashText.size(); ++i)
+        rom.setByte(0x29A16 + i, seedHashText[i]);
+    for (size_t i = seedHashText.size() ; i < 3; ++i)
+        rom.setByte(0x29A16 + i, 0x0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
