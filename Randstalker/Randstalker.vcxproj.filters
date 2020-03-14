@@ -39,9 +39,6 @@
     <ClInclude Include="RandomizerOptions.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="ItemShop.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
     <ClInclude Include="GameText.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
@@ -53,21 +50,6 @@
     </ClInclude>
     <ClInclude Include="MegadriveTools\MdRom.h">
       <Filter>Fichiers sources\Megadrive Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="AbstractItemSource.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemChest.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemInShop.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemOnGround.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemReward.h">
-      <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="ItemCodes.h">
       <Filter>Fichiers sources</Filter>
@@ -82,6 +64,12 @@
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="WorldRandomizer.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="SpoilerLog.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemSources.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
   </ItemGroup>

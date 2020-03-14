@@ -104,7 +104,6 @@ void WorldRandomizer::randomizeDarkRooms()
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////
 ///		SECOND PASS RANDOMIZATIONS (items)
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +121,7 @@ void WorldRandomizer::randomizeItems()
 
 	this->initFillerItems();
 
+	_debugLog << "\n-------------------------------------------------\n";
 	_debugLog << "Step #0 (placing priority items)\n";
 	this->placePriorityItems();
 
@@ -155,8 +155,17 @@ void WorldRandomizer::randomizeItems()
 
 	// Place the remaining filler items, and put Ekeeke in the last empty sources
 	this->placeFillerItemsPhase();
-	for (AbstractItemSource* itemSource : _itemSourcesToFill)
+	for (ItemSource* itemSource : _itemSourcesToFill)
 		itemSource->setItem(_world.items[ITEM_EKEEKE]);
+
+	if (!_fillerItems.empty())
+	{
+		_debugLog << "\n-------------------------------\n";
+		_debugLog << "\tUnplaced items" << "\n\n";
+
+		for (Item* item : _fillerItems)
+			_debugLog << "- [" << item->getName() << "]\n";
+	}
 
 	_debugLog << "\n-------------------------------------------------\n";
 	_debugLog << "End of generation\n";
@@ -223,7 +232,7 @@ void WorldRandomizer::placePriorityItems()
 	};
 	Tools::shuffle(priorityItems, _rng);
 
-	std::vector<AbstractItemSource*> allEmptyItemSources;
+	std::vector<ItemSource*> allEmptyItemSources;
 	for (auto& [key, source] : _world.itemSources)
 		if(!source->getItem())
 			allEmptyItemSources.push_back(source);
@@ -231,7 +240,7 @@ void WorldRandomizer::placePriorityItems()
 
 	for (Item* itemToPlace : priorityItems)
 	{
-		for (AbstractItemSource* source : allEmptyItemSources)
+		for (ItemSource* source : allEmptyItemSources)
 		{
 			if (!source->getItem() && source->isItemCompatible(itemToPlace))
 			{
@@ -252,7 +261,7 @@ void WorldRandomizer::placeFillerItemsPhase(size_t count)
 
 	for (size_t i=0 ; i<count ; ++i)
 	{
-		AbstractItemSource* itemSource = _itemSourcesToFill[0];
+		ItemSource* itemSource = _itemSourcesToFill[0];
 		
 		for (size_t j=0 ; j < _fillerItems.size(); ++j)
 		{
@@ -280,8 +289,8 @@ void WorldRandomizer::explorationPhase()
 		_debugLog << "\t > Exploring region \"" << exploredRegion->getName() << "\"...\n";
 
 		// List item sources to fill from this region.
-		const std::vector<AbstractItemSource*> unrestrictedItemSources = exploredRegion->getUnrestrictedItemSources();
-		for (AbstractItemSource* itemSource : unrestrictedItemSources)
+		const std::vector<ItemSource*> unrestrictedItemSources = exploredRegion->getUnrestrictedItemSources();
+		for (ItemSource* itemSource : unrestrictedItemSources)
 		{
 			// Non-empty item sources populate player inventory (useful for plandos)
 			if (itemSource->getItem())
@@ -290,7 +299,7 @@ void WorldRandomizer::explorationPhase()
 				_itemSourcesToFill.push_back(itemSource);
 		}
 		// Add conditionnal item sources to a pending list.
-		const std::map<AbstractItemSource*, Item*>& restrictedItemSources = exploredRegion->getRestrictedItemSources();
+		const std::map<ItemSource*, Item*>& restrictedItemSources = exploredRegion->getRestrictedItemSources();
 		for (const auto& [itemSource, item] : restrictedItemSources)
 			_pendingItemSources[itemSource] = item;
 
@@ -336,7 +345,7 @@ void WorldRandomizer::placeKeyItemPhase()
 	Item* keyItemToPlace = unownedKeyItems[0];
 
 	// Find a random item source capable of carrying the item
-	AbstractItemSource* randomItemSource = nullptr;
+	ItemSource* randomItemSource = nullptr;
 	for (uint32_t i = 0; i < _itemSourcesToFill.size(); ++i)
 	{
 		if (_itemSourcesToFill[i]->isItemCompatible(keyItemToPlace))
@@ -379,7 +388,7 @@ void WorldRandomizer::unlockPhase()
 	// Look for unlockable item sources...
 	for (auto it = _pendingItemSources.begin(); it != _pendingItemSources.end(); )
 	{
-		AbstractItemSource* itemSource = it->first;
+		ItemSource* itemSource = it->first;
 		Item* requiredItem = it->second;
 
 		if (_playerInventory.count(requiredItem))
@@ -397,85 +406,6 @@ void WorldRandomizer::unlockPhase()
 		else ++it;
 	}
 }
-
-void WorldRandomizer::writeSpoilerLog()
-{
-	std::ofstream spoilerLog(_options.getSpoilerLogPath());
-
-	if (!spoilerLog.is_open())
-		return;
-
-	_options.logToFile(spoilerLog);
-
-	spoilerLog << "Dark region: " << _world.darkenedRegion->getName() << "\n";
-
-	// ---------- Hints ------------------------------
-	spoilerLog << "\n-------------------------------\n";
-	spoilerLog << "\tHints" << "\n\n";
-
-	std::string lithographHint = _world.lithographHint.getText();
-	lithographHint.erase(std::remove(lithographHint.begin(), lithographHint.end(), '\n'), lithographHint.end());
-	spoilerLog << "- Lithograph: \"" << lithographHint << "\"\n";
-	spoilerLog << "- Fortune Teller: \"" << _world.ingameTexts[0x27CE6].getText() << "\"\n";
-
-	for (const auto& [addr, name] : _world.roadSigns)
-		spoilerLog << "- " << name << ": \"" << _world.ingameTexts[addr].getText() << "\"\n";
-
-	// ---------- Tibor trees ------------------------------
-	if (_options.shuffleTiborTrees())
-	{
-		spoilerLog << "\n-------------------------------\n";
-		spoilerLog << "Tibor trees:" << "\n";
-
-		std::pair<const TreeMap*, const TreeMap*> pairs[5];
-		for (const TreeMap& map : _world.treeMaps)
-		{
-			uint16_t treeMapID = map.getTree();
-			if (treeMapID == 0x0200)		pairs[0].first = &map;
-			else if (treeMapID == 0x0216)	pairs[0].second = &map;
-			else if (treeMapID == 0x021B)	pairs[1].first = &map;
-			else if (treeMapID == 0x0219)	pairs[1].second = &map;
-			else if (treeMapID == 0x0218)	pairs[2].first = &map;
-			else if (treeMapID == 0x0201)	pairs[2].second = &map;
-			else if (treeMapID == 0x021A)	pairs[3].first = &map;
-			else if (treeMapID == 0x0217)	pairs[3].second = &map;
-			else if (treeMapID == 0x01FF)	pairs[4].first = &map;
-			else if (treeMapID == 0x01FE)	pairs[4].second = &map;
-		}
-
-		for (int i = 0; i < 5; ++i)
-			spoilerLog << "- " << pairs[i].first->getName() << " <===> " << pairs[i].second->getName() << "\n";
-	}
-
-	// ---------- Items ------------------------------
-	for (auto& [key, region] : _world.regions)
-	{
-		std::vector<AbstractItemSource*> sources = region->getAllItemSources();
-		if (sources.empty())
-			continue;
-
-		spoilerLog << "\n-------------------------------\n";
-		spoilerLog << "\t" << region->getName() << "\n\n";
-
-		for (AbstractItemSource* source : sources)
-		{
-			spoilerLog << "[" << (source->getItem() ? source->getItem()->getName() : "No Item (out of items)") << "] in \"" << source->getName() << "\"\n";
-		}
-	}
-
-	if (!_fillerItems.empty())
-	{
-		spoilerLog << "\n-------------------------------\n";
-		spoilerLog << "\tUnplaced items" << "\n\n";
-
-		for (Item* item : _fillerItems)
-			spoilerLog << "- [" << item->getName() << "]\n";
-	}
-
-	spoilerLog.close();
-}
-
-
 
 
 
@@ -607,8 +537,8 @@ std::string WorldRandomizer::getRandomHintForItem(Item* item)
 {
 	for (auto& [key, region] : _world.regions)
 	{
-		std::vector<AbstractItemSource*> sources = region->getAllItemSources();
-		for (AbstractItemSource* source : sources)
+		std::vector<ItemSource*> sources = region->getAllItemSources();
+		for (ItemSource* source : sources)
 		{
 			if (source->getItem() == item)
 			{

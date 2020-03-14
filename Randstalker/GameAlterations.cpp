@@ -112,27 +112,6 @@ void addTextReplacementFunction(md::ROM& rom)
     funcFindCustomText.movemFromStack({ reg_D0, reg_D1 }, { reg_A1 });
     funcFindCustomText.rts();
 
-/*    
-    funcFindCustomText.movemToStack({ reg_D0 }, { reg_A1 });
-    funcFindCustomText.cmpa(lval_(0xFF5480), reg_A4);
-    funcFindCustomText.blt(12);
-        // If this is a road sign...
-        funcFindCustomText.cmpiw(0x0128, addr_(reg_A4, 0xA));
-        funcFindCustomText.bne(10);
-            // Iterate over signs table to find the related text
-            funcFindCustomText.movel(rom.getStoredAddress("data_signs_table"), reg_A0);
-            funcFindCustomText.label("loop_start");
-            funcFindCustomText.movew(addr_(reg_A0), reg_D0);
-            funcFindCustomText.bmi(7);
-                funcFindCustomText.cmpw(addr_(0xFF1204), reg_D0);
-                funcFindCustomText.bne(3);
-                    funcFindCustomText.movel(addr_(reg_A0, 0x2), addr_(customTextStorageMemoryAddress));
-                    funcFindCustomText.bra(3);
-                funcFindCustomText.adda(0x6, reg_A0);
-                funcFindCustomText.bra("loop_start");
-    funcFindCustomText.movemFromStack({ reg_D0, reg_D1 }, { reg_A1 });
-    funcFindCustomText.rts();
-    */
     uint32_t funcFindCustomTextAddr = rom.injectCode(funcFindCustomText);
     uint32_t injectionAddress = rom.getStoredAddress("proc_handle_custom_text") + 0x4;
     rom.setCode(injectionAddress, md::Code().jsr(funcFindCustomTextAddr)); // Try to find an appropriate custom text for this context
@@ -770,6 +749,7 @@ void fixFaraLifestockChest(md::ROM& rom)
     rom.setWord(0x01BF72, 0x0400);
 }
 
+/*
 void addLithographChestInKazaltTeleporterRoom(md::ROM& rom)
 {
     // Negate map trigger removing entities once the Duke cutscene was seen in OG
@@ -788,6 +768,7 @@ void addLithographChestInKazaltTeleporterRoom(md::ROM& rom)
     // Change the map base chest ID
     rom.setByte(0x09E838, 0x1E);
 }
+*/
 
 void replaceLumberjackByChest(md::ROM& rom)
 {
@@ -1141,7 +1122,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
     fixFaraLifestockChest(rom);
-    addLithographChestInKazaltTeleporterRoom(rom);
+//    addLithographChestInKazaltTeleporterRoom(rom);
     replaceLumberjackByChest(rom);
     replaceSickMerchantByChest(rom);
     replaceFaraInElderHouseByChest(rom);

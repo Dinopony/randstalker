@@ -19,23 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbstractItemSource.h" />
     <ClInclude Include="GameAlterations.h" />
     <ClInclude Include="GameText.h" />
-    <ClInclude Include="ItemChest.h" />
     <ClInclude Include="ItemCodes.h" />
-    <ClInclude Include="ItemInShop.h" />
-    <ClInclude Include="ItemOnGround.h" />
-    <ClInclude Include="ItemReward.h" />
-    <ClInclude Include="ItemShop.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemSourceCodes.h" />
+    <ClInclude Include="ItemSources.h" />
     <ClInclude Include="MegadriveTools\MdCode.h" />
     <ClInclude Include="MegadriveTools\MdRom.h" />
     <ClInclude Include="MegadriveTools\MdTypes.h" />
     <ClInclude Include="RandomizerOptions.h" />
     <ClInclude Include="RegionCodes.h" />
     <ClInclude Include="SpawnLocations.h" />
+    <ClInclude Include="SpoilerLog.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TreeMap.h" />
     <ClInclude Include="World.h" />

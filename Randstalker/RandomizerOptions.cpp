@@ -12,17 +12,21 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[])
 		try
 		{
 			_seed = (uint32_t) std::stoul(seedString);
+			_seedAsString = _optionsDictionary["seed"];
 		} 
 		catch (std::invalid_argument&)
 		{
 			_seed = 0;
 			for (uint32_t i = 0; i < seedString.length(); ++i)
 				_seed += ((uint32_t)seedString[i]) * (i*100+1);
+
+			_seedAsString = "\"" + _optionsDictionary["seed"] + "\" (" + Tools::stringify(_seed) + ")";
 		}
 	} 
 	else
 	{
 		_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
+		_seedAsString = Tools::stringify(_seed);
 	}
 
 	// Technical options
@@ -43,23 +47,16 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[])
 	_hudColor				= parseStringOption("hudcolor", "default");
 }
 
-void RandomizerOptions::logToFile(std::ofstream& logFile) const
+std::string RandomizerOptions::getSpawnLocationAsString() const
 {
-	logFile << "Seed: " << _seed << "\n\n";
-
-	logFile << "Armor upgrades: " << ((_armorUpgrades) ? "enabled" : "disabled") << "\n";
-	logFile << "Randomized Tibor trees: " << ((_shuffleTiborTrees) ? "enabled" : "disabled") << "\n";
-	logFile << "Record Book: " << ((_saveAnywhereBook) ? "enabled" : "disabled") << "\n";
-	logFile << "In-game item tracker: " << ((_addIngameItemTracker) ? "enabled" : "disabled") << "\n";
-
-	logFile << "Starting location: ";
-	if (_spawnLocation == SpawnLocation::MASSAN)			logFile << "Massan";
-	else if (_spawnLocation == SpawnLocation::GUMI)			logFile << "Gumi";
-	else if (_spawnLocation == SpawnLocation::RYUMA)		logFile << "Ryuma";
-	else if (_spawnLocation == SpawnLocation::RANDOM)		logFile << "Random";
-	logFile << "\n";
-
-	logFile << "\n";
+	switch (_spawnLocation)
+	{
+	case SpawnLocation::MASSAN:		return "Massan";
+	case SpawnLocation::GUMI:		return "Gumi";
+	case SpawnLocation::RYUMA:		return "Ryuma";
+	case SpawnLocation::RANDOM:		return "Random";
+	}
+	return "???";
 }
 
 void RandomizerOptions::parseOptionsDictionaryFromArgs(int argc, char* argv[])

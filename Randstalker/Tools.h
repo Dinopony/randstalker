@@ -5,6 +5,7 @@
 #include <string>
 #include <random>
 #include <algorithm>
+#include <sstream>
 
 namespace Tools 
 {
@@ -34,6 +35,13 @@ namespace Tools
         vector = elems;
     }
 
+    template<typename T>
+    std::string stringify(const T& value)
+    {
+        std::ostringstream oss;
+        oss << value;
+        return oss.str();
+    }
 
     // trim from start (in place)
     inline void ltrim(std::string& s) {

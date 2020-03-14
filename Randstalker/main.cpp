@@ -40,6 +40,7 @@
 #include "Tools.h"
 #include "World.h"
 #include "WorldRandomizer.h"
+#include "SpoilerLog.h"
 
 constexpr auto RELEASE = "0.9e";
 
@@ -72,11 +73,13 @@ int main(int argc, char* argv[])
 	alterRomBeforeRandomization(*rom, options);
 	
 	// Create a replica model of Landstalker world, randomize it and save it to the ROM	
-	World landstalkerWorld(options);
-	WorldRandomizer randomizer(landstalkerWorld, options);
+	World world(options);
+	WorldRandomizer randomizer(world, options);
 	randomizer.randomize();
-	randomizer.writeSpoilerLog();
-	landstalkerWorld.writeToROM(*rom);
+	world.writeToROM(*rom);
+
+	// Write a spoiler log to help the player
+	SpoilerLog(options, world).writeToFile();
 
 	// Perform game changes after the actual randomization. This is usually required when we need to point on a data block
 	// which we don't know the exact position before it is actually written.

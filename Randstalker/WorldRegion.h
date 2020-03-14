@@ -51,12 +51,12 @@ private:
 class WorldRegion
 {
 public:
-	WorldRegion(const std::string& name, const std::vector<AbstractItemSource*> itemSources) :
+	WorldRegion(const std::string& name, const std::vector<ItemSource*> itemSources) :
 		_name		(name),
 		_itemSources(itemSources),
 		_isBarren	(true)
 	{
-		for (AbstractItemSource* source : itemSources)
+		for (ItemSource* source : itemSources)
 			source->setRegion(this);
 	}
 
@@ -68,23 +68,23 @@ public:
 
 	const std::string& getName() const { return _name; }
 
-	void addItemSource(AbstractItemSource* itemSource) 
+	void addItemSource(ItemSource* itemSource) 
 	{ 
 		_itemSources.push_back(itemSource); 
 		itemSource->setRegion(this);
 	}
-	const std::vector<AbstractItemSource*>& getUnrestrictedItemSources() const 	{ return _itemSources; }
+	const std::vector<ItemSource*>& getUnrestrictedItemSources() const 	{ return _itemSources; }
 
-	void addItemSource(AbstractItemSource* itemSource, Item* requiredItem) 
+	void addItemSource(ItemSource* itemSource, Item* requiredItem) 
 	{
 		_restrictedItemSources[itemSource] = requiredItem;
 		itemSource->setRegion(this);
 	}
-	const std::map<AbstractItemSource*, Item*>& getRestrictedItemSources() const { return _restrictedItemSources; }
+	const std::map<ItemSource*, Item*>& getRestrictedItemSources() const { return _restrictedItemSources; }
 
-	std::vector<AbstractItemSource*> getAllItemSources() const 
+	std::vector<ItemSource*> getAllItemSources() const 
 	{ 
-		std::vector<AbstractItemSource*> allItemSources = _itemSources;
+		std::vector<ItemSource*> allItemSources = _itemSources;
 		for (auto& [source, item] : _restrictedItemSources)
 			allItemSources.push_back(source);
 		return allItemSources;
@@ -124,8 +124,8 @@ public:
 
 private:
 	std::string _name;
-	std::vector<AbstractItemSource*> _itemSources;
-	std::map<AbstractItemSource*, Item*> _restrictedItemSources;
+	std::vector<ItemSource*> _itemSources;
+	std::map<ItemSource*, Item*> _restrictedItemSources;
 
 	std::vector<WorldPath*> _ingoingPaths;
 	std::vector<WorldPath*> _outgoingPaths;

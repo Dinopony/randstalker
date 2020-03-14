@@ -7,7 +7,7 @@
 #include "ItemCodes.h"
 #include "ItemSourceCodes.h"
 #include "RegionCodes.h"
-#include "AbstractItemSource.h"
+#include "ItemSources.h"
 #include "RandomizerOptions.h"
 #include "Item.h"
 #include "World.h"
@@ -22,7 +22,6 @@ public:
 	~WorldRandomizer();
 
 	void randomize();
-	void writeSpoilerLog();
 
 private:
 	// First pass randomizations (before items)
@@ -40,7 +39,6 @@ private:
 	void placeKeyItemPhase();
 	void unlockPhase();
 
-
 	// Third pass randomizations (after items)
 	void randomizeSpawnLocation();
 	void randomizeHints();
@@ -56,9 +54,9 @@ private:
 
 	std::set<WorldRegion*> _regionsToExplore;
 	std::set<WorldRegion*> _exploredRegions;
-	std::vector<AbstractItemSource*> _itemSourcesToFill;
+	std::vector<ItemSource*> _itemSourcesToFill;
 	std::set<Item*> _playerInventory;
-	std::map<AbstractItemSource*, Item*> _pendingItemSources;
+	std::map<ItemSource*, Item*> _pendingItemSources;
 	std::vector<WorldPath*> _pendingPaths;
 	std::vector<Item*> _fillerItems;
 

@@ -4,10 +4,7 @@
 #include "ItemSourceCodes.h"
 #include "RegionCodes.h"
 #include "Item.h"
-#include "ItemChest.h"
-#include "ItemOnGround.h"
-#include "ItemInShop.h"
-#include "ItemReward.h"
+#include "ItemSources.h"
 
 #include <sstream>
 
@@ -221,7 +218,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_GREENMAZE_LUMBERJACK_WHISTLE] =                   new ItemChest(0x1B, "Greenmaze: chest replacing lumberjack");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_THIRD_GOLD] =                             new ItemChest(0x1C, "King Nole's Cave: gold chest in isolated room");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_SECOND_LIFESTOCK] =                       new ItemChest(0x1D, "King Nole's Cave: lifestock chest in crate room");
-    itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM] =                 new ItemChest(0x1E, "King Nole's Cave: chest in teleporter room to Kazalt");
+//    itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM] =                 new ItemChest(0x1E, "King Nole's Cave: chest in teleporter room to Kazalt");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_BOULDER_CHASE_LIFESTOCK] =                new ItemChest(0x1F, "King Nole's Cave: boulder chase corridor chest");
     itemSources[ItemSourceCode::CHEST_WATERFALL_SHRINE_ENTRANCE_LIFESTOCK] =            new ItemChest(0x21, "Waterfall Shrine: lifestock chest under entrance (accessible after talking with Prospero)");
     itemSources[ItemSourceCode::CHEST_WATERFALL_SHRINE_END_LIFESTOCK] =                 new ItemChest(0x22, "Waterfall Shrine: lifestock chest near Prospero");
@@ -247,9 +244,9 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_50G] =                     new ItemChest(0x3A, "Thieves Hideout: 50 golds chest in boss reward room");
     itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_LIFESTOCK] =               new ItemChest(0x3B, "Thieves Hideout: lifestock chest in boss reward room");
     itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_EKEEKE] =                  new ItemChest(0x3C, "Thieves Hideout: ekeeke chest in boss reward room");
-    itemSources[ItemSourceCode::CHEST_VERLA_MINES_CRATE_ON_SPIKEBALL_LEFT] =            new ItemChest(0x42, "Verla Mines: right chest in \"crate on spike\" room near entrance");
-    itemSources[ItemSourceCode::CHEST_VERLA_MINES_CRATE_ON_SPIKEBALL_RIGHT] =           new ItemChest(0x43, "Verla Mines: left chest in \"crate on spike\" room near entrance");
-    itemSources[ItemSourceCode::CHEST_VERLA_MINES_JAR_STAIRCASE_ROOM] =                 new ItemChest(0x44, "Verla Mines: chest on isolated cliff in \"jar staircase\" room");
+    itemSources[ItemSourceCode::CHEST_VERLA_MINES_CRATE_ON_SPIKEBALL_LEFT] =            new ItemChest(0x42, "Verla Mines: right chest in 'crate on spike' room near entrance");
+    itemSources[ItemSourceCode::CHEST_VERLA_MINES_CRATE_ON_SPIKEBALL_RIGHT] =           new ItemChest(0x43, "Verla Mines: left chest in 'crate on spike' room near entrance");
+    itemSources[ItemSourceCode::CHEST_VERLA_MINES_JAR_STAIRCASE_ROOM] =                 new ItemChest(0x44, "Verla Mines: chest on isolated cliff in 'jar staircase' room");
     itemSources[ItemSourceCode::CHEST_VERLA_MINES_DEX_KEY] =                            new ItemChest(0x45, "Verla Mines: Dex reward chest");
     itemSources[ItemSourceCode::CHEST_VERLA_MINES_SLASHER_KEY] =                        new ItemChest(0x46, "Verla Mines: Slasher reward chest");
     itemSources[ItemSourceCode::CHEST_VERLA_MINES_TRIO_LEFT] =                          new ItemChest(0x47, "Verla Mines: left chest in 3 chests room");
@@ -258,7 +255,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_VERLA_MINES_ELEVATOR_RIGHT] =                     new ItemChest(0x4A, "Verla Mines: right chest in button room near elevator shaft leading to Marley");
     itemSources[ItemSourceCode::CHEST_VERLA_MINES_ELEVATOR_LEFT] =                      new ItemChest(0x4B, "Verla Mines: left chest in button room near elevator shaft leading to Marley");
     itemSources[ItemSourceCode::CHEST_VERLA_MINES_LAVA_WALKING] =                       new ItemChest(0x4C, "Verla Mines: chest in hidden room accessible by lava-walking");
-    itemSources[ItemSourceCode::CHEST_DESTEL_WELL_CRATES_KEY] =                         new ItemChest(0x4D, "Destel Well (0F): \"crates and holes\" room key chest");
+    itemSources[ItemSourceCode::CHEST_DESTEL_WELL_CRATES_KEY] =                         new ItemChest(0x4D, "Destel Well (0F): 'crates and holes' room key chest");
     itemSources[ItemSourceCode::CHEST_DESTEL_WELL_STAIRS_EKEEKE] =                      new ItemChest(0x4E, "Destel Well (1F): ekeeke chest on small stairs");
     itemSources[ItemSourceCode::CHEST_DESTEL_WELL_NARROW_GROUND_LIFESTOCK] =            new ItemChest(0x4F, "Destel Well (1F): lifestock chest on narrow ground");
     itemSources[ItemSourceCode::CHEST_DESTEL_WELL_SPIKE_HALLWAY] =                      new ItemChest(0x50, "Destel Well (1F): lifestock chest in spike room");
@@ -278,8 +275,8 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B1_GREEN_SPINNER_LIFESTOCK] =         new ItemChest(0x5E, "Lake Shrine (-1F): green golem spinner lifestock chest");
     itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B1_GOLEM_HOPPING_LIFESTOCK] =         new ItemChest(0x5F, "Lake Shrine (-1F): golem hopping lifestock chest");
     itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B2_LIFESTOCK_FALLING_FROM_UNICORNS] = new ItemChest(0x60, "Lake Shrine (-2F): middle life stock");
-    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B2_THRONE_ROOM_LIFESTOCK] =           new ItemChest(0x61, "Lake Shrine (-2F): \"throne room\" lifestock chest");
-    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B2_THRONE_ROOM_KEY] =                 new ItemChest(0x62, "Lake Shrine (-2F): \"throne room\" key chest");
+    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B2_THRONE_ROOM_LIFESTOCK] =           new ItemChest(0x61, "Lake Shrine (-2F): 'throne room' lifestock chest");
+    itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B2_THRONE_ROOM_KEY] =                 new ItemChest(0x62, "Lake Shrine (-2F): 'throne room' key chest");
     itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B3_WHITE_GOLEMS_CEILING] =            new ItemChest(0x63, "Lake Shrine (-3F): white golems room");
     itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B3_KEY_NEAR_SWORD] =                  new ItemChest(0x64, "Lake Shrine (-3F): key chest near sword of ice");
     itemSources[ItemSourceCode::CHEST_LAKE_SHRINE_B3_SNAKE_CAGING_RIDDLE] =             new ItemChest(0x65, "Lake Shrine (-3F): chest in snake caging room");
@@ -326,7 +323,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL] =                     new ItemChest(0x8E, "Route to Mir Tower: dahl chest behind sacred tree");
     itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN] =                      new ItemChest(0x8F, "Verla Shore: chest behind cabin");
     itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_BUSHES_DAHL] =                 new ItemChest(0x90, "Route to Destel: chest in map right after Verla mines exit");
-    itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_ELEVATOR] =                    new ItemChest(0x91, "Route to Destel: chest in \"elevator\" map");
+    itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_ELEVATOR] =                    new ItemChest(0x91, "Route to Destel: chest in 'elevator' map");
     itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK] =                new ItemChest(0x92, "Route to Mir Tower: lifestock chest behind sacred tree");
     itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_HIDDEN_LIFESTOCK] =            new ItemChest(0x93, "Route to Destel: hidden chest in map right before Destel");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_DAHL_NEAR_TREE] =                new ItemChest(0x94, "Mountainous Area: chest near teleport tree");
@@ -342,8 +339,8 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_ROUTE_AFTER_DESTEL_HIDDEN_LIFESTOCK] =            new ItemChest(0x9E, "Route after Destel: lifestock chest in map after seeing Duke raft");
     itemSources[ItemSourceCode::CHEST_ROUTE_AFTER_DESTEL_DAHL] =                        new ItemChest(0x9F, "Route after Destel: dahl chest in map after seeing Duke raft");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_BELOW_ROCKY_ARCH] =              new ItemChest(0xA0, "Mountainous Area: chest hidden under rocky arch");
-    itemSources[ItemSourceCode::CHEST_ROUTE_LAKE_SHRINE_EASY_LIFESTOCK] =               new ItemChest(0xA1, "Route to Lake Shrine: \"easy\" chest on crossroads with mountainous area");
-    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_LAKE_SHRINE_SHORTCUT] =          new ItemChest(0xA2, "Route to Lake Shrine: \"hard\" chest on crossroads with mountainous area");
+    itemSources[ItemSourceCode::CHEST_ROUTE_LAKE_SHRINE_EASY_LIFESTOCK] =               new ItemChest(0xA1, "Route to Lake Shrine: 'easy' chest on crossroads with mountainous area");
+    itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_LAKE_SHRINE_SHORTCUT] =          new ItemChest(0xA2, "Route to Lake Shrine: 'hard' chest on crossroads with mountainous area");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_EKEEKE_NEAR_BRIDGE] =            new ItemChest(0xA3, "Mountainous Area: chest in map in front of the statue under the bridge");
     itemSources[ItemSourceCode::CHEST_ROUTE_LAKE_SHRINE_VOLCANO_RIGHT] =                new ItemChest(0xA4, "Route to Lake Shrine: right chest in volcano");
     itemSources[ItemSourceCode::CHEST_ROUTE_LAKE_SHRINE_VOLCANO_LEFT] =                 new ItemChest(0xA5, "Route to Lake Shrine: left chest in volcano");
@@ -399,7 +396,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_TIBOR_DUAL_RIGHT] =                               new ItemChest(0xDD, "Tibor: right chest on 2 chest group");
 
     // Force the contents of a few specific chests
-    itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM]->setItem(items[ITEM_LITHOGRAPH]);
+ //   itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM]->setItem(items[ITEM_LITHOGRAPH]);
 
     // The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
     // 0x0E, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
@@ -943,7 +940,7 @@ void World::initRegions()
 
 void World::initRegionPaths()
 {
-	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC], 1);
+	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::ROUTE_MASSAN_GUMI]);
 	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::WATERFALL_SHRINE]);
 	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::SWAMP_SHRINE], items[ITEM_IDOL_STONE], 2);
@@ -952,17 +949,17 @@ void World::initRegionPaths()
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::TIBOR]);
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::RYUMA]);
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::MERCATOR], items[ITEM_SAFETY_PASS], 3);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE], 1);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE]);
 	regions[RegionCode::RYUMA]->addPathTo(regions[RegionCode::THIEVES_HIDEOUT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_DUNGEON]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::CRYPT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD], 1);
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE], items[ITEM_KEY], 2);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE], 1);
-	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET], 1);
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE]);
+	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
     regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::TWINKLE_VILLAGE]);
-	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathTo(regions[RegionCode::MIR_TOWER_POST_GARLIC], items[ITEM_GARLIC], 1);
+	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathTo(regions[RegionCode::MIR_TOWER_POST_GARLIC], items[ITEM_GARLIC]);
 	regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA_MINES]);
     regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA]);
 	regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
@@ -971,15 +968,15 @@ void World::initRegionPaths()
 	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::DESTEL_WELL]);
 	regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE]);
 	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::LAKE_SHRINE]);
-	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC], 1);
-	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC], 1);
+	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
+	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
-	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL] }, 2);
+	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL], items[ITEM_LITHOGRAPH] });
 	regions[RegionCode::KAZALT]->addPathTo(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
-	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS], 1);
-	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], items[ITEM_LOGS], 1);
+	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
+	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], items[ITEM_LOGS]);
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_PALACE]);
-	regions[RegionCode::KN_PALACE]->addPathTo(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] }, 1);
+	regions[RegionCode::KN_PALACE]->addPathTo(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] });
 
     regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::DESTEL_WELL]);
     regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::DESTEL]);

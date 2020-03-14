@@ -13,8 +13,7 @@ class RandomizerOptions
 public:
 	RandomizerOptions(int argc, char* argv[]);
 
-	void logToFile(std::ofstream& logFile) const;
-
+	const std::string& getSeedString() const { return _seedAsString; }
 	uint32_t getSeed() const { return _seed; }
 
 	const std::string& getInputROMPath() const { return _inputRomPath; }
@@ -31,6 +30,8 @@ public:
 	bool addIngameItemTracker() const { return _addIngameItemTracker; }
 	const std::string getHUDColor() const { return _hudColor; }
 
+	std::string getSpawnLocationAsString() const;
+
 private:
 	void parseOptionsDictionaryFromArgs(int argc, char* argv[]);
 	std::string parseStringOption(const std::string& name, const std::string& defaultValue) const;
@@ -41,6 +42,7 @@ private:
 
 	std::map<std::string, std::string> _optionsDictionary;
 
+	std::string _seedAsString;
 	uint32_t _seed;
 	
 	std::string _inputRomPath;
