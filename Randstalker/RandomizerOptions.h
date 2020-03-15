@@ -26,6 +26,7 @@ public:
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool useRecordBook() const { return _saveAnywhereBook; }
 	SpawnLocation getSpawnLocation() const { return _spawnLocation;  }
+	bool replaceOriginalGameHints() const { return _replaceOGHints; }
 
 	bool addIngameItemTracker() const { return _addIngameItemTracker; }
 	const std::string getHUDColor() const { return _hudColor; }
@@ -55,6 +56,7 @@ private:
 	bool _shuffleTiborTrees;
 	bool _saveAnywhereBook;
 	SpawnLocation _spawnLocation;
+	bool _replaceOGHints;
 
 	bool _addIngameItemTracker;
 	std::string _hudColor;

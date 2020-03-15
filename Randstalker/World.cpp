@@ -22,7 +22,7 @@ World::World(const RandomizerOptions& options) :
     this->initRegionPaths();
 
     this->initRegionHints();
-    this->initRoadSigns();
+    this->initRoadSigns(options.replaceOriginalGameHints());
 
     this->initDarkRooms();
 
@@ -1137,7 +1137,7 @@ void World::initRegionHints()
     regions[RegionCode::KN_PALACE]->addHint("in King Nole's palace");
 }
 
-void World::initRoadSigns()
+void World::initRoadSigns(bool replaceOGHints)
 {
     roadSigns = {
         { 0x27960, "Waterfall Shrine crossroad sign" },
@@ -1152,6 +1152,13 @@ void World::initRoadSigns()
         { 0x279F0, "Center of Greenmaze sign" },
         { 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
     };
+
+    if (replaceOGHints)
+    {
+        roadSigns[0x2795A] = "Thieves' Hideout entrance sign";
+        roadSigns[0x2795E] = "Thieves' Hideout boss path sign";
+        roadSigns[0x27A0C] = "Volcano sign";
+    }
 }
 
 void World::initDarkRooms()

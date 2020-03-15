@@ -47,7 +47,8 @@ public:
 		*this << "Randomized Tibor trees: " << (_options.shuffleTiborTrees() ? "enabled" : "disabled") << "\n";
 		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";
 		*this << "In-game item tracker: " << (_options.addIngameItemTracker() ? "enabled" : "disabled") << "\n";
-		*this << "Starting location: " << _options.getSpawnLocationAsString();
+		*this << "Starting location: " << _options.getSpawnLocationAsString() << "\n";
+		*this << "Replace original game hints: " << (_options.replaceOriginalGameHints() ? "enabled" : "disabled") << "\n";
 
 		*this << "\n";
 	}

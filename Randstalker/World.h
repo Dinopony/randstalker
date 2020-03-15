@@ -33,7 +33,7 @@ private:
     void initRegionPaths();
 
     void initRegionHints();
-    void initRoadSigns();
+    void initRoadSigns(bool replaceOGHints);
 
     void initDarkRooms();
 
@@ -45,7 +45,7 @@ public:
     std::map<RegionCode, WorldRegion*> regions;
     std::vector<ItemShop*> shops;
 
-    std::map<uint16_t, std::string> roadSigns;
+    std::map<uint32_t, std::string> roadSigns;
 
     WorldRegion* darkenedRegion;
     GameText lithographHint;
