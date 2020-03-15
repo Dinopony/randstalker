@@ -81,7 +81,7 @@ void WorldRandomizer::randomizeGoldValues()
 		std::ostringstream goldName;
 		goldName << (uint32_t)goldValue << " golds";
 
-		_world.addItem(new Item(ITEM_GOLDS_START + i, goldName.str(), (uint8_t)goldValue));
+		_world.addItem(new Item(ITEM_GOLDS_START + i, goldName.str(), (uint8_t)goldValue, false));
 	}
 }
 
