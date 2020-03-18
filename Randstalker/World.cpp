@@ -1157,6 +1157,7 @@ void World::initRoadSigns(bool replaceOGHints)
     if (replaceOGHints)
     {
         roadSigns[0x2795A] = "Thieves' Hideout entrance sign";
+        roadSigns[0x2795C] = "Thieves' Hideout second room sign";
         roadSigns[0x2795E] = "Thieves' Hideout boss path sign";
         roadSigns[0x27A0C] = "Volcano sign";
     }
