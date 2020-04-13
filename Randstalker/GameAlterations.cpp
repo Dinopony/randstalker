@@ -252,7 +252,7 @@ void alterLifestockHandlingInShops(md::ROM& rom)
 
 void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
 {
-    constexpr uint16_t goldsPerCycle = 0x0002;
+    constexpr uint16_t goldsPerCycle = 0x0001;
 
     // ============== Function to handle walk abilities (healing boots, jypta statue...) ==============
     md::Code funcHandleWalkAbilities;

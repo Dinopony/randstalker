@@ -144,7 +144,7 @@ void World::initItems(bool useArmorUpgrades)
     this->addItem(new Item(ITEM_LANTERN,           "Lantern",           100));
     this->addItem(new Item(ITEM_GARLIC,            "Garlic",            200));
     this->addItem(new Item(ITEM_ANTI_PARALYZE,     "Anti Paralyze",     20));
-    this->addItem(new Item(ITEM_STATUE_JYPTA,      "Statue of Jypta",   500));
+    this->addItem(new Item(ITEM_STATUE_JYPTA,      "Statue of Jypta",   250));
     this->addItem(new Item(ITEM_SUN_STONE,         "Sun Stone",         300));
     this->addItem(new Item(ITEM_ARMLET,            "Armlet",            300));
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  200));
