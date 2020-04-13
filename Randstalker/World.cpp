@@ -1151,7 +1151,7 @@ void World::initRoadSigns(bool replaceOGHints)
         { 0x27A04, "Greenmaze / Mountainous crossroad sign" },
         { 0x279F0, "Center of Greenmaze sign" },
         { 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
-        { 0x27958, "King Nole's Cave first room sign" }
+//      { 0x27958, "King Nole's Cave first room sign" }
     };
 
     if (replaceOGHints)

@@ -456,6 +456,11 @@ void WorldRandomizer::randomizeHints()
 	_world.ingameTexts[0x27CE4] = GameText("Fortune Teller: Hello dear, let me look what your future is made of.");
 	_world.ingameTexts[0x27CE6] = GameText("I see... I see... " + completeFortuneHint);
 
+	// =============== King Nole Cave "where is lithograph" hint sign ===============
+
+	std::string whereIsLithograph = "The lithograph will help you finding the jewels. It is " + this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
+	_world.ingameTexts[0x27958] = whereIsLithograph;
+
 	// =============== Road sign hints ===============
 
 	std::vector<std::string> roadSignHintsVector;

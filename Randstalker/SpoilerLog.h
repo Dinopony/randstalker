@@ -64,6 +64,7 @@ public:
 
 		for (const auto& [addr, name] : _world.roadSigns)
 			*this << "- " << name << ": \"" << _world.ingameTexts.at(addr).getText() << "\"\n";
+		*this << "- King Nole's Cave sign: \"" << _world.ingameTexts.at(0x27958).getText() << "\"\n";
 	}
 
 	void writeTiborTrees()
