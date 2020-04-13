@@ -361,7 +361,8 @@ void WorldRandomizer::placeKeyItemPhase()
 	// Place the key item in the appropriate source, and also add it to player inventory
 	_debugLog << "\t > Key item is [" << keyItemToPlace->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
 	randomItemSource->setItem(keyItemToPlace);
-	randomItemSource->getRegion()->setBarren(false);
+	if(keyItemToPlace != _world.items[ITEM_LITHOGRAPH])
+		randomItemSource->getRegion()->setBarren(false);
 	_playerInventory.insert(keyItemToPlace);
 }
 
