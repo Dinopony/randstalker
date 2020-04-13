@@ -149,7 +149,7 @@ void World::initItems(bool useArmorUpgrades)
     this->addItem(new Item(ITEM_ARMLET,            "Armlet",            300));
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  200));
     this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        50));
-    this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        100));
+    this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        200));
     this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         400));
     this->addItem(new Item(ITEM_PAWN_TICKET,       "Pawn Ticket",       100));
     this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      400));
