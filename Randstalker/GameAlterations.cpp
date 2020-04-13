@@ -534,6 +534,7 @@ void alterWaterfallShrineSecretStairsCheck(md::ROM& rom)
     rom.setWord(0x005014, 0x0209);
 }
 
+/*
 void alterVerlaBoulderCheck(md::ROM& rom)
 {
     // Change the removal check for the boulder between Verla and Mercator so that it disappears as soon as you sail with the boat.
@@ -551,6 +552,7 @@ void alterVerlaBoulderCheck(md::ROM& rom)
     rom.setByte(0x005075, 0x0C);
     rom.setByte(0x01A965, 0x86);
 }
+*/
 
 void alterBlueRibbonStoryCheck(md::ROM& rom)
 {
@@ -1109,7 +1111,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 
     // Map check changes
     alterWaterfallShrineSecretStairsCheck(rom);
-    alterVerlaBoulderCheck(rom);
+//  alterVerlaBoulderCheck(rom);
     alterBlueRibbonStoryCheck(rom);
     alterKingNolesCaveTeleporterCheck(rom);
     alterMercatorDocksShopCheck(rom);
