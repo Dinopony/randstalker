@@ -62,7 +62,7 @@ public:
 		*this << "- Lithograph: \"" << lithographHint << "\"\n";
 		*this << "- Fortune Teller: \"" << _world.ingameTexts.at(0x27CE6).getText() << "\"\n";
 
-		for (const auto& [addr, name] : _world.roadSigns)
+		for (const auto& [addr, name] : _world.hintSigns)
 			*this << "- " << name << ": \"" << _world.ingameTexts.at(addr).getText() << "\"\n";
 		*this << "- King Nole's Cave sign: \"" << _world.ingameTexts.at(0x27958).getText() << "\"\n";
 	}

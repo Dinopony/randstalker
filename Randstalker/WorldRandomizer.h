@@ -30,6 +30,7 @@ private:
 
 	// Second pass randomizations (items)
 	void randomizeItems();
+	void analyzeStrictlyRequiredKeyItems();
 
 	void placePriorityItems();
 	void initFillerItems();
@@ -60,5 +61,5 @@ private:
 	std::vector<WorldPath*> _pendingPaths;
 	std::vector<Item*> _fillerItems;
 
-	std::vector<Item*> _keyItems;
+	std::set<Item*> _strictlyNeededKeyItems;
 };

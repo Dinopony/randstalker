@@ -31,6 +31,7 @@ void WorldRandomizer::randomize()
 	// 2nd pass: randomizing items
 	_rng.seed(rngSeed);
 	this->randomizeItems();
+	this->analyzeStrictlyRequiredKeyItems();
 	
 	// 3rd pass: randomizations happening AFTER randomizing items
 	_rng.seed(rngSeed);
@@ -361,8 +362,6 @@ void WorldRandomizer::placeKeyItemPhase()
 	// Place the key item in the appropriate source, and also add it to player inventory
 	_debugLog << "\t > Key item is [" << keyItemToPlace->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
 	randomItemSource->setItem(keyItemToPlace);
-	if(keyItemToPlace != _world.items[ITEM_LITHOGRAPH])
-		randomItemSource->getRegion()->setBarren(false);
 	_playerInventory.insert(keyItemToPlace);
 }
 
@@ -408,7 +407,57 @@ void WorldRandomizer::unlockPhase()
 	}
 }
 
+#include <iostream>
 
+void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
+{
+	const std::set<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
+
+	// We perform a backwards analysis here starting from endgame region and determining which key items are strictly needed to finish the seed
+	std::set<WorldRegion*> regionsToExplore = { _world.regions[RegionCode::ENDGAME] };
+	std::set<WorldRegion*> alreadyExploredRegions;
+	std::set<Item*> itemsToLocate;
+	
+	while (!regionsToExplore.empty())
+	{
+		WorldRegion* exploredRegion = *regionsToExplore.begin();
+		regionsToExplore.erase(exploredRegion);
+		alreadyExploredRegions.insert(exploredRegion);
+
+		const std::vector<WorldPath*>& pathsToRegion = exploredRegion->getIngoingPaths();
+		for (WorldPath* path : pathsToRegion)
+		{
+			for (Item* neededItem : path->getRequiredItems())
+				if (!optionalItems.count(neededItem))
+					itemsToLocate.insert(neededItem);
+
+			WorldRegion* originRegion = path->getOrigin();
+			if (!alreadyExploredRegions.count(originRegion))
+				regionsToExplore.insert(originRegion);
+		}
+
+		while (regionsToExplore.empty() && !itemsToLocate.empty())
+		{
+			Item* keyItemToLocate = *itemsToLocate.begin();
+			itemsToLocate.erase(keyItemToLocate);			
+			if (!_strictlyNeededKeyItems.count(keyItemToLocate))
+			{
+				_strictlyNeededKeyItems.insert(keyItemToLocate);
+
+				for (const auto& [code, source] : _world.itemSources)
+				{
+					if (source->getItem() == keyItemToLocate)
+					{
+						WorldRegion* region = source->getRegion();
+						if (!alreadyExploredRegions.count(region))
+							regionsToExplore.insert(region);
+						break;
+					}
+				}
+			}
+		}
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///		THIRD PASS RANDOMIZATIONS (after items)
@@ -461,9 +510,9 @@ void WorldRandomizer::randomizeHints()
 	std::string whereIsLithograph = "The lithograph will help you finding the jewels. It is " + this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
 	_world.ingameTexts[0x27958] = whereIsLithograph;
 
-	// =============== Road sign hints ===============
+	// =============== Sign hints ===============
 
-	std::vector<std::string> roadSignHintsVector;
+	std::vector<std::string> signHintsVector;
 
 	const std::map<std::string, std::vector<WorldRegion*>> macroRegions = {
 		{ "the village of Massan",		{ _world.regions[RegionCode::MASSAN] } },
@@ -492,51 +541,76 @@ void WorldRandomizer::randomizeHints()
 		{ "King Nole's palace",			{ _world.regions[RegionCode::KN_PALACE] } }
 	};
 
-	// Barren / key hints
+	// Barren / pleasant surprise hints
 	for (const auto& [name, regions] : macroRegions)
 	{
 		bool isBarren = true;
 		for (WorldRegion* region : regions)
-			if (!region->isBarren())
-				isBarren = false;
+		{
+			std::vector<ItemSource*> itemSources = region->getAllItemSources();
+			for (ItemSource* source : itemSources)
+			{
+				if (_strictlyNeededKeyItems.count(source->getItem()))
+				{
+					isBarren = false;
+					break;
+				}
+			}
+			if (!isBarren)
+				break;
+		}
+
 		if (isBarren)
-			roadSignHintsVector.push_back("What you are looking for is not in " + name + ".");
+			signHintsVector.push_back("What you are looking for is not in " + name + ".");
 		else
-			roadSignHintsVector.push_back("You might have a pleasant surprise wandering in " + name + ".");
+			signHintsVector.push_back("You might have a pleasant surprise wandering in " + name + ".");
 	}
 
-	// Key items location hints
+	// "You will / won't need {item} to finish"
+	const std::vector<uint8_t> potentiallyOptionalKeyItems = { ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE };
+
+	for (uint8_t keyItemID : potentiallyOptionalKeyItems)
+	{
+		Item* keyItem = _world.items[keyItemID];
+		if (_strictlyNeededKeyItems.count(keyItem))
+			signHintsVector.push_back("You will need " + keyItem->getName() + " in your quest to King Nole's treasure.");
+		else
+			signHintsVector.push_back(keyItem->getName() + " is useless in your quest King Nole's treasure.");
+	}
+
+	// Important items location hints
 	const std::vector<uint8_t> hintableItems = {
-		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,	ITEM_BUYER_CARD,	ITEM_GARLIC,	ITEM_SUN_STONE,
-		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,	ITEM_IDOL_STONE,	ITEM_KEY,		ITEM_SAFETY_PASS
+		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,		ITEM_SUN_STONE,
+		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,	ITEM_KEY,			ITEM_SAFETY_PASS,
+		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA
 	};
 
 	for (uint8_t itemID : hintableItems)
 	{
 		Item* hintedItem = _world.items[itemID];
-		roadSignHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
+		signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
 	}
-	Tools::shuffle(roadSignHintsVector, _rng);
+	Tools::shuffle(signHintsVector, _rng);
 
 	uint8_t i = 0;
-	for (const auto& [addr, name] : _world.roadSigns)
+	for (const auto& [addr, name] : _world.hintSigns)
 	{
-		_world.ingameTexts[addr] = GameText(roadSignHintsVector[i]);
+		_world.ingameTexts[addr] = GameText(signHintsVector[i]);
 		++i;
 	}
 
 	// =============== Crypt sign hints ===============
-	_world.ingameTexts[0x2797A] = GameText("This is the Crypt #0 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x27982] = GameText("This is the Crypt #1 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x2798A] = GameText("This is the Crypt #2 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x27992] = GameText("This is the Crypt #3 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x27998] = GameText("This is the Crypt #4 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x279A0] = GameText("This is the Crypt #5 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x279A8] = GameText("This is the Crypt #6 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x279B0] = GameText("This is the Crypt #7 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x279B8] = GameText("This is the Crypt #8 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x279C0] = GameText("This is the Crypt #9 sign. Hints are soon to be put on this sign!");
-	_world.ingameTexts[0x279E8] = GameText("This is the Crypt #10 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x2797A] = GameText("This is the Crypt #0 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x27982] = GameText("This is the Crypt #1 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x2798A] = GameText("This is the Crypt #2 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x27992] = GameText("This is the Crypt #3 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x27998] = GameText("This is the Crypt #4 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x279A0] = GameText("This is the Crypt #5 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x279A8] = GameText("This is the Crypt #6 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x279B0] = GameText("This is the Crypt #7 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x279B8] = GameText("This is the Crypt #8 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x279C0] = GameText("This is the Crypt #9 sign. Hints are soon to be put on this sign!");
+//	_world.ingameTexts[0x279E8] = GameText("This is the Crypt #10 sign. Hints are soon to be put on this sign!");
 }
 
 std::string WorldRandomizer::getRandomHintForItem(Item* item)

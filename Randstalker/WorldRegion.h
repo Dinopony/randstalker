@@ -8,7 +8,8 @@ class WorldRegion;
 class WorldPath
 {
 public:
-	WorldPath(WorldRegion* destination, Item* requiredItem = nullptr, uint16_t weight = 1) :
+	WorldPath(WorldRegion* origin, WorldRegion* destination, Item* requiredItem = nullptr, uint16_t weight = 1) :
+		_origin(origin),
 		_destination(destination),
 		_randomWeight(weight),
 		_requiredItems()
@@ -17,7 +18,8 @@ public:
 			_requiredItems.push_back(requiredItem);
 	}
 
-	WorldPath(WorldRegion* destination, std::vector<Item*> requiredItems, uint16_t weight = 1) :
+	WorldPath(WorldRegion* origin, WorldRegion* destination, std::vector<Item*> requiredItems, uint16_t weight = 1) :
+		_origin(origin),
 		_destination(destination),
 		_randomWeight(weight),
 		_requiredItems(requiredItems)
@@ -25,6 +27,7 @@ public:
 
 	void addRequiredItem(Item* requiredItem) { _requiredItems.push_back(requiredItem); }
 
+	WorldRegion* getOrigin() const { return _origin; }
 	WorldRegion* getDestination() const { return _destination; }
 	const std::vector<Item*>& getRequiredItems() const { return _requiredItems; }
 
@@ -40,6 +43,7 @@ public:
 	uint16_t getRandomWeight() const { return _randomWeight; }
 
 private:
+	WorldRegion* _origin;
 	WorldRegion* _destination;
 	std::vector<Item*> _requiredItems;
 	std::vector<uint16_t> _darkRooms;
@@ -53,8 +57,7 @@ class WorldRegion
 public:
 	WorldRegion(const std::string& name, const std::vector<ItemSource*> itemSources) :
 		_name		(name),
-		_itemSources(itemSources),
-		_isBarren	(true)
+		_itemSources(itemSources)
 	{
 		for (ItemSource* source : itemSources)
 			source->setRegion(this);
@@ -92,14 +95,14 @@ public:
 
 	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr, uint16_t weight = 1)
 	{
-		WorldPath* newPath = new WorldPath(otherRegion, requiredItem, weight);
+		WorldPath* newPath = new WorldPath(this, otherRegion, requiredItem, weight);
 		_outgoingPaths.push_back(newPath);
 		otherRegion->_ingoingPaths.push_back(newPath);
 	}
 
 	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems, uint16_t weight = 1)
 	{
-		WorldPath* newPath = new WorldPath(otherRegion, requiredItems, weight);
+		WorldPath* newPath = new WorldPath(this, otherRegion, requiredItems, weight);
 		_outgoingPaths.push_back(newPath);
 		otherRegion->_ingoingPaths.push_back(newPath);
 	}
@@ -119,9 +122,6 @@ public:
 	}
 	const std::vector<uint16_t>& getDarkRooms() const { return _darkRooms; }
 
-	void setBarren(bool isBarren) { _isBarren = isBarren; }
-	bool isBarren() const { return _isBarren; }
-
 private:
 	std::string _name;
 	std::vector<ItemSource*> _itemSources;
@@ -132,6 +132,4 @@ private:
 	
 	std::vector<std::string> _hints;
 	std::vector<uint16_t> _darkRooms;
-
-	bool _isBarren;
 };

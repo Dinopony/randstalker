@@ -22,7 +22,7 @@ World::World(const RandomizerOptions& options) :
     this->initRegionPaths();
 
     this->initRegionHints();
-    this->initRoadSigns(options.replaceOriginalGameHints());
+    this->initHintSigns(options.replaceOriginalGameHints());
 
     this->initDarkRooms();
 
@@ -1081,6 +1081,7 @@ void World::initRegionHints()
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_HIDDEN_GOLDEN_STATUE]->addHint("in a well-hidden chest");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_HIDDEN_GAIA_STATUE]->addHint("in a well-hidden chest");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_HIDDEN]->addHint("in a well-hidden chest");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_HIDDEN_EKEEKE]->addHint("in a well-hidden chest");
 
     itemSources[ItemSourceCode::GROUND_HEALING_BOOTS]->addHint("kept by a threatening guardian");
     itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_MIRO_REWARD]->addHint("kept by a threatening guardian");
@@ -1137,29 +1138,40 @@ void World::initRegionHints()
     regions[RegionCode::KN_PALACE]->addHint("in King Nole's palace");
 }
 
-void World::initRoadSigns(bool replaceOGHints)
+void World::initHintSigns(bool replaceOGHints)
 {
-    roadSigns = {
+    hintSigns = {
         { 0x27960, "Waterfall Shrine crossroad sign" },
         { 0x27962, "Swamp Shrine crossroad sign" },
         { 0x27964, "Tibor crossroad sign" },
-        { 0x27966, "Mir Tower crossroad sign" },
-        { 0x279E6, "Mir Tower map sign" },
+        { 0x27966, "Mir Tower sector crossroad sign" },
+        { 0x279D0, "Mir Tower sign before bridge room" },
+        { 0x279E6, "Mir Tower exterior sign" },
         { 0x27A0A, "Verla crossroad sign" },
         { 0x27A08, "Destel crossroad sign" },
         { 0x27A06, "Lake Shrine / Mountainous crossroad sign" },
         { 0x27A04, "Greenmaze / Mountainous crossroad sign" },
         { 0x279F0, "Center of Greenmaze sign" },
         { 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
+        { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
 //      { 0x27958, "King Nole's Cave first room sign" }
     };
 
+    ingameTexts[0x279D2] = GameText();
+    ingameTexts[0x279D4] = GameText();
+
     if (replaceOGHints)
     {
-        roadSigns[0x2795A] = "Thieves' Hideout entrance sign";
-        roadSigns[0x2795C] = "Thieves' Hideout second room sign";
-        roadSigns[0x2795E] = "Thieves' Hideout boss path sign";
-        roadSigns[0x27A0C] = "Volcano sign";
+        hintSigns[0x2795A] = "Thieves' Hideout entrance sign";
+        hintSigns[0x2795C] = "Thieves' Hideout second room sign";
+        hintSigns[0x2795E] = "Thieves' Hideout boss path sign";
+        hintSigns[0x27A0C] = "Volcano sign";
+        hintSigns[0x279D8] = "Mir Tower bridge room sign";
+        hintSigns[0x279DC] = "Mir Tower library sign";
+        hintSigns[0x279E2] = "Mir Tower sign before library";
+        
+        ingameTexts[0x279DE] = GameText();
+        ingameTexts[0x279E4] = GameText();
     }
 }
 
