@@ -21,6 +21,7 @@ World::World(const RandomizerOptions& options) :
     this->initRegions();
     this->initRegionPaths();
 
+    this->initText();
     this->initRegionHints();
     this->initHintSigns(options.replaceOriginalGameHints());
 
@@ -983,6 +984,25 @@ void World::initRegionPaths()
     regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
     regions[RegionCode::ROUTE_VERLA_DESTEL]->addPathTo(regions[RegionCode::VERLA_MINES]);
     regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::VERLA_SECTOR]);
+}
+
+void World::initText()
+{
+    const std::set<uint32_t> ignoredTexts = {
+        // Mir intro dialogue
+        0x2871E, 0x28724, 0x28726,
+        // Mir outro dialogue
+        0x28730, 0x28734, 0x28738, 0x2873A, 0x2873E, 0x28742, 0x28744, 0x28746,
+        0x2874C, 0x28750, 0x28752, 0x28754, 0x28758, 0x2875C
+    };
+
+    for (uint32_t ignoredID : ignoredTexts)
+        ingameTexts[ignoredID] = GameText();
+
+    // Alter Mir intro dialogue
+    ingameTexts[0x2872E] = GameText("Mir: You beat me... You're too strong. You know, I'm not the bad guy, it's the duke...");
+    ingameTexts[0x28748] = GameText("Friday: Shut up! We don't care about the storyline, we're in a randomizer. Give us the treasure!");
+    ingameTexts[0x2875E] = GameText("Mir: Urgh, go downstairs and take my treasure then.");
 }
 
 void World::initRegionHints()
