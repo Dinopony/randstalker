@@ -407,8 +407,6 @@ void WorldRandomizer::unlockPhase()
 	}
 }
 
-#include <iostream>
-
 void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 {
 	const std::set<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
@@ -456,6 +454,15 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 				}
 			}
 		}
+	}
+
+	// Output required item list to debug log if we are in debug mode
+	if (_debugLog)
+	{
+		_debugLog << "\n-------------------------------\n";
+		_debugLog << "\tItems required to finish the seed" << "\n\n";
+		for (Item* item : _strictlyNeededKeyItems)
+			_debugLog << "\t- " << item->getName() << "\n";
 	}
 }
 
