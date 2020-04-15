@@ -975,6 +975,12 @@ void replaceNewGameStringBySeedHash(md::ROM& rom, const RandomizerOptions& optio
         rom.setByte(0x29A16 + i, 0x0);
 }
 
+void setKeyAsUniqueItem(md::ROM& rom)
+{
+    // Set the maximum amount of keys to 1, displaying it as a unique item
+    rom.setByte(0x293CC, 0x01);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
 //       Post-generation stuff
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1193,6 +1199,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     // Miscellaneous
     changeHUDColor(rom, options);
     replaceNewGameStringBySeedHash(rom, options);
+    setKeyAsUniqueItem(rom);
 }
 
 void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
