@@ -8,6 +8,7 @@
 #include <vector>
 
 constexpr uint32_t customTextStorageMemoryAddress = 0xFF0014;
+constexpr uint32_t mapEntrancePositionStorageMemoryAddress = 0xFF0018;
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       Technical additions
@@ -288,6 +289,59 @@ void quickenGaiaEffect(md::ROM& rom)
     rom.setWord(0x1686C, rom.getWord(0x1686C) * factor);
     rom.setWord(0x16878, rom.getWord(0x16878) * factor);
     rom.setWord(0x16884, rom.getWord(0x16884) * factor);
+}
+
+void addRecordBookSave(md::ROM& rom)
+{
+    md::Code funcStoreCurrentMapAndPosition;
+    funcStoreCurrentMapAndPosition.movew(addr_(0xFF1204), addr_(mapEntrancePositionStorageMemoryAddress));
+    funcStoreCurrentMapAndPosition.movew(addr_(0xFF5400), addr_(mapEntrancePositionStorageMemoryAddress+2));
+    funcStoreCurrentMapAndPosition.rts();
+    uint32_t funcStoreCurrentMapAndPositionAddr = rom.injectCode(funcStoreCurrentMapAndPosition);
+
+    // -------- Function to save game using record book --------
+
+    // On record book use, set stored position and map, then call the save game function. Then, restore Nigel's position and map as if nothing happened.
+    md::Code funcSaveUsingRecordBook;
+    funcSaveUsingRecordBook.movemToStack({ reg_D0, reg_D1 }, {});
+    funcSaveUsingRecordBook.movew(addr_(0xFF1204), reg_D0);
+    funcSaveUsingRecordBook.movew(addr_(0xFF5400), reg_D1);
+    
+    funcSaveUsingRecordBook.movew(addr_(mapEntrancePositionStorageMemoryAddress), addr_(0xFF1204));
+    funcSaveUsingRecordBook.movew(addr_(mapEntrancePositionStorageMemoryAddress+2), addr_(0xFF5400));
+    funcSaveUsingRecordBook.jsr(0x1592); // "func_save_game"
+
+    funcSaveUsingRecordBook.movew(reg_D0, addr_(0xFF1204));
+    funcSaveUsingRecordBook.movew(reg_D1, addr_(0xFF5400));
+    funcSaveUsingRecordBook.movemFromStack({ reg_D0, reg_D1 }, {});
+
+    funcSaveUsingRecordBook.rts();
+    rom.injectCode(funcSaveUsingRecordBook, "func_save_game_record_book");
+
+    // -------- Procedure injections to store map entrance position --------
+    
+    // Regular map transition position storage injection
+    md::Code procRegularMapTransition;
+    procRegularMapTransition.movew(addr_(reg_A0, 0x4), addr_(0xFF5400));
+    procRegularMapTransition.jsr(funcStoreCurrentMapAndPositionAddr);
+    procRegularMapTransition.nop();
+    rom.setCode(0xA0F6, procRegularMapTransition);
+
+    // Update stored map and position on load
+    md::Code funcLoad;
+    funcLoad.jsr(0x15C2); // "func_load_game"
+    funcLoad.jsr(funcStoreCurrentMapAndPositionAddr);
+    funcLoad.rts();
+    uint32_t funcLoadAddr = rom.injectCode(funcLoad);
+    rom.setCode(0xEF46, md::Code().jsr(funcLoadAddr));
+
+    // "Falling" map transition position storage injection
+//    md::Code funStoreMapEntrancePositionFall;
+//    funStoreMapEntrancePositionFall.movew(addr_(0xFF5400), addr_(mapEntrancePositionStorageMemoryAddress));
+//    funStoreMapEntrancePositionFall.tstw(addr_(0xFF5430));
+//    funStoreMapEntrancePositionFall.rts();
+//    uint32_t funcStoreMapEntrancePositionFallAddr = rom.injectCode(funStoreMapEntrancePositionFall);
+//    rom.setCode(0x6368, md::Code().jsr(funcStoreMapEntrancePositionFallAddr));
 }
 
 void handleArmorUpgrades(md::ROM& rom)
@@ -1058,7 +1112,7 @@ void addFunctionToItemsOnUse(md::ROM& rom)
 
     funcExtendedItemHandling.cmpib(ITEM_RECORD_BOOK, reg_D0);
     funcExtendedItemHandling.bne(3);
-        funcExtendedItemHandling.jsr(0x1592); // "func_save_game"
+        funcExtendedItemHandling.jsr(rom.getStoredAddress("func_save_game_record_book"));
         funcExtendedItemHandling.rts();
     funcExtendedItemHandling.cmpib(ITEM_SPELL_BOOK, reg_D0);
     funcExtendedItemHandling.bne(3);
@@ -1096,6 +1150,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     alterLifestockHandlingInShops(rom);
     addStatueOfJyptaGoldsOverTime(rom);
     quickenGaiaEffect(rom);
+    addRecordBookSave(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
