@@ -3,8 +3,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include "MegadriveTools/MdRom.h"
 
+#include "../MegadriveTools/MdRom.h"
 #include "HuffmanTree.h"
 
 class TextDecoder

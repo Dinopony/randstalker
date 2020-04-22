@@ -10,8 +10,7 @@
 
 #include "HuffmanTree.h"
 #include "Symbols.h"
-#include "Tools.h"
-#include "MegadriveTools/MdRom.h"
+#include "../MegadriveTools/MdRom.h"
 
 class TextEncoder 
 {
