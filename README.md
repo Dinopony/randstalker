@@ -9,7 +9,7 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 
 - Game starts at Massan Inn and intro is skipped. It is also possible to set a different spawn point among three different ones (Massan, Gumi or Ryuma)
 - Most cutscenes and scenario related checks / blockers are removed
-- You will need the Red Jewel and the Purple Jewel to use the teleporter to go to Kazalt, and you will need all three Gola pieces to reach King Nole's fight.
+- You will need the Red Jewel and the Purple Jewel to use the teleporter to go to Kazalt, and you will need all three Gola pieces to reach King Nole's fight
 - All other conditions from the original game stay as-is (Gola's Eye to reach King Nole's Cave, Axe Magic to cut trees...)
 - All key doors are gone, except one (the Mercator castle backdoor), same goes for the keys. The key becomes a unique item to find which gives you access to Greenmaze sector.
 
@@ -21,7 +21,11 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 
 - Armors work by default as "armor upgrades", meaning you will always get them one tier after another (this can be disabled as an option)
 - You start with a Record Book in your inventory allowing you to save anywhere and pontentially save time by strategically save-scumming (this can be disabled as an option)
-- Using the Lithograph will give you hints where to find both jewels.
+
+- Road signs give hints instead of directions
+- Using the Lithograph will give you hints where to find both jewels
+- Using the Oracle Stone will give you a hint on an important item
+- The Fortune Teller in Mercator will give you a hint leading to one of the Gola items
 
 ## Minor differences you most likely won't care about
 
@@ -65,3 +69,4 @@ It also provides a few randomization options:
 - **--noRecordBook**: disable the Record Book in inventory allowing to save anywhere
 - **--spawnLocation=LOC**: choose the starting location by replacing LOC with either `massan`, `gumi`, `ryuma` or `random`
 - **--ingameTracker**: adds greyed out key items in inventory to have a working in-game item tracker
+- **--dungeonSignHints**: adds extra hints on signs inside dungeons (e.g. Thieves Hideout, Mir Tower...)

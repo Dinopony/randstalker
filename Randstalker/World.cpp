@@ -63,11 +63,18 @@ void World::writeToROM(md::ROM& rom)
 	for (const TreeMap& treeMap : treeMaps)
 		treeMap.writeToROM(rom);
 
-    // Inject lithograph hint as text
+    // Write lithograph hint
     textLines[0x021] = GameText(redJewelHint + " \x1E" + purpleJewelHint).getOutput();
 
+    // Write the fortune teller hint
     textLines[0x28D] = "\x1CHello dear, let me look at\nwhat your future is made of...\x1E";
     textLines[0x28E] = "\x1CI see... I see...\x1E\n" + GameText(fortuneTellerHint).getOutput();
+
+    // Write the "where is lithograph" hint in King Nole's Cave
+    textLines[0x0FD] = GameText(whereIsLithographHint).getOutput();
+
+    // Write the oracle stone hint
+    textLines[0x019] = GameText(oracleStoneHint).getOutput();
 
     // Inject dark rooms as a data block
     const std::vector<uint16_t>& darkRooms = darkenedRegion->getDarkRooms();
@@ -139,7 +146,7 @@ void World::initItems(bool useArmorUpgrades)
     this->addItem(new Item(ITEM_ARMLET,            "Armlet",            300));
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  200));
     this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        50));
-    this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        200));
+    this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        250));
     this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         400));
     this->addItem(new Item(ITEM_PAWN_TICKET,       "Pawn Ticket",       100));
     this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      400));
@@ -148,7 +155,7 @@ void World::initItems(bool useArmorUpgrades)
     this->addItem(new Item(ITEM_DAHL,              "Dahl",              100, false));
     this->addItem(new Item(ITEM_RESTORATION,       "Restoration",       40));
     this->addItem(new Item(ITEM_LOGS,              "Logs",              200));
-    this->addItem(new Item(ITEM_ORACLE_STONE,      "Oracle Stone",      100));
+    this->addItem(new Item(ITEM_ORACLE_STONE,      "Oracle Stone",      250));
     this->addItem(new Item(ITEM_IDOL_STONE,        "Idol Stone",        200));
     this->addItem(new Item(ITEM_KEY,               "Key",               150));
     this->addItem(new Item(ITEM_SAFETY_PASS,       "Safety Pass",       300));
@@ -926,6 +933,33 @@ void World::initRegions()
 
     // Create a fake region to require the 3 Gola items
     regions[RegionCode::ENDGAME] = new WorldRegion("The End", {});
+
+    macroRegions = {
+        { "the village of Massan",		{ regions[RegionCode::MASSAN] } },
+        { "the cave near Massan",		{ regions[RegionCode::MASSAN_CAVE] } },
+        { "the waterfall shrine",		{ regions[RegionCode::WATERFALL_SHRINE] } },
+        { "the village of Gumi",		{ regions[RegionCode::GUMI] } },
+        { "the swamp shrine",			{ regions[RegionCode::SWAMP_SHRINE] } },
+        { "Tibor",						{ regions[RegionCode::TIBOR] } },
+        { "the town of Ryuma",			{ regions[RegionCode::RYUMA] } },
+        { "the thieves' hideout",		{ regions[RegionCode::THIEVES_HIDEOUT] } },
+        { "witch Helga's hut",			{ regions[RegionCode::WITCH_HELGA_HUT] } },
+        { "the town of Mercator",		{ regions[RegionCode::MERCATOR], regions[RegionCode::MERCATOR_SPECIAL_SHOP] } },
+        { "the crypt of Mercator",		{ regions[RegionCode::CRYPT] } },
+        { "the dungeon of Mercator",	{ regions[RegionCode::MERCATOR_DUNGEON] } },
+        { "Mir Tower",					{ regions[RegionCode::MIR_TOWER_PRE_GARLIC], regions[RegionCode::MIR_TOWER_POST_GARLIC] } },
+        { "Greenmaze",					{ regions[RegionCode::GREENMAZE] } },
+        { "the town of Verla",			{ regions[RegionCode::VERLA] } },
+        { "Verla mine",					{ regions[RegionCode::VERLA_MINES] } },
+        { "the village of Destel",		{ regions[RegionCode::DESTEL] } },
+        { "Destel well",				{ regions[RegionCode::DESTEL_WELL] } },
+        { "the lake shrine",			{ regions[RegionCode::LAKE_SHRINE] } },
+        { "the mountainous area",		{ regions[RegionCode::MOUNTAINOUS_AREA] } },
+        { "King Nole's cave",			{ regions[RegionCode::KN_CAVE] } },
+        { "the town of Kazalt",			{ regions[RegionCode::KAZALT] } },
+        { "King Nole's labyrinth",		{ regions[RegionCode::KN_LABYRINTH_PRE_SPIKES], regions[RegionCode::KN_LABYRINTH_POST_SPIKES], regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] } },
+        { "King Nole's palace",			{ regions[RegionCode::KN_PALACE] } }
+    };
 }
 
 void World::initRegionPaths()
@@ -1005,12 +1039,12 @@ void World::initRegionHints()
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS]->addHint("close to a waterfall");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK]->addHint("close to a waterfall");
 
-    regions[RegionCode::GREENMAZE]->addHint("resting among the trees");
-    regions[RegionCode::TIBOR]->addHint("resting among the trees");
-    itemSources[ItemSourceCode::GROUND_LOGS_1]->addHint("resting among the trees");
-    itemSources[ItemSourceCode::GROUND_LOGS_2]->addHint("resting among the trees");
-    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL]->addHint("resting among the trees");
-    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK]->addHint("resting among the trees");
+    regions[RegionCode::GREENMAZE]->addHint("among the trees");
+    regions[RegionCode::TIBOR]->addHint("among the trees");
+    itemSources[ItemSourceCode::GROUND_LOGS_1]->addHint("among the trees");
+    itemSources[ItemSourceCode::GROUND_LOGS_2]->addHint("among the trees");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL]->addHint("among the trees");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK]->addHint("among the trees");
 
     regions[RegionCode::SWAMP_SHRINE]->addHint("near a swamp");
     regions[RegionCode::WITCH_HELGA_HUT]->addHint("near a swamp");
@@ -1089,12 +1123,12 @@ void World::initRegionHints()
     itemSources[ItemSourceCode::CHEST_MIR_TOWER_REWARD_RIGHT_EKEEKE]->addHint("kept by a threatening guardian");
     itemSources[ItemSourceCode::CHEST_MIR_TOWER_REWARD_LIFESTOCK]->addHint("kept by a threatening guardian");
 
-    regions[RegionCode::MASSAN]->addHint("in Massan");
-    regions[RegionCode::GUMI]->addHint("in Gumi");
-    regions[RegionCode::DESTEL]->addHint("in Destel");
+    regions[RegionCode::MASSAN]->addHint("in the village of Massan");
+    regions[RegionCode::GUMI]->addHint("in the village of Gumi");
+    regions[RegionCode::DESTEL]->addHint("in the village of Destel");
     regions[RegionCode::TWINKLE_VILLAGE]->addHint("in Twinkle village");
-    regions[RegionCode::RYUMA]->addHint("in Ryuma");
-    regions[RegionCode::MERCATOR]->addHint("in Mercator");
+    regions[RegionCode::RYUMA]->addHint("in the town of Ryuma");
+    regions[RegionCode::MERCATOR]->addHint("in the town of Mercator");
     regions[RegionCode::VERLA]->addHint("in the town of Verla");
     regions[RegionCode::ROUTE_MASSAN_GUMI]->addHint("between Massan and Gumi");
     regions[RegionCode::ROUTE_GUMI_RYUMA]->addHint("between Gumi and Ryuma");
@@ -1116,7 +1150,7 @@ void World::initRegionHints()
     regions[RegionCode::MIR_TOWER_POST_GARLIC]->addHint("in Mir Tower");
     regions[RegionCode::MASSAN_CAVE]->addHint("in Massan cave");
     regions[RegionCode::KN_CAVE]->addHint("in King Nole's cave");
-    regions[RegionCode::VERLA_MINES]->addHint("in a mine");
+    regions[RegionCode::VERLA_MINES]->addHint("in Verla Mines");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_HIDDEN]->addHint("in a cave in the mountains");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_VISIBLE]->addHint("in a cave in the mountains");
     itemSources[ItemSourceCode::GROUND_MOON_STONE]->addHint("in a cave in the mountains");

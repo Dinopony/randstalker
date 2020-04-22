@@ -29,7 +29,7 @@ void loadGameStrings(std::vector<std::string>& gameStrings)
         /* 0x16 */ 		"Nothing happened...\x1E",
         /* 0x17 */ 		"Found ""\x1D"".""\x1A",
         /* 0x18 */ 		"Took ""\x1D"".",
-        /* 0x19 */ 		"You have finished ""\x1B""%\nof this island...\x1E\nspoke the Oracle Stone.\x1E",
+        /* 0x19 */ 		"",
         /* 0x1A */ 		"Won second place\nin a beauty contest!\x1E",
         /* 0x1B */ 		"Abracadabra.....\x1E",
         /* 0x1C */ 		"Something happened!\x1E",

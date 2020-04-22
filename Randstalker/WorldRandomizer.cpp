@@ -508,42 +508,32 @@ void WorldRandomizer::randomizeHints()
 
 	// =============== King Nole Cave "where is lithograph" hint sign ===============
 
-	std::string whereIsLithograph = "The lithograph will help you finding the jewels. It is " + this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
-	_world.textLines[0x0FD] = GameText(whereIsLithograph).getOutput();
+	_world.whereIsLithographHint = "The lithograph will help you finding the jewels. It is " + this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
+
+	// =============== Oracle Stone hint ===============
+
+	std::set<Item*> forbiddenOracleStoneItems = {
+		fortuneHintedItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL], _world.items[ITEM_SAFETY_PASS]
+	};
+
+	std::vector<Item*> requiredItems; 
+	for (Item* item : _strictlyNeededKeyItems)
+		requiredItems.push_back(item);
+	Tools::shuffle(requiredItems, _rng);
+	Item* itemInOracleStoneHint;
+	do {
+		itemInOracleStoneHint = requiredItems[0];
+		requiredItems.erase(requiredItems.begin());
+	} while (forbiddenOracleStoneItems.count(itemInOracleStoneHint));
+
+	_world.oracleStoneHint = "You will need " + itemInOracleStoneHint->getName() + ". It is " + this->getRandomHintForItem(itemInOracleStoneHint) + ".";
 
 	// =============== Sign hints ===============
 
 	std::vector<std::string> signHintsVector;
 
-	const std::map<std::string, std::vector<WorldRegion*>> macroRegions = {
-		{ "the village of Massan",		{ _world.regions[RegionCode::MASSAN] } },
-		{ "the cave near Massan",		{ _world.regions[RegionCode::MASSAN_CAVE] } },
-		{ "the waterfall shrine",		{ _world.regions[RegionCode::WATERFALL_SHRINE] } },
-		{ "the village of Gumi",		{ _world.regions[RegionCode::GUMI] } },
-		{ "the swamp shrine",			{ _world.regions[RegionCode::SWAMP_SHRINE] } },
-		{ "Tibor",						{ _world.regions[RegionCode::TIBOR] } },
-		{ "the town of Ryuma",			{ _world.regions[RegionCode::RYUMA] } },
-		{ "the thieves' hideout",		{ _world.regions[RegionCode::THIEVES_HIDEOUT] } },
-		{ "witch Helga's hut",			{ _world.regions[RegionCode::WITCH_HELGA_HUT] } },
-		{ "the town of Mercator",		{ _world.regions[RegionCode::MERCATOR], _world.regions[RegionCode::MERCATOR_SPECIAL_SHOP] } },
-		{ "the crypt of Mercator",		{ _world.regions[RegionCode::CRYPT] } },
-		{ "the dungeon of Mercator",	{ _world.regions[RegionCode::MERCATOR_DUNGEON] } },
-		{ "Mir Tower",					{ _world.regions[RegionCode::MIR_TOWER_PRE_GARLIC], _world.regions[RegionCode::MIR_TOWER_POST_GARLIC] } },
-		{ "Greenmaze",					{ _world.regions[RegionCode::GREENMAZE] } },
-		{ "the town of Verla",			{ _world.regions[RegionCode::VERLA] } },
-		{ "Verla mine",					{ _world.regions[RegionCode::VERLA_MINES] } },
-		{ "the village of Destel",		{ _world.regions[RegionCode::DESTEL] } },
-		{ "Destel well",				{ _world.regions[RegionCode::DESTEL_WELL] } },
-		{ "the lake shrine",			{ _world.regions[RegionCode::LAKE_SHRINE] } },
-		{ "the mountainous area",		{ _world.regions[RegionCode::MOUNTAINOUS_AREA] } },
-		{ "King Nole's cave",			{ _world.regions[RegionCode::KN_CAVE] } },
-		{ "the town of Kazalt",			{ _world.regions[RegionCode::KAZALT] } },
-		{ "King Nole's labyrinth",		{ _world.regions[RegionCode::KN_LABYRINTH_PRE_SPIKES], _world.regions[RegionCode::KN_LABYRINTH_POST_SPIKES], _world.regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] } },
-		{ "King Nole's palace",			{ _world.regions[RegionCode::KN_PALACE] } }
-	};
-
 	// Barren / pleasant surprise hints
-	for (const auto& [name, regions] : macroRegions)
+	for (const auto& [name, regions] : _world.macroRegions)
 	{
 		bool isBarren = true;
 		for (WorldRegion* region : regions)
@@ -580,7 +570,7 @@ void WorldRandomizer::randomizeHints()
 	}
 
 	// Important items location hints
-	const std::vector<uint8_t> hintableItems = {
+	std::vector<uint8_t> hintableItems = {
 		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,		ITEM_SUN_STONE,
 		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,	ITEM_KEY,			ITEM_SAFETY_PASS,
 		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA
@@ -589,7 +579,8 @@ void WorldRandomizer::randomizeHints()
 	for (uint8_t itemID : hintableItems)
 	{
 		Item* hintedItem = _world.items[itemID];
-		signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
+		if (hintedItem != itemInOracleStoneHint)
+			signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
 	}
 	Tools::shuffle(signHintsVector, _rng);
 

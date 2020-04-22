@@ -26,8 +26,9 @@
 //	Randomization options:
 //		--shuffleTrees			===> Randomize Tibor trees
 //		--noArmorUpgrades		===> Don't use armor upgrades, just place vanilla armors randomly
-//		--randomSpawn			===> randomize spawn point between Massan, Gumi and Ryuma
+//		--spawnLocation			===> Spawn point between Massan, Gumi and Ryuma
 //		--noRecordBook			===> Record Book not available in inventory
+//		--dungeonSignHints		===> Whether to add extra hints on signs inside dungeons (e.g. Thieves Hideout, Mir Tower...)
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 

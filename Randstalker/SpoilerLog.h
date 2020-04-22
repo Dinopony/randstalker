@@ -58,12 +58,13 @@ public:
 	{
 		this->writeTitle("Hints");
 
-		*this << "- Lithograph: \"" << _world.redJewelHint << " " << _world.purpleJewelHint << "\"\n";
 		*this << "- Fortune Teller: \"" << _world.fortuneTellerHint << "\"\n";
+		*this << "- Oracle Stone: \"" << _world.oracleStoneHint << "\"\n";
+		*this << "- Lithograph: \"" << _world.redJewelHint << " " << _world.purpleJewelHint << "\"\n";
+		*this << "- King Nole's Cave sign: \"" << _world.whereIsLithographHint << "\"\n\n";
 
 		for (const auto& [textID, name] : _world.hintSigns)
 			*this << "- " << name << ": \"" << stripSpecialSymbolsFromString(_world.textLines.at(textID)) << "\"\n";
-		*this << "- King Nole's Cave sign: \"" << stripSpecialSymbolsFromString(_world.textLines.at(0x0FD)) << "\"\n";
 	}
 
 	void writeTiborTrees()

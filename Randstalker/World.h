@@ -43,6 +43,7 @@ public:
 	std::map<uint8_t, Item*> items;
 	std::map<ItemSourceCode, ItemSource*> itemSources;
     std::map<RegionCode, WorldRegion*> regions;
+    std::map<std::string, std::vector<WorldRegion*>> macroRegions;
     std::vector<ItemShop*> shops;
 
     std::map<uint32_t, std::string> hintSigns;
@@ -51,7 +52,9 @@ public:
     
     std::string redJewelHint;
     std::string purpleJewelHint;
+    std::string whereIsLithographHint;
     std::string fortuneTellerHint;
+    std::string oracleStoneHint;
 
     std::vector<std::string> textLines;
 
