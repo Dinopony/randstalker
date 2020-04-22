@@ -13,12 +13,13 @@ endif
 
 # Link the object files into a binary
 all : main
-	$(CC) $(STATIC) -O2 -pipe -s -o randstalker$(EXT) main.o WorldRandomizer.o World.o GameAlterations.o RandomizerOptions.o GameText.o MdRom.o MdCode.o -lstdc++
+	$(CC) $(STATIC) -O2 -pipe -s -o randstalker$(EXT) main.o WorldRandomizer.o World.o GameAlterations.o RandomizerOptions.o GameText.o GameStrings.o MdRom.o MdCode.o -lstdc++
 
 # Compile the source files into object files
 main :
 	$(CC) -O2 -pipe -c MegadriveTools/MdCode.cpp -o MdCode.o -std=c++17
 	$(CC) -O2 -pipe -c MegadriveTools/MdRom.cpp -o MdRom.o -std=c++17
+	$(CC) -O2 -pipe -c GameStrings.cpp -o GameStrings.o -std=c++17
 	$(CC) -O2 -pipe -c GameText.cpp -o GameText.o -std=c++17
 	$(CC) -O2 -pipe -c RandomizerOptions.cpp -o RandomizerOptions.o -std=c++17
 	$(CC) -O2 -pipe -c World.cpp -o World.o -std=c++17
@@ -29,4 +30,4 @@ main :
 
 # Clean target
 clean :
-	rm main.o World.o WorldRandomizer.o GameAlterations.o RandomizerOptions.o GameText.o MdRom.o MdCode.o randstalker randstalker.exe
+	rm main.o World.o WorldRandomizer.o GameAlterations.o RandomizerOptions.o GameText.o GameStrings.o MdRom.o MdCode.o randstalker randstalker.exe
