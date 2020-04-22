@@ -16,6 +16,9 @@
     <Filter Include="Fichiers sources\Megadrive Tools">
       <UniqueIdentifier>{71aee359-cc76-4520-bdaa-cd69de4e2895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers sources\Huffman">
+      <UniqueIdentifier>{65b0f1dc-dfde-4bcd-9095-91dc6f2eea9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Item.h">
@@ -37,9 +40,6 @@
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="RandomizerOptions.h">
-      <Filter>Fichiers sources</Filter>
-    </ClInclude>
-    <ClInclude Include="GameText.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="MegadriveTools\MdCode.h">
@@ -72,6 +72,27 @@
     <ClInclude Include="ItemSources.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="GameText.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Huffman\Bitfield.h">
+      <Filter>Fichiers sources\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="Huffman\HuffmanTree.h">
+      <Filter>Fichiers sources\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="Huffman\HuffmanTreeNode.h">
+      <Filter>Fichiers sources\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="Huffman\Symbols.h">
+      <Filter>Fichiers sources\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="Huffman\TextDecoder.h">
+      <Filter>Fichiers sources\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="Huffman\TextEncoder.h">
+      <Filter>Fichiers sources\Huffman</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -86,9 +107,6 @@
     <ClCompile Include="RandomizerOptions.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="GameText.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="MegadriveTools\MdCode.cpp">
       <Filter>Fichiers sources\Megadrive Tools</Filter>
     </ClCompile>
@@ -96,6 +114,12 @@
       <Filter>Fichiers sources\Megadrive Tools</Filter>
     </ClCompile>
     <ClCompile Include="WorldRandomizer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameText.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStrings.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

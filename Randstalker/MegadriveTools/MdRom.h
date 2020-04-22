@@ -18,8 +18,8 @@ namespace md {
 		bool isValid() const { return _wasOpen; }
 
 		uint8_t getByte(uint32_t address) const { return _byteArray[address]; }
-		uint16_t getWord(uint32_t address) const { return (uint16_t(_byteArray[address]) << 8) + uint16_t(_byteArray[address+1]); }
-		uint32_t getLong(uint32_t address) const { return (uint32_t(this->getWord(address)) << 16) + uint32_t(this->getWord(address+2)); }
+		uint16_t getWord(uint32_t address) const { return (this->getByte(address) << 8) + this->getByte(address+1); }
+		uint32_t getLong(uint32_t address) const { return (static_cast<uint32_t>(this->getWord(address)) << 16) + static_cast<uint32_t>(this->getWord(address+2)); }
 
 		void setByte(uint32_t address, uint8_t byte);
 		void setWord(uint32_t address, uint16_t word);
@@ -40,6 +40,10 @@ namespace md {
 
 		uint32_t getCurrentInjectionAddress() { return _currentCodeInjectionAddress; }
 		uint32_t getCurrentCodeInjectionAddress() { return _currentCodeInjectionAddress; }
+
+		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output);
+		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output);
+		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output);
 
 		void saveAs(const std::string& outputPath);
 

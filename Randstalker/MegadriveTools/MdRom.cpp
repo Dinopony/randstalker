@@ -4,7 +4,7 @@
 
 constexpr uint32_t ROM_SIZE = 2097152;
 constexpr uint32_t CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAC0;
-constexpr uint32_t DATE_INJECTION_SECTOR_START_ADDRESS = 0x11FFF0;
+constexpr uint32_t DATA_INJECTION_SECTOR_START_ADDRESS = 0x11FFF0;
 
 namespace md 
 {
@@ -12,7 +12,7 @@ namespace md
 	ROM::ROM(const std::string& inputPath) :
 		_wasOpen(false),
 		_currentCodeInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS),
-		_currentDataInjectionAddress(DATE_INJECTION_SECTOR_START_ADDRESS)
+		_currentDataInjectionAddress(DATA_INJECTION_SECTOR_START_ADDRESS)
 	{
 		_byteArray = new char[ROM_SIZE];
 
@@ -134,6 +134,24 @@ namespace md
 		if (!name.empty())
 			this->storeAddress(name, _currentDataInjectionAddress);
 		return _currentDataInjectionAddress;
+	}
+
+	void ROM::getDataChunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output)
+	{
+		for (uint32_t addr = begin; addr < end; ++addr)
+			output.push_back(this->getByte(addr));
+	}
+
+	void ROM::getDataChunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output)
+	{
+		for (uint32_t addr = begin; addr < end; addr += 0x2)
+			output.push_back(this->getWord(addr));
+	}
+
+	void ROM::getDataChunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output)
+	{
+		for (uint32_t addr = begin; addr < end; addr += 0x4)
+			output.push_back(this->getLong(addr));
 	}
 
 	void ROM::saveAs(const std::string& outputPath)

@@ -41,7 +41,7 @@ RandomizerOptions::RandomizerOptions(int argc, char* argv[])
 	_shuffleTiborTrees		= parseBooleanOption("shuffletrees", false);
 	_saveAnywhereBook		= parseBooleanOption("recordbook", true);
 	_spawnLocation			= parseSpawnLocationEnumOption("spawnlocation", SpawnLocation::MASSAN);
-	_replaceOGHints			= parseBooleanOption("replaceoghints", false);
+	_dungeonSignHints		= parseBooleanOption("dungeonsignhints", false);
 
 	// Miscellaneous options
 	_addIngameItemTracker	= parseBooleanOption("ingametracker", false);

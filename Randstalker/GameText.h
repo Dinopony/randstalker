@@ -6,11 +6,9 @@
 
 class GameText
 {
-public: 
+public:
 	GameText();
 	GameText(const std::string& text);
-	
-	bool isEmpty() const { return _bytes.empty(); }
 
 	const std::string& getText() const { return _initialText; }
 	void setText(const std::string& text);
@@ -18,14 +16,14 @@ public:
 	void addCharacter(const std::string& text, size_t i);
 	void addCharacter(char character);
 
-	const std::vector<uint8_t>& getBytes() const { return _bytes; }
+	const std::string& getOutput() const { return _outputText; }
 
-	static uint8_t getCharacterByte(char character);
 	static uint8_t getCharacterWidth(char character);
 
 private:
 	std::string _initialText;
-	std::vector<uint8_t> _bytes;
+	std::string _outputText;
+	//	std::vector<uint8_t> _bytes;
 	uint16_t _currentLineLength;
 	uint8_t _currentLineCount;
 };

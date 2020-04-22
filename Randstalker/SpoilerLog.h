@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <sstream>
 #include "World.h"
 
 class SpoilerLog : private std::ofstream 
@@ -48,7 +49,7 @@ public:
 		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";
 		*this << "In-game item tracker: " << (_options.addIngameItemTracker() ? "enabled" : "disabled") << "\n";
 		*this << "Starting location: " << _options.getSpawnLocationAsString() << "\n";
-		*this << "Replace original game hints: " << (_options.replaceOriginalGameHints() ? "enabled" : "disabled") << "\n";
+		*this << "Fill dungeon signs with hints: " << (_options.fillDungeonSignsWithHints() ? "enabled" : "disabled") << "\n";
 
 		*this << "\n";
 	}
@@ -57,14 +58,12 @@ public:
 	{
 		this->writeTitle("Hints");
 
-		std::string lithographHint = _world.lithographHint.getText();
-		lithographHint.erase(std::remove(lithographHint.begin(), lithographHint.end(), '\n'), lithographHint.end());
-		*this << "- Lithograph: \"" << lithographHint << "\"\n";
-		*this << "- Fortune Teller: \"" << _world.ingameTexts.at(0x27CE6).getText() << "\"\n";
+		*this << "- Lithograph: \"" << _world.redJewelHint << " " << _world.purpleJewelHint << "\"\n";
+		*this << "- Fortune Teller: \"" << _world.fortuneTellerHint << "\"\n";
 
-		for (const auto& [addr, name] : _world.hintSigns)
-			*this << "- " << name << ": \"" << _world.ingameTexts.at(addr).getText() << "\"\n";
-		*this << "- King Nole's Cave sign: \"" << _world.ingameTexts.at(0x27958).getText() << "\"\n";
+		for (const auto& [textID, name] : _world.hintSigns)
+			*this << "- " << name << ": \"" << stripSpecialSymbolsFromString(_world.textLines.at(textID)) << "\"\n";
+		*this << "- King Nole's Cave sign: \"" << stripSpecialSymbolsFromString(_world.textLines.at(0x0FD)) << "\"\n";
 	}
 
 	void writeTiborTrees()
@@ -114,6 +113,25 @@ public:
 	}
 
 private:
+	static std::string stripSpecialSymbolsFromString(const std::string& str)
+	{
+		const std::set<char> strippedChars = { 
+			'\x10', '\x11', '\x12', '\x13', '\x02', '\x18', '\x19', 
+			'\x1A', '\x1B', '\x1C', '\x03', '\x1D', '\x1E', '\x1F',
+		};
+
+		std::ostringstream oss;
+		for (size_t i = 0; i < str.length(); ++i)
+		{
+			if (str[i] == '\n')
+				oss << ' ';
+			else if (!strippedChars.count(str[i]))
+				oss << str[i];
+		}
+
+		return oss.str();
+	}
+
 	const RandomizerOptions& _options;
 	const World& _world;
 };

@@ -43,6 +43,14 @@ namespace Tools
         return oss.str();
     }
 
+    template<typename T>
+    static std::string hexify(const T& val)
+    {
+        std::ostringstream oss;
+        oss << std::uppercase << std::hex << val;
+        return oss.str();
+    }
+
     // trim from start (in place)
     inline void ltrim(std::string& s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {

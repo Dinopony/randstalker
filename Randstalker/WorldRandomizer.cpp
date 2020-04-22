@@ -484,12 +484,9 @@ void WorldRandomizer::randomizeHints()
 {
 	// =============== Lithograph hint ===============
 
-	std::string redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
-	std::string purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
-	std::string completeLithographHint = redJewelHint + "\t\n" + purpleJewelHint;
+	_world.redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
+	_world.purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
 	
-	_world.lithographHint = GameText(completeLithographHint);
-
 	// =============== Fortune Teller hint ===============
 
 	std::vector<Item*> hintableItemsByFortuneTeller = { _world.items[ITEM_GOLA_EYE], _world.items[ITEM_GOLA_NAIL], _world.items[ITEM_GOLA_FANG], _world.items[ITEM_GOLA_HORN] };
@@ -507,15 +504,12 @@ void WorldRandomizer::randomizeHints()
 		fortuneItemName = "a horn";
 
 	std::string fortuneItemHint = this->getRandomHintForItem(fortuneHintedItem);
-	std::string completeFortuneHint = "I see " + fortuneItemName + " " + fortuneItemHint + ".";
-
-	_world.ingameTexts[0x27CE4] = GameText("Fortune Teller: Hello dear, let me look what your future is made of.");
-	_world.ingameTexts[0x27CE6] = GameText("I see... I see... " + completeFortuneHint);
+	_world.fortuneTellerHint = "I see " + fortuneItemName + " " + fortuneItemHint + ".";
 
 	// =============== King Nole Cave "where is lithograph" hint sign ===============
 
 	std::string whereIsLithograph = "The lithograph will help you finding the jewels. It is " + this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
-	_world.ingameTexts[0x27958] = whereIsLithograph;
+	_world.textLines[0x0FD] = GameText(whereIsLithograph).getOutput();
 
 	// =============== Sign hints ===============
 
@@ -600,24 +594,11 @@ void WorldRandomizer::randomizeHints()
 	Tools::shuffle(signHintsVector, _rng);
 
 	uint8_t i = 0;
-	for (const auto& [addr, name] : _world.hintSigns)
+	for (const auto& [id, name] : _world.hintSigns)
 	{
-		_world.ingameTexts[addr] = GameText(signHintsVector[i]);
+		_world.textLines[id] = GameText(signHintsVector[i]).getOutput();
 		++i;
 	}
-
-	// =============== Crypt sign hints ===============
-//	_world.ingameTexts[0x2797A] = GameText("This is the Crypt #0 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x27982] = GameText("This is the Crypt #1 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x2798A] = GameText("This is the Crypt #2 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x27992] = GameText("This is the Crypt #3 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x27998] = GameText("This is the Crypt #4 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x279A0] = GameText("This is the Crypt #5 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x279A8] = GameText("This is the Crypt #6 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x279B0] = GameText("This is the Crypt #7 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x279B8] = GameText("This is the Crypt #8 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x279C0] = GameText("This is the Crypt #9 sign. Hints are soon to be put on this sign!");
-//	_world.ingameTexts[0x279E8] = GameText("This is the Crypt #10 sign. Hints are soon to be put on this sign!");
 }
 
 std::string WorldRandomizer::getRandomHintForItem(Item* item)

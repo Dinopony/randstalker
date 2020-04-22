@@ -10,115 +10,6 @@
 constexpr uint32_t customTextStorageMemoryAddress = 0xFF0014;
 constexpr uint32_t mapEntrancePositionStorageMemoryAddress = 0xFF0018;
 
-///////////////////////////////////////////////////////////////////////////////////
-//       Technical additions
-///////////////////////////////////////////////////////////////////////////////////
-
-void addNewlineHandlingInDynamicText(md::ROM& rom)
-{
-    // Inject a new condition in characters processing to handle newlines in dynamic text when 0x6C character is encountered
-    md::Code procHandleNewlineInCustomText;
-
-    procHandleNewlineInCustomText.cmpiw(0xFFFF, reg_D0);
-    procHandleNewlineInCustomText.bne(2);
-        procHandleNewlineInCustomText.jmp(0x230C0);
-    procHandleNewlineInCustomText.cmpiw(0x006C, reg_D0);
-    procHandleNewlineInCustomText.bne(3);
-        procHandleNewlineInCustomText.jsr(0x22F7C); // "func_textbox_line_feed"
-        procHandleNewlineInCustomText.jmp(0x23094); // process next character
-    procHandleNewlineInCustomText.jmp(0x230A8); // resume to calling code
-
-    uint32_t procAddr = rom.injectCode(procHandleNewlineInCustomText, "proc_handle_newline_in_custom_text");
-
-    // Jump to the injected procedure
-    rom.setCode(0x0230A2, md::Code().jmp(procAddr));
-}
-
-void addCustomTextHandling(md::ROM& rom)
-{
-    // --------------- Custom text handling procedure ---------------------
-    // This procedure replaces the text that supposed to be written if an address is stored in 0xFF0014.l,
-    // using this address instead as dynamic text.
-
-    md::Code procHandleCustomText;
-
-    procHandleCustomText.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
-    procHandleCustomText.nop(3); // Let some space to insert the custom text usage function (check addCustomTextUsage())
-    procHandleCustomText.tstl(addr_(customTextStorageMemoryAddress));
-    procHandleCustomText.beq(11);
-        // If memory address stored is negative (e.g. 0xFFFFFFFF), it means we don't want to display text
-        procHandleCustomText.bpl(4);
-            procHandleCustomText.movel(0x00000000, addr_(customTextStorageMemoryAddress));
-            procHandleCustomText.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
-            procHandleCustomText.rts();
-        // If there is already custom text address in 0xFF0014, use it
-        procHandleCustomText.movew(0xFFFF, reg_D0);
-        procHandleCustomText.moveb(0x00, addr_(0xFF1144));  // to reset textbox state
-        procHandleCustomText.jsr(0x22FCC);
-        procHandleCustomText.movel(addr_(customTextStorageMemoryAddress), addr_(0xFF1844));
-        procHandleCustomText.movel(0x00000000, addr_(customTextStorageMemoryAddress));
-        procHandleCustomText.bra(2);
-    // Otherwise, print default text
-    procHandleCustomText.jsr(0x22FCC);
-
-    procHandleCustomText.jmp(0x22F34);
-
-    uint32_t procHandleCustomTextAddr = rom.injectCode(procHandleCustomText, "proc_handle_custom_text");
-
-    // Inject the custom text handling procedure at the beginning of regular text handling function
-    rom.setCode(0x22F2C, md::Code().jmp(procHandleCustomTextAddr).nop());
-    rom.storeAddress("func_display_text", 0x22F2C);
-
-    // --------------- Full textbox handling function ---------------------
-    md::Code funcDisplayTextWithTextbox;
-
-    funcDisplayTextWithTextbox.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
-    funcDisplayTextWithTextbox.jsr(0x22EE8); // open textbox
-    funcDisplayTextWithTextbox.jsr(0x22F2C); // display text
-    funcDisplayTextWithTextbox.jsr(0x22EA0); // close textbox
-    funcDisplayTextWithTextbox.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
-    funcDisplayTextWithTextbox.rts();
-
-    rom.injectCode(funcDisplayTextWithTextbox, "func_display_text_with_textbox");
-}
-
-void addTextReplacementFunction(md::ROM& rom)
-{
-    constexpr uint32_t regularTextTableAddress = 0x277F6;
-    constexpr uint32_t regularTextEnd = 0x29000;
-
-    // --------------- Text replacement function ---------------------
-    // This function analyzes the text about to be displayed in the textbox and replaces it with custom text
-    // if it's appropriate to do so.
-    // For instance, if we interact with a road sign, it puts a hint instead of the usual sign indications.
-
-    md::Code funcFindCustomText;
-
-    funcFindCustomText.movemToStack({ reg_D0, reg_D1 }, { reg_A1 });
-    funcFindCustomText.cmpa(lval_(0x29000), reg_A0);
-    funcFindCustomText.bgt(12);
-        // Iterate over text replacement table to find the related text
-        funcFindCustomText.movel(reg_A0, reg_D0);
-        funcFindCustomText.subil(regularTextTableAddress, reg_D0);
-        funcFindCustomText.movel(rom.getStoredAddress("data_text_replacement_table"), reg_A1);
-        funcFindCustomText.label("loop_start");
-        funcFindCustomText.movew(addr_(reg_A1), reg_D1);
-        funcFindCustomText.bmi(7);
-            funcFindCustomText.cmpw(reg_D1, reg_D0);
-            funcFindCustomText.bne(3);
-                funcFindCustomText.movel(addr_(reg_A1, 0x2), addr_(customTextStorageMemoryAddress));
-                funcFindCustomText.bra(3);
-            funcFindCustomText.adda(0x6, reg_A1);
-            funcFindCustomText.bra("loop_start");
-    funcFindCustomText.movemFromStack({ reg_D0, reg_D1 }, { reg_A1 });
-    funcFindCustomText.rts();
-
-    uint32_t funcFindCustomTextAddr = rom.injectCode(funcFindCustomText);
-    uint32_t injectionAddress = rom.getStoredAddress("proc_handle_custom_text") + 0x4;
-    rom.setCode(injectionAddress, md::Code().jsr(funcFindCustomTextAddr)); // Try to find an appropriate custom text for this context
-}
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       Game & gameplay changes
@@ -531,18 +422,17 @@ void alterMercatorSecondaryShopCheck(md::ROM& rom)
 
 void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
 {
-    GameText text("King Nole: Only the bearers of the jewels are worthy of entering my domain...");
-    rom.injectDataBlock(text.getBytes(), "data_text_jewels_alert");
-
     // ----------- Jewel textbox handling ----------------------
     md::Code procHandleJewelsCheck;
 
     procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
     procHandleJewelsCheck.beq(3);
     procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
-    procHandleJewelsCheck.bne(4);
-        procHandleJewelsCheck.movel(rom.getStoredAddress("data_text_jewels_alert"), addr_(0xFF0014));
-        procHandleJewelsCheck.jsr(rom.getStoredAddress("func_display_text_with_textbox"));
+    procHandleJewelsCheck.bne(6);
+        procHandleJewelsCheck.jsr(0x22EE8); // open textbox
+        procHandleJewelsCheck.movew(0x22, reg_D0);
+        procHandleJewelsCheck.jsr(0x28FD8); // display text 
+        procHandleJewelsCheck.jsr(0x22EA0); // close textbox
         procHandleJewelsCheck.rts();
     procHandleJewelsCheck.moveq(0x7, reg_D0);
     procHandleJewelsCheck.jsr(0xE110);  // "func_teleport_kazalt"
@@ -804,27 +694,6 @@ void fixFaraLifestockChest(md::ROM& rom)
     rom.setWord(0x01BF70, 0x0012);
     rom.setWord(0x01BF72, 0x0400);
 }
-
-/*
-void addLithographChestInKazaltTeleporterRoom(md::ROM& rom)
-{
-    // Negate map trigger removing entities once the Duke cutscene was seen in OG
-    rom.setWord(0x01AA0E, 0x7F7F);
-
-    // Replace the first entity in the map by a chest
-    rom.setWord(0x01CFA6, 0x1D9D);  // X&Z pos, orientation and palette info
-    rom.setWord(0x01CFA8, 0x0000);
-    rom.setWord(0x01CFAA, 0x0012);  // Type 0x0012 = chest
-    rom.setWord(0x01CFAC, 0x0100);  // Y pos = 0x10
-
-    // Remove other entities in the map
-    for (uint32_t addr = 0x1CFAE; addr <= 0x1CFC5; ++addr)
-        rom.setByte(addr, 0xFF);
-
-    // Change the map base chest ID
-    rom.setByte(0x09E838, 0x1E);
-}
-*/
 
 void replaceLumberjackByChest(md::ROM& rom)
 {
@@ -1126,8 +995,8 @@ void addFunctionToItemsOnUse(md::ROM& rom)
         funcExtendedItemHandling.rts();
     funcExtendedItemHandling.cmpib(ITEM_LITHOGRAPH, reg_D0);
     funcExtendedItemHandling.bne(3);
-        funcExtendedItemHandling.movel(rom.getStoredAddress("data_lithograph_hint_text"), addr_(0xFF0014));
-        funcExtendedItemHandling.jsr(rom.getStoredAddress("func_display_text"));
+        funcExtendedItemHandling.movew(0x21, reg_D0);  // funcExtendedItemHandling.movel(rom.getStoredAddress("data_lithograph_hint_text"), addr_(0xFF0014));
+        funcExtendedItemHandling.jsr(0x22E90);
     funcExtendedItemHandling.rts();
     
     uint32_t funcExtendedItemHandlingAddr = rom.injectCode(funcExtendedItemHandling);
@@ -1146,10 +1015,6 @@ void addFunctionToItemsOnUse(md::ROM& rom)
 
 void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 {
-    // Technical additions
-    addNewlineHandlingInDynamicText(rom);
-    addCustomTextHandling(rom);
-
     // Game & gameplay changes
     alterGameStart(rom, options);
     alterItemOrderInMenu(rom);
@@ -1187,7 +1052,6 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
     fixFaraLifestockChest(rom);
-//    addLithographChestInKazaltTeleporterRoom(rom);
     replaceLumberjackByChest(rom);
     replaceSickMerchantByChest(rom);
     replaceFaraInElderHouseByChest(rom);
@@ -1208,5 +1072,4 @@ void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
     alterLanternHandling(rom);
-    addTextReplacementFunction(rom);
 }

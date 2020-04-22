@@ -32,7 +32,6 @@ private:
     void initRegions();
     void initRegionPaths();
 
-    void initText();
     void initRegionHints();
     void initHintSigns(bool replaceOGHints);
 
@@ -49,8 +48,12 @@ public:
     std::map<uint32_t, std::string> hintSigns;
 
     WorldRegion* darkenedRegion;
-    GameText lithographHint;
-    std::map<uint32_t, GameText> ingameTexts;
+    
+    std::string redJewelHint;
+    std::string purpleJewelHint;
+    std::string fortuneTellerHint;
+
+    std::vector<std::string> textLines;
 
     std::vector<TreeMap> treeMaps;
 

@@ -5,13 +5,13 @@
 // ---------------------------------------------------------------------------------------
 //
 //		Developed by:	Dinopony (@DinoponyRuns)
-//		Version:		v0.9e
+//		Version:		v1.0
 //
 // ---------------------------------------------------------------------------------------
 //
-//	Special thanks to the whole Landstalker speedrunning community for being supportive
-//	and helpful during the whole process of developing this!
-//
+//	Thanks to the whole Landstalker speedrunning community for being supportive during the whole process of developing this
+//  Special mention to Wizardwhosaysni for being extra helpful with his deep knowledge of Megadrive reverse-engineering
+// 
 //
 //  Command line syntax:
 //		randstalker [args]
@@ -42,7 +42,7 @@
 #include "WorldRandomizer.h"
 #include "SpoilerLog.h"
 
-constexpr auto RELEASE = "0.9e";
+constexpr auto RELEASE = "1.0";
 
 md::ROM* getInputROM(std::string inputRomPath)
 {
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
 	rom->saveAs(options.getOutputROMPath());
 
-	std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";
+	std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n" << std::endl;
 
 	if ( options.mustPause() )
 	{

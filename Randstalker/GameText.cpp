@@ -12,14 +12,12 @@ GameText::GameText(const std::string& text) : _currentLineLength(0), _currentLin
 void GameText::setText(const std::string& text)
 {
 	_initialText = text;
-	_bytes.clear();
+	_outputText = "";
 
-	if (!text.empty())
-	{
-		for (size_t i = 0; i < text.size(); ++i)
-			this->addCharacter(text, i);
-		this->addCharacter('\0');
-	}
+	for (size_t i = 0; i < text.size(); ++i)
+		this->addCharacter(text, i);
+
+	_outputText += "\x03"; // EOL
 }
 
 void GameText::addCharacter(const std::string& text, size_t i)
@@ -27,7 +25,7 @@ void GameText::addCharacter(const std::string& text, size_t i)
 	char character = text[i];
 
 	// If we start a new word, check if we can finish it on the same line
-	if (!_bytes.empty() && character != ' ' && (*_bytes.rbegin()) == 0x00)
+	if (!_outputText.empty() && character != ' ' && (*_outputText.rbegin()) == ' ')
 	{
 		uint16_t wordWidth = 0;
 		char currentWordChar = character;
@@ -47,81 +45,34 @@ void GameText::addCharacter(const std::string& text, size_t i)
 
 void GameText::addCharacter(char character)
 {
-	if (character == '\0')
+	if (character == '\n')
 	{
-		this->addCharacter('\t');
-		_bytes.push_back(0xFF);
-		_bytes.push_back(0xFF);
-	}
-	else if (character == '\t')
-	{
-		_bytes.push_back(0xFF);
-		_bytes.push_back(0xF0);
-		_currentLineCount = 0;
-	}
-	else if (character == '\n')
-	{
-		if (++_currentLineCount == 3)
-			this->addCharacter('\t'); // Add a 'wait for input' character if textbox is going to scroll
-		_bytes.push_back(0x00);
-		_bytes.push_back(0x6C);
 		_currentLineLength = 0;
-	}
-	else
-	{
-		if (_currentLineLength >= 0x105)
+		if (*_outputText.rbegin() == ' ')
+			_outputText = _outputText.substr(0, _outputText.size() - 1);
+
+		if (++_currentLineCount == 3)
 		{
-			uint8_t previousByte = *_bytes.rbegin();
-			bool needsHyphen = (previousByte >= 0x0B && previousByte <= 0x3E);
-			this->addCharacter('\n');
-			if (needsHyphen)
-				this->addCharacter('-');
-		}
+			_outputText += "\x1E";
+			_currentLineCount = 0;
+		} 
+		_outputText += "\xA";
 
-		_bytes.push_back(0x00);
-		_bytes.push_back(getCharacterByte(character));
-		_currentLineLength += getCharacterWidth(character);
-	}
-}
-
-uint8_t GameText::getCharacterByte(char character)
-{
-	// 'a' - 'z' ===> 0x25 - 0x3E
-	if (character >= 'a' && character <= 'z')
-		return 0x25 + (character - 'a');
-	// ' ' ===> 0x00
-	else if (character == ' ')
-		return 0x00;
-	// 'A' - 'Z' ===> 0x0B - 0x24
-	else if (character >= 'A' && character <= 'Z')
-		return 0x0B + (character - 'A');
-	// '0' - '9' ===> 0x01 - 0x0A
-	else if(character >= '0' && character <= '9')
-		return 0x01 + (character - '0');
-
-	// Other characters
-	switch (character)
+		return;
+	} 
+	
+	if (_currentLineLength >= 0x105)
 	{
-	case '*':	return 0x3F;
-	case '.':	return 0x40;
-	case ',':	return 0x41;
-	case '?':	return 0x42;
-	case '!':	return 0x43;
-	case '/':	return 0x44;
-	case '<':	return 0x45;
-	case '>':	return 0x46;
-	case ':':	return 0x47;
-	case '-':	return 0x48;
-	case '\'':	return 0x49;
-	case '"':	return 0x4A;
-	case '%':	return 0x4B;
-	case '#':	return 0x4C;
-	case '&':	return 0x4D;
-	case '(':	return 0x4E;
-	case ')':	return 0x4F;
-	case '=':	return 0x50;
-	default:	return 0x42; // '?'
+		this->addCharacter('\n');
+
+		uint8_t previousByte = *_outputText.rbegin();
+		bool needsHyphen = (previousByte >= 'A' && previousByte <= 'z');
+		if (needsHyphen)
+			this->addCharacter('-');
 	}
+
+	_outputText += character;
+	_currentLineLength += getCharacterWidth(character);
 }
 
 uint8_t GameText::getCharacterWidth(char character)

@@ -5,8 +5,14 @@
 #include "RegionCodes.h"
 #include "Item.h"
 #include "ItemSources.h"
+#include "GameText.h"
+#include "Huffman/Symbols.h"
+#include "Huffman/TextEncoder.h"
 
 #include <sstream>
+
+void loadGameStrings(std::vector<std::string>& gameStrings);
+
 
 World::World(const RandomizerOptions& options) :
     spawnLocation(options.getSpawnLocation()), darkenedRegion(nullptr)
@@ -21,9 +27,9 @@ World::World(const RandomizerOptions& options) :
     this->initRegions();
     this->initRegionPaths();
 
-    this->initText();
+    loadGameStrings(textLines);
     this->initRegionHints();
-    this->initHintSigns(options.replaceOriginalGameHints());
+    this->initHintSigns(options.fillDungeonSignsWithHints());
 
     this->initDarkRooms();
 
@@ -57,8 +63,11 @@ void World::writeToROM(md::ROM& rom)
 	for (const TreeMap& treeMap : treeMaps)
 		treeMap.writeToROM(rom);
 
-    // Inject lithograph hint as a data block
-    rom.injectDataBlock(lithographHint.getBytes(), "data_lithograph_hint_text");
+    // Inject lithograph hint as text
+    textLines[0x021] = GameText(redJewelHint + " \x1E" + purpleJewelHint).getOutput();
+
+    textLines[0x28D] = "\x1CHello dear, let me look at\nwhat your future is made of...\x1E";
+    textLines[0x28E] = "\x1CI see... I see...\x1E\n" + GameText(fortuneTellerHint).getOutput();
 
     // Inject dark rooms as a data block
     const std::vector<uint16_t>& darkRooms = darkenedRegion->getDarkRooms();
@@ -68,28 +77,6 @@ void World::writeToROM(md::ROM& rom)
     for (uint16_t roomID : darkRooms)
         rom.setWord(darkRoomsArrayAddress + (i++) * 0x2, roomID);
     rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
-
-    // Inject text replacements
-    constexpr uint32_t regularTextTableAddress = 0x277F6;
-    uint32_t textReplacementTableAddr = rom.reserveDataBlock((static_cast<uint16_t>(ingameTexts.size()) * 0x6) + 0x2, "data_text_replacement_table");
-    for (const auto& [textAddress, replacementText] : ingameTexts)
-    {
-        uint32_t textOffset = textAddress - regularTextTableAddress;
-        rom.setWord(textReplacementTableAddr, static_cast<uint16_t>(textOffset));
-
-        if (!replacementText.isEmpty())
-        {
-            uint32_t replacementTextAddr = rom.injectDataBlock(replacementText.getBytes());
-            rom.setLong(textReplacementTableAddr + 2, replacementTextAddr);
-        }
-        else
-        {
-            // Empty text
-            rom.setLong(textReplacementTableAddr + 2, 0xFFFFFFFF);
-        }
-
-        textReplacementTableAddr += 0x6;
-    }
 
     // Set spawn point
     uint16_t spawnMapID;
@@ -116,6 +103,8 @@ void World::writeToROM(md::ROM& rom)
     rom.setWord(0x0027F4, spawnMapID);
     rom.setByte(0x0027FD, spawnX);
     rom.setByte(0x002805, spawnZ);
+
+    TextEncoder encoder(rom, textLines);
 }
 
 
@@ -986,25 +975,6 @@ void World::initRegionPaths()
     regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::VERLA_SECTOR]);
 }
 
-void World::initText()
-{
-    const std::set<uint32_t> ignoredTexts = {
-        // Mir intro dialogue
-        0x2871E, 0x28724, 0x28726,
-        // Mir outro dialogue
-        0x28730, 0x28734, 0x28738, 0x2873A, 0x2873E, 0x28742, 0x28744, 0x28746,
-        0x2874C, 0x28750, 0x28752, 0x28754, 0x28758, 0x2875C
-    };
-
-    for (uint32_t ignoredID : ignoredTexts)
-        ingameTexts[ignoredID] = GameText();
-
-    // Alter Mir intro dialogue
-    ingameTexts[0x2872E] = GameText("Mir: You beat me... You're too strong. You know, I'm not the bad guy, it's the duke...");
-    ingameTexts[0x28748] = GameText("Friday: Shut up! We don't care about the storyline, we're in a randomizer. Give us the treasure!");
-    ingameTexts[0x2875E] = GameText("Mir: Urgh, go downstairs and take my treasure then.");
-}
-
 void World::initRegionHints()
 {
     regions[RegionCode::MASSAN]->addHint("in a village");
@@ -1158,40 +1128,38 @@ void World::initRegionHints()
     regions[RegionCode::KN_PALACE]->addHint("in King Nole's palace");
 }
 
-void World::initHintSigns(bool replaceOGHints)
+void World::initHintSigns(bool fillDungeonSignsWithHints)
 {
     hintSigns = {
-        { 0x27960, "Waterfall Shrine crossroad sign" },
-        { 0x27962, "Swamp Shrine crossroad sign" },
-        { 0x27964, "Tibor crossroad sign" },
-        { 0x27966, "Mir Tower sector crossroad sign" },
-        { 0x279D0, "Mir Tower sign before bridge room" },
-        { 0x279E6, "Mir Tower exterior sign" },
-        { 0x27A0A, "Verla crossroad sign" },
-        { 0x27A08, "Destel crossroad sign" },
-        { 0x27A06, "Lake Shrine / Mountainous crossroad sign" },
-        { 0x27A04, "Greenmaze / Mountainous crossroad sign" },
-        { 0x279F0, "Center of Greenmaze sign" },
-        { 0x279F2, "Greenmaze / Massan shortcut tunnel sign" },
-        { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
-//      { 0x27958, "King Nole's Cave first room sign" }
+        { 0x101, "Waterfall Shrine crossroad sign" },
+        { 0x102, "Swamp Shrine crossroad sign" },
+        { 0x103, "Tibor crossroad sign" },
+        { 0x104, "Mir Tower sector crossroad sign" },
+        { 0x134, "Mir Tower exterior sign" },
+        { 0x143, "Verla crossroad sign" },
+        { 0x142, "Destel crossroad sign" },
+        { 0x141, "Lake Shrine / Mountainous crossroad sign" },
+        { 0x140, "Greenmaze / Mountainous crossroad sign" },
+        { 0x139, "Center of Greenmaze sign" },
+        { 0x13A, "Greenmaze / Massan shortcut tunnel sign" },
+        { 0x144, "Volcano sign" }
     };
 
-    ingameTexts[0x279D2] = GameText();
-    ingameTexts[0x279D4] = GameText();
-
-    if (replaceOGHints)
+    if (fillDungeonSignsWithHints)
     {
-        hintSigns[0x2795A] = "Thieves' Hideout entrance sign";
-        hintSigns[0x2795C] = "Thieves' Hideout second room sign";
-        hintSigns[0x2795E] = "Thieves' Hideout boss path sign";
-        hintSigns[0x27A0C] = "Volcano sign";
-        hintSigns[0x279D8] = "Mir Tower bridge room sign";
-        hintSigns[0x279DC] = "Mir Tower library sign";
-        hintSigns[0x279E2] = "Mir Tower sign before library";
-        
-        ingameTexts[0x279DE] = GameText();
-        ingameTexts[0x279E4] = GameText();
+        hintSigns[0x0FE] = "Thieves' Hideout entrance sign";
+        hintSigns[0x0FF] = "Thieves' Hideout second room sign";
+        hintSigns[0x100] = "Thieves' Hideout boss path sign";
+
+        hintSigns[0x12C] = "Mir Tower sign before bridge room";
+        hintSigns[0x12F] = "Mir Tower bridge room sign";
+        hintSigns[0x130] = "Mir Tower library sign";
+        hintSigns[0x132] = "Mir Tower sign before library";
+
+        //      { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
+
+        for (uint16_t textID = 0x12C; textID <= 0x133; ++textID)
+            textLines[textID] = " ";
     }
 }
 
