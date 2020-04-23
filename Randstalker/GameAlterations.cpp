@@ -235,6 +235,18 @@ void addRecordBookSave(md::ROM& rom)
 //    rom.setCode(0x6368, md::Code().jsr(funcStoreMapEntrancePositionFallAddr));
 }
 
+void alterFahlChallenge(md::ROM& rom)
+{
+    // Neutralize mid-challenge proposals for money
+    rom.setCode(0x12D52, md::Code().nop(24));
+
+    // When beating an enemy, increment the "beaten" counter by 4 instead of 1
+    rom.setByte(0x12D4C, 0x58);
+    
+    // Set the end of the challenge at 0x30 instead of 0x32
+    rom.setByte(0x12D87, 0x30);
+}
+
 void handleArmorUpgrades(md::ROM& rom)
 {
     // --------------- Alter item in D0 register function ---------------
@@ -460,7 +472,17 @@ void fixSwordOfGaiaEffectInVolcano(md::ROM& rom)
     rom.setCode(0x1611E, md::Code().jmp(procAddr));
 }
 
+void alterCasinoTicketHandling(md::ROM& rom)
+{
+    // Set the maximum amount of Casino Tickets to 1, displaying it as a unique item
+    rom.setByte(0x2935C, 0x01);
 
+    // Remove ticket consumption on dialogue with the casino "bouncer"
+    rom.setCode(0x277A8, md::Code().nop(2));
+
+    // Remove Arthur giving his item another time if casino ticket is not owned
+    rom.setCode(0x26BBA, md::Code().nop(5));
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1022,6 +1044,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     addStatueOfJyptaGoldsOverTime(rom);
     quickenGaiaEffect(rom);
     addRecordBookSave(rom);
+    alterFahlChallenge(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
@@ -1034,6 +1057,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     alterMercatorSecondaryShopCheck(rom);
     addJewelsCheckForTeleporterToKazalt(rom);
     fixSwordOfGaiaEffectInVolcano(rom);
+    alterCasinoTicketHandling(rom);
 
     // Map check changes
     alterWaterfallShrineSecretStairsCheck(rom);

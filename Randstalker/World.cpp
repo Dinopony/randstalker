@@ -532,6 +532,8 @@ void World::initNPCRewards()
     itemSources[ItemSourceCode::NPC_ZAK_GOLA_EYE] =             new ItemReward(0x028A73, "Zak reward after fighting (Gola's Eye in OG)");
     itemSources[ItemSourceCode::NPC_KADO_MAGIC_SWORD] =         new ItemReward(0x02894B, "Swordman Kado reward (Magic Sword in OG)");
     itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION] = new ItemReward(0x0288DF, "Greenmaze hidden dwarf (Restoration in OG)");
+    itemSources[ItemSourceCode::NPC_ARTHUR_CASINO_TICKET] =     new ItemReward(0x02815F, "Arthur reward (Casino Ticket in OG)");
+    itemSources[ItemSourceCode::NPC_FAHL_PAWN_TICKET] =         new ItemReward(0x0284A5, "Fahl's dojo challenge reward (Pawn Ticket in OG)");
 }
 
 void World::initRegions()
@@ -641,7 +643,6 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_MERCATOR_GREENPEA],
         itemSources[ItemSourceCode::CHEST_MERCATOR_GRANDMA_POT_SHELVING],
         itemSources[ItemSourceCode::CHEST_MERCATOR_SICK_MERCHANT],
-        itemSources[ItemSourceCode::CHEST_MERCATOR_CASINO],
         itemSources[ItemSourceCode::GROUND_FALLING_RIBBON],
         itemSources[ItemSourceCode::SHOP_MERCATOR_ARMOR],
         itemSources[ItemSourceCode::SHOP_MERCATOR_BELL],
@@ -651,8 +652,14 @@ void World::initRegions()
         itemSources[ItemSourceCode::SHOP_MERCATOR_GOLDEN_STATUE],
         itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_1],
         itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_2],
-        itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_3]
+        itemSources[ItemSourceCode::SHOP_MERCATOR_DOCKS_EKEEKE_3],
+        itemSources[ItemSourceCode::NPC_ARTHUR_CASINO_TICKET],
+        itemSources[ItemSourceCode::NPC_FAHL_PAWN_TICKET]
     });
+
+    regions[RegionCode::MERCATOR_CASINO] = new WorldRegion("Mercator casino", {
+        itemSources[ItemSourceCode::CHEST_MERCATOR_CASINO]
+    }); 
 
     regions[RegionCode::MERCATOR_SPECIAL_SHOP] = new WorldRegion("Mercator special shop", { 
         itemSources[ItemSourceCode::SHOP_MERCATOR_SPECIAL_MIND_REPAIR],
@@ -944,7 +951,7 @@ void World::initRegions()
         { "the town of Ryuma",			{ regions[RegionCode::RYUMA] } },
         { "the thieves' hideout",		{ regions[RegionCode::THIEVES_HIDEOUT] } },
         { "witch Helga's hut",			{ regions[RegionCode::WITCH_HELGA_HUT] } },
-        { "the town of Mercator",		{ regions[RegionCode::MERCATOR], regions[RegionCode::MERCATOR_SPECIAL_SHOP] } },
+        { "the town of Mercator",		{ regions[RegionCode::MERCATOR], regions[RegionCode::MERCATOR_CASINO], regions[RegionCode::MERCATOR_SPECIAL_SHOP] } },
         { "the crypt of Mercator",		{ regions[RegionCode::CRYPT] } },
         { "the dungeon of Mercator",	{ regions[RegionCode::MERCATOR_DUNGEON] } },
         { "Mir Tower",					{ regions[RegionCode::MIR_TOWER_PRE_GARLIC], regions[RegionCode::MIR_TOWER_POST_GARLIC] } },
@@ -976,6 +983,7 @@ void World::initRegionPaths()
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE]);
 	regions[RegionCode::RYUMA]->addPathTo(regions[RegionCode::THIEVES_HIDEOUT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_DUNGEON]);
+    regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_CASINO], items[ITEM_CASINO_TICKET]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::CRYPT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);

@@ -111,7 +111,7 @@ void WorldRandomizer::randomizeDarkRooms()
 
 void WorldRandomizer::randomizeItems()
 {
-	constexpr double FILLING_RATE = 0.21;
+	constexpr double FILLING_RATE = 0.20;
 
 	_regionsToExplore = { _world.regions[RegionCode::MASSAN] };
 	_exploredRegions.clear();		// Regions already processed by the exploration algorithm
@@ -558,7 +558,7 @@ void WorldRandomizer::randomizeHints()
 	}
 
 	// "You will / won't need {item} to finish"
-	const std::vector<uint8_t> potentiallyOptionalKeyItems = { ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE };
+	const std::vector<uint8_t> potentiallyOptionalKeyItems = { ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE, ITEM_CASINO_TICKET };
 
 	for (uint8_t keyItemID : potentiallyOptionalKeyItems)
 	{

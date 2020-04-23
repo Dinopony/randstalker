@@ -13,6 +13,7 @@ enum class RegionCode {
     TIBOR,
     WITCH_HELGA_HUT,
     MERCATOR,
+    MERCATOR_CASINO,
     MERCATOR_DUNGEON,
     MERCATOR_SPECIAL_SHOP,
     CRYPT,
