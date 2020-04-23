@@ -32,7 +32,6 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 - Original game glitches (tree cutting glitch, armlet skip...) are fixed. Sorry!
 - All known places where you usually can't go back and could potentially softlock now stay opened (e.g. Crypt, King Nole's Labyrinth raft sector, Swamp Shrine boss reward chest...)
 - Tibor trees connections can be optionally randomized (will be available as an option later on)
-- Fahl's dojo in Mercator is **out of logic**. You can still do it to get a Pawn Ticket if you want to. But come on. Let's be serious.
 - Statue of Jypta is reintroduced as a real item giving gold passively as you walk. Free riches!
 - The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
 - The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right before it. You can go straight to Kazalt without worrying about it.
