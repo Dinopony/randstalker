@@ -290,19 +290,17 @@ void WorldRandomizer::explorationPhase()
 		_debugLog << "\t > Exploring region \"" << exploredRegion->getName() << "\"...\n";
 
 		// List item sources to fill from this region.
-		const std::vector<ItemSource*> unrestrictedItemSources = exploredRegion->getUnrestrictedItemSources();
-		for (ItemSource* itemSource : unrestrictedItemSources)
+		const std::vector<ItemSource*> itemSources = exploredRegion->getItemSources();
+		for (ItemSource* itemSource : itemSources)
 		{
-			// Non-empty item sources populate player inventory (useful for plandos)
-			if (itemSource->getItem())
-				_playerInventory.insert(itemSource->getItem());
+			Item* requiredItem = itemSource->getRequiredItem();
+			if (requiredItem)
+				_pendingItemSources[itemSource] = requiredItem;
+			else if(itemSource->getItem())
+				_playerInventory.insert(itemSource->getItem());	// Non-empty item sources populate player inventory (useful for plandos)
 			else
 				_itemSourcesToFill.push_back(itemSource);
 		}
-		// Add conditionnal item sources to a pending list.
-		const std::map<ItemSource*, Item*>& restrictedItemSources = exploredRegion->getRestrictedItemSources();
-		for (const auto& [itemSource, item] : restrictedItemSources)
-			_pendingItemSources[itemSource] = item;
 
 		// List outgoing paths
 		for (WorldPath* outgoingPath : exploredRegion->getOutgoingPaths())
@@ -449,6 +447,10 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 						WorldRegion* region = source->getRegion();
 						if (!alreadyExploredRegions.count(region))
 							regionsToExplore.insert(region);
+
+						if (source->getRequiredItem())
+							itemsToLocate.insert(source->getRequiredItem());
+
 						break;
 					}
 				}
@@ -538,7 +540,7 @@ void WorldRandomizer::randomizeHints()
 		bool isBarren = true;
 		for (WorldRegion* region : regions)
 		{
-			std::vector<ItemSource*> itemSources = region->getAllItemSources();
+			std::vector<ItemSource*> itemSources = region->getItemSources();
 			for (ItemSource* source : itemSources)
 			{
 				if (_strictlyNeededKeyItems.count(source->getItem()))
@@ -596,7 +598,7 @@ std::string WorldRandomizer::getRandomHintForItem(Item* item)
 {
 	for (auto& [key, region] : _world.regions)
 	{
-		std::vector<ItemSource*> sources = region->getAllItemSources();
+		std::vector<ItemSource*> sources = region->getItemSources();
 		for (ItemSource* source : sources)
 		{
 			if (source->getItem() == item)

@@ -5,7 +5,7 @@
 // ---------------------------------------------------------------------------------------
 //
 //		Developed by:	Dinopony (@DinoponyRuns)
-//		Version:		v1.0
+//		Version:		v1.01
 //
 // ---------------------------------------------------------------------------------------
 //
@@ -43,7 +43,7 @@
 #include "WorldRandomizer.h"
 #include "SpoilerLog.h"
 
-constexpr auto RELEASE = "1.0";
+constexpr auto RELEASE = "1.01";
 
 md::ROM* getInputROM(std::string inputRomPath)
 {

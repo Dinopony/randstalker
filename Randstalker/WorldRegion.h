@@ -71,26 +71,15 @@ public:
 
 	const std::string& getName() const { return _name; }
 
-	void addItemSource(ItemSource* itemSource) 
-	{ 
-		_itemSources.push_back(itemSource); 
-		itemSource->setRegion(this);
-	}
-	const std::vector<ItemSource*>& getUnrestrictedItemSources() const 	{ return _itemSources; }
-
-	void addItemSource(ItemSource* itemSource, Item* requiredItem) 
+	std::vector<ItemSource*> getItemSources() const
 	{
-		_restrictedItemSources[itemSource] = requiredItem;
-		itemSource->setRegion(this);
+		return _itemSources;
 	}
-	const std::map<ItemSource*, Item*>& getRestrictedItemSources() const { return _restrictedItemSources; }
 
-	std::vector<ItemSource*> getAllItemSources() const 
-	{ 
-		std::vector<ItemSource*> allItemSources = _itemSources;
-		for (auto& [source, item] : _restrictedItemSources)
-			allItemSources.push_back(source);
-		return allItemSources;
+	void addItemSource(ItemSource* itemSource)
+	{
+		_itemSources.push_back(itemSource);
+		itemSource->setRegion(this);
 	}
 
 	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr, uint16_t weight = 1)
@@ -125,7 +114,6 @@ public:
 private:
 	std::string _name;
 	std::vector<ItemSource*> _itemSources;
-	std::map<ItemSource*, Item*> _restrictedItemSources;
 
 	std::vector<WorldPath*> _ingoingPaths;
 	std::vector<WorldPath*> _outgoingPaths;

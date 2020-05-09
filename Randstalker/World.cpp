@@ -208,7 +208,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_KN_PALACE_EKEEKE] =                               new ItemChest(0x14, "King Nole's Palace: ekeeke chest in topmost pit room");
     itemSources[ItemSourceCode::CHEST_KN_PALACE_DAHL] =                                 new ItemChest(0x15, "King Nole's Palace: dahl chest in floating button room");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_FIRST_LIFESTOCK] =                        new ItemChest(0x16, "King Nole's Cave: first lifestock chest");
-    itemSources[ItemSourceCode::CHEST_MASSAN_FARA_REWARD] =                             new ItemChest(0x17, "Massan: chest in elder house after freeing Fara");
+    itemSources[ItemSourceCode::CHEST_MASSAN_FARA_REWARD] =                             new ItemChest(0x17, "Massan: chest in elder house after freeing Fara", items[ITEM_IDOL_STONE]);
     itemSources[ItemSourceCode::CHEST_KN_CAVE_FIRST_GOLD] =                             new ItemChest(0x18, "King Nole's Cave: first gold chest in third room");
     itemSources[ItemSourceCode::CHEST_KN_CAVE_SECOND_GOLD] =                            new ItemChest(0x19, "King Nole's Cave: second gold chest in third room");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_LUMBERJACK_LIFESTOCK] =                 new ItemChest(0x1A, "Greenmaze: chest on path to lumberjack");
@@ -317,11 +317,11 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_ANGLE_PROMONTORY] =                  new ItemChest(0x8B, "Verla Shore: chest on angle promontory after Verla tunnel");
     itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_CLIFF_CHEST] =                       new ItemChest(0x8C, "Verla Shore: chest on highest promontory after Verla tunnel (accessible through Verla mines)");
     itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_HIDDEN_BUTTON_LIFESTOCK] =       new ItemChest(0x8D, "Route to Mir Tower: chest on promontory accessed by pressing hidden switch");
-    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL] =                     new ItemChest(0x8E, "Route to Mir Tower: dahl chest behind sacred tree");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL] =                     new ItemChest(0x8E, "Route to Mir Tower: dahl chest behind sacred tree", items[ITEM_AXE_MAGIC]);
     itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN] =                      new ItemChest(0x8F, "Verla Shore: chest behind cabin");
     itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_BUSHES_DAHL] =                 new ItemChest(0x90, "Route to Destel: chest in map right after Verla mines exit");
     itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_ELEVATOR] =                    new ItemChest(0x91, "Route to Destel: chest in 'elevator' map");
-    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK] =                new ItemChest(0x92, "Route to Mir Tower: lifestock chest behind sacred tree");
+    itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK] =                new ItemChest(0x92, "Route to Mir Tower: lifestock chest behind sacred tree", items[ITEM_AXE_MAGIC]);
     itemSources[ItemSourceCode::CHEST_ROUTE_VERLA_DESTEL_HIDDEN_LIFESTOCK] =            new ItemChest(0x93, "Route to Destel: hidden chest in map right before Destel");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_DAHL_NEAR_TREE] =                new ItemChest(0x94, "Mountainous Area: chest near teleport tree");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_LIFESTOCK_BEFORE_BRIDGE] =       new ItemChest(0x95, "Mountainous Area: chest on right side of the map right before the bridge");
@@ -344,7 +344,7 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_HIDDEN] =                   new ItemChest(0xA6, "Mountainous Area Cave: chest in small hidden room");
     itemSources[ItemSourceCode::CHEST_MOUNTAINOUS_AREA_CAVE_VISIBLE] =                  new ItemChest(0xA7, "Mountainous Area Cave: chest in small visible room");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_PROMONTORY_GOLDS] =                     new ItemChest(0xA9, "Greenmaze: chest on promontory appearing after pressing a button in other section");
-    itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL] =                           new ItemChest(0xAA, "Greenmaze: chest between Sunstone and Massan shortcut");
+    itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL] =                           new ItemChest(0xAA, "Greenmaze: chest between Sunstone and Massan shortcut", items[ITEM_EINSTEIN_WHISTLE]);
     itemSources[ItemSourceCode::CHEST_GREENMAZE_MAGES_LIFESTOCK] =                      new ItemChest(0xAB, "Greenmaze: chest in mages room");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_ELBOW_CAVE_LEFT] =                      new ItemChest(0xAC, "Greenmaze: left chest in elbow cave");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_ELBOW_CAVE_RIGHT] =                     new ItemChest(0xAD, "Greenmaze: right chest in elbow cave");
@@ -356,9 +356,9 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_MASSAN_HOUSE_LIFESTOCK] =                         new ItemChest(0xB3, "Massan: lifestock chest in house");
     itemSources[ItemSourceCode::CHEST_MASSAN_EKEEKE_2] =                                new ItemChest(0xB4, "Massan: chest in house farthest from elder house");
     itemSources[ItemSourceCode::CHEST_GUMI_LIFESTOCK] =                                 new ItemChest(0xB5, "Gumi: chest on top of bed in house");
-    itemSources[ItemSourceCode::CHEST_GUMI_FARA_REWARD] =                               new ItemChest(0xB6, "Gumi: chest in elder house after saving Fara");
+    itemSources[ItemSourceCode::CHEST_GUMI_FARA_REWARD] =                               new ItemChest(0xB6, "Gumi: chest in elder house after saving Fara", items[ITEM_IDOL_STONE]);
     itemSources[ItemSourceCode::CHEST_RYUMA_MAYOR_LIFESTOCK] =                          new ItemChest(0xB7, "Ryuma: chest in mayor's house");
-    itemSources[ItemSourceCode::CHEST_RYUMA_LIGHTHOUSE_LIFESTOCK] =                     new ItemChest(0xB8, "Ryuma: chest in repaired lighthouse");
+    itemSources[ItemSourceCode::CHEST_RYUMA_LIGHTHOUSE_LIFESTOCK] =                     new ItemChest(0xB8, "Ryuma: chest in repaired lighthouse", items[ITEM_SUN_STONE]);
     itemSources[ItemSourceCode::CHEST_CRYPT_MAIN_LOBBY] =                               new ItemChest(0xB9, "Crypt: chest in main room");
     itemSources[ItemSourceCode::CHEST_CRYPT_ARMLET] =                                   new ItemChest(0xBA, "Crypt: reward chest");
     itemSources[ItemSourceCode::CHEST_MERCATOR_CASINO] =                                new ItemChest(0xBF, "Mercator: hidden casino chest");
@@ -402,7 +402,7 @@ void World::initChests()
 void World::initGroundItems()
 {
     itemSources[ItemSourceCode::GROUND_IDOL_STONE] =                new ItemOnGround(0x021167, "Gumi: Idol Stone on ground");
-    itemSources[ItemSourceCode::GROUND_SUN_STONE] =                 new ItemOnGround(0x020C21, "Greenmaze: Sun Stone on ground");
+    itemSources[ItemSourceCode::GROUND_SUN_STONE] =                 new ItemOnGround(0x020C21, "Greenmaze: Sun Stone on ground", items[ITEM_EINSTEIN_WHISTLE]);
     itemSources[ItemSourceCode::GROUND_CHROME_BREAST] =             new ItemOnGround(0x01DDB7, "Verla Mines: Chrome Breast on ground");
     itemSources[ItemSourceCode::GROUND_SHELL_BREAST] =              new ItemOnGround(0x01EC99, "Lake Shrine (-3F): Shell Breast on ground");
     itemSources[ItemSourceCode::GROUND_HYPER_BREAST] =              new ItemOnGround(0x01F9BD, "King Nole's Labyrinth (-3F): Hyper Breast on ground");
@@ -426,8 +426,8 @@ void World::initGroundItems()
     itemSources[ItemSourceCode::GROUND_MIR_TOWER_EKEEKE] =          new ItemOnGround(0x0226A3, "Mir Tower: EkeEke on ground in priest room");
     itemSources[ItemSourceCode::GROUND_MIR_TOWER_DETOX] =           new ItemOnGround(0x02269B, "Mir Tower: Detox Grass on ground in priest room");
     itemSources[ItemSourceCode::GROUND_MIR_TOWER_RECORD_BOOK] =     new ItemOnGround(0x022673, "Mir Tower: Record Book on ground in priest room");
-    itemSources[ItemSourceCode::GROUND_LOGS_1] =                    new ItemOnGround(0x01FA43, "King Nole's Labyrinth (-2F): left Logs on ground");
-    itemSources[ItemSourceCode::GROUND_LOGS_2] =                    new ItemOnGround(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs on ground");
+    itemSources[ItemSourceCode::GROUND_LOGS_1] =                    new ItemOnGround(0x01FA43, "King Nole's Labyrinth (-2F): left Logs on ground", items[ITEM_AXE_MAGIC]);
+    itemSources[ItemSourceCode::GROUND_LOGS_2] =                    new ItemOnGround(0x01FA3B, "King Nole's Labyrinth (-2F): right Logs on ground", items[ITEM_AXE_MAGIC]);
     itemSources[ItemSourceCode::GROUND_FIREDEMON_EKEEKE] =          new ItemOnGround(0x01F8E1, "King Nole's Labyrinth (-3F): EkeEke on ground before Firedemon");
 
     // This ground item is special in the sense that it can only be taken once, so we take advantage of this to consider it as a shop.
@@ -538,16 +538,16 @@ void World::initNPCRewards()
 
 void World::initRegions()
 {
-    regions[RegionCode::MASSAN] = new WorldRegion("Massan", { 
+    regions[RegionCode::MASSAN] = new WorldRegion("Massan", {
         itemSources[ItemSourceCode::CHEST_MASSAN_DOG_STATUE],
         itemSources[ItemSourceCode::CHEST_MASSAN_HOUSE_LIFESTOCK],
         itemSources[ItemSourceCode::CHEST_MASSAN_EKEEKE_1],
         itemSources[ItemSourceCode::CHEST_MASSAN_EKEEKE_2],
         itemSources[ItemSourceCode::SHOP_MASSAN_LIFESTOCK],
         itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_1],
-        itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_2]
+        itemSources[ItemSourceCode::SHOP_MASSAN_EKEEKE_2],
+        itemSources[ItemSourceCode::CHEST_MASSAN_FARA_REWARD]
     });
-    regions[RegionCode::MASSAN]->addItemSource(itemSources[ItemSourceCode::CHEST_MASSAN_FARA_REWARD], items[ITEM_IDOL_STONE]);
 
     regions[RegionCode::MASSAN_CAVE] = new WorldRegion("Massan Cave", { 
         itemSources[ItemSourceCode::CHEST_MASSAN_CAVE_LIFESTOCK],
@@ -582,9 +582,9 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_GUMI_LIFESTOCK],
         itemSources[ItemSourceCode::GROUND_IDOL_STONE],
         itemSources[ItemSourceCode::SHOP_GUMI_LIFESTOCK],
-        itemSources[ItemSourceCode::SHOP_GUMI_EKEEKE]
+        itemSources[ItemSourceCode::SHOP_GUMI_EKEEKE],
+        itemSources[ItemSourceCode::CHEST_GUMI_FARA_REWARD]
     });
-    regions[RegionCode::GUMI]->addItemSource(itemSources[ItemSourceCode::CHEST_GUMI_FARA_REWARD], items[ITEM_IDOL_STONE]);
 
     regions[RegionCode::ROUTE_GUMI_RYUMA] = new WorldRegion("Route from Gumi to Ryuma", { 
         itemSources[ItemSourceCode::CHEST_ROUTE_GUMI_RYUMA_LIFESTOCK],
@@ -605,9 +605,9 @@ void World::initRegions()
         itemSources[ItemSourceCode::SHOP_RYUMA_GOLDEN_STATUE],
         itemSources[ItemSourceCode::SHOP_RYUMA_EKEEKE],
         itemSources[ItemSourceCode::SHOP_RYUMA_DETOX_GRASS],
-        itemSources[ItemSourceCode::SHOP_RYUMA_INN_EKEEKE]
+        itemSources[ItemSourceCode::SHOP_RYUMA_INN_EKEEKE],
+        itemSources[ItemSourceCode::CHEST_RYUMA_LIGHTHOUSE_LIFESTOCK]
     });
-    regions[RegionCode::RYUMA]->addItemSource(itemSources[ItemSourceCode::CHEST_RYUMA_LIGHTHOUSE_LIFESTOCK], items[ITEM_SUN_STONE]);
 
     regions[RegionCode::THIEVES_HIDEOUT] = new WorldRegion("Thieves Hideout", { 
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_EKEEKE_ROLLING_BOULDER],
@@ -688,9 +688,9 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_RESTORATION],
         itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TWINKLE_LIFESTOCK],
         itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_HIDDEN_BUTTON_LIFESTOCK],
+        itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL],
+        itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK]
     });
-    regions[RegionCode::MIR_TOWER_SECTOR]->addItemSource(itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_DAHL], items[ITEM_AXE_MAGIC]);
-    regions[RegionCode::MIR_TOWER_SECTOR]->addItemSource(itemSources[ItemSourceCode::CHEST_MIR_TOWER_SECTOR_TREE_LIFESTOCK], items[ITEM_AXE_MAGIC]);
 
     regions[RegionCode::TWINKLE_VILLAGE] = new WorldRegion("Twinkle village", {
         itemSources[ItemSourceCode::GROUND_TWINKLE_VILLAGE_EKEEKE_1],
@@ -735,10 +735,10 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_DAHL],
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK],
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS],
-        itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION]
+        itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION],
+        itemSources[ItemSourceCode::GROUND_SUN_STONE],
+        itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL]
     });
-    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::GROUND_SUN_STONE], items[ITEM_EINSTEIN_WHISTLE]);
-    regions[RegionCode::GREENMAZE]->addItemSource(itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL], items[ITEM_EINSTEIN_WHISTLE]);
 
     regions[RegionCode::VERLA_SECTOR] = new WorldRegion("Verla sector", {
         itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN],
@@ -918,10 +918,10 @@ void World::initRegions()
 
     regions[RegionCode::KN_LABYRINTH_POST_SPIKES] = new WorldRegion("King Nole's Labyrinth (post-spikes)", {
 	    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_MIRO_GARLIC],
-	    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_MIRO_REWARD]
+	    itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_MIRO_REWARD],
+        itemSources[ItemSourceCode::GROUND_LOGS_1],
+        itemSources[ItemSourceCode::GROUND_LOGS_2]
     });
-    regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addItemSource(itemSources[ItemSourceCode::GROUND_LOGS_1], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addItemSource(itemSources[ItemSourceCode::GROUND_LOGS_2], items[ITEM_AXE_MAGIC]);
 
     regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] = new WorldRegion("King Nole's Labyrinth (raft sector)", {
         itemSources[ItemSourceCode::CHEST_KN_LABYRINTH_B3_SPINNER_EKEEKE_1],

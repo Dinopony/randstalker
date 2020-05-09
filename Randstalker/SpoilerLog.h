@@ -100,7 +100,7 @@ public:
 
 		for (auto& [key, region] : _world.regions)
 		{
-			std::vector<ItemSource*> sources = region->getAllItemSources();
+			std::vector<ItemSource*> sources = region->getItemSources();
 			if (sources.empty())
 				continue;
 
