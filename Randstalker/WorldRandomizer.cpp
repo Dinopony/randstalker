@@ -591,13 +591,13 @@ void WorldRandomizer::randomizeHints()
 	// Important items location hints : processing signs from late-game to early-game to avoid early items in late-game hints
 
 	// Starting with late game hint signs
-	std::vector<uint8_t> hintableLateGameItems = {
+	std::vector<uint8_t> hintableFromLateGameItems = {
 		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,
 		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,
 		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA
 	};
 
-	for (uint8_t itemID : hintableLateGameItems)
+	for (uint8_t itemID : hintableFromLateGameItems)
 	{
 		Item* hintedItem = _world.items[itemID];
 		if (hintedItem != itemInOracleStoneHint)
@@ -612,11 +612,11 @@ void WorldRandomizer::randomizeHints()
 	}
 
 	// Adding mid-game items for mid-game hint sings
-	std::vector<uint8_t> hintableMidGameItems = {
+	std::vector<uint8_t> hintableFromMidGameItems = {
 		ITEM_SUN_STONE, ITEM_KEY
 	};
 
-	for (uint8_t itemID : hintableMidGameItems)
+	for (uint8_t itemID : hintableFromMidGameItems)
 	{
 		Item* hintedItem = _world.items[itemID];
 		if (hintedItem != itemInOracleStoneHint)
@@ -631,11 +631,11 @@ void WorldRandomizer::randomizeHints()
 	}
 
 	// Adding early-game item for early-game hint signs
-	std::vector<uint8_t> hintableEarlyGameItems = {
+	std::vector<uint8_t> hintableFromEarlyGameItems = {
 		ITEM_SAFETY_PASS
 	};
 
-	for (uint8_t itemID : hintableEarlyGameItems)
+	for (uint8_t itemID : hintableFromEarlyGameItems)
 	{
 		Item* hintedItem = _world.items[itemID];
 		if (hintedItem != itemInOracleStoneHint)
