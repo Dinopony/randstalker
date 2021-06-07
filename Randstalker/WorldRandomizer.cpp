@@ -407,13 +407,28 @@ void WorldRandomizer::unlockPhase()
 
 void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 {
+	_strictlyNeededKeyItems = this->analyzeStrictlyRequiredKeyItemsForRegion(_world.regions[RegionCode::ENDGAME]);
+
+	// Output required item list to debug log if we are in debug mode
+	if (_debugLog)
+	{
+		_debugLog << "\n-------------------------------\n";
+		_debugLog << "\tItems required to finish the seed" << "\n\n";
+		for (Item* item : _strictlyNeededKeyItems)
+			_debugLog << "\t- " << item->getName() << "\n";
+	}
+}
+
+std::set<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
+{
 	const std::set<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
 
 	// We perform a backwards analysis here starting from endgame region and determining which key items are strictly needed to finish the seed
-	std::set<WorldRegion*> regionsToExplore = { _world.regions[RegionCode::ENDGAME] };
+	std::set<Item*> strictlyNeededKeyItems;
+	std::set<WorldRegion*> regionsToExplore = { region };
 	std::set<WorldRegion*> alreadyExploredRegions;
 	std::set<Item*> itemsToLocate;
-	
+
 	while (!regionsToExplore.empty())
 	{
 		WorldRegion* exploredRegion = *regionsToExplore.begin();
@@ -435,10 +450,10 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 		while (regionsToExplore.empty() && !itemsToLocate.empty())
 		{
 			Item* keyItemToLocate = *itemsToLocate.begin();
-			itemsToLocate.erase(keyItemToLocate);			
-			if (!_strictlyNeededKeyItems.count(keyItemToLocate))
+			itemsToLocate.erase(keyItemToLocate);
+			if (!strictlyNeededKeyItems.count(keyItemToLocate))
 			{
-				_strictlyNeededKeyItems.insert(keyItemToLocate);
+				strictlyNeededKeyItems.insert(keyItemToLocate);
 
 				for (const auto& [code, source] : _world.itemSources)
 				{
@@ -458,14 +473,7 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 		}
 	}
 
-	// Output required item list to debug log if we are in debug mode
-	if (_debugLog)
-	{
-		_debugLog << "\n-------------------------------\n";
-		_debugLog << "\tItems required to finish the seed" << "\n\n";
-		for (Item* item : _strictlyNeededKeyItems)
-			_debugLog << "\t- " << item->getName() << "\n";
-	}
+	return strictlyNeededKeyItems;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -517,6 +525,15 @@ void WorldRandomizer::randomizeHints()
 	std::set<Item*> forbiddenOracleStoneItems = {
 		fortuneHintedItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL], _world.items[ITEM_SAFETY_PASS]
 	};
+
+	// Also excluding items strictly needed to get to Oracle Stone's region
+	WorldRegion* oracleStoneRegion = this->getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
+	std::set<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(oracleStoneRegion);
+	for (Item* item : strictlyNeededKeyItemsForOracleStone)
+	{
+		if(!forbiddenOracleStoneItems.count(item))		
+			forbiddenOracleStoneItems.insert(item);
+	}
 
 	std::vector<Item*> requiredItems; 
 	for (Item* item : _strictlyNeededKeyItems)
@@ -571,14 +588,16 @@ void WorldRandomizer::randomizeHints()
 			signHintsVector.push_back(keyItem->getName() + " is useless in your quest King Nole's treasure.");
 	}
 
-	// Important items location hints
-	std::vector<uint8_t> hintableItems = {
-		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,		ITEM_SUN_STONE,
-		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,	ITEM_KEY,			ITEM_SAFETY_PASS,
+	// Important items location hints : processing signs from late-game to early-game to avoid early items in late-game hints
+
+	// Starting with late game hint signs
+	std::vector<uint8_t> hintableLateGameItems = {
+		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,
+		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,
 		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA
 	};
 
-	for (uint8_t itemID : hintableItems)
+	for (uint8_t itemID : hintableLateGameItems)
 	{
 		Item* hintedItem = _world.items[itemID];
 		if (hintedItem != itemInOracleStoneHint)
@@ -586,11 +605,48 @@ void WorldRandomizer::randomizeHints()
 	}
 	Tools::shuffle(signHintsVector, _rng);
 
-	uint8_t i = 0;
-	for (const auto& [id, name] : _world.hintSigns)
+	for (const auto& [id, name] : _world.hintSignsLateGame)
 	{
-		_world.textLines[id] = GameText(signHintsVector[i]).getOutput();
-		++i;
+		_world.textLines[id] = GameText(signHintsVector.back()).getOutput();
+		signHintsVector.pop_back();
+	}
+
+	// Adding mid-game items for mid-game hint sings
+	std::vector<uint8_t> hintableMidGameItems = {
+		ITEM_SUN_STONE, ITEM_KEY
+	};
+
+	for (uint8_t itemID : hintableMidGameItems)
+	{
+		Item* hintedItem = _world.items[itemID];
+		if (hintedItem != itemInOracleStoneHint)
+			signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
+	}
+	Tools::shuffle(signHintsVector, _rng);
+
+	for (const auto& [id, name] : _world.hintSignsMidGame)
+	{
+		_world.textLines[id] = GameText(signHintsVector.back()).getOutput();
+		signHintsVector.pop_back();
+	}
+
+	// Adding early-game item for early-game hint signs
+	std::vector<uint8_t> hintableEarlyGameItems = {
+		ITEM_SAFETY_PASS
+	};
+
+	for (uint8_t itemID : hintableEarlyGameItems)
+	{
+		Item* hintedItem = _world.items[itemID];
+		if (hintedItem != itemInOracleStoneHint)
+			signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
+	}
+	Tools::shuffle(signHintsVector, _rng);
+
+	for (const auto& [id, name] : _world.hintSignsEarlyGame)
+	{
+		_world.textLines[id] = GameText(signHintsVector.back()).getOutput();
+		signHintsVector.pop_back();
 	}
 }
 
@@ -617,6 +673,23 @@ std::string WorldRandomizer::getRandomHintForItem(Item* item)
 	}
 
 	return "in an unknown place";
+}
+
+WorldRegion* WorldRandomizer::getRegionForItem(Item* item)
+{
+	for (auto& [key, region] : _world.regions)
+	{
+		std::vector<ItemSource*> sources = region->getItemSources();
+		for (ItemSource* source : sources)
+		{
+			if (source->getItem() == item)
+			{
+				return region;
+			}
+		}
+	}
+
+	return _world.regions[RegionCode::ENDGAME];
 }
 
 void WorldRandomizer::randomizeTiborTrees()

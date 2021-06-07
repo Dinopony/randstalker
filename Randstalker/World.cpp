@@ -725,7 +725,7 @@ void World::initRegions()
         itemSources[ItemSourceCode::GROUND_MIR_TOWER_RECORD_BOOK]
     });
 
-    regions[RegionCode::GREENMAZE] = new WorldRegion("Greenmaze", {
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE] = new WorldRegion("Greenmaze (pre-whistle)", {
         itemSources[ItemSourceCode::CHEST_GREENMAZE_LUMBERJACK_LIFESTOCK],
         itemSources[ItemSourceCode::CHEST_GREENMAZE_LUMBERJACK_WHISTLE],
         itemSources[ItemSourceCode::CHEST_GREENMAZE_PROMONTORY_GOLDS],
@@ -735,10 +735,13 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_DAHL],
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK],
         itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS],
-        itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION],
+        itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION]
+        });
+
+    regions[RegionCode::GREENMAZE_POST_WHISTLE] = new WorldRegion("Greenmaze (post-whistle)", {
         itemSources[ItemSourceCode::GROUND_SUN_STONE],
         itemSources[ItemSourceCode::CHEST_MASSAN_SHORTCUT_DAHL]
-    });
+        });
 
     regions[RegionCode::VERLA_SECTOR] = new WorldRegion("Verla sector", {
         itemSources[ItemSourceCode::CHEST_VERLA_SECTOR_BEHIND_CABIN],
@@ -955,7 +958,7 @@ void World::initRegions()
         { "the crypt of Mercator",		{ regions[RegionCode::CRYPT] } },
         { "the dungeon of Mercator",	{ regions[RegionCode::MERCATOR_DUNGEON] } },
         { "Mir Tower",					{ regions[RegionCode::MIR_TOWER_PRE_GARLIC], regions[RegionCode::MIR_TOWER_POST_GARLIC] } },
-        { "Greenmaze",					{ regions[RegionCode::GREENMAZE] } },
+        { "Greenmaze",					{ regions[RegionCode::GREENMAZE_PRE_WHISTLE], regions[RegionCode::GREENMAZE_POST_WHISTLE] } },
         { "the town of Verla",			{ regions[RegionCode::VERLA] } },
         { "Verla mine",					{ regions[RegionCode::VERLA_MINES] } },
         { "the village of Destel",		{ regions[RegionCode::DESTEL] } },
@@ -987,7 +990,7 @@ void World::initRegionPaths()
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::CRYPT]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE], items[ITEM_KEY], 2);
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
 	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE]);
 	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
     regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::TWINKLE_VILLAGE]);
@@ -1000,7 +1003,8 @@ void World::initRegionPaths()
 	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::DESTEL_WELL]);
 	regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE]);
 	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::LAKE_SHRINE]);
-	regions[RegionCode::GREENMAZE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::GREENMAZE_POST_WHISTLE], items[ITEM_EINSTEIN_WHISTLE]);
+	regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
 	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL], items[ITEM_LITHOGRAPH] });
@@ -1047,7 +1051,8 @@ void World::initRegionHints()
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS]->addHint("close to a waterfall");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_LIFESTOCK]->addHint("close to a waterfall");
 
-    regions[RegionCode::GREENMAZE]->addHint("among the trees");
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addHint("among the trees");
+    regions[RegionCode::GREENMAZE_POST_WHISTLE]->addHint("among the trees");
     regions[RegionCode::TIBOR]->addHint("among the trees");
     itemSources[ItemSourceCode::GROUND_LOGS_1]->addHint("among the trees");
     itemSources[ItemSourceCode::GROUND_LOGS_2]->addHint("among the trees");
@@ -1149,7 +1154,8 @@ void World::initRegionHints()
     regions[RegionCode::SWAMP_SHRINE]->addHint("in Swamp Shrine");
     regions[RegionCode::LAKE_SHRINE]->addHint("in Lake Shrine");
     regions[RegionCode::THIEVES_HIDEOUT]->addHint("in the Thieves' Hideout");
-    regions[RegionCode::GREENMAZE]->addHint("in the infamous Greenmaze");
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addHint("in the infamous Greenmaze");
+    regions[RegionCode::GREENMAZE_POST_WHISTLE]->addHint("in the infamous Greenmaze");
     regions[RegionCode::TIBOR]->addHint("inside the elder tree called Tibor");
     regions[RegionCode::WITCH_HELGA_HUT]->addHint("in the hut of a witch called Helga");
     regions[RegionCode::DESTEL_WELL]->addHint("in Destel Well");
@@ -1172,12 +1178,16 @@ void World::initRegionHints()
 
 void World::initHintSigns(bool fillDungeonSignsWithHints)
 {
-    hintSigns = {
+    hintSignsEarlyGame = {
         { 0x101, "Waterfall Shrine crossroad sign" },
         { 0x102, "Swamp Shrine crossroad sign" },
-        { 0x103, "Tibor crossroad sign" },
+        { 0x103, "Tibor crossroad sign" }
+    };
+    hintSignsMidGame = {
         { 0x104, "Mir Tower sector crossroad sign" },
-        { 0x134, "Mir Tower exterior sign" },
+        { 0x134, "Mir Tower exterior sign" }
+    };
+    hintSignsLateGame = {
         { 0x143, "Verla crossroad sign" },
         { 0x142, "Destel crossroad sign" },
         { 0x141, "Lake Shrine / Mountainous crossroad sign" },
@@ -1189,20 +1199,42 @@ void World::initHintSigns(bool fillDungeonSignsWithHints)
 
     if (fillDungeonSignsWithHints)
     {
-        hintSigns[0x0FE] = "Thieves' Hideout entrance sign";
-        hintSigns[0x0FF] = "Thieves' Hideout second room sign";
-        hintSigns[0x100] = "Thieves' Hideout boss path sign";
+        hintSignsEarlyGame[0x0FE] = "Thieves' Hideout entrance sign";
+        hintSignsEarlyGame[0x0FF] = "Thieves' Hideout second room sign";
+        hintSignsEarlyGame[0x100] = "Thieves' Hideout boss path sign";
 
-        hintSigns[0x12C] = "Mir Tower sign before bridge room";
-        hintSigns[0x12F] = "Mir Tower bridge room sign";
-        hintSigns[0x130] = "Mir Tower library sign";
-        hintSigns[0x132] = "Mir Tower sign before library";
+        hintSignsMidGame[0x12C] = "Mir Tower sign before bridge room";
+        hintSignsMidGame[0x12F] = "Mir Tower bridge room sign";
+        hintSignsMidGame[0x130] = "Mir Tower library sign";
+        hintSignsMidGame[0x132] = "Mir Tower sign before library";
 
         //      { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
 
         for (uint16_t textID = 0x12C; textID <= 0x133; ++textID)
             textLines[textID] = " ";
     }
+
+    hintSignRegions = {
+        { 0x101, RegionCode::ROUTE_MASSAN_GUMI },
+        { 0x102, RegionCode::ROUTE_MASSAN_GUMI },
+        { 0x103, RegionCode::ROUTE_GUMI_RYUMA },
+        { 0x104, RegionCode::MIR_TOWER_SECTOR },
+        { 0x134, RegionCode::MIR_TOWER_SECTOR },
+        { 0x143, RegionCode::VERLA_SECTOR },
+        { 0x142, RegionCode::ROUTE_VERLA_DESTEL },
+        { 0x141, RegionCode::ROUTE_LAKE_SHRINE },
+        { 0x140, RegionCode::GREENMAZE_PRE_WHISTLE },
+        { 0x139, RegionCode::GREENMAZE_PRE_WHISTLE },
+        { 0x13A, RegionCode::GREENMAZE_POST_WHISTLE },
+        { 0x144, RegionCode::LAKE_SHRINE },
+        { 0x0FE, RegionCode::THIEVES_HIDEOUT },
+        { 0x0FF, RegionCode::THIEVES_HIDEOUT },
+        { 0x100, RegionCode::THIEVES_HIDEOUT },
+        { 0x12C, RegionCode::MIR_TOWER_PRE_GARLIC },
+        { 0x12F, RegionCode::MIR_TOWER_PRE_GARLIC },
+        { 0x130, RegionCode::MIR_TOWER_POST_GARLIC },
+        { 0x132, RegionCode::MIR_TOWER_POST_GARLIC }
+    };
 }
 
 void World::initDarkRooms()

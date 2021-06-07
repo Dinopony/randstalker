@@ -31,6 +31,7 @@ private:
 	// Second pass randomizations (items)
 	void randomizeItems();
 	void analyzeStrictlyRequiredKeyItems();
+	std::set<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
 
 	void placePriorityItems();
 	void initFillerItems();
@@ -44,6 +45,7 @@ private:
 	void randomizeSpawnLocation();
 	void randomizeHints();
 	std::string getRandomHintForItem(Item* item);
+	WorldRegion* getRegionForItem(Item* item);
 	void randomizeTiborTrees();
 
 private:
