@@ -63,7 +63,11 @@ public:
 		*this << "- Lithograph: \"" << _world.redJewelHint << " " << _world.purpleJewelHint << "\"\n";
 		*this << "- King Nole's Cave sign: \"" << _world.whereIsLithographHint << "\"\n\n";
 
-		for (const auto& [textID, name] : _world.hintSigns)
+		for (const auto& [textID, name] : _world.hintSignsEarlyGame)
+			*this << "- " << name << ": \"" << stripSpecialSymbolsFromString(_world.textLines.at(textID)) << "\"\n";
+		for (const auto& [textID, name] : _world.hintSignsMidGame)
+			*this << "- " << name << ": \"" << stripSpecialSymbolsFromString(_world.textLines.at(textID)) << "\"\n";
+		for (const auto& [textID, name] : _world.hintSignsLateGame)
 			*this << "- " << name << ": \"" << stripSpecialSymbolsFromString(_world.textLines.at(textID)) << "\"\n";
 	}
 

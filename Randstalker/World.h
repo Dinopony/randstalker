@@ -46,7 +46,10 @@ public:
     std::map<std::string, std::vector<WorldRegion*>> macroRegions;
     std::vector<ItemShop*> shops;
 
-    std::map<uint32_t, std::string> hintSigns;
+    std::map<uint32_t, std::string> hintSignsEarlyGame;
+    std::map<uint32_t, std::string> hintSignsMidGame;
+    std::map<uint32_t, std::string> hintSignsLateGame;
+    std::map<uint32_t, RegionCode> hintSignRegions;
 
     WorldRegion* darkenedRegion;
     
