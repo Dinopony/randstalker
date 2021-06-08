@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <initializer_list>
+#include <algorithm>
 
 template<typename T>
 class UnsortedSet : public std::vector<T> {
