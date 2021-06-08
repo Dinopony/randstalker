@@ -63,7 +63,7 @@ public:
 	Bitfield operator+(const Bitfield& other) const
 	{
 		Bitfield newBF(*this);
-		for (size_t i = 0; i < other._size; ++i)
+		for (uint32_t i = 0; i < other._size; ++i)
 			newBF.add(other.get(i));
 		return newBF;
 	}
@@ -109,7 +109,7 @@ public:
 	{
 		std::ostringstream oss;
 		oss << "[";
-		for (size_t i = 0; i < _size; ++i)
+		for (uint32_t i = 0; i < _size; ++i)
 			oss << (this->get(i) ? "1" : "0");
 		oss << "]";
 		return oss.str();

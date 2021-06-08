@@ -209,7 +209,7 @@ public:
             textbankOffsetWritingAddress += 0x4;
 
             rom.setBytes(writingAddress, _textbanks[i]);
-            writingAddress += _textbanks[i].size();
+            writingAddress += (uint32_t)_textbanks[i].size();
         }
 
         int sizeDiff = 0x38368 - writingAddress;

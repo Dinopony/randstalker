@@ -866,9 +866,9 @@ void replaceNewGameStringBySeedHash(md::ROM& rom, const RandomizerOptions& optio
 
     // Write seed hash as text replacing the "New Game" string
     rom.setBytes(0x29A11, { 0x1D, 0x29, 0x29, 0x28, 0x47 }); // "Seed:"
-    for (size_t i = 0; i < seedHashText.size(); ++i)
+    for (uint32_t i = 0; i < seedHashText.size(); ++i)
         rom.setByte(0x29A16 + i, seedHashText[i]);
-    for (size_t i = seedHashText.size() ; i < 3; ++i)
+    for (uint32_t i = (uint32_t)seedHashText.size() ; i < 3; ++i)
         rom.setByte(0x29A16 + i, 0x0);
 }
 

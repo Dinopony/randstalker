@@ -94,7 +94,7 @@ public:
             }
 
             if (indexAfterHalfWeight == nextSymbolCounts.size())
-                indexAfterHalfWeight = nextSymbolCounts.size() / 2;
+                indexAfterHalfWeight = (uint32_t)(nextSymbolCounts.size() / 2);
 
             std::vector<SymbolCount> leftSide(nextSymbolCounts.begin(), nextSymbolCounts.begin() + indexAfterHalfWeight);
             std::vector<SymbolCount> rightSide(nextSymbolCounts.begin() + indexAfterHalfWeight, nextSymbolCounts.end());
