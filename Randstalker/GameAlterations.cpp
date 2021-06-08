@@ -821,6 +821,12 @@ void fixTreeCuttingGlitch(md::ROM& rom)
 //       Miscellaneous
 ///////////////////////////////////////////////////////////////////////////////////
 
+void deactivateRegionCheck(md::ROM& rom)
+{
+    // Before : jsr $A0A0C | After : nop nop nop
+    rom.setCode(0x506, md::Code().nop(3));
+}
+
 void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
 {
     // 0x824 is the default purple color from the original game
@@ -1085,6 +1091,7 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     fixTreeCuttingGlitch(rom);
 
     // Miscellaneous
+    deactivateRegionCheck(rom);
     changeHUDColor(rom, options);
     replaceNewGameStringBySeedHash(rom, options);
     setKeyAsUniqueItem(rom);
