@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <random>
+#include "UnsortedSet.h"
 
 #include "ItemCodes.h"
 #include "ItemSourceCodes.h"
@@ -31,7 +32,7 @@ private:
 	// Second pass randomizations (items)
 	void randomizeItems();
 	void analyzeStrictlyRequiredKeyItems();
-	std::set<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
+	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
 
 	void placePriorityItems();
 	void initFillerItems();
@@ -47,7 +48,6 @@ private:
 	Item* randomizeFortuneTellerHint();
 	Item* randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem);
 	void randomizeSignHints(Item* hintedFortuneItem, Item* hintedOracleStoneItem);
-	
 	std::string getRandomHintForItem(Item* item);
 
 	void randomizeTiborTrees();
@@ -59,13 +59,13 @@ private:
 	std::ofstream _debugLog;
 	std::mt19937 _rng;
 
-	std::set<WorldRegion*> _regionsToExplore;
-	std::set<WorldRegion*> _exploredRegions;
+	UnsortedSet<WorldRegion*> _regionsToExplore;
+	UnsortedSet<WorldRegion*> _exploredRegions;
 	std::vector<ItemSource*> _itemSourcesToFill;
-	std::set<Item*> _playerInventory;
+	UnsortedSet<Item*> _playerInventory;
 	std::map<ItemSource*, Item*> _pendingItemSources;
 	std::vector<WorldPath*> _pendingPaths;
 	std::vector<Item*> _fillerItems;
 
-	std::set<Item*> _strictlyNeededKeyItems;
+	UnsortedSet<Item*> _strictlyNeededKeyItems;
 };

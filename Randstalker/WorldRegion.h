@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <set>
+#include "UnsortedSet.h"
 
 class WorldRegion;
 
@@ -31,10 +31,10 @@ public:
 	WorldRegion* getDestination() const { return _destination; }
 	const std::vector<Item*>& getRequiredItems() const { return _requiredItems; }
 
-	bool canBeCrossedWithInventory(const std::set<Item*>& playerInventory)
+	bool canBeCrossedWithInventory(const UnsortedSet<Item*>& playerInventory)
 	{
 		for (Item* requiredItem : _requiredItems)
-			if (!playerInventory.count(requiredItem))
+			if (!playerInventory.contains(requiredItem))
 				return false;
 		return true;
 	}

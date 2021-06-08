@@ -41,6 +41,7 @@
     <ClInclude Include="SpoilerLog.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TreeMap.h" />
+    <ClInclude Include="UnsortedSet.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="WorldMacroRegion.h" />
     <ClInclude Include="WorldRandomizer.h" />

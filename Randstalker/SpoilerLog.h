@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <set>
 #include "World.h"
 
 class SpoilerLog : private std::ofstream 

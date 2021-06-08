@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <set>
+#include "UnsortedSet.h"
 #include "Item.h"
 #include "ItemSources.h"
 #include "WorldRegion.h"
@@ -18,14 +18,14 @@ public:
 	const std::string& getName() const { return _name; }
 	const std::vector<WorldRegion*>& getRegions() const { return _regions; }
 
-	bool isBarren(const std::set<Item*> strictlyNeededKeyItems)
+	bool isBarren(const UnsortedSet<Item*> strictlyNeededKeyItems)
 	{
 		for (WorldRegion* region : _regions)
 		{
 			std::vector<ItemSource*> itemSources = region->getItemSources();
 			for (ItemSource* source : itemSources)
 			{
-				if (strictlyNeededKeyItems.count(source->getItem()))
+				if (strictlyNeededKeyItems.contains(source->getItem()))
 					return false;
 			}
 		}

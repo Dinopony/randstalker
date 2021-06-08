@@ -25,6 +25,7 @@ void WorldRandomizer::randomize()
 
 	// 1st pass: randomizations happening BEFORE randomizing items
 	_rng.seed(rngSeed);
+	this->randomizeSpawnLocation();
 	this->randomizeGoldValues();
 	this->randomizeDarkRooms();
 
@@ -35,7 +36,6 @@ void WorldRandomizer::randomize()
 	
 	// 3rd pass: randomizations happening AFTER randomizing items
 	_rng.seed(rngSeed);
-	this->randomizeSpawnLocation();
 	this->randomizeHints();
 
 	if(_options.shuffleTiborTrees())
@@ -61,8 +61,7 @@ void WorldRandomizer::randomizeGoldValues()
 
 		if (i < GOLD_SOURCES_COUNT - 1)
 		{
-			uint32_t randomNumber = _rng();
-			double proportion = (double) randomNumber / (double) UINT32_MAX;
+			double proportion = (double) _rng() / (double) _rng.max();
 			double factor = (proportion * maxFactorOfTotalGoldValue);
 
 			goldValue = (uint16_t)((double)totalGoldValue * factor);
@@ -113,7 +112,7 @@ void WorldRandomizer::randomizeItems()
 {
 	constexpr double FILLING_RATE = 0.20;
 
-	_regionsToExplore = { _world.regions[RegionCode::MASSAN] };
+	_regionsToExplore.insert(_world.regions[RegionCode::MASSAN]);
 	_exploredRegions.clear();		// Regions already processed by the exploration algorithm
 	_itemSourcesToFill.clear();		// Reachable empty item sources which must be filled with a random item
 	_playerInventory.clear();		// The current contents of player inventory at the given time in the exploration algorithm
@@ -309,7 +308,7 @@ void WorldRandomizer::explorationPhase()
 			{
 				// For crossable paths, add destinations in regions to explore if not already explored / to process
 				WorldRegion* destination = outgoingPath->getDestination();
-				if (!_regionsToExplore.count(destination) && !_exploredRegions.count(destination))
+				if (!_regionsToExplore.contains(destination) && !_exploredRegions.contains(destination))
 					_regionsToExplore.insert(destination);
 			}
 			else
@@ -332,7 +331,7 @@ void WorldRandomizer::placeKeyItemPhase()
 	{
 		for (Item* requiredItem : pendingPath->getRequiredItems())
 		{
-			if (!_playerInventory.count(requiredItem))
+			if (!_playerInventory.contains(requiredItem))
 			{
 				for(uint16_t i=0 ; i<pendingPath->getRandomWeight() ; ++i)
 					unownedKeyItems.push_back(requiredItem);
@@ -374,7 +373,7 @@ void WorldRandomizer::unlockPhase()
 		{
 			// Path is now unlocked, add destination to regions to explore if it has not yet been explored
 			WorldRegion* destination = pendingPath->getDestination();
-			if (!_regionsToExplore.count(destination) && !_exploredRegions.count(destination))
+			if (!_regionsToExplore.contains(destination) && !_exploredRegions.contains(destination))
 				_regionsToExplore.insert(destination);
 
 			// Remove path from pending paths
@@ -389,7 +388,7 @@ void WorldRandomizer::unlockPhase()
 		ItemSource* itemSource = it->first;
 		Item* requiredItem = it->second;
 
-		if (_playerInventory.count(requiredItem))
+		if (_playerInventory.contains(requiredItem))
 		{
 			// Item source is now unlocked, add it to the "item sources to fill" list if it's empty or take the pre-filled item
 			if (itemSource->getItem())
@@ -419,15 +418,15 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 	}
 }
 
-std::set<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
+UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
 {
-	const std::set<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
+	const UnsortedSet<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
 
 	// We perform a backwards analysis here starting from endgame region and determining which key items are strictly needed to finish the seed
-	std::set<Item*> strictlyNeededKeyItems;
-	std::set<WorldRegion*> regionsToExplore = { region };
-	std::set<WorldRegion*> alreadyExploredRegions;
-	std::set<Item*> itemsToLocate;
+	UnsortedSet<Item*> strictlyNeededKeyItems;
+	UnsortedSet<WorldRegion*> regionsToExplore = { region };
+	UnsortedSet<WorldRegion*> alreadyExploredRegions;
+	UnsortedSet<Item*> itemsToLocate;
 
 	while (!regionsToExplore.empty())
 	{
@@ -439,11 +438,11 @@ std::set<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldR
 		for (WorldPath* path : pathsToRegion)
 		{
 			for (Item* neededItem : path->getRequiredItems())
-				if (!optionalItems.count(neededItem))
+				if (!optionalItems.contains(neededItem))
 					itemsToLocate.insert(neededItem);
 
 			WorldRegion* originRegion = path->getOrigin();
-			if (!alreadyExploredRegions.count(originRegion))
+			if (!alreadyExploredRegions.contains(originRegion))
 				regionsToExplore.insert(originRegion);
 		}
 
@@ -451,7 +450,7 @@ std::set<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldR
 		{
 			Item* keyItemToLocate = *itemsToLocate.begin();
 			itemsToLocate.erase(keyItemToLocate);
-			if (!strictlyNeededKeyItems.count(keyItemToLocate))
+			if (!strictlyNeededKeyItems.contains(keyItemToLocate))
 			{
 				strictlyNeededKeyItems.insert(keyItemToLocate);
 
@@ -460,7 +459,7 @@ std::set<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldR
 					if (source->getItem() == keyItemToLocate)
 					{
 						WorldRegion* region = source->getRegion();
-						if (!alreadyExploredRegions.count(region))
+						if (!alreadyExploredRegions.contains(region))
 							regionsToExplore.insert(region);
 
 						if (source->getRequiredItem())
@@ -532,20 +531,20 @@ Item* WorldRandomizer::randomizeFortuneTellerHint()
 
 Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem)
 {
-	std::set<Item*> forbiddenOracleStoneItems = {
+	UnsortedSet<Item*> forbiddenOracleStoneItems = {
 		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL]
 	};
 
 	// Also excluding items strictly needed to get to Oracle Stone's region
 	WorldRegion* oracleStoneRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
-	std::set<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(oracleStoneRegion);
+	UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(oracleStoneRegion);
 	for (Item* item : strictlyNeededKeyItemsForOracleStone)
 		forbiddenOracleStoneItems.insert(item);
 
 	std::vector<Item*> hintableItems;
 	for (Item* item : _strictlyNeededKeyItems)
 	{
-		if(forbiddenOracleStoneItems.count(item) == 0)
+		if(forbiddenOracleStoneItems.contains(item) == 0)
 			hintableItems.push_back(item);
 	}
 	
@@ -591,8 +590,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 	for (HintSign* sign : _world.hintSigns)
 	{
 		std::string hintText;
-		uint32_t randomInteger = _rng();
-		double randomNumber = (double) randomInteger / (double) UINT32_MAX;
+		double randomNumber = (double) _rng() / (double) _rng.max();
 
 		// "Barren / pleasant surprise" (30%)
 		if (randomNumber < 0.3 && !macroRegionsAvailableForHints.empty())
@@ -609,7 +607,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		else if (randomNumber < 0.5 && !hintableItemsNecessity.empty())
 		{
 			Item* hintedItem = _world.items[*hintableItemsNecessity.begin()];
-			if (_strictlyNeededKeyItems.count(hintedItem))
+			if (_strictlyNeededKeyItems.contains(hintedItem))
 				hintText = "You will need " + hintedItem->getName() + " in your quest to King Nole's treasure.";
 			else
 				hintText = hintedItem->getName() + " is useless in your quest King Nole's treasure.";
@@ -620,13 +618,13 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		else if (!hintableItemLocations.empty())
 		{
 			WorldRegion* signRegion = sign->getRegion();
-			std::set<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
+			UnsortedSet<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
 
 			Item* hintedItem = nullptr;
 			for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
 			{
 				Item* testedItem = _world.items[hintableItemLocations[i]];
-				if (itemsAlreadyObtainedAtSign.count(testedItem) == 0)
+				if (itemsAlreadyObtainedAtSign.contains(testedItem) == 0)
 				{
 					hintedItem = testedItem;
 					hintableItemLocations.erase(hintableItemLocations.begin() + i);
