@@ -523,7 +523,7 @@ void WorldRandomizer::randomizeHints()
 	// =============== Oracle Stone hint ===============
 
 	std::set<Item*> forbiddenOracleStoneItems = {
-		fortuneHintedItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL], _world.items[ITEM_SAFETY_PASS]
+		fortuneHintedItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL]
 	};
 
 	// Also excluding items strictly needed to get to Oracle Stone's region
