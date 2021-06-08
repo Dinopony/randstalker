@@ -49,6 +49,23 @@ World::~World()
         delete shop;
 }
 
+WorldRegion* World::getRegionForItem(Item* item)
+{
+    for (auto& [key, region] : regions)
+    {
+        std::vector<ItemSource*> sources = region->getItemSources();
+        for (ItemSource* source : sources)
+        {
+            if (source->getItem() == item)
+            {
+                return region;
+            }
+        }
+    }
+
+    return regions[RegionCode::ENDGAME];
+}
+
 void World::writeToROM(md::ROM& rom)
 {
     // Reserve a data block for gold values which will be filled when gold items will be encountered
@@ -945,30 +962,30 @@ void World::initRegions()
     regions[RegionCode::ENDGAME] = new WorldRegion("The End", {});
 
     macroRegions = {
-        { "the village of Massan",		{ regions[RegionCode::MASSAN] } },
-        { "the cave near Massan",		{ regions[RegionCode::MASSAN_CAVE] } },
-        { "the waterfall shrine",		{ regions[RegionCode::WATERFALL_SHRINE] } },
-        { "the village of Gumi",		{ regions[RegionCode::GUMI] } },
-        { "the swamp shrine",			{ regions[RegionCode::SWAMP_SHRINE] } },
-        { "Tibor",						{ regions[RegionCode::TIBOR] } },
-        { "the town of Ryuma",			{ regions[RegionCode::RYUMA] } },
-        { "the thieves' hideout",		{ regions[RegionCode::THIEVES_HIDEOUT] } },
-        { "witch Helga's hut",			{ regions[RegionCode::WITCH_HELGA_HUT] } },
-        { "the town of Mercator",		{ regions[RegionCode::MERCATOR], regions[RegionCode::MERCATOR_CASINO], regions[RegionCode::MERCATOR_SPECIAL_SHOP] } },
-        { "the crypt of Mercator",		{ regions[RegionCode::CRYPT] } },
-        { "the dungeon of Mercator",	{ regions[RegionCode::MERCATOR_DUNGEON] } },
-        { "Mir Tower",					{ regions[RegionCode::MIR_TOWER_PRE_GARLIC], regions[RegionCode::MIR_TOWER_POST_GARLIC] } },
-        { "Greenmaze",					{ regions[RegionCode::GREENMAZE_PRE_WHISTLE], regions[RegionCode::GREENMAZE_POST_WHISTLE] } },
-        { "the town of Verla",			{ regions[RegionCode::VERLA] } },
-        { "Verla mine",					{ regions[RegionCode::VERLA_MINES] } },
-        { "the village of Destel",		{ regions[RegionCode::DESTEL] } },
-        { "Destel well",				{ regions[RegionCode::DESTEL_WELL] } },
-        { "the lake shrine",			{ regions[RegionCode::LAKE_SHRINE] } },
-        { "the mountainous area",		{ regions[RegionCode::MOUNTAINOUS_AREA] } },
-        { "King Nole's cave",			{ regions[RegionCode::KN_CAVE] } },
-        { "the town of Kazalt",			{ regions[RegionCode::KAZALT] } },
-        { "King Nole's labyrinth",		{ regions[RegionCode::KN_LABYRINTH_PRE_SPIKES], regions[RegionCode::KN_LABYRINTH_POST_SPIKES], regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] } },
-        { "King Nole's palace",			{ regions[RegionCode::KN_PALACE] } }
+        new WorldMacroRegion("the village of Massan",	{ regions[RegionCode::MASSAN] }),
+        new WorldMacroRegion("the cave near Massan",	{ regions[RegionCode::MASSAN_CAVE] }),
+        new WorldMacroRegion("the waterfall shrine",	{ regions[RegionCode::WATERFALL_SHRINE] }),
+        new WorldMacroRegion("the village of Gumi",		{ regions[RegionCode::GUMI] }),
+        new WorldMacroRegion("the swamp shrine",		{ regions[RegionCode::SWAMP_SHRINE] }),
+        new WorldMacroRegion("Tibor",					{ regions[RegionCode::TIBOR] }),
+        new WorldMacroRegion("the town of Ryuma",		{ regions[RegionCode::RYUMA] }),
+        new WorldMacroRegion("the thieves' hideout",	{ regions[RegionCode::THIEVES_HIDEOUT] }),
+        new WorldMacroRegion("witch Helga's hut",		{ regions[RegionCode::WITCH_HELGA_HUT] }),
+        new WorldMacroRegion("the town of Mercator",	{ regions[RegionCode::MERCATOR], regions[RegionCode::MERCATOR_CASINO], regions[RegionCode::MERCATOR_SPECIAL_SHOP] }),
+        new WorldMacroRegion("the crypt of Mercator",	{ regions[RegionCode::CRYPT] }),
+        new WorldMacroRegion("the dungeon of Mercator",	{ regions[RegionCode::MERCATOR_DUNGEON] }),
+        new WorldMacroRegion("Mir Tower",				{ regions[RegionCode::MIR_TOWER_PRE_GARLIC], regions[RegionCode::MIR_TOWER_POST_GARLIC] }),
+        new WorldMacroRegion("Greenmaze",				{ regions[RegionCode::GREENMAZE_PRE_WHISTLE], regions[RegionCode::GREENMAZE_POST_WHISTLE] }),
+        new WorldMacroRegion("the town of Verla",		{ regions[RegionCode::VERLA] }),
+        new WorldMacroRegion("Verla mine",				{ regions[RegionCode::VERLA_MINES] }),
+        new WorldMacroRegion("the village of Destel",	{ regions[RegionCode::DESTEL] }),
+        new WorldMacroRegion("Destel well",				{ regions[RegionCode::DESTEL_WELL] }),
+        new WorldMacroRegion("the lake shrine",			{ regions[RegionCode::LAKE_SHRINE] }),
+        new WorldMacroRegion("the mountainous area",	{ regions[RegionCode::MOUNTAINOUS_AREA] }),
+        new WorldMacroRegion("King Nole's cave",		{ regions[RegionCode::KN_CAVE] }),
+        new WorldMacroRegion("the town of Kazalt",		{ regions[RegionCode::KAZALT] }),
+        new WorldMacroRegion("King Nole's labyrinth",	{ regions[RegionCode::KN_LABYRINTH_PRE_SPIKES], regions[RegionCode::KN_LABYRINTH_POST_SPIKES], regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR] }),
+        new WorldMacroRegion("King Nole's palace",		{ regions[RegionCode::KN_PALACE] })
     };
 }
 
@@ -1178,16 +1195,12 @@ void World::initRegionHints()
 
 void World::initHintSigns(bool fillDungeonSignsWithHints)
 {
-    hintSignsEarlyGame = {
+    hintSigns = {
         { 0x101, "Waterfall Shrine crossroad sign" },
         { 0x102, "Swamp Shrine crossroad sign" },
-        { 0x103, "Tibor crossroad sign" }
-    };
-    hintSignsMidGame = {
+        { 0x103, "Tibor crossroad sign" },
         { 0x104, "Mir Tower sector crossroad sign" },
-        { 0x134, "Mir Tower exterior sign" }
-    };
-    hintSignsLateGame = {
+        { 0x134, "Mir Tower exterior sign" },
         { 0x143, "Verla crossroad sign" },
         { 0x142, "Destel crossroad sign" },
         { 0x141, "Lake Shrine / Mountainous crossroad sign" },
@@ -1199,16 +1212,15 @@ void World::initHintSigns(bool fillDungeonSignsWithHints)
 
     if (fillDungeonSignsWithHints)
     {
-        hintSignsEarlyGame[0x0FE] = "Thieves' Hideout entrance sign";
-        hintSignsEarlyGame[0x0FF] = "Thieves' Hideout second room sign";
-        hintSignsEarlyGame[0x100] = "Thieves' Hideout boss path sign";
+        hintSigns[0x0FE] = "Thieves' Hideout entrance sign";
+        hintSigns[0x0FF] = "Thieves' Hideout second room sign";
+        hintSigns[0x100] = "Thieves' Hideout boss path sign";
+        hintSigns[0x12C] = "Mir Tower sign before bridge room";
+        hintSigns[0x12F] = "Mir Tower bridge room sign";
+        hintSigns[0x130] = "Mir Tower library sign";
+        hintSigns[0x132] = "Mir Tower sign before library";
 
-        hintSignsMidGame[0x12C] = "Mir Tower sign before bridge room";
-        hintSignsMidGame[0x12F] = "Mir Tower bridge room sign";
-        hintSignsMidGame[0x130] = "Mir Tower library sign";
-        hintSignsMidGame[0x132] = "Mir Tower sign before library";
-
-        //      { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
+        // { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
 
         for (uint16_t textID = 0x12C; textID <= 0x133; ++textID)
             textLines[textID] = " ";

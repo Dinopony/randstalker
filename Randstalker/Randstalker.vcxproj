@@ -41,6 +41,7 @@
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TreeMap.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="WorldMacroRegion.h" />
     <ClInclude Include="WorldRandomizer.h" />
     <ClInclude Include="WorldRegion.h" />
   </ItemGroup>

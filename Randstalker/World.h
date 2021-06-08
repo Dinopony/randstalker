@@ -6,6 +6,7 @@
 #include "Item.h"
 #include "GameText.h"
 #include "WorldRegion.h"
+#include "WorldMacroRegion.h"
 #include "RandomizerOptions.h"
 #include "TreeMap.h"
 
@@ -18,6 +19,8 @@ public:
     ~World();
 
     void addItem(Item* item) { items[item->getID()] = item; }
+   
+    WorldRegion* getRegionForItem(Item* item);
 
     void writeToROM(md::ROM& rom);
 
@@ -43,12 +46,10 @@ public:
 	std::map<uint8_t, Item*> items;
 	std::map<ItemSourceCode, ItemSource*> itemSources;
     std::map<RegionCode, WorldRegion*> regions;
-    std::map<std::string, std::vector<WorldRegion*>> macroRegions;
+    std::vector<WorldMacroRegion*> macroRegions;
     std::vector<ItemShop*> shops;
 
-    std::map<uint32_t, std::string> hintSignsEarlyGame;
-    std::map<uint32_t, std::string> hintSignsMidGame;
-    std::map<uint32_t, std::string> hintSignsLateGame;
+    std::map<uint32_t, std::string> hintSigns;
     std::map<uint32_t, RegionCode> hintSignRegions;
 
     WorldRegion* darkenedRegion;

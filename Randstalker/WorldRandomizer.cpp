@@ -492,158 +492,156 @@ void WorldRandomizer::randomizeSpawnLocation()
 
 void WorldRandomizer::randomizeHints()
 {
-	// =============== Lithograph hint ===============
-
+	// Lithograph hints
 	_world.redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
 	_world.purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
-	
-	// =============== Fortune Teller hint ===============
 
-	std::vector<Item*> hintableItemsByFortuneTeller = { _world.items[ITEM_GOLA_EYE], _world.items[ITEM_GOLA_NAIL], _world.items[ITEM_GOLA_FANG], _world.items[ITEM_GOLA_HORN] };
+	// King Nole Cave "where is lithograph" hint sign
+	_world.whereIsLithographHint = "The lithograph will help you finding the jewels. It is " 
+		+ this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
+
+	// Fortune Teller hint
+	Item* hintedFortuneItem = this->randomizeFortuneTellerHint();
+	Item* hintedOracleStoneItem = this->randomizeOracleStoneHint(hintedFortuneItem);
+
+	// Sign hints
+	this->randomizeSignHints(hintedFortuneItem, hintedOracleStoneItem);
+}
+
+Item* WorldRandomizer::randomizeFortuneTellerHint()
+{
+	std::vector<uint8_t> hintableItemsByFortuneTeller = { ITEM_GOLA_EYE, ITEM_GOLA_NAIL, ITEM_GOLA_FANG, ITEM_GOLA_HORN };
 	Tools::shuffle(hintableItemsByFortuneTeller, _rng);
-	Item* fortuneHintedItem = *(hintableItemsByFortuneTeller.begin());
+	
+	Item* fortuneHintedItem = _world.items[*(hintableItemsByFortuneTeller.begin())];
 
 	std::string fortuneItemName;
-	if (fortuneHintedItem == _world.items[ITEM_GOLA_EYE]) 
+	if (fortuneHintedItem == _world.items[ITEM_GOLA_EYE])
 		fortuneItemName = "an eye";
-	else if (fortuneHintedItem == _world.items[ITEM_GOLA_NAIL]) 
+	else if (fortuneHintedItem == _world.items[ITEM_GOLA_NAIL])
 		fortuneItemName = "a nail";
-	else if (fortuneHintedItem == _world.items[ITEM_GOLA_FANG]) 
+	else if (fortuneHintedItem == _world.items[ITEM_GOLA_FANG])
 		fortuneItemName = "a fang";
 	else if (fortuneHintedItem == _world.items[ITEM_GOLA_HORN])
 		fortuneItemName = "a horn";
 
-	std::string fortuneItemHint = this->getRandomHintForItem(fortuneHintedItem);
-	_world.fortuneTellerHint = "I see " + fortuneItemName + " " + fortuneItemHint + ".";
+	_world.fortuneTellerHint = "I see " + fortuneItemName + " " + this->getRandomHintForItem(fortuneHintedItem) + ".";
 
-	// =============== King Nole Cave "where is lithograph" hint sign ===============
+	return fortuneHintedItem;
+}
 
-	_world.whereIsLithographHint = "The lithograph will help you finding the jewels. It is " + this->getRandomHintForItem(_world.items[ITEM_LITHOGRAPH]) + ".";
-
-	// =============== Oracle Stone hint ===============
-
+Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem)
+{
 	std::set<Item*> forbiddenOracleStoneItems = {
-		fortuneHintedItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL]
+		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL]
 	};
 
 	// Also excluding items strictly needed to get to Oracle Stone's region
-	WorldRegion* oracleStoneRegion = this->getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
+	WorldRegion* oracleStoneRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
 	std::set<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(oracleStoneRegion);
 	for (Item* item : strictlyNeededKeyItemsForOracleStone)
-			forbiddenOracleStoneItems.insert(item);
+		forbiddenOracleStoneItems.insert(item);
 
-	std::vector<Item*> requiredItems; 
+	std::vector<Item*> hintableItems;
 	for (Item* item : _strictlyNeededKeyItems)
-		requiredItems.push_back(item);
-	Tools::shuffle(requiredItems, _rng);
-	Item* itemInOracleStoneHint;
-	do {
-		itemInOracleStoneHint = requiredItems[0];
-		requiredItems.erase(requiredItems.begin());
-	} while (forbiddenOracleStoneItems.count(itemInOracleStoneHint));
-
-	_world.oracleStoneHint = "You will need " + itemInOracleStoneHint->getName() + ". It is " + this->getRandomHintForItem(itemInOracleStoneHint) + ".";
-
-	// =============== Sign hints ===============
-
-	std::vector<std::string> signHintsVector;
-
-	// Barren / pleasant surprise hints
-	for (const auto& [name, regions] : _world.macroRegions)
 	{
-		bool isBarren = true;
-		for (WorldRegion* region : regions)
+		if(forbiddenOracleStoneItems.count(item) == 0)
+			hintableItems.push_back(item);
+	}
+	
+	if (!hintableItems.empty())
+	{
+		Tools::shuffle(hintableItems, _rng);
+		Item* itemInOracleStoneHint = hintableItems[0];
+		_world.oracleStoneHint = "You will need " + itemInOracleStoneHint->getName() + ". It is " + this->getRandomHintForItem(itemInOracleStoneHint) + ".";
+		return itemInOracleStoneHint;
+	}
+	
+	_world.oracleStoneHint = "The stone looks blurry. It looks like it won't be of any use this time...";
+	return nullptr;
+}
+
+
+void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOracleStoneItem)
+{
+	// A shuffled list of macro regions, useful for the "barren / useful region" hints
+	std::vector<WorldMacroRegion*> macroRegionsAvailableForHints;
+	for (WorldMacroRegion* macroRegion : _world.macroRegions)
+		macroRegionsAvailableForHints.push_back(macroRegion);
+	Tools::shuffle(macroRegionsAvailableForHints, _rng);
+
+	// A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints
+	std::vector<uint8_t> hintableItemsNecessity = {
+		ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE, ITEM_CASINO_TICKET
+	};
+	Tools::shuffle(hintableItemsNecessity, _rng);
+
+	// A shuffled list of items which location is interesting, useful for the "item X is in Y" hints
+	std::vector<uint8_t> hintableItemLocations = {
+		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,
+		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,
+		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA,
+		ITEM_SUN_STONE,			ITEM_KEY,			ITEM_SAFETY_PASS,
+		ITEM_GOLA_EYE,			ITEM_GOLA_NAIL,		ITEM_GOLA_FANG,		ITEM_GOLA_HORN
+	};
+	hintableItemLocations.erase(std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedFortuneItem->getID()));
+	hintableItemLocations.erase(std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedOracleStoneItem->getID()));
+	Tools::shuffle(hintableItemLocations, _rng);
+
+	for (const auto& [gameStringID, name] : _world.hintSigns)
+	{
+		std::string hintText;
+		uint32_t randomInteger = _rng();
+		double randomNumber = (double) randomInteger / (double) UINT32_MAX;
+
+		// "Barren / pleasant surprise" (30%)
+		if (randomNumber < 0.3 && !macroRegionsAvailableForHints.empty())
 		{
-			std::vector<ItemSource*> itemSources = region->getItemSources();
-			for (ItemSource* source : itemSources)
+			WorldMacroRegion* macroRegion = *macroRegionsAvailableForHints.begin();
+			if (macroRegion->isBarren(_strictlyNeededKeyItems))
+				hintText = "What you are looking for is not in " + macroRegion->getName() + ".";
+			else
+				hintText = "You might have a pleasant surprise wandering in " + macroRegion->getName() + ".";
+
+			macroRegionsAvailableForHints.erase(macroRegionsAvailableForHints.begin());
+		}
+		// "You will / won't need {item} to finish" (10%)
+		else if (randomNumber < 0.5 && !hintableItemsNecessity.empty())
+		{
+			Item* hintedItem = _world.items[*hintableItemsNecessity.begin()];
+			if (_strictlyNeededKeyItems.count(hintedItem))
+				hintText = "You will need " + hintedItem->getName() + " in your quest to King Nole's treasure.";
+			else
+				hintText = hintedItem->getName() + " is useless in your quest King Nole's treasure.";
+
+			hintableItemsNecessity.erase(hintableItemsNecessity.begin());
+		}
+		// "You shall find {item} in {place}" (60%)
+		else if (!hintableItemLocations.empty())
+		{
+			WorldRegion* signRegion = nullptr;
+			std::set<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
+
+			Item* hintedItem = nullptr;
+			for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
 			{
-				if (_strictlyNeededKeyItems.count(source->getItem()))
+				Item* testedItem = _world.items[hintableItemLocations[i]];
+				if (itemsAlreadyObtainedAtSign.count(testedItem) == 0)
 				{
-					isBarren = false;
+					hintedItem = testedItem;
+					hintableItemLocations.erase(hintableItemLocations.begin() + i);
 					break;
 				}
 			}
-			if (!isBarren)
-				break;
+
+			if (hintedItem) {
+				hintText = "You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".";
+			} else {
+				hintText = "This sign has been damaged in a way that makes it unreadable.";
+			}
 		}
 
-		if (isBarren)
-			signHintsVector.push_back("What you are looking for is not in " + name + ".");
-		else
-			signHintsVector.push_back("You might have a pleasant surprise wandering in " + name + ".");
-	}
-
-	// "You will / won't need {item} to finish"
-	const std::vector<uint8_t> potentiallyOptionalKeyItems = { ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE, ITEM_CASINO_TICKET };
-
-	for (uint8_t keyItemID : potentiallyOptionalKeyItems)
-	{
-		Item* keyItem = _world.items[keyItemID];
-		if (_strictlyNeededKeyItems.count(keyItem))
-			signHintsVector.push_back("You will need " + keyItem->getName() + " in your quest to King Nole's treasure.");
-		else
-			signHintsVector.push_back(keyItem->getName() + " is useless in your quest King Nole's treasure.");
-	}
-
-	// Important items location hints : processing signs from late-game to early-game to avoid early items in late-game hints
-
-	// Starting with late game hint signs
-	std::vector<uint8_t> hintableFromLateGameItems = {
-		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,
-		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,
-		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA
-	};
-
-	for (uint8_t itemID : hintableFromLateGameItems)
-	{
-		Item* hintedItem = _world.items[itemID];
-		if (hintedItem != itemInOracleStoneHint)
-			signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
-	}
-	Tools::shuffle(signHintsVector, _rng);
-
-	for (const auto& [id, name] : _world.hintSignsLateGame)
-	{
-		_world.textLines[id] = GameText(signHintsVector.back()).getOutput();
-		signHintsVector.pop_back();
-	}
-
-	// Adding mid-game items for mid-game hint sings
-	std::vector<uint8_t> hintableFromMidGameItems = {
-		ITEM_SUN_STONE, ITEM_KEY
-	};
-
-	for (uint8_t itemID : hintableFromMidGameItems)
-	{
-		Item* hintedItem = _world.items[itemID];
-		if (hintedItem != itemInOracleStoneHint)
-			signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
-	}
-	Tools::shuffle(signHintsVector, _rng);
-
-	for (const auto& [id, name] : _world.hintSignsMidGame)
-	{
-		_world.textLines[id] = GameText(signHintsVector.back()).getOutput();
-		signHintsVector.pop_back();
-	}
-
-	// Adding early-game item for early-game hint signs
-	std::vector<uint8_t> hintableFromEarlyGameItems = {
-		ITEM_SAFETY_PASS
-	};
-
-	for (uint8_t itemID : hintableFromEarlyGameItems)
-	{
-		Item* hintedItem = _world.items[itemID];
-		if (hintedItem != itemInOracleStoneHint)
-			signHintsVector.push_back("You shall find " + hintedItem->getName() + " " + this->getRandomHintForItem(hintedItem) + ".");
-	}
-	Tools::shuffle(signHintsVector, _rng);
-
-	for (const auto& [id, name] : _world.hintSignsEarlyGame)
-	{
-		_world.textLines[id] = GameText(signHintsVector.back()).getOutput();
-		signHintsVector.pop_back();
+		_world.textLines[gameStringID] = GameText(hintText).getOutput();
 	}
 }
 
@@ -672,22 +670,6 @@ std::string WorldRandomizer::getRandomHintForItem(Item* item)
 	return "in an unknown place";
 }
 
-WorldRegion* WorldRandomizer::getRegionForItem(Item* item)
-{
-	for (auto& [key, region] : _world.regions)
-	{
-		std::vector<ItemSource*> sources = region->getItemSources();
-		for (ItemSource* source : sources)
-		{
-			if (source->getItem() == item)
-			{
-				return region;
-			}
-		}
-	}
-
-	return _world.regions[RegionCode::ENDGAME];
-}
 
 void WorldRandomizer::randomizeTiborTrees()
 {

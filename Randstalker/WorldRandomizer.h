@@ -44,8 +44,12 @@ private:
 	// Third pass randomizations (after items)
 	void randomizeSpawnLocation();
 	void randomizeHints();
+	Item* randomizeFortuneTellerHint();
+	Item* randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem);
+	void randomizeSignHints(Item* hintedFortuneItem, Item* hintedOracleStoneItem);
+	
 	std::string getRandomHintForItem(Item* item);
-	WorldRegion* getRegionForItem(Item* item);
+
 	void randomizeTiborTrees();
 
 private:
