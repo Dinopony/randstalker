@@ -530,10 +530,7 @@ void WorldRandomizer::randomizeHints()
 	WorldRegion* oracleStoneRegion = this->getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
 	std::set<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(oracleStoneRegion);
 	for (Item* item : strictlyNeededKeyItemsForOracleStone)
-	{
-		if(!forbiddenOracleStoneItems.count(item))		
 			forbiddenOracleStoneItems.insert(item);
-	}
 
 	std::vector<Item*> requiredItems; 
 	for (Item* item : _strictlyNeededKeyItems)
