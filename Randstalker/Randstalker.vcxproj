@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="GameText.h" />
     <ClInclude Include="GameAlterations.h" />
+    <ClInclude Include="HintSign.h" />
     <ClInclude Include="Huffman\Bitfield.h" />
     <ClInclude Include="Huffman\HuffmanTree.h" />
     <ClInclude Include="Huffman\HuffmanTreeNode.h" />

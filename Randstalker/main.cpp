@@ -43,7 +43,7 @@
 #include "WorldRandomizer.h"
 #include "SpoilerLog.h"
 
-constexpr auto RELEASE = "1.01";
+constexpr auto RELEASE = "1.02";
 
 md::ROM* getInputROM(std::string inputRomPath)
 {

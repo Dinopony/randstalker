@@ -9,6 +9,7 @@
 #include "WorldMacroRegion.h"
 #include "RandomizerOptions.h"
 #include "TreeMap.h"
+#include "HintSign.h"
 
 constexpr auto GOLD_SOURCES_COUNT = 30;
 
@@ -49,8 +50,7 @@ public:
     std::vector<WorldMacroRegion*> macroRegions;
     std::vector<ItemShop*> shops;
 
-    std::map<uint32_t, std::string> hintSigns;
-    std::map<uint32_t, RegionCode> hintSignRegions;
+    std::vector<HintSign*> hintSigns;
 
     WorldRegion* darkenedRegion;
     

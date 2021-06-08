@@ -1196,57 +1196,35 @@ void World::initRegionHints()
 void World::initHintSigns(bool fillDungeonSignsWithHints)
 {
     hintSigns = {
-        { 0x101, "Waterfall Shrine crossroad sign" },
-        { 0x102, "Swamp Shrine crossroad sign" },
-        { 0x103, "Tibor crossroad sign" },
-        { 0x104, "Mir Tower sector crossroad sign" },
-        { 0x134, "Mir Tower exterior sign" },
-        { 0x143, "Verla crossroad sign" },
-        { 0x142, "Destel crossroad sign" },
-        { 0x141, "Lake Shrine / Mountainous crossroad sign" },
-        { 0x140, "Greenmaze / Mountainous crossroad sign" },
-        { 0x139, "Center of Greenmaze sign" },
-        { 0x13A, "Greenmaze / Massan shortcut tunnel sign" },
-        { 0x144, "Volcano sign" }
+        new HintSign(0x101, "Waterfall Shrine crossroad sign", regions[RegionCode::ROUTE_MASSAN_GUMI]),
+        new HintSign(0x102, "Swamp Shrine crossroad sign", regions[RegionCode::ROUTE_MASSAN_GUMI]),
+        new HintSign(0x103, "Tibor crossroad sign", regions[RegionCode::ROUTE_GUMI_RYUMA]),
+        new HintSign(0x104, "Mir Tower sector crossroad sign", regions[RegionCode::MIR_TOWER_SECTOR]),
+        new HintSign(0x134, "Mir Tower exterior sign", regions[RegionCode::MIR_TOWER_SECTOR]),
+        new HintSign(0x143, "Verla crossroad sign", regions[RegionCode::VERLA_SECTOR]),
+        new HintSign(0x142, "Destel crossroad sign", regions[RegionCode::ROUTE_VERLA_DESTEL]),
+        new HintSign(0x141, "Lake Shrine / Mountainous crossroad sign", regions[RegionCode::ROUTE_LAKE_SHRINE]),
+        new HintSign(0x140, "Greenmaze / Mountainous crossroad sign", regions[RegionCode::GREENMAZE_PRE_WHISTLE]),
+        new HintSign(0x139, "Center of Greenmaze sign", regions[RegionCode::GREENMAZE_PRE_WHISTLE]),
+        new HintSign(0x13A, "Greenmaze / Massan shortcut tunnel sign", regions[RegionCode::GREENMAZE_POST_WHISTLE]),
+        new HintSign(0x144, "Volcano sign", regions[RegionCode::LAKE_SHRINE])
     };
 
     if (fillDungeonSignsWithHints)
     {
-        hintSigns[0x0FE] = "Thieves' Hideout entrance sign";
-        hintSigns[0x0FF] = "Thieves' Hideout second room sign";
-        hintSigns[0x100] = "Thieves' Hideout boss path sign";
-        hintSigns[0x12C] = "Mir Tower sign before bridge room";
-        hintSigns[0x12F] = "Mir Tower bridge room sign";
-        hintSigns[0x130] = "Mir Tower library sign";
-        hintSigns[0x132] = "Mir Tower sign before library";
+        hintSigns.push_back(new HintSign(0x0FE, "Thieves' Hideout entrance sign", regions[RegionCode::THIEVES_HIDEOUT]));
+        hintSigns.push_back(new HintSign(0x0FF, "Thieves' Hideout second room sign", regions[RegionCode::THIEVES_HIDEOUT]));
+        hintSigns.push_back(new HintSign(0x100, "Thieves' Hideout boss path sign", regions[RegionCode::THIEVES_HIDEOUT]));
+        hintSigns.push_back(new HintSign(0x12C, "Mir Tower sign before bridge room", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
+        hintSigns.push_back(new HintSign(0x12F, "Mir Tower bridge room sign", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
+        hintSigns.push_back(new HintSign(0x130, "Mir Tower library sign", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
+        hintSigns.push_back(new HintSign(0x132, "Mir Tower sign before library", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
 
         // { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
 
         for (uint16_t textID = 0x12C; textID <= 0x133; ++textID)
             textLines[textID] = " ";
     }
-
-    hintSignRegions = {
-        { 0x101, RegionCode::ROUTE_MASSAN_GUMI },
-        { 0x102, RegionCode::ROUTE_MASSAN_GUMI },
-        { 0x103, RegionCode::ROUTE_GUMI_RYUMA },
-        { 0x104, RegionCode::MIR_TOWER_SECTOR },
-        { 0x134, RegionCode::MIR_TOWER_SECTOR },
-        { 0x143, RegionCode::VERLA_SECTOR },
-        { 0x142, RegionCode::ROUTE_VERLA_DESTEL },
-        { 0x141, RegionCode::ROUTE_LAKE_SHRINE },
-        { 0x140, RegionCode::GREENMAZE_PRE_WHISTLE },
-        { 0x139, RegionCode::GREENMAZE_PRE_WHISTLE },
-        { 0x13A, RegionCode::GREENMAZE_POST_WHISTLE },
-        { 0x144, RegionCode::LAKE_SHRINE },
-        { 0x0FE, RegionCode::THIEVES_HIDEOUT },
-        { 0x0FF, RegionCode::THIEVES_HIDEOUT },
-        { 0x100, RegionCode::THIEVES_HIDEOUT },
-        { 0x12C, RegionCode::MIR_TOWER_PRE_GARLIC },
-        { 0x12F, RegionCode::MIR_TOWER_PRE_GARLIC },
-        { 0x130, RegionCode::MIR_TOWER_POST_GARLIC },
-        { 0x132, RegionCode::MIR_TOWER_POST_GARLIC }
-    };
 }
 
 void World::initDarkRooms()

@@ -588,7 +588,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 	hintableItemLocations.erase(std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedOracleStoneItem->getID()));
 	Tools::shuffle(hintableItemLocations, _rng);
 
-	for (const auto& [gameStringID, name] : _world.hintSigns)
+	for (HintSign* sign : _world.hintSigns)
 	{
 		std::string hintText;
 		uint32_t randomInteger = _rng();
@@ -619,7 +619,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		// "You shall find {item} in {place}" (60%)
 		else if (!hintableItemLocations.empty())
 		{
-			WorldRegion* signRegion = nullptr;
+			WorldRegion* signRegion = sign->getRegion();
 			std::set<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
 
 			Item* hintedItem = nullptr;
@@ -641,7 +641,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 			}
 		}
 
-		_world.textLines[gameStringID] = GameText(hintText).getOutput();
+		_world.textLines[sign->getTextID()] = GameText(hintText).getOutput();
 	}
 }
 

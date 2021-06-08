@@ -96,6 +96,9 @@
     <ClInclude Include="WorldMacroRegion.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="HintSign.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
