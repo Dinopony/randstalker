@@ -48,6 +48,7 @@ private:
 	Item* randomizeFortuneTellerHint();
 	Item* randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem);
 	void randomizeSignHints(Item* hintedFortuneItem, Item* hintedOracleStoneItem);
+	uint32_t getNextElligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, UnsortedSet<Item*> itemsAlreadyObtainedAtSign);
 	std::string getRandomHintForItem(Item* item);
 
 	void randomizeTiborTrees();
