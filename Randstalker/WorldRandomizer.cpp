@@ -649,7 +649,7 @@ uint32_t WorldRandomizer::getNextElligibleHintableItemPos(std::vector<uint8_t> h
 	for (uint32_t i = 0; i < hintableItemsNecessity.size(); ++i)
 	{
 		Item* testedItem = _world.items[hintableItemsNecessity[i]];
-		if (itemsAlreadyObtainedAtSign.contains(testedItem) == 0)
+		if (!itemsAlreadyObtainedAtSign.contains(testedItem))
 		{
 			return i;
 		}
