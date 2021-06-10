@@ -544,7 +544,7 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 	std::vector<Item*> hintableItems;
 	for (Item* item : _strictlyNeededKeyItems)
 	{
-		if(forbiddenOracleStoneItems.contains(item) == 0)
+		if(!forbiddenOracleStoneItems.contains(item))
 			hintableItems.push_back(item);
 	}
 	
@@ -624,7 +624,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 			for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
 			{
 				Item* testedItem = _world.items[hintableItemLocations[i]];
-				if (itemsAlreadyObtainedAtSign.contains(testedItem) == 0)
+				if (!itemsAlreadyObtainedAtSign.contains(testedItem))
 				{
 					hintedItem = testedItem;
 					hintableItemLocations.erase(hintableItemLocations.begin() + i);
