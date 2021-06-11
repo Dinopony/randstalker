@@ -591,6 +591,9 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 	{
 		std::string hintText;
 		double randomNumber = (double) _rng() / (double) _rng.max();
+		WorldRegion* signRegion = sign->getRegion();
+		UnsortedSet<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
+		int nextElligibleHintableItemsNecessityPos = this->getNextElligibleHintableItemPos(hintableItemsNecessity, itemsAlreadyObtainedAtSign);
 
 		// "Barren / pleasant surprise" (30%)
 		if (randomNumber < 0.3 && !macroRegionsAvailableForHints.empty())
@@ -604,21 +607,19 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 			macroRegionsAvailableForHints.erase(macroRegionsAvailableForHints.begin());
 		}
 		// "You will / won't need {item} to finish" (10%)
-		else if (randomNumber < 0.5 && !hintableItemsNecessity.empty())
+		else if (randomNumber < 0.5 && nextElligibleHintableItemsNecessityPos >=0)
 		{
-			Item* hintedItem = _world.items[*hintableItemsNecessity.begin()];
+			Item* hintedItem = _world.items[hintableItemsNecessity.at(nextElligibleHintableItemsNecessityPos)];
 			if (_strictlyNeededKeyItems.contains(hintedItem))
 				hintText = "You will need " + hintedItem->getName() + " in your quest to King Nole's treasure.";
 			else
 				hintText = hintedItem->getName() + " is useless in your quest King Nole's treasure.";
 
-			hintableItemsNecessity.erase(hintableItemsNecessity.begin());
+			hintableItemsNecessity.erase(hintableItemsNecessity.begin() + nextElligibleHintableItemsNecessityPos);
 		}
 		// "You shall find {item} in {place}" (60%)
 		else if (!hintableItemLocations.empty())
 		{
-			WorldRegion* signRegion = sign->getRegion();
-			UnsortedSet<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
 
 			Item* hintedItem = nullptr;
 			for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
@@ -641,6 +642,19 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 
 		_world.textLines[sign->getTextID()] = GameText(hintText).getOutput();
 	}
+}
+
+uint32_t WorldRandomizer::getNextElligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, UnsortedSet<Item*> itemsAlreadyObtainedAtSign)
+{
+	for (uint32_t i = 0; i < hintableItemsNecessity.size(); ++i)
+	{
+		Item* testedItem = _world.items[hintableItemsNecessity[i]];
+		if (!itemsAlreadyObtainedAtSign.contains(testedItem))
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
 std::string WorldRandomizer::getRandomHintForItem(Item* item)
