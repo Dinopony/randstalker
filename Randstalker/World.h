@@ -20,8 +20,9 @@ public:
     ~World();
 
     void addItem(Item* item) { items[item->getID()] = item; }
-   
+
     WorldRegion* getRegionForItem(Item* item);
+    ItemSource* getItemSourceForItem(Item* item);
 
     void writeToROM(md::ROM& rom);
 

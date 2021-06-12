@@ -418,6 +418,18 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 	}
 }
 
+UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForItem(Item* item)
+{
+	WorldRegion* itemRegion = _world.getRegionForItem(item);
+	UnsortedSet<Item*> strictlyRequiredKeyItemsForItem = this->analyzeStrictlyRequiredKeyItemsForRegion(itemRegion);
+	
+	ItemSource* itemSource = _world.getItemSourceForItem(item);
+	if(itemSource && itemSource->getRequiredItem())
+		strictlyRequiredKeyItemsForItem.insert(itemSource->getRequiredItem());
+
+	return strictlyRequiredKeyItemsForItem;
+}
+
 UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
 {
 	const UnsortedSet<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
@@ -535,9 +547,8 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL]
 	};
 
-	// Also excluding items strictly needed to get to Oracle Stone's region
-	WorldRegion* oracleStoneRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
-	UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(oracleStoneRegion);
+	// Also excluding items strictly needed to get to Oracle Stone's location
+	UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForItem(_world.items[ITEM_ORACLE_STONE]);
 	for (Item* item : strictlyNeededKeyItemsForOracleStone)
 		forbiddenOracleStoneItems.insert(item);
 

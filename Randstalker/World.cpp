@@ -66,6 +66,23 @@ WorldRegion* World::getRegionForItem(Item* item)
     return regions[RegionCode::ENDGAME];
 }
 
+ItemSource* World::getItemSourceForItem(Item* item)
+{
+    for (auto& [key, region] : regions)
+    {
+        std::vector<ItemSource*> sources = region->getItemSources();
+        for (ItemSource* source : sources)
+        {
+            if (source->getItem() == item)
+            {
+                return source;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 void World::writeToROM(md::ROM& rom)
 {
     // Reserve a data block for gold values which will be filled when gold items will be encountered

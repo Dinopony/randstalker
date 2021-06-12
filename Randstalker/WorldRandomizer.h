@@ -32,6 +32,7 @@ private:
 	// Second pass randomizations (items)
 	void randomizeItems();
 	void analyzeStrictlyRequiredKeyItems();
+	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForItem(Item* item);
 	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
 
 	void placePriorityItems();
