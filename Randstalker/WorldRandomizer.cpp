@@ -582,7 +582,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 
 	// A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints
 	std::vector<uint8_t> hintableItemsNecessity = {
-		ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE, ITEM_CASINO_TICKET
+		ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE, ITEM_CASINO_TICKET, ITEM_LOGS
 	};
 	Tools::shuffle(hintableItemsNecessity, _rng);
 
