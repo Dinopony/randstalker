@@ -135,7 +135,7 @@ void alterLifestockHandlingInShops(md::ROM& rom)
 {
     // Make Lifestock prices the same over all shops
     for (uint32_t addr = 0x024D34; addr <= 0x024EAE; addr += 0xE)
-        rom.setByte(addr + 0x03, 0x10); //rom.getByte(addr + 0x02));
+        rom.setByte(addr + 0x03, 0x10);
 
     // Remove the usage of "bought lifestock in shop X" flags 
     for (uint32_t addr = 0x009D18; addr <= 0x009D33; addr += 0xE)
@@ -155,7 +155,7 @@ void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
     funcHandleWalkAbilities.movew(goldsPerCycle, reg_D0);
     funcHandleWalkAbilities.jsr(0x177DC);   // rom.getStoredAddress("func_earn_gold");
 
-// If Healing boots are equipped, gain life over time
+    // If Healing boots are equipped, gain life over time
     funcHandleWalkAbilities.cmpib(0x7, addr_(0xFF1150));
     funcHandleWalkAbilities.bne(4);
     funcHandleWalkAbilities.movew(0x100, reg_D0);
@@ -167,9 +167,7 @@ void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
     uint32_t funcAddr = rom.injectCode(funcHandleWalkAbilities);
 
     // ============== Hook the function inside game code ==============
-
     rom.setCode(0x16696, md::Code().nop(5));
-
     rom.setCode(0x166D0, md::Code().jsr(funcAddr).nop(4));
 }
 
@@ -425,7 +423,6 @@ void fixDogTalkingCheck(md::ROM& rom)
 void alterMercatorSecondaryShopCheck(md::ROM& rom)
 {
     // Change the Mercator secondary shop check so that it sells item as long as you own Buyer's Card
-
     // 0x00A574:
         // Before:	2A 04 (bit 4 of FF102A)
         // After:	4C 05 (bit 5 of FF104C)
@@ -450,7 +447,7 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
     procHandleJewelsCheck.jsr(0xE110);  // "func_teleport_kazalt"
     procHandleJewelsCheck.jmp(0x62FA);
 
-    uint32_t procHandleJewelsAddr = rom.injectCode(procHandleJewelsCheck, "proc_handle_jewels_check");
+    uint32_t procHandleJewelsAddr = rom.injectCode(procHandleJewelsCheck);
 
     // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
     rom.setCode(0x62F4, md::Code().jmp(procHandleJewelsAddr));
@@ -458,6 +455,7 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
 
 void fixSwordOfGaiaEffectInVolcano(md::ROM& rom)
 {
+    // Add the ability to also trigger the volcano using the Sword of Gaia instead of only Statue of Gaia
     md::Code procTriggerVolcano;
 
     procTriggerVolcano.cmpiw(0x20A, addr_(0xFF1204));
@@ -847,8 +845,8 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
 
     rom.setWord(0xF6D0, color);
     rom.setWord(0xFB36, color);
-    rom.setWord(0x9020, color);
     rom.setWord(0x903C, color);
+//    rom.setWord(0x9020, color);
 }
 
 void replaceNewGameStringBySeedHash(md::ROM& rom, const RandomizerOptions& options)
