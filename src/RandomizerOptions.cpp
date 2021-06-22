@@ -73,5 +73,5 @@ std::string RandomizerOptions::toPermalink() const
 						<< (_dungeonSignHints ? "t" : "") << ";"
 						<< (_allowSpoilerLog ? "t" : "");
 	
-	return "L" + base64_encode(permalinkBuilder.str().c_str()) + "S";
+	return "L" + base64_encode(permalinkBuilder.str()) + "S";
 }
