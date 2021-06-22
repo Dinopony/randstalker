@@ -31,7 +31,7 @@
 
 */
 
-#include "base64.hpp"
+#include "Base64.hpp"
 
 #include <algorithm>
 #include <stdexcept>
