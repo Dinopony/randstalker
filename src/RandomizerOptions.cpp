@@ -15,8 +15,8 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 			std::vector<std::string> tokens = Tools::split(decodedPermalink, ";");
 
 			std::string releaseVersion = tokens.at(0);
-			if(releaseVersion != RELEASE) {
-				throw WrongVersionException("This permalink comes from a different version of Randstalker (" + releaseVersion + ").");
+			if(releaseVersion != MAJOR_RELEASE) {
+				throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + releaseVersion + ").");
 			}
 
 			_seed = std::stoul(tokens.at(1));
@@ -64,7 +64,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 std::string RandomizerOptions::toPermalink() const
 {
 	std::ostringstream permalinkBuilder;
-	permalinkBuilder 	<< RELEASE << ";"
+	permalinkBuilder 	<< MAJOR_RELEASE << ";"
 						<< _seed << ";"
 						<< (_armorUpgrades ? "t" : "") << ";"
 						<< (_shuffleTiborTrees ? "t" : "") << ";"
