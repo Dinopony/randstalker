@@ -16,7 +16,7 @@ public:
 
 	void writeToFile()
 	{
-		if (_options.getSpoilerLogPath().empty())
+		if (!_options.allowSpoilerLog() || _options.getSpoilerLogPath().empty())
 			return;
 
 		this->open(_options.getSpoilerLogPath());
@@ -49,7 +49,7 @@ public:
 		*this << "Randomized Tibor trees: " << (_options.shuffleTiborTrees() ? "enabled" : "disabled") << "\n";
 		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";
 		*this << "In-game item tracker: " << (_options.addIngameItemTracker() ? "enabled" : "disabled") << "\n";
-		*this << "Starting location: " << _options.getSpawnLocationAsString() << "\n";
+		*this << "Starting location: " << spawnLocationToString(_options.getSpawnLocation()) << "\n";
 		*this << "Fill dungeon signs with hints: " << (_options.fillDungeonSignsWithHints() ? "enabled" : "disabled") << "\n";
 
 		*this << "\n";

@@ -1,142 +1,77 @@
 #include "RandomizerOptions.hpp"
-#include <set>
-#include <unordered_map>
+#include "Extlibs/Base64.hpp"
+#include "Globals.hpp"
+#include "Exceptions.hpp"
+#include <iostream>
 
-RandomizerOptions::RandomizerOptions(int argc, char* argv[])
+RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 {
-	this->parseOptionsDictionaryFromArgs(argc, argv);
-
-	if (_optionsDictionary.count("seed") && _optionsDictionary["seed"] != "random")
+	std::string permalinkString = args.getString("permalink");
+	if(!permalinkString.empty()) 
 	{
-		std::string& seedString = _optionsDictionary["seed"];
-		try
-		{
-			_seed = (uint32_t) std::stoul(seedString);
-			_seedAsString = _optionsDictionary["seed"];
-		} 
-		catch (std::invalid_argument&)
-		{
-			_seed = 0;
-			for (uint32_t i = 0; i < seedString.length(); ++i)
-				_seed += ((uint32_t)seedString[i]) * (i*100+1);
+		try {
+			// Permalink case: extract seed related options from the decoded permalink
+			std::string decodedPermalink = base64_decode(permalinkString.substr(1, permalinkString.size()-2));
+			std::vector<std::string> tokens = Tools::split(decodedPermalink, ";");
 
-			_seedAsString = "\"" + _optionsDictionary["seed"] + "\" (" + Tools::stringify(_seed) + ")";
+			std::string releaseVersion = tokens.at(0);
+			if(releaseVersion != RELEASE) {
+				throw WrongVersionException("This permalink comes from a different version of Randstalker (" + releaseVersion + ").");
+			}
+
+			_seed = std::stoul(tokens.at(1));
+			_armorUpgrades = (tokens.at(2) == "t");
+			_shuffleTiborTrees = (tokens.at(3) == "t");
+			_saveAnywhereBook = (tokens.at(4) == "t");
+			_spawnLocation = spawnLocationFromString(tokens.at(5));
+			_dungeonSignHints = (tokens.at(6) == "t");
+			_allowSpoilerLog = (tokens.at(7) == "t");
+		} 
+		catch(std::exception&) {
+			throw RandomizerException("Invalid permalink given.");
 		}
 	} 
-	else
+	else 
 	{
-		_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
-		_seedAsString = Tools::stringify(_seed);
+		// New seed case: extract seed related options from the CLI arguments
+		std::string seedString = args.getString("seed", "random");
+		try {
+			_seed = (uint32_t) std::stoul(seedString);
+		} catch (std::invalid_argument&) {
+			_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
+			_seed *= _seed;
+		}
+
+		// Seed-related options (included in permalink)
+		_armorUpgrades			= args.getBoolean("armorupgrades", true);
+		_shuffleTiborTrees		= args.getBoolean("shuffletrees", false);
+		_saveAnywhereBook		= args.getBoolean("recordbook", true);
+		_spawnLocation			= spawnLocationFromString(args.getString("spawnlocation", "massan"));
+		_dungeonSignHints		= args.getBoolean("dungeonsignhints", false);
+		_allowSpoilerLog		= args.getBoolean("allowSpoilerLog", true);
 	}
 
-	// Technical options
-	_inputRomPath			= parseStringOption("inputrom", "input.md");
-	_outputRomPath			= parseStringOption("outputrom", "output.md");
-	_spoilerLogPath			= parseStringOption("outputlog", "spoiler.log");
-	_debugLogPath			= parseStringOption("debuglog", "debug.log");
-	_pauseAfterGeneration	= parseBooleanOption("pause", true);
-
-	// Gameplay options
-	_armorUpgrades			= parseBooleanOption("armorupgrades", true);
-	_shuffleTiborTrees		= parseBooleanOption("shuffletrees", false);
-	_saveAnywhereBook		= parseBooleanOption("recordbook", true);
-	_spawnLocation			= parseSpawnLocationEnumOption("spawnlocation", SpawnLocation::MASSAN);
-	_dungeonSignHints		= parseBooleanOption("dungeonsignhints", false);
-
-	// Miscellaneous options
-	_addIngameItemTracker	= parseBooleanOption("ingametracker", false);
-	_hudColor				= parseStringOption("hudcolor", "default");
+	// Personal options (not included in permalink)
+	_inputRomPath			= args.getString("inputrom", "input.md");
+	_outputRomPath			= args.getString("outputrom", "output.md");
+	_spoilerLogPath			= args.getString("outputlog", "spoiler.log");
+	_debugLogPath			= args.getString("debuglog", "debug.log");
+	_pauseAfterGeneration	= args.getBoolean("pause", true);
+	_addIngameItemTracker	= args.getBoolean("ingametracker", false);
+	_hudColor				= args.getString("hudcolor", "default");
 }
 
-std::string RandomizerOptions::getSpawnLocationAsString() const
+std::string RandomizerOptions::toPermalink() const
 {
-	switch (_spawnLocation)
-	{
-	case SpawnLocation::MASSAN:		return "Massan";
-	case SpawnLocation::GUMI:		return "Gumi";
-	case SpawnLocation::RYUMA:		return "Ryuma";
-	case SpawnLocation::RANDOM:		return "Random";
-	}
-	return "???";
-}
-
-void RandomizerOptions::parseOptionsDictionaryFromArgs(int argc, char* argv[])
-{
-	for (int i = 1; i < argc; ++i)
-	{
-		std::string param = argv[i];
-		if (param[0] != '-' || param[1] != '-')
-			continue;
-
-		auto tokenIter = std::find(param.begin() + 2, param.end(), '=');
-		std::string paramName(param.begin() + 2, tokenIter);
-		Tools::toLower(paramName);
-		if (tokenIter != param.end())
-			_optionsDictionary[paramName] = std::string(tokenIter + 1, param.end());
-		else
-			_optionsDictionary[paramName] = "";
-	}
-}
-
-std::string RandomizerOptions::parseStringOption(const std::string& name, const std::string& defaultValue) const
-{
-	try
-	{
-		return _optionsDictionary.at(name);
-	}
-	catch (std::out_of_range&)
-	{
-		return defaultValue;
-	}
-}
-
-bool RandomizerOptions::parseBooleanOption(const std::string& name, bool defaultValue) const
-{
-	// "--noParam" <==> "--param=false"
-	std::string negationParam = "no" + name;
-	if (_optionsDictionary.count(negationParam))
-		return false;
-
-	try
-	{
-		std::string contents = _optionsDictionary.at(name);
-		Tools::toLower(contents);
-
-		// "--param=false"
-		if (contents == "false")
-			return false;
-
-		// "--param=true" or "--param"
-		return true;
-	}
-	catch (std::out_of_range&)
-	{
-		// No trace of "--param" or "--noParam", return default value
-		return defaultValue;
-	}
-}
-
-SpawnLocation RandomizerOptions::parseSpawnLocationEnumOption(const std::string& name, SpawnLocation defaultValue) const
-{
-	const std::unordered_map<std::string, SpawnLocation> assocMap = {
-		{ "massan", SpawnLocation::MASSAN	},
-		{ "0",		SpawnLocation::MASSAN	},
-		{ "gumi",	SpawnLocation::GUMI		},
-		{ "1",		SpawnLocation::GUMI		},
-		{ "ryuma",	SpawnLocation::RYUMA	},
-		{ "2",		SpawnLocation::RYUMA	},
-		{ "random",	SpawnLocation::RANDOM	},
-		{ "3",		SpawnLocation::RANDOM	}
-	};
-
-	try
-	{
-		std::string spawnLoc = _optionsDictionary.at(name);
-		Tools::toLower(spawnLoc);
-		return assocMap.at(spawnLoc);
-	}
-	catch (std::out_of_range&)
-	{
-		return defaultValue;
-	}
+	std::ostringstream permalinkBuilder;
+	permalinkBuilder 	<< RELEASE << ";"
+						<< _seed << ";"
+						<< (_armorUpgrades ? "t" : "") << ";"
+						<< (_shuffleTiborTrees ? "t" : "") << ";"
+						<< (_saveAnywhereBook ? "t" : "") << ";"
+						<< (spawnLocationToNumber(_spawnLocation)) << ";"
+						<< (_dungeonSignHints ? "t" : "") << ";"
+						<< (_allowSpoilerLog ? "t" : "");
+	
+	return "L" + base64_encode(permalinkBuilder.str().c_str()) + "S";
 }

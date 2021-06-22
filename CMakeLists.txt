@@ -10,8 +10,13 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
 endif()
 
 add_executable(randstalker
+    src/Extlibs/Base64.cpp
+
     src/MegadriveTools/MdCode.cpp
     src/MegadriveTools/MdRom.cpp
+    
+    src/Enums/SpawnLocations.cpp
+    
     src/GameStrings.cpp
     src/GameText.cpp
     src/RandomizerOptions.cpp

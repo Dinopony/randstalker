@@ -162,7 +162,7 @@ public:
 
     void writeToROM(md::ROM& rom) 
     {
-        std::cout << "Outputting text to ROM...\n";
+        // std::cout << "Outputting text to ROM...\n";
 
         // Write Huffman trees & tree offsets to the ROM
         std::vector<uint16_t> treeOffsets;
@@ -212,8 +212,8 @@ public:
             writingAddress += (uint32_t)_textbanks[i].size();
         }
 
-        int sizeDiff = 0x38368 - writingAddress;
-        std::cout << "Saved " << sizeDiff << " bytes on textbanks.\n";
+        //int sizeDiff = 0x38368 - writingAddress;
+        //std::cout << "Saved " << sizeDiff << " bytes on textbanks.\n";
 
         while (writingAddress < 0x38368)
         {

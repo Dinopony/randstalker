@@ -55,7 +55,7 @@ To do so, either launch randstalker.exe and follow the instructions, or execute 
 
 With the following options being available:
 
-- **--seed=SEED**: set the seed used for the randomizer. It can be a string or an integer, or the keyword "random" if you want it to be random (e.g. `--seed=2134548740`)
+- **--permalink=PERMALINK**: use the given permalink to populate all other settings. Permalinks are given at then end of a generation and allow for other generations of the exact same seed.
 - **--inputRom=PATH**: set the path to the ROM used as input (e.g. `--inputRom="myROM.md"`)
 - **--outputRom=PATH**: set the path where the randomized ROM will be outputted (e.g. `--outputROM="rando.md"`)
 - **--outputLog=PATH**: set the path where the spoiler log will be outputted (e.g. `--outputLog=spoiler.log`)

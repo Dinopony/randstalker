@@ -2087,7 +2087,7 @@ void loadGameStrings(std::vector<std::string>& gameStrings)
         /* 0x820 */ 	"\x1C""Welcome to\nthe Casino Arthurlier!\nHave fun!\x03",
         /* 0x821 */ 	"\x1C""See you!\x03",
         /* 0x822 */ 	"\x1C""Sorry. You can't come in \nunless you have a \n""\x1D""!\x03",
-        /* 0x823 */ 	"\x1C""There's one lone tree \nstanding up above.Trees \nare very rare here, so \x1E",
+        /* 0x823 */ 	"\x1C""There's one lone tree \nstanding up above. Trees \nare very rare here, so \x1E",
         /* 0x824 */ 	"\x1C""I'm standing guard!\x03",
         /* 0x825 */ 	"\x1C""You met my father, right?\nIn that case, go on up and\ncut the tree to make a raft!\x03",
         /* 0x826 */ 	"\x1C""I wish we could grow\nmore trees underground...\x03",
