@@ -343,7 +343,7 @@ healthchecksdb
 *.md
 
 # CMake related
-CMakeFiles/*
+build/*
 CMakeCache.txt
 cmake_install.cmake
 
@@ -351,3 +351,5 @@ cmake_install.cmake
 *.vcxproj
 *.vcxproj.filters
 *.sln
+
+.vscode/*

@@ -74,5 +74,5 @@ It also provides a few randomization options:
 
 If you want to build the binary from the source code, you will need CMake.
 
-On Windows, with Visual Studio 2019 installed, you can do `cmake -G "Visual Studio 16"`, then `cmake build .` at the project root.
-On Unix, you can do `cmake -G "Unix Makefiles"`, then `cmake build .` at the project root.
+- On Windows, with Visual Studio 2019 installed, you can execute `build_win_vs2019.bat`
+- On Unix, you can execute `build_unix.sh`
