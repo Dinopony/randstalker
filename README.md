@@ -31,7 +31,7 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 
 - Original game glitches (tree cutting glitch, armlet skip...) are fixed. Sorry!
 - All known places where you usually can't go back and could potentially softlock now stay opened (e.g. Crypt, King Nole's Labyrinth raft sector, Swamp Shrine boss reward chest...)
-- Tibor trees connections can be optionally randomized (will be available as an option later on)
+- Tibor trees connections can be optionally randomized
 - Statue of Jypta is reintroduced as a real item giving gold passively as you walk. Free riches!
 - The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
 - The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right before it. You can go straight to Kazalt without worrying about it.
@@ -69,3 +69,10 @@ It also provides a few randomization options:
 - **--spawnLocation=LOC**: choose the starting location by replacing LOC with either `massan`, `gumi`, `ryuma` or `random`
 - **--ingameTracker**: adds greyed out key items in inventory to have a working in-game item tracker
 - **--dungeonSignHints**: adds extra hints on signs inside dungeons (e.g. Thieves Hideout, Mir Tower...)
+
+## Build instructions
+
+If you want to build the binary from the source code, you will need CMake.
+
+On Windows, with Visual Studio 2019 installed, you can do `cmake -G "Visual Studio 16"`, then `cmake build .` at the project root.
+On Unix, you can do `cmake -G "Unix Makefiles"`, then `cmake build .` at the project root.

@@ -23,7 +23,6 @@ public:
 private:
 	std::string _initialText;
 	std::string _outputText;
-	//	std::vector<uint8_t> _bytes;
 	uint16_t _currentLineLength;
 	uint8_t _currentLineCount;
 };

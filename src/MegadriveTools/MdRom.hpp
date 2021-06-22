@@ -38,7 +38,7 @@ namespace md {
 		void storeAddress(const std::string& name, uint32_t address) { _storedAddresses[name] = address; }
 		uint32_t getStoredAddress(const std::string& name) { return _storedAddresses.at(name); }
 
-		uint32_t getCurrentInjectionAddress() { return _currentCodeInjectionAddress; }
+		uint32_t getCurrentDataInjectionAddress() { return _currentDataInjectionAddress; }
 		uint32_t getCurrentCodeInjectionAddress() { return _currentCodeInjectionAddress; }
 
 		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output);
