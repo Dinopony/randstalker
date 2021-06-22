@@ -14,7 +14,6 @@ class RandomizerOptions
 public:
 	RandomizerOptions(const ArgumentDictionary& args);
 
-	const std::string& getSeedString() const { return _seedAsString; }
 	uint32_t getSeed() const { return _seed; }
 	std::string toPermalink() const;
 	
@@ -37,7 +36,6 @@ public:
 
 private:
 	// ------------- Attributes -------------
-	std::string _seedAsString;
 	uint32_t _seed;
 	
 	std::string _inputRomPath;
