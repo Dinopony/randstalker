@@ -9,6 +9,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: cmake
+      run: cmake -G "Unix Makefiles"
     - name: make
       run: make
-      working-directory: Randstalker

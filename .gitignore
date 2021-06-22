@@ -342,8 +342,12 @@ healthchecksdb
 # Debug ROM file output
 *.md
 
+# CMake related
 CMakeFiles/*
+CMakeCache.txt
+cmake_install.cmake
+
+# VS files
 *.vcxproj
 *.vcxproj.filters
 *.sln
-CMakeCache.txt
