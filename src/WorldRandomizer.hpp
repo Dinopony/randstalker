@@ -3,16 +3,16 @@
 #include <vector>
 #include <string>
 #include <random>
-#include "UnsortedSet.h"
+#include "UnsortedSet.hpp"
 
-#include "ItemCodes.h"
-#include "ItemSourceCodes.h"
-#include "RegionCodes.h"
-#include "ItemSources.h"
-#include "RandomizerOptions.h"
-#include "Item.h"
-#include "World.h"
-#include "WorldRegion.h"
+#include "Enums/ItemCodes.hpp"
+#include "Enums/ItemSourceCodes.hpp"
+#include "Enums/RegionCodes.hpp"
+#include "ItemSources.hpp"
+#include "RandomizerOptions.hpp"
+#include "Item.hpp"
+#include "World.hpp"
+#include "WorldRegion.hpp"
 
 class NoAppropriateItemSourceException : public std::exception {};
 

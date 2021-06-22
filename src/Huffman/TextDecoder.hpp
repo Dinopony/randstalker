@@ -4,8 +4,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "../MegadriveTools/MdRom.h"
-#include "HuffmanTree.h"
+#include "../MegadriveTools/MdRom.hpp"
+#include "HuffmanTree.hpp"
 
 class TextDecoder
 {

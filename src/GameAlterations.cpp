@@ -1,9 +1,9 @@
-#include "GameAlterations.h"
-#include "ItemCodes.h"
-#include "RandomizerOptions.h"
-#include "GameText.h"
-#include "MegadriveTools/MdRom.h"
-#include "MegadriveTools/MdCode.h"
+#include "GameAlterations.hpp"
+#include "Enums/ItemCodes.hpp"
+#include "RandomizerOptions.hpp"
+#include "GameText.hpp"
+#include "MegadriveTools/MdRom.hpp"
+#include "MegadriveTools/MdCode.hpp"
 #include <cstdint>
 #include <vector>
 

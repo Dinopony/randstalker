@@ -1,15 +1,15 @@
 #pragma once
 
-#include "ItemSourceCodes.h"
-#include "RegionCodes.h"
-#include "ItemSources.h"
-#include "Item.h"
-#include "GameText.h"
-#include "WorldRegion.h"
-#include "WorldMacroRegion.h"
-#include "RandomizerOptions.h"
-#include "TreeMap.h"
-#include "HintSign.h"
+#include "Enums/ItemSourceCodes.hpp"
+#include "Enums/RegionCodes.hpp"
+#include "ItemSources.hpp"
+#include "Item.hpp"
+#include "GameText.hpp"
+#include "WorldRegion.hpp"
+#include "WorldMacroRegion.hpp"
+#include "RandomizerOptions.hpp"
+#include "TreeMap.hpp"
+#include "HintSign.hpp"
 
 constexpr auto GOLD_SOURCES_COUNT = 30;
 

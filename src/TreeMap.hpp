@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <string>
-#include "MegadriveTools/MdRom.h"
+#include "MegadriveTools/MdRom.hpp"
 
 class TreeMap {
 public:

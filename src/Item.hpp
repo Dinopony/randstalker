@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MegadriveTools/MdRom.h"
-#include "ItemCodes.h"
+#include "MegadriveTools/MdRom.hpp"
+#include "Enums/ItemCodes.hpp"
 
 class Item
 {

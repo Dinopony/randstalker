@@ -1,4 +1,4 @@
-#include "RandomizerOptions.h"
+#include "RandomizerOptions.hpp"
 #include <set>
 #include <unordered_map>
 

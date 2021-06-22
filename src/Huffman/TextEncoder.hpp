@@ -8,9 +8,9 @@
 #include <set>
 #include <algorithm>
 
-#include "HuffmanTree.h"
-#include "Symbols.h"
-#include "../MegadriveTools/MdRom.h"
+#include "HuffmanTree.hpp"
+#include "Symbols.hpp"
+#include "../MegadriveTools/MdRom.hpp"
 
 class TextEncoder 
 {

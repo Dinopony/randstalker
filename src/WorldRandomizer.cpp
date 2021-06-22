@@ -1,6 +1,6 @@
-#include "WorldRandomizer.h"
-#include "Tools.h"
-#include "GameText.h"
+#include "WorldRandomizer.hpp"
+#include "Tools.hpp"
+#include "GameText.hpp"
 #include <algorithm>
 #include <set>
 #include <sstream>

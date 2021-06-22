@@ -1,13 +1,13 @@
-#include "World.h"
+#include "World.hpp"
 
-#include "ItemCodes.h"
-#include "ItemSourceCodes.h"
-#include "RegionCodes.h"
-#include "Item.h"
-#include "ItemSources.h"
-#include "GameText.h"
-#include "Huffman/Symbols.h"
-#include "Huffman/TextEncoder.h"
+#include "Enums/ItemCodes.hpp"
+#include "Enums/ItemSourceCodes.hpp"
+#include "Enums/RegionCodes.hpp"
+#include "Item.hpp"
+#include "ItemSources.hpp"
+#include "GameText.hpp"
+#include "Huffman/Symbols.hpp"
+#include "Huffman/TextEncoder.hpp"
 
 #include <sstream>
 

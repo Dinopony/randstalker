@@ -1,5 +1,5 @@
-#include "MdRom.h"
-#include "MdCode.h"
+#include "MdRom.hpp"
+#include "MdCode.hpp"
 #include <fstream>
 
 constexpr uint32_t ROM_SIZE = 2097152;

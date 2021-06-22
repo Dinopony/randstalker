@@ -2,9 +2,9 @@
 
 #include <cstdint>
 #include <algorithm>
-#include "Symbols.h"
-#include "Bitfield.h"
-#include "HuffmanTreeNode.h"
+#include "Symbols.hpp"
+#include "Bitfield.hpp"
+#include "HuffmanTreeNode.hpp"
 
 class HuffmanTree
 {

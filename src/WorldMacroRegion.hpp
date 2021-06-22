@@ -2,10 +2,10 @@
 
 #include <string>
 #include <vector>
-#include "UnsortedSet.h"
-#include "Item.h"
-#include "ItemSources.h"
-#include "WorldRegion.h"
+#include "UnsortedSet.hpp"
+#include "Item.hpp"
+#include "ItemSources.hpp"
+#include "WorldRegion.hpp"
 
 class WorldMacroRegion
 {

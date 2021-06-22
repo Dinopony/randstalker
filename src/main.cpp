@@ -36,12 +36,12 @@
 #include <string>
 #include <iostream>
 
-#include "MegadriveTools/MdRom.h"
-#include "GameAlterations.h"
-#include "Tools.h"
-#include "World.h"
-#include "WorldRandomizer.h"
-#include "SpoilerLog.h"
+#include "MegadriveTools/MdRom.hpp"
+#include "GameAlterations.hpp"
+#include "Tools.hpp"
+#include "World.hpp"
+#include "WorldRandomizer.hpp"
+#include "SpoilerLog.hpp"
 
 constexpr auto RELEASE = "1.02";
 

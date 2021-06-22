@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <set>
-#include "World.h"
+#include "World.hpp"
 
 class SpoilerLog : private std::ofstream 
 {

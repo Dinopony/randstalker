@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include <chrono>
 #include <fstream>
-#include "Tools.h"
-#include "SpawnLocations.h"
+#include "Tools.hpp"
+#include "Enums/SpawnLocations.hpp"
 
 class RandomizerOptions 
 {

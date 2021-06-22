@@ -1,4 +1,4 @@
-#include "GameText.h"
+#include "GameText.hpp"
 #include <sstream>
 
 GameText::GameText() : _currentLineLength(0), _currentLineCount(0)
