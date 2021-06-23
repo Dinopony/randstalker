@@ -591,7 +591,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		ITEM_SPIKE_BOOTS,		ITEM_AXE_MAGIC,		ITEM_BUYER_CARD,	ITEM_GARLIC,
 		ITEM_EINSTEIN_WHISTLE,	ITEM_ARMLET,		ITEM_IDOL_STONE,
 		ITEM_THUNDER_SWORD,		ITEM_HEALING_BOOTS,	ITEM_VENUS_STONE,	ITEM_STATUE_JYPTA,
-		ITEM_SUN_STONE,			ITEM_KEY,			ITEM_SAFETY_PASS,
+		ITEM_SUN_STONE,			ITEM_KEY,			ITEM_SAFETY_PASS,	ITEM_LOGS,
 		ITEM_GOLA_EYE,			ITEM_GOLA_NAIL,		ITEM_GOLA_FANG,		ITEM_GOLA_HORN
 	};
 	hintableItemLocations.erase(std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedFortuneItem->getID()));
