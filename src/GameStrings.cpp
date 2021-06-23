@@ -2105,7 +2105,7 @@ void loadGameStrings(std::vector<std::string>& gameStrings)
         /* 0x832 */ 	"\x1C""Let's go!\nWe'll get to the treasures\nsoon!\x1E",
         /* 0x833 */ 	"\x1C""Soon? Then you know\nthe exact location of the\ntreasures, right?\x1E",
         /* 0x834 */ 	"\x1C""No, but it\nfeels like we're getting \nwarmer!\x03",
-        /* 0x835 */ 	"\x1C""Nice to meet you!\nWe're not like Dexand \nthe other stupid soldiers!\x1E",
+        /* 0x835 */ 	"\x1C""Nice to meet you!\nWe're not like Dex and \nthe other stupid soldiers!\x1E",
         /* 0x836 */ 	"\x1C""We're the elite of the elite!\nWe're the Unicorn troopers!\x1E",
         /* 0x837 */ 	"\x1C""\"Labyrinth Formation\"!\nReady, set...go!\x1E",
         /* 0x838 */ 	"\x1C""See you again!\nHahahahaha!\x03",
