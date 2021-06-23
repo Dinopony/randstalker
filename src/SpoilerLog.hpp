@@ -45,6 +45,7 @@ public:
 		this->writeTitle("Options");
 
 		*this << "Seed: " << _options.getSeed() << "\n";
+		*this << "Permalink: " << _options.toPermalink() << "\n";
 		*this << "Armor upgrades: " << (_options.useArmorUpgrades() ? "enabled" : "disabled") << "\n";
 		*this << "Randomized Tibor trees: " << (_options.shuffleTiborTrees() ? "enabled" : "disabled") << "\n";
 		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";
