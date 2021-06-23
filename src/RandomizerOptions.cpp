@@ -2,6 +2,7 @@
 #include "Extlibs/Base64.hpp"
 #include "Globals.hpp"
 #include "Exceptions.hpp"
+#include "Tools.hpp"
 #include <iostream>
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
@@ -52,16 +53,43 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 	}
 
 	// Personal options (not included in permalink)
-	_inputRomPath			= args.getString("inputrom", "input.md");
-	_outputRomPath			= args.getString("outputrom", "output.md");
-	_spoilerLogPath			= args.getString("outputlog", "spoiler.log");
-	_debugLogPath			= args.getString("debuglog", "debug.log");
+	_inputRomPath			= args.getString("inputrom", "./input.md");
+	
+	_outputRomPath			= args.getString("outputrom", "./");
+	if(*_outputRomPath.rbegin() != '/')
+		_outputRomPath += "/";
+
+	_spoilerLogPath			= args.getString("outputlog", _outputRomPath);
+	if(*_spoilerLogPath.rbegin() != '/')
+		_spoilerLogPath += "/";
+
+	_debugLogPath			= args.getString("debuglog", "./debug.log");
 	_pauseAfterGeneration	= args.getBoolean("pause", true);
 	_addIngameItemTracker	= args.getBoolean("ingametracker", false);
 	_hudColor				= args.getString("hudcolor", "default");
 }
 
-std::string RandomizerOptions::toPermalink() const
+std::vector<std::string> RandomizerOptions::getHashWords() const
+{
+	std::vector<std::string> words = {
+		"EkeEke", "Nail", "Horn", "Fang", "Magic", "Ice", "Thunder", "Gaia", "Fireproof", "Iron", "Spikes", "Healing", "Snow",
+		"Mars", "Moon", "Saturn", "Venus", "Detox", "Statue", "Golden", "Mind", "Repair", "Casino", "Ticket", "Axe", "Ribbon",
+		"Card", "Lantern", "Garlic", "Paralyze", "Chicken", "Death", "Jypta", "Sun", "Armlet", "Einstein", "Whistle", "Spell",
+		"Book", "Lithograph", "Red", "Purple", "Jewel", "Pawn", "Ticket", "Gola", "Nole", "King", "Dragon", "Dahl", "Restoration",
+		"Logs", "Oracle", "Stone", "Idol", "Key", "Safety", "Pass", "Bell", "Short", "Cake", "Life", "Stock", "Zak", "Duke",
+		"Massan", "Gumi", "Ryuma", "Mercator", "Verla", "Destel", "Kazalt", "Greedly", "Dex", "Slasher", "Marley", "Nigel", "Friday",
+		"Mir", "Miro", "Prospero", "Fara", "Orc", "Mushroom", "Slime", "Cyclops", "Ninja", "Ghost", "Tibor", "Knight", "Pockets",
+		"Kado", "Kan", "Well", "Dungeon", "Loria", "Kayla", "Wally", "Ink", "Arthur", "Crypt", "Mummy", "Poison", "Labyrinth",
+		"Palace", "Gold", "Waterfall", "Shrine", "Swamp", "Hideout", "Greenmaze", "Mines", "Lake", "Volcano", "Crate", "Jar", 
+		"Helga", "Fahl", "Yard", "Twinkle", "Firedemon", "Spinner", "Golem", "Boulder"
+	};
+
+	std::mt19937 rng(_seed);
+	Tools::shuffle(words, rng);
+	return std::vector<std::string>(words.begin(), words.begin() + 4);
+}
+
+std::string RandomizerOptions::getPermalink() const
 {
 	std::ostringstream permalinkBuilder;
 	permalinkBuilder 	<< MAJOR_RELEASE << ";"

@@ -41,9 +41,8 @@ namespace Tools
         size_t prev = 0, pos = 0;
         do {
             pos = str.find(delim, prev);
-            if (pos == std::string::npos) {
+            if (pos == std::string::npos)
                 pos = str.length();
-            }
             std::string token = str.substr(prev, pos-prev);
             tokens.push_back(token);
 
@@ -51,6 +50,21 @@ namespace Tools
         } while (pos < str.length() && prev < str.length());
 
         return tokens;
+    }
+
+    inline std::string join(const std::vector<std::string>& words, const std::string& junction)
+    {
+        if(words.size() == 0)
+            return "";
+            
+        std::string ret = words[0];
+        for(int i=1 ; i<words.size() ; ++i)
+        {
+            ret += junction;
+            ret += words[i];
+        }
+
+        return ret;
     }
 
     template<typename T>

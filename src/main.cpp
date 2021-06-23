@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 		rom->saveAs(options.getOutputROMPath());
 
 		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n" << std::endl;
-		std::cout << "Permalink: \"" << options.toPermalink() << "\"" << std::endl;
+		std::cout << "Permalink: \"" << options.getPermalink() << "\"" << std::endl;
 		std::cout << "Share this permalink with other people to enable them building the exact same seed.\n" << std::endl;
 
 		if ( options.mustPause() )

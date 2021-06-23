@@ -15,12 +15,15 @@ public:
 	RandomizerOptions(const ArgumentDictionary& args);
 
 	uint32_t getSeed() const { return _seed; }
-	std::string toPermalink() const;
+	std::vector<std::string> getHashWords() const;
+	std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
+	std::string getPermalink() const;
 	
 	// Personal options (not included in permalink)
 	const std::string& getInputROMPath() const { return _inputRomPath; }
-	const std::string& getOutputROMPath() const { return _outputRomPath; }
-	const std::string& getSpoilerLogPath() const { return _spoilerLogPath; }
+	std::string getOutputROMPath() const { return _outputRomPath + this->getHashSentence() + ".md"; }
+	std::string getSpoilerLogPath() const { return _spoilerLogPath + this->getHashSentence() + ".log"; }
+
 	const std::string& getDebugLogPath() const { return _debugLogPath; }
 	bool mustPause() const { return _pauseAfterGeneration; }
 	bool addIngameItemTracker() const { return _addIngameItemTracker; }

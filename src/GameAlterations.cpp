@@ -849,27 +849,6 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
 //    rom.setWord(0x9020, color);
 }
 
-void replaceNewGameStringBySeedHash(md::ROM& rom, const RandomizerOptions& options)
-{
-    std::vector<uint8_t> seedHashText;
-
-    uint32_t seed = options.getSeed();
-    while (seed && seedHashText.size() < 3)
-    {
-        uint32_t mod = seed % 0x3F;
-        if (mod)
-            seedHashText.push_back((uint8_t)mod);
-        seed /= 0x3F;
-    }
-
-    // Write seed hash as text replacing the "New Game" string
-    rom.setBytes(0x29A11, { 0x1D, 0x29, 0x29, 0x28, 0x47 }); // "Seed:"
-    for (uint32_t i = 0; i < seedHashText.size(); ++i)
-        rom.setByte(0x29A16 + i, seedHashText[i]);
-    for (uint32_t i = (uint32_t)seedHashText.size() ; i < 3; ++i)
-        rom.setByte(0x29A16 + i, 0x0);
-}
-
 void setKeyAsUniqueItem(md::ROM& rom)
 {
     // Set the maximum amount of keys to 1, displaying it as a unique item
@@ -1091,7 +1070,6 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     // Miscellaneous
     deactivateRegionCheck(rom);
     changeHUDColor(rom, options);
-    replaceNewGameStringBySeedHash(rom, options);
     setKeyAsUniqueItem(rom);
 }
 
