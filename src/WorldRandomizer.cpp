@@ -617,8 +617,8 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 
 			macroRegionsAvailableForHints.erase(macroRegionsAvailableForHints.begin());
 		}
-		// "You will / won't need {item} to finish" (10%)
-		else if (randomNumber < 0.5 && nextElligibleHintableItemsNecessityPos >=0)
+		// "You will / won't need {item} to finish" (25%)
+		else if (randomNumber < 0.55 && nextElligibleHintableItemsNecessityPos >=0)
 		{
 			Item* hintedItem = _world.items[hintableItemsNecessity.at(nextElligibleHintableItemsNecessityPos)];
 			if (_strictlyNeededKeyItems.contains(hintedItem))
@@ -628,7 +628,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 
 			hintableItemsNecessity.erase(hintableItemsNecessity.begin() + nextElligibleHintableItemsNecessityPos);
 		}
-		// "You shall find {item} in {place}" (60%)
+		// "You shall find {item} in {place}" (45%)
 		else if (!hintableItemLocations.empty())
 		{
 
