@@ -355,8 +355,6 @@ void handleArmorUpgrades(md::ROM& rom)
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////
 //       Item check changes
 ///////////////////////////////////////////////////////////////////////////////////
@@ -497,26 +495,6 @@ void alterWaterfallShrineSecretStairsCheck(md::ROM& rom)
         // After:	02 09 (bit 1 of FF1002)
     rom.setWord(0x005014, 0x0209);
 }
-
-/*
-void alterVerlaBoulderCheck(md::ROM& rom)
-{
-    // Change the removal check for the boulder between Verla and Mercator so that it disappears as soon as you sail with the boat.
-    // This means you don't need to do anything in Verla to be able to go back to the rest of the island, preventing any softlock there
-
-    // Mercator side map (exterior)
-    //  5071 08 => 0C
-    // 1A8C9 08 => 88 (>> 5 = 4 --> bit 4)
-    rom.setByte(0x005071, 0x0C);
-    rom.setByte(0x01A8C9, 0x88);
-
-    // Verla side map (inside tunnel)
-    //  5075 08 => 0C
-    // 1A965 06 => 86 (>> 5 = 4 --> bit 4)
-    rom.setByte(0x005075, 0x0C);
-    rom.setByte(0x01A965, 0x86);
-}
-*/
 
 void alterBlueRibbonStoryCheck(md::ROM& rom)
 {
@@ -984,8 +962,95 @@ void alterGoldRewardsHandling(md::ROM& rom)
     rom.setCode(0x0070E8, md::Code().jsr(funcAddr));
 }
 
+void addTeleportFunctionToSpellBook(md::ROM& rom)
+{
+    uint16_t spawnX = rom.getByte(0x0027FD);
+    uint16_t spawnZ = rom.getByte(0x002805);
+    uint16_t spawnPosition = (spawnX << 8) + spawnZ;
+    uint16_t spawnMapID = rom.getWord(0x0027F4);
+
+    // ------------- New spell book teleport function -------------
+    md::Code spellBookFunction;   // CSA_009A
+    spellBookFunction.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
+    spellBookFunction.movew(spawnPosition, addr_(0xFF5400));
+    spellBookFunction.trap(0, { 0x00, 0x4D });
+    spellBookFunction.jsr(0x44C);
+    spellBookFunction.movew(spawnMapID, reg_D0); // Set MapID to spawn map
+    spellBookFunction.jsr(0x1586E);
+    spellBookFunction.jsr(0x434);
+    spellBookFunction.clrb(reg_D0);
+    spellBookFunction.jsr(0x2824);
+    spellBookFunction.jsr(0x410);
+    spellBookFunction.jsr(0x8EB4);
+    spellBookFunction.movemFromStack({ reg_D0_D7 }, { reg_A0_A6 });
+    spellBookFunction.rts();
+    rom.injectCode(spellBookFunction, "func_spell_book");
+
+    // ------------- Extended item post use table -------------
+    uint32_t newPostUseTableAddr = rom.reserveDataBlock(0x2A+6, "new_post_use_table");
+    // PostUseGarlic
+    rom.setLong(newPostUseTableAddr, 0x00008BE8); 
+    rom.setWord(newPostUseTableAddr+4, 0x9BFF);
+    newPostUseTableAddr += 6;
+    // PostUseEinsteinWhistle
+    rom.setLong(newPostUseTableAddr, 0x00008BF2); 
+    rom.setWord(newPostUseTableAddr+4, 0xA0FF);
+    newPostUseTableAddr += 6;
+    // PostUsePostUseGolasEye
+    rom.setLong(newPostUseTableAddr, 0x00008C7C); 
+    rom.setWord(newPostUseTableAddr+4, 0xABFF);
+    newPostUseTableAddr += 6;
+    // PostUseIdolStone
+    rom.setLong(newPostUseTableAddr, 0x00008C8E); 
+    rom.setWord(newPostUseTableAddr+4, 0xB1FF);
+    newPostUseTableAddr += 6;
+    // PostUseKey
+    rom.setLong(newPostUseTableAddr, 0x00008CB6); 
+    rom.setWord(newPostUseTableAddr+4, 0xB2FF);
+    newPostUseTableAddr += 6;
+    // PostUseShortcake
+    rom.setLong(newPostUseTableAddr, 0x00008CF6); 
+    rom.setWord(newPostUseTableAddr+4, 0xB6FF);
+    newPostUseTableAddr += 6;
+    // PostUseSpellbook
+    rom.setLong(newPostUseTableAddr, rom.getStoredAddress("func_spell_book")); 
+    rom.setWord(newPostUseTableAddr+4, 0xA4FF);
+    newPostUseTableAddr += 6;
+    // End
+    rom.setLong(newPostUseTableAddr, 0xFFFFFFFF); 
+    rom.setWord(newPostUseTableAddr+4, 0xFFFF);
+
+    // ------------- New function to read the new table -------------
+    md::Code newPostUseTableLookupProc;
+    newPostUseTableLookupProc.moveb(addr_(0x00FF1152), reg_D0);
+    newPostUseTableLookupProc.lea(rom.getStoredAddress("new_post_use_table"), reg_A0);
+    newPostUseTableLookupProc.label("newPostUseTableLookupProc_loop");
+    newPostUseTableLookupProc.moveb(addr_(reg_A0, 0x04), reg_D2);
+    newPostUseTableLookupProc.cmpib(0xFF, reg_D2);
+    newPostUseTableLookupProc.beq(7);
+    newPostUseTableLookupProc.cmpb(reg_D0, reg_D2);
+    newPostUseTableLookupProc.beq(3);
+    newPostUseTableLookupProc.addql(0x06, reg_A0);
+    newPostUseTableLookupProc.bra("newPostUseTableLookupProc_loop");
+    newPostUseTableLookupProc.movel(addr_(reg_A0), reg_A0);
+    newPostUseTableLookupProc.jmp(addr_(reg_A0));
+    newPostUseTableLookupProc.rts();
+    uint32_t newPostUseTableLookupProcAddr = rom.injectCode(newPostUseTableLookupProc);
+
+    // ------------- JMP to override old lookup function by the new one -------------
+    md::Code postUseTableInjectorCall;
+    postUseTableInjectorCall.jmp(newPostUseTableLookupProcAddr);
+    rom.setCode(0x8BC8, postUseTableInjectorCall);
+
+    // Replace "consume Spell Book" by "trigger post use effect"
+    rom.setLong(0x88C6, 0x600002EA); // bra loc_8BB2 >>> Mark used item as "has post use effect"
+}
+
+
 void addFunctionToItemsOnUse(md::ROM& rom)
 {
+    addTeleportFunctionToSpellBook(rom);
+
     // ------------- Extended item handling function -------------
 
     md::Code funcExtendedItemHandling;
@@ -1044,7 +1109,6 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
 
     // Map check changes
     alterWaterfallShrineSecretStairsCheck(rom);
-//  alterVerlaBoulderCheck(rom);
     alterBlueRibbonStoryCheck(rom);
     alterKingNolesCaveTeleporterCheck(rom);
     alterMercatorDocksShopCheck(rom);

@@ -53,6 +53,14 @@ namespace md
         return *this;
     }
 
+    Code& Code::jmp(const Param& target)
+    {
+        uint16_t opcode = 0x4EC0 + target.getMXn();
+        this->addOpcode(opcode);
+        this->addBytes(target.getAdditionnalData());
+        return *this;
+    }
+    
     Code& Code::jmp(uint32_t address)
     {
         this->addOpcode(0x4EF9);
@@ -414,6 +422,14 @@ namespace md
         this->addWord(0x4E71);
         if (--amount > 0)
             this->nop(amount);
+        return *this;
+    }
+
+    Code& Code::trap(uint8_t trapID, std::vector<uint8_t> additionnalBytes)
+    {
+        uint16_t opcode = 0x4E40 + static_cast<uint16_t>(trapID);
+        this->addOpcode(opcode);
+        this->addBytes(additionnalBytes);
         return *this;
     }
 

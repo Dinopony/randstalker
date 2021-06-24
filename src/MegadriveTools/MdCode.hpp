@@ -20,6 +20,7 @@ namespace md
         Code& bsr(uint8_t offset);
         Code& bsr(uint16_t offset);
         Code& jsr(uint32_t address);
+        Code& jmp(const Param& target);
         Code& jmp(uint32_t address);
 
         Code& cmp(const Param& value, const DataRegister& Dx, Size size);
@@ -104,6 +105,7 @@ namespace md
 
         Code& rts();
         Code& nop(uint16_t amount = 1);
+        Code& trap(uint8_t trapID, std::vector<uint8_t> additionnalBytes = {});
 
         void label(const std::string& label) { _labels[label] = static_cast<uint32_t>(_bytes.size()); }
         const std::vector<uint8_t>& getBytes() const { return _bytes; }
