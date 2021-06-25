@@ -1,6 +1,5 @@
 #include "RandomizerOptions.hpp"
 #include "Extlibs/Base64.hpp"
-#include "Globals.hpp"
 #include "Exceptions.hpp"
 #include "Tools.hpp"
 #include <iostream>

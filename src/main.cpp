@@ -44,7 +44,6 @@
 #include "WorldRandomizer.hpp"
 #include "SpoilerLog.hpp"
 #include "ArgumentDictionary.hpp"
-#include "Globals.hpp"
 #include "Exceptions.hpp"
 
 md::ROM* getInputROM(std::string inputRomPath)
