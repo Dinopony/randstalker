@@ -1,13 +1,3 @@
-var lifestockGoals = [
-    { name: "Reach 20 total life", types: [""] },
-    { name: "Reach 30 total life", types: [""] },
-    { name: "Reach 40 total life", types: [""] },
-    { name: "Reach 50 total life", types: [""] },
-    { name: "Reach 60 total life", types: [""] },
-    { name: "Reach 70 total life", types: [""] },
-    { name: "Reach 80 total life", types: [""] }
-];
-
 var minigameGoals = [
     { name: "Play Greenpea's boulder game 3 times", types: [""] },
     { name: "Play Greenpea's boulder game 5 times", types: [""] },
@@ -24,7 +14,7 @@ var goofyItemGoals = [
     { name: "Get Casino Ticket", types: [""] },
     { name: "Get Lantern", types: [""] },
     { name: "Get Bell", types: [""] },
-    { name: "Get Spell Book", types: [""] },
+    { name: "Use Spell Book", types: [""] },
     { name: "Get Statue of Jypta", types: [""] },
 ];
 
@@ -206,10 +196,10 @@ var bingoList = [
     /* 13 */ ,
     /* 14 */ sidequestGoals,
     /* 15 */ easyBossesGoals,
-    /* 16 */ reachTotalLifeGoals,
+    /* 16 */ ,
     /* 17 */ ,
-    /* 18 */ ,
-    /* 19 */ lifestockGoals,
+    /* 18 */ reachTotalLifeGoals,
+    /* 19 */ ,
     /* 20 */ ,
     /* 21 */ painfulCheckGoals,
     /* 22 */ buyEveryItemInShopGoals,
@@ -217,3 +207,4 @@ var bingoList = [
     /* 24 */ hardBossesGoals,
 ];
 
+// Beat a boss without anything equipped
