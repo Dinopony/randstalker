@@ -28,35 +28,6 @@ var getOptionalItemGoals = [
     { name: "Get Armlet", types: [""] },
 ];
 
-var getBootsOrRingGoals = [
-    { name: "Get Iron Boots", types: ["equipment"] },
-    { name: "Get Snow Spikes", types: ["equipment"] },
-    { name: "Get Fireproof Boots", types: ["equipment"] },
-    { name: "Get Healing Boots", types: ["equipment"] },
-    { name: "Get Venus Stone", types: ["equipment"] },
-    { name: "Get Saturn Stone", types: ["equipment"] },
-    { name: "Get Mars Stone", types: ["equipment"] },
-    { name: "Get Moon Stone", types: ["equipment"] },
-];
-
-var getSwordOrArmorGoals = [
-    { name: "Get Magic Sword", types: ["equipment"] },
-    { name: "Get Thunder Sword", types: ["equipment"] },
-    { name: "Get Ice Sword", types: ["equipment"] },
-    { name: "Get Sword of Gaia", types: ["equipment"] },
-    { name: "Get Steel Breast", types: ["equipment"] },
-    { name: "Get Chrome Breast", types: ["equipment"] },
-    { name: "Get Shell Breast", types: ["equipment"] },
-    { name: "Get Hyper Breast", types: ["equipment"] },
-];
-
-var getAllEquipmentsOfTypeGoals = [
-    { name: "Get all 4 swords", types: ["equipment"] },
-    { name: "Get all 4 armors", types: ["equipment"] },
-    { name: "Get all 4 rings", types: ["equipment"] },
-    { name: "Get all 4 boots", types: ["equipment"] },
-];
-
 var getKeyItemGoals = [
     { name: "Get Gola's Eye", types: [""] },
     { name: "Get Gola's Nail", types: [""] },
@@ -68,6 +39,35 @@ var getKeyItemGoals = [
     { name: "Get Sun Stone", types: [""] },
     { name: "Get Key", types: [""] },
     { name: "Get Axe Magic", types: [""] },
+];
+
+var getBootsOrRingGoals = [
+    { name: "Get Iron Boots", types: ["equipment", "boots"] },
+    { name: "Get Snow Spikes", types: ["equipment", "boots"] },
+    { name: "Get Fireproof Boots", types: ["equipment", "boots"] },
+    { name: "Get Healing Boots", types: ["equipment", "boots"] },
+    { name: "Get Venus Stone", types: ["equipment", "ring"] },
+    { name: "Get Saturn Stone", types: ["equipment", "ring"] },
+    { name: "Get Mars Stone", types: ["equipment", "ring"] },
+    { name: "Get Moon Stone", types: ["equipment", "ring"] },
+];
+
+var getSwordOrArmorGoals = [
+    { name: "Get Magic Sword", types: ["equipment", "sword"] },
+    { name: "Get Thunder Sword", types: ["equipment", "sword"] },
+    { name: "Get Ice Sword", types: ["equipment", "sword"] },
+    { name: "Get Sword of Gaia", types: ["equipment", "sword"] },
+    { name: "Get Steel Breast", types: ["equipment", "armor"] },
+    { name: "Get Chrome Breast", types: ["equipment", "armor"] },
+    { name: "Get Shell Breast", types: ["equipment", "armor"] },
+    { name: "Get Hyper Breast", types: ["equipment", "armor"] },
+];
+
+var getAllEquipmentsOfTypeGoals = [
+    { name: "Get all 4 swords", types: ["equipment", "sword"] },
+    { name: "Get all 4 armors", types: ["equipment", "armor"] },
+    { name: "Get all 4 rings", types: ["equipment", "ring"] },
+    { name: "Get all 4 boots", types: ["equipment", "boots"] },
 ];
 
 var sleepInInnsGoals = [
@@ -85,11 +85,11 @@ var haveGoldGoals = [
 ];
 
 var reachTotalLifeGoals = [
+    { name: "Reach 30 total life", types: [""] },
     { name: "Reach 40 total life", types: [""] },
     { name: "Reach 50 total life", types: [""] },
     { name: "Reach 60 total life", types: [""] },
     { name: "Reach 70 total life", types: [""] },
-    { name: "Reach 80 total life", types: [""] },
 ];
 
 var getNineConsumablesGoals = [
@@ -175,32 +175,61 @@ var enterBigTreeGoals = [
     { name: "Enter big tree near Lake Shrine", types: [""] },
 ];
 
+var beatThreeVariantsofEnemyGoals = [
+    { name: "Beat 3 color variants of Orcs", types: [""] },
+    { name: "Beat 3 color variants of Mushrooms", types: [""] },
+    { name: "Beat 3 color variants of Slimes", types: [""] },
+    { name: "Beat 3 color variants of Cyclops", types: [""] },
+    { name: "Beat 3 color variants of Knights", types: [""] },
+    { name: "Beat 3 color variants of Mummies", types: [""] },
+    { name: "Beat 3 color variants of Lizards", types: [""] },
+];
+
 var fancyTrickGoals = [
     { name: "Jump on Massan statue (no dog throw)", types: [""] },
+    { name: "Break all jars inside grandma's house in Mercator", types: [""] },
+    { name: "Use a Dahl while at 1 HP", types: [""] },
+    { name: "Cure a debuff using a book in a church", types: [""] },
+];
+
+var MISSING_1 = [
+
+];
+
+var MISSING_2 = [
+
+];
+
+var MISSING_3 = [
+
+];
+
+var MISSING_4 = [
+    
 ];
 
 var bingoList = [
     /* 0 */ getKeyItemGoals, 
     /* 1 */ getBootsOrRingGoals,
-    /* 2 */ getSwordOrArmor,
+    /* 2 */ getSwordOrArmorGoals,
     /* 3 */ getNineConsumablesGoals,
     /* 4 */ getOptionalItemGoals,
     /* 5 */ enterDungeonGoals,
     /* 6 */ sleepInInnsGoals,
-    /* 7 */ ,
+    /* 7 */ fancyTrickGoals,
     /* 8 */ haveGoldGoals,
     /* 9 */ goofyItemGoals,
     /* 10 */ buyOneItemInShopsGoals,
     /* 11 */ enterBigTreeGoals,
     /* 12 */ minigameGoals,
-    /* 13 */ ,
+    /* 13 */ MISSING_1,
     /* 14 */ sidequestGoals,
     /* 15 */ easyBossesGoals,
-    /* 16 */ ,
-    /* 17 */ ,
+    /* 16 */ MISSING_2,
+    /* 17 */ beatThreeVariantsofEnemyGoals,
     /* 18 */ reachTotalLifeGoals,
-    /* 19 */ ,
-    /* 20 */ ,
+    /* 19 */ MISSING_3,
+    /* 20 */ MISSING_4,
     /* 21 */ painfulCheckGoals,
     /* 22 */ buyEveryItemInShopGoals,
     /* 23 */ getAllEquipmentsOfTypeGoals,
