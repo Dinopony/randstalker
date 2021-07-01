@@ -3,7 +3,6 @@
 #include "GameText.hpp"
 #include <algorithm>
 #include <set>
-#include <sstream>
 
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
@@ -78,10 +77,7 @@ void WorldRandomizer::randomizeGoldValues()
 
 		totalGoldValue -= goldValue;
 
-		std::ostringstream goldName;
-		goldName << (uint32_t)goldValue << " golds";
-
-		_world.addItem(new Item(ITEM_GOLDS_START + i, goldName.str(), (uint8_t)goldValue, false));
+		_world.items[ITEM_GOLDS_START+i]->setGoldWorth(goldValue);
 	}
 }
 
@@ -116,10 +112,10 @@ void WorldRandomizer::randomizeItems()
 	_exploredRegions.clear();		// Regions already processed by the exploration algorithm
 	_itemSourcesToFill.clear();		// Reachable empty item sources which must be filled with a random item
 	_playerInventory.clear();		// The current contents of player inventory at the given time in the exploration algorithm
-	_pendingItemSources.clear();	// Unreachable item sources locked behind a key item which is not yet owned by the player
 	_pendingPaths.clear();			// Paths leading to potentially unexplored regions, locked behind a key item which is not yet owned by the player
 
-	this->initFillerItems();
+	_fillerItems = _world.getFillerItemsList();
+	Tools::shuffle(_fillerItems, _rng);
 
 	_debugLog << "\n-------------------------------------------------\n";
 	_debugLog << "Step #0 (placing priority items)\n";
@@ -131,13 +127,6 @@ void WorldRandomizer::randomizeItems()
 		_debugLog << "\n-------------------------------------------------\n";
 		_debugLog << "Step #" << stepCount++ << "\n";
 
-		// If there is going to be newly explored regions in this step, fill a fraction of already available sources with filler items
-		if (!_regionsToExplore.empty() && !_itemSourcesToFill.empty())
-		{
-			size_t sourcesToFillCount = (size_t)(_itemSourcesToFill.size() * FILLING_RATE);
-			this->placeFillerItemsPhase(sourcesToFillCount);
-		}
-
 		// Explore not yet explored regions, listing all item sources and paths for further exploration and processing
 		this->explorationPhase();
 
@@ -146,17 +135,22 @@ void WorldRandomizer::randomizeItems()
 
 		Tools::shuffle(_itemSourcesToFill, _rng);
 
-		// Place a key item to unlock access to new regions & item sources
-		this->placeKeyItemPhase();
+		// Place one or several key items to unlock access to a path, opening new regions & item sources
+		this->placeKeyItemsPhase();
+
+		// Fill a fraction of already available sources with filler items
+		if (!_itemSourcesToFill.empty())
+		{
+			size_t sourcesToFillCount = (size_t)(_itemSourcesToFill.size() * FILLING_RATE);
+			this->placeFillerItemsPhase(sourcesToFillCount);
+		}
 
 		// Try unlocking paths and item sources with the newly acquired key item
 		this->unlockPhase();
 	}
 
 	// Place the remaining filler items, and put Ekeeke in the last empty sources
-	this->placeFillerItemsPhase();
-	for (ItemSource* itemSource : _itemSourcesToFill)
-		itemSource->setItem(_world.items[ITEM_EKEEKE]);
+	this->placeFillerItemsPhase(_itemSourcesToFill.size(), _world.items[ITEM_EKEEKE]);
 
 	if (!_fillerItems.empty())
 	{
@@ -172,64 +166,13 @@ void WorldRandomizer::randomizeItems()
 	_debugLog << "\t - " << _itemSourcesToFill.size() << " remaining sources to fill\n";
 	for(auto source : _itemSourcesToFill)
 		_debugLog << "\t\t - " << source->getName() << "\n";
-	_debugLog << "\t - " << _pendingItemSources.size() << " pending item sources\n";
 	_debugLog << "\t - " << _pendingPaths.size() << " pending paths\n";
-}
-
-void WorldRandomizer::initFillerItems()
-{
-	// TODO: Don't place already placed items in plandos
-
-	_fillerItems = {
-		_world.items[ITEM_GARLIC],			_world.items[ITEM_PAWN_TICKET],
-		_world.items[ITEM_SHORT_CAKE],		_world.items[ITEM_SPELL_BOOK],
-		_world.items[ITEM_BLUE_RIBBON],		_world.items[ITEM_ORACLE_STONE]
-	};
-
-	for (uint8_t i = 0; i < 80; ++i)
-		_fillerItems.push_back(_world.items[ITEM_LIFESTOCK]);
-	for (uint8_t i = 0; i < 55; ++i)
-		_fillerItems.push_back(_world.items[ITEM_EKEEKE]);
-	for (uint8_t i = 0; i < 16; ++i)
-		_fillerItems.push_back(_world.items[ITEM_DAHL]);
-	for (uint8_t i = 0; i < 12; ++i)
-		_fillerItems.push_back(_world.items[ITEM_GAIA_STATUE]);
-	for (uint8_t i = 0; i < 10; ++i)
-		_fillerItems.push_back(_world.items[ITEM_GOLDEN_STATUE]);
-	for (uint8_t i = 0; i < 10; ++i)
-		_fillerItems.push_back(_world.items[ITEM_RESTORATION]);
-	for (uint8_t i = 0; i < 12; ++i)
-		_fillerItems.push_back(_world.items[ITEM_DETOX_GRASS]);
-	for (uint8_t i = 0; i < 7; ++i)
-		_fillerItems.push_back(_world.items[ITEM_MIND_REPAIR]);
-	for (uint8_t i = 0; i < 7; ++i)
-		_fillerItems.push_back(_world.items[ITEM_ANTI_PARALYZE]);
-
-	for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
-		_fillerItems.push_back(_world.items[ITEM_GOLDS_START + i]);
-
-	for (uint8_t i = 0; i < 4; ++i)
-		_fillerItems.push_back(_world.items[ITEM_NONE]);
-
-	Tools::shuffle(_fillerItems, _rng);
 }
 
 void WorldRandomizer::placePriorityItems()
 {
-	// TODO: Don't place already placed items in plandos
-
 	// Priority items are filler items which are always placed first in the randomization, no matter what
-	std::vector<Item*> priorityItems = {
-		_world.items[ITEM_MAGIC_SWORD],			_world.items[ITEM_THUNDER_SWORD],
-		_world.items[ITEM_ICE_SWORD],			_world.items[ITEM_GAIA_SWORD],
-		_world.items[ITEM_STEEL_BREAST],		_world.items[ITEM_CHROME_BREAST],
-		_world.items[ITEM_SHELL_BREAST],		_world.items[ITEM_HYPER_BREAST],
-		_world.items[ITEM_HEALING_BOOTS],		_world.items[ITEM_IRON_BOOTS],
-		_world.items[ITEM_FIREPROOF_BOOTS],		_world.items[ITEM_MARS_STONE],
-		_world.items[ITEM_MOON_STONE],			_world.items[ITEM_SATURN_STONE],
-		_world.items[ITEM_VENUS_STONE],			_world.items[ITEM_DEATH_STATUE],
-		_world.items[ITEM_BELL],				_world.items[ITEM_STATUE_JYPTA]
-	};
+	std::vector<Item*> priorityItems = _world.getPriorityItemsList();
 	Tools::shuffle(priorityItems, _rng);
 
 	std::vector<ItemSource*> allEmptyItemSources;
@@ -252,11 +195,8 @@ void WorldRandomizer::placePriorityItems()
 	}
 }
 
-void WorldRandomizer::placeFillerItemsPhase(size_t count)
+void WorldRandomizer::placeFillerItemsPhase(size_t count, Item* lastResortFiller)
 {
-	if (!count)
-		count = _itemSourcesToFill.size();
-
 	_debugLog << "\t > Filling " << count << " item sources with filler items...\n";
 
 	for (size_t i=0 ; i<count ; ++i)
@@ -269,11 +209,32 @@ void WorldRandomizer::placeFillerItemsPhase(size_t count)
 			if (itemSource->isItemCompatible(fillerItem))
 			{
 				itemSource->setItem(fillerItem);
-				_debugLog << "\t\t - Filling \"" << itemSource->getName() << "\" with [" << fillerItem->getName() << "]\n";
 				_fillerItems.erase(_fillerItems.begin() + j);
 				_itemSourcesToFill.erase(_itemSourcesToFill.begin());
 				break;
 			}
+		}
+
+		if(itemSource->getItem() == nullptr)
+		{
+			// No valid item could be put inside the itemSource...
+			if(lastResortFiller)
+			{
+				// Fill with the "last resort filler" if provided
+				itemSource->setItem(lastResortFiller);
+				_itemSourcesToFill.erase(_itemSourcesToFill.begin());
+			}
+			else
+			{
+				// No last resort provided, put this item source on the back of the list
+				_itemSourcesToFill.erase(_itemSourcesToFill.begin());
+				_itemSourcesToFill.push_back(itemSource);
+			}
+		}
+
+		if(itemSource->getItem())
+		{
+			_debugLog << "\t\t - Filling \"" << itemSource->getName() << "\" with [" << itemSource->getItem()->getName() << "]\n";
 		}
 	}
 }
@@ -292,11 +253,8 @@ void WorldRandomizer::explorationPhase()
 		const std::vector<ItemSource*> itemSources = exploredRegion->getItemSources();
 		for (ItemSource* itemSource : itemSources)
 		{
-			Item* requiredItem = itemSource->getRequiredItem();
-			if (requiredItem)
-				_pendingItemSources[itemSource] = requiredItem;
-			else if(itemSource->getItem())
-				_playerInventory.insert(itemSource->getItem());	// Non-empty item sources populate player inventory (useful for plandos)
+			if(itemSource->getItem())
+				_playerInventory.push_back(itemSource->getItem());	// Non-empty item sources populate player inventory (useful for plandos)
 			else
 				_itemSourcesToFill.push_back(itemSource);
 		}
@@ -304,7 +262,7 @@ void WorldRandomizer::explorationPhase()
 		// List outgoing paths
 		for (WorldPath* outgoingPath : exploredRegion->getOutgoingPaths())
 		{
-			if (outgoingPath->canBeCrossedWithInventory(_playerInventory))
+			if (outgoingPath->getMissingItemsToCross(_playerInventory).empty())
 			{
 				// For crossable paths, add destinations in regions to explore if not already explored / to process
 				WorldRegion* destination = outgoingPath->getDestination();
@@ -320,46 +278,47 @@ void WorldRandomizer::explorationPhase()
 	}
 }
 
-void WorldRandomizer::placeKeyItemPhase()
+void WorldRandomizer::placeKeyItemsPhase()
 {
 	if (_pendingPaths.empty())
 		return;
 
 	// List all unowned key items, and pick a random one among them
-	std::vector<Item*> unownedKeyItems;
+	std::vector<WorldPath*> blockedPaths;
 	for (WorldPath* pendingPath : _pendingPaths)
 	{
-		for (Item* requiredItem : pendingPath->getRequiredItems())
+		if(!pendingPath->getMissingItemsToCross(_playerInventory).empty())
 		{
-			if (!_playerInventory.contains(requiredItem))
+			// If items are missing to cross this path, add as many entries as the weight of the path to the blockedPaths array
+			for(int i=0 ; i<pendingPath->getRandomWeight() ; ++i)
+				blockedPaths.push_back(pendingPath);
+		}
+	}
+
+	Tools::shuffle(blockedPaths, _rng);
+	WorldPath* pathToOpen = blockedPaths[0];
+	std::vector<Item*> missingKeyItems = pathToOpen->getMissingItemsToCross(_playerInventory);
+	for(Item* keyItemToPlace : missingKeyItems)
+	{
+		// Find a random item source capable of carrying the item
+		ItemSource* randomItemSource = nullptr;
+		for (uint32_t i = 0; i < _itemSourcesToFill.size(); ++i)
+		{
+			if (_itemSourcesToFill[i]->isItemCompatible(keyItemToPlace))
 			{
-				for(uint16_t i=0 ; i<pendingPath->getRandomWeight() ; ++i)
-					unownedKeyItems.push_back(requiredItem);
+				randomItemSource = _itemSourcesToFill[i];
+				_itemSourcesToFill.erase(_itemSourcesToFill.begin() + i);
+				break;
 			}
 		}
+		if (!randomItemSource)
+			throw NoAppropriateItemSourceException();
+
+		// Place the key item in the appropriate source, and also add it to player inventory
+		_debugLog << "\t > Key item is [" << keyItemToPlace->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
+		randomItemSource->setItem(keyItemToPlace);
+		_playerInventory.push_back(keyItemToPlace);
 	}
-
-	Tools::shuffle(unownedKeyItems, _rng);
-	Item* keyItemToPlace = unownedKeyItems[0];
-
-	// Find a random item source capable of carrying the item
-	ItemSource* randomItemSource = nullptr;
-	for (uint32_t i = 0; i < _itemSourcesToFill.size(); ++i)
-	{
-		if (_itemSourcesToFill[i]->isItemCompatible(keyItemToPlace))
-		{
-			randomItemSource = _itemSourcesToFill[i];
-			_itemSourcesToFill.erase(_itemSourcesToFill.begin() + i);
-			break;
-		}
-	}
-	if (!randomItemSource)
-		throw NoAppropriateItemSourceException();
-
-	// Place the key item in the appropriate source, and also add it to player inventory
-	_debugLog << "\t > Key item is [" << keyItemToPlace->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
-	randomItemSource->setItem(keyItemToPlace);
-	_playerInventory.insert(keyItemToPlace);
 }
 
 void WorldRandomizer::unlockPhase()
@@ -369,7 +328,7 @@ void WorldRandomizer::unlockPhase()
 	{
 		WorldPath* pendingPath = _pendingPaths[i];
 
-		if (pendingPath->canBeCrossedWithInventory(_playerInventory))
+		if (pendingPath->getMissingItemsToCross(_playerInventory).empty())
 		{
 			// Path is now unlocked, add destination to regions to explore if it has not yet been explored
 			WorldRegion* destination = pendingPath->getDestination();
@@ -380,27 +339,6 @@ void WorldRandomizer::unlockPhase()
 			_pendingPaths.erase(_pendingPaths.begin()+i);
 			--i;
 		}
-	}
-
-	// Look for unlockable item sources...
-	for (auto it = _pendingItemSources.begin(); it != _pendingItemSources.end(); )
-	{
-		ItemSource* itemSource = it->first;
-		Item* requiredItem = it->second;
-
-		if (_playerInventory.contains(requiredItem))
-		{
-			// Item source is now unlocked, add it to the "item sources to fill" list if it's empty or take the pre-filled item
-			if (itemSource->getItem())
-				_playerInventory.insert(itemSource->getItem());
-			else
-				_itemSourcesToFill.push_back(itemSource);
-
-			// Remove it from the pending list
-			++it;
-			_pendingItemSources.erase(itemSource);
-		}
-		else ++it;
 	}
 }
 
@@ -416,18 +354,6 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 		for (Item* item : _strictlyNeededKeyItems)
 			_debugLog << "\t- " << item->getName() << "\n";
 	}
-}
-
-UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForItem(Item* item)
-{
-	WorldRegion* itemRegion = _world.getRegionForItem(item);
-	UnsortedSet<Item*> strictlyRequiredKeyItemsForItem = this->analyzeStrictlyRequiredKeyItemsForRegion(itemRegion);
-	
-	ItemSource* itemSource = _world.getItemSourceForItem(item);
-	if(itemSource && itemSource->getRequiredItem())
-		strictlyRequiredKeyItemsForItem.insert(itemSource->getRequiredItem());
-
-	return strictlyRequiredKeyItemsForItem;
 }
 
 UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
@@ -473,9 +399,6 @@ UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(Wor
 						WorldRegion* region = source->getRegion();
 						if (!alreadyExploredRegions.contains(region))
 							regionsToExplore.insert(region);
-
-						if (source->getRequiredItem())
-							itemsToLocate.insert(source->getRequiredItem());
 
 						break;
 					}
@@ -548,7 +471,8 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 	};
 
 	// Also excluding items strictly needed to get to Oracle Stone's location
-	UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForItem(_world.items[ITEM_ORACLE_STONE]);
+	WorldRegion* itemRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
+	UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(itemRegion);
 	for (Item* item : strictlyNeededKeyItemsForOracleStone)
 		forbiddenOracleStoneItems.insert(item);
 
@@ -567,7 +491,7 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 		return itemInOracleStoneHint;
 	}
 	
-	_world.oracleStoneHint = "The stone looks blurry. It looks like it won't be of any use this time...";
+	_world.oracleStoneHint = "The stone looks blurry. It looks like it won't be of any use...";
 	return nullptr;
 }
 

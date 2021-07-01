@@ -10,10 +10,9 @@ class WorldRegion;
 class ItemSource
 {
 public:
-    ItemSource(const std::string& name, Item* requiredItem = nullptr) :
+    ItemSource(const std::string& name) :
         _name(name),
         _item(nullptr),
-        _requiredItem(requiredItem),
         _region(nullptr)
     {}
 
@@ -22,8 +21,6 @@ public:
     void setItem(Item* item) { _item = item; }
     Item* getItem() const { return _item; }
     uint8_t getItemID() const { return (_item) ? _item->getID() : ITEM_NONE; }
-
-    Item* getRequiredItem() const { return _requiredItem; }
 
     void addHint(const std::string& hint) { _hints.push_back(hint); }
     const std::vector<std::string>& getHints() const { return _hints; }
@@ -37,7 +34,6 @@ public:
 private:
     std::string _name;
     Item* _item;
-    Item* _requiredItem;
 
     std::vector<std::string> _hints;
     WorldRegion* _region;
@@ -48,8 +44,8 @@ private:
 class ItemChest : public ItemSource
 {
 public:
-    ItemChest(uint8_t chestID, const std::string& name, Item* requiredItem = nullptr) :
-        ItemSource(name, requiredItem),
+    ItemChest(uint8_t chestID, const std::string& name) :
+        ItemSource(name),
         _chestID(chestID)
     {}
 
@@ -70,12 +66,12 @@ private:
 class ItemOnGround : public ItemSource
 {
 public:
-    ItemOnGround(uint32_t addressInROM, const std::string& name, Item* requiredItem = nullptr) :
-        ItemSource(name, requiredItem), _addressesInROM({ addressInROM })
+    ItemOnGround(uint32_t addressInROM, const std::string& name) :
+        ItemSource(name), _addressesInROM({ addressInROM })
     {}
 
-    ItemOnGround(std::vector<uint32_t> addressesInROM, const std::string& name, Item* requiredItem = nullptr) :
-        ItemSource(name, requiredItem), _addressesInROM(addressesInROM)
+    ItemOnGround(std::vector<uint32_t> addressesInROM, const std::string& name) :
+        ItemSource(name), _addressesInROM(addressesInROM)
     {}
 
     virtual bool isItemCompatible(Item* item) const
@@ -98,8 +94,8 @@ private:
 class ItemReward : public ItemSource
 {
 public:
-    ItemReward(uint32_t addressInROM, const std::string& name, Item* requiredItem = nullptr) :
-        ItemSource(name, requiredItem), _addressInROM(addressInROM)
+    ItemReward(uint32_t addressInROM, const std::string& name) :
+        ItemSource(name), _addressInROM(addressInROM)
     {
         this->addHint("owned by someone willing to give it to the brave");
     }
@@ -150,8 +146,8 @@ private:
 class ItemInShop : public ItemSource
 {
 public:
-    ItemInShop(uint32_t addressInROM, const std::string& name, ItemShop* shop, Item* requiredItem = nullptr) :
-        ItemSource(name, requiredItem),
+    ItemInShop(uint32_t addressInROM, const std::string& name, ItemShop* shop) :
+        ItemSource(name),
         _addressesInROM({ addressInROM }),
         _shop(shop)
     {
@@ -161,8 +157,8 @@ public:
         this->addHint("owned by someone trying to make profit out of it");
     }
 
-    ItemInShop(std::vector<uint32_t> addressesInROM, const std::string& name, ItemShop* shop, Item* requiredItem = nullptr) :
-        ItemSource(name, requiredItem),
+    ItemInShop(std::vector<uint32_t> addressesInROM, const std::string& name, ItemShop* shop) :
+        ItemSource(name),
         _addressesInROM(addressesInROM),
         _shop(shop)
     {

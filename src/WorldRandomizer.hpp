@@ -32,15 +32,14 @@ private:
 	// Second pass randomizations (items)
 	void randomizeItems();
 	void analyzeStrictlyRequiredKeyItems();
-	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForItem(Item* item);
 	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
 
 	void placePriorityItems();
 	void initFillerItems();
 
-	void placeFillerItemsPhase(size_t count = 0);
+	void placeFillerItemsPhase(size_t count, Item* lastResortFiller = nullptr);
 	void explorationPhase();
-	void placeKeyItemPhase();
+	void placeKeyItemsPhase();
 	void unlockPhase();
 
 	// Third pass randomizations (after items)
@@ -64,8 +63,7 @@ private:
 	UnsortedSet<WorldRegion*> _regionsToExplore;
 	UnsortedSet<WorldRegion*> _exploredRegions;
 	std::vector<ItemSource*> _itemSourcesToFill;
-	UnsortedSet<Item*> _playerInventory;
-	std::map<ItemSource*, Item*> _pendingItemSources;
+	std::vector<Item*> _playerInventory;
 	std::vector<WorldPath*> _pendingPaths;
 	std::vector<Item*> _fillerItems;
 

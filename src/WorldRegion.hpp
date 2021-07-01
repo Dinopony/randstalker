@@ -31,12 +31,25 @@ public:
 	WorldRegion* getDestination() const { return _destination; }
 	const std::vector<Item*>& getRequiredItems() const { return _requiredItems; }
 
-	bool canBeCrossedWithInventory(const UnsortedSet<Item*>& playerInventory)
+	std::vector<Item*> getMissingItemsToCross(std::vector<Item*> playerInventoryCopy)
 	{
+		std::vector<Item*> missingItems;
 		for (Item* requiredItem : _requiredItems)
-			if (!playerInventory.contains(requiredItem))
-				return false;
-		return true;
+		{
+			auto iter = std::find(playerInventoryCopy.begin(), playerInventoryCopy.end(), requiredItem);
+			if (iter == playerInventoryCopy.end())
+			{
+				missingItems.push_back(requiredItem);
+			}
+			else
+			{
+				// If item has been found, remove it from the inventory copy for it not to count several times
+				// (case where quantity needed is > 1)
+				playerInventoryCopy.erase(iter);
+			}
+		}
+	
+		return missingItems;
 	}
 
 	void setRandomWeight(uint16_t randomWeight) { _randomWeight = randomWeight; }

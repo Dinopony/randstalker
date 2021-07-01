@@ -24,10 +24,15 @@ public:
     WorldRegion* getRegionForItem(Item* item);
     ItemSource* getItemSourceForItem(Item* item);
 
+    const std::vector<Item*>& getFillerItemsList() const { return _fillerItems; }
+    const std::vector<Item*>& getPriorityItemsList() const { return _priorityItems; }
+
     void writeToROM(md::ROM& rom);
 
 private:
     void initItems(bool useArmorUpgrades);
+    void initFillerItemsList();
+    void initPriorityItemsList();
 
     void initChests();
     void initGroundItems();
@@ -66,4 +71,8 @@ public:
     std::vector<TreeMap> treeMaps;
 
     SpawnLocation spawnLocation;
+
+private:
+    std::vector<Item*> _fillerItems;
+    std::vector<Item*> _priorityItems;
 };
