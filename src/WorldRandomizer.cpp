@@ -24,7 +24,8 @@ void WorldRandomizer::randomize()
 
 	// 1st pass: randomizations happening BEFORE randomizing items
 	_rng.seed(rngSeed);
-	this->randomizeSpawnLocation();
+	if (_world.spawnLocation == SpawnLocation::RANDOM)
+		this->randomizeSpawnLocation();
 	this->randomizeGoldValues();
 	this->randomizeDarkRooms();
 
@@ -416,12 +417,9 @@ UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(Wor
 
 void WorldRandomizer::randomizeSpawnLocation()
 {
-	if (_world.spawnLocation == SpawnLocation::RANDOM)
-	{
-		std::vector<SpawnLocation> possibleSpawnRegions = { SpawnLocation::MASSAN, SpawnLocation::GUMI, SpawnLocation::RYUMA };
-		Tools::shuffle(possibleSpawnRegions, _rng);
-		_world.spawnLocation = possibleSpawnRegions[0];
-	}
+	std::vector<SpawnLocation> spawnLocations = getAllSpawnLocations();
+	Tools::shuffle(spawnLocations, _rng);
+	_world.spawnLocation = spawnLocations[0];
 }
 
 void WorldRandomizer::randomizeHints()

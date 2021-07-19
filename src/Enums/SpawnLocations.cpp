@@ -49,3 +49,45 @@ SpawnLocation spawnLocationFromString(std::string locAsString, SpawnLocation def
 		return defaultValue;
 	}
 }
+
+std::vector<SpawnLocation> getAllSpawnLocations()
+{ 
+	return { 
+		SpawnLocation::MASSAN, 
+		SpawnLocation::GUMI, 
+		SpawnLocation::RYUMA
+	}; 
+}
+
+uint8_t getSpawnLocationX(SpawnLocation loc)
+{
+    switch (loc)
+    {
+    case SpawnLocation::MASSAN:		return 0x1F;
+    case SpawnLocation::GUMI:		return 0x10;
+    case SpawnLocation::RYUMA:		return 0x11;
+    }
+    return -1;
+}
+
+uint8_t getSpawnLocationZ(SpawnLocation loc)
+{
+    switch (loc)
+    {
+    case SpawnLocation::MASSAN:		return 0x19;
+    case SpawnLocation::GUMI:		return 0x0F;
+    case SpawnLocation::RYUMA:		return 0x14;
+    }
+    return -1;
+}
+
+uint16_t getSpawnLocationMapID(SpawnLocation loc)
+{
+    switch (loc)
+    {
+    case SpawnLocation::MASSAN:		return 0x258;
+    case SpawnLocation::GUMI:		return 0x25E;
+    case SpawnLocation::RYUMA:		return 0x268;
+    }
+    return -1;
+}
