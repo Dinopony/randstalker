@@ -88,27 +88,32 @@ void World::writeToROM(md::ROM& rom)
     // Reserve a data block for gold values which will be filled when gold items will be encountered
     rom.reserveDataBlock(GOLD_SOURCES_COUNT, "data_gold_values");
 	
+    // Write item info
     for (auto& [key, item] : items)
 		item->writeToROM(rom);
 
+    // Write item sources' contents
 	for (auto& [key, itemSource] : itemSources)
 		itemSource->writeToROM(rom);
 
-	for (const TreeMap& treeMap : treeMaps)
-		treeMap.writeToROM(rom);
+    // Write spawn point
+    rom.setWord(0x0027F4, getSpawnLocationMapID(spawnLocation));
+    rom.setByte(0x0027FD, getSpawnLocationX(spawnLocation));
+    rom.setByte(0x002805, getSpawnLocationZ(spawnLocation));
 
-    // Write lithograph hint
+    // Alter some static text lines to fit hints inside
+    //  - Lithograph hint
     textLines[0x021] = GameText(redJewelHint + " \x1E" + purpleJewelHint).getOutput();
-
-    // Write the fortune teller hint
+    //  - Fortune teller hint
     textLines[0x28D] = "\x1CHello dear, let me look at\nwhat your future is made of...\x1E";
     textLines[0x28E] = "\x1CI see... I see...\x1E\n" + GameText(fortuneTellerHint).getOutput();
-
-    // Write the "where is lithograph" hint in King Nole's Cave
+    //  - "Where is lithograph" hint in King Nole's Cave
     textLines[0x0FD] = GameText(whereIsLithographHint).getOutput();
-
-    // Write the oracle stone hint
+    //  - Oracle stone hint
     textLines[0x019] = GameText(oracleStoneHint).getOutput();
+
+    // Write all text lines into text banks
+    TextEncoder encoder(rom, textLines);
 
     // Inject dark rooms as a data block
     const std::vector<uint16_t>& darkRooms = darkenedRegion->getDarkRooms();
@@ -119,33 +124,9 @@ void World::writeToROM(md::ROM& rom)
         rom.setWord(darkRoomsArrayAddress + (i++) * 0x2, roomID);
     rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
 
-    // Set spawn point
-    uint16_t spawnMapID;
-    uint8_t spawnX, spawnZ;
-    if (spawnLocation == SpawnLocation::GUMI)
-    {
-        spawnMapID = 0x25E;
-        spawnX = 0x10;
-        spawnZ = 0x0F;
-    }
-    else if (spawnLocation == SpawnLocation::RYUMA)
-    {
-        spawnMapID = 0x268;
-        spawnX = 0x11;
-        spawnZ = 0x14;
-    }
-    else // if (spawnLocation == SpawnLocation::MASSAN)
-    {
-        spawnMapID = 0x258;
-        spawnX = 0x1F;
-        spawnZ = 0x19;
-    }
-
-    rom.setWord(0x0027F4, spawnMapID);
-    rom.setByte(0x0027FD, spawnX);
-    rom.setByte(0x002805, spawnZ);
-
-    TextEncoder encoder(rom, textLines);
+    // Write Tibor tree map connections
+	for (const TreeMap& treeMap : treeMaps)
+		treeMap.writeToROM(rom);
 }
 
 

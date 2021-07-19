@@ -451,7 +451,7 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
     rom.setCode(0x62F4, md::Code().jmp(procHandleJewelsAddr));
 }
 
-void fixSwordOfGaiaEffectInVolcano(md::ROM& rom)
+void makeSwordOfGaiaWorkInVolcano(md::ROM& rom)
 {
     // Add the ability to also trigger the volcano using the Sword of Gaia instead of only Statue of Gaia
     md::Code procTriggerVolcano;
@@ -496,7 +496,7 @@ void alterWaterfallShrineSecretStairsCheck(md::ROM& rom)
     rom.setWord(0x005014, 0x0209);
 }
 
-void alterBlueRibbonStoryCheck(md::ROM& rom)
+void makeFallingRibbonAlwaysThere(md::ROM& rom)
 {
     // The "falling ribbon" item source is pretty dependant from the scenario to happen. In the original game,
     // the timeframe to get it is really tight. We try to get rid of any conditions here, apart from checking
@@ -548,7 +548,7 @@ void alterKingNolesCaveTeleporterCheck(md::ROM& rom)
     rom.setCode(0x004E18, md::Code().clrw(reg_D0).jmp(procAddr));
 }
 
-void alterMercatorDocksShopCheck(md::ROM& rom)
+void makeMercatorDocksShopAlwaysOpen(md::ROM& rom)
 {
     // 0x01AA26:
         // Before:	0284 2A A2 (in map 284, check bit 5 of flag 102A)
@@ -557,7 +557,7 @@ void alterMercatorDocksShopCheck(md::ROM& rom)
     rom.setWord(0x01AA28, 0x5FE2);
 }
 
-void alterArthurCheck(md::ROM& rom)
+void makeArthurAlwaysPresentInThroneRoom(md::ROM& rom)
 {
     // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
 
@@ -605,13 +605,13 @@ void fixKingNolesLabyrinthRafts(md::ROM& rom)
     rom.setByte(0x0293C0, 0x01);
 }
 
-void fixLogsRoomExitCheck(md::ROM& rom)
+void removeLogsRoomExitCheck(md::ROM& rom)
 {
     // Remove logs check
     rom.setCode(0x011EC4, md::Code().bra());
 }
 
-void fixMirAfterLakeShrineCheck(md::ROM& rom)
+void fixMirFightAfterLakeShrine(md::ROM& rom)
 {
     // In the original game, coming back to Mir room after Lake Shrine would softlock you because Mir
     // would not be there. This check is removed to prevent any softlock and allow fighting Mir after having
@@ -754,8 +754,6 @@ void replaceFaraInElderHouseByChest(md::ROM& rom)
     // Set map base chest index to 0x17
     rom.setByte(0x09E9DF, 0x17);
 }
-
-
 
 
 
@@ -1093,33 +1091,33 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     quickenGaiaEffect(rom);
     addRecordBookSave(rom);
     alterFahlChallenge(rom);
+    addJewelsCheckForTeleporterToKazalt(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
-    // Item check changes
+    // Flag-reading changes (from story flag reading to inventory reading)
     fixAxeMagicCheck(rom);
     fixSafetyPassCheck(rom);
     fixArmletCheck(rom);
     fixSunstoneCheck(rom);
     fixDogTalkingCheck(rom);
     alterMercatorSecondaryShopCheck(rom);
-    addJewelsCheckForTeleporterToKazalt(rom);
-    fixSwordOfGaiaEffectInVolcano(rom);
     alterCasinoTicketHandling(rom);
-
-    // Map check changes
+    
+    // Specific map check changes
     alterWaterfallShrineSecretStairsCheck(rom);
-    alterBlueRibbonStoryCheck(rom);
+    makeFallingRibbonAlwaysThere(rom);
     alterKingNolesCaveTeleporterCheck(rom);
-    alterMercatorDocksShopCheck(rom);
-    alterArthurCheck(rom);
+    makeMercatorDocksShopAlwaysOpen(rom);
+    makeArthurAlwaysPresentInThroneRoom(rom);
     fixCryptBehavior(rom);
     fixKingNolesLabyrinthRafts(rom);
-    fixLogsRoomExitCheck(rom);
-    fixMirAfterLakeShrineCheck(rom);
+    removeLogsRoomExitCheck(rom);
+    fixMirFightAfterLakeShrine(rom);
     fixMirTowerPriestRoomItems(rom);
+    makeSwordOfGaiaWorkInVolcano(rom);
 
-    // Map content changes
+    // Specific map content changes
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
     fixFaraLifestockChest(rom);
