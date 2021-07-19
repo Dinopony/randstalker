@@ -4,6 +4,8 @@
 #include "GameText.hpp"
 #include "MegadriveTools/MdRom.hpp"
 #include "MegadriveTools/MdCode.hpp"
+#include "World.hpp"
+
 #include <cstdint>
 #include <vector>
 
@@ -15,7 +17,7 @@ constexpr uint32_t mapEntrancePositionStorageMemoryAddress = 0xFF0018;
 //       Game & gameplay changes
 ///////////////////////////////////////////////////////////////////////////////////
 
-void alterGameStart(md::ROM& rom, const RandomizerOptions& options)
+void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     // ------- Inject flags init function ---------
     // Init function used to set story flags to specific values at the very beginning of the game, opening some usually closed paths
@@ -69,8 +71,8 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options)
 
     md::Code funcInitFlags;
 
-    // Set the orientation byte of Nigel to 88 (south-west) on game start
-    funcInitFlags.moveb(0x88, addr_(0xFF5404));
+    // Set the orientation byte of Nigel depending on spawn location on game start
+    funcInitFlags.moveb(getSpawnLocationOrientation(world.spawnLocation), addr_(0xFF5404));
 
     for(int i=0 ; i<0x60 ; i+=0x2)
     {
@@ -82,6 +84,11 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options)
     funcInitFlags.rts();
 
     uint32_t funcInitFlagsAddr = rom.injectCode(funcInitFlags);
+
+    // ------- Set spawn position ---------
+    rom.setWord(0x0027F4, getSpawnLocationMapID(world.spawnLocation));
+    rom.setByte(0x0027FD, getSpawnLocationX(world.spawnLocation));
+    rom.setByte(0x002805, getSpawnLocationZ(world.spawnLocation));
 
     // ------- Remove no music flag ---------
     // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom
@@ -831,10 +838,6 @@ void setKeyAsUniqueItem(md::ROM& rom)
     rom.setByte(0x293CC, 0x01);
 }
 
-///////////////////////////////////////////////////////////////////////////////////
-//       Post-generation stuff
-///////////////////////////////////////////////////////////////////////////////////
-
 void alterLanternHandling(md::ROM& rom)
 {
 //    rom.storeAddress("data_dark_rooms", 0x8800);
@@ -1080,11 +1083,10 @@ void addFunctionToItemsOnUse(md::ROM& rom)
     rom.setWord(0x008647, 0x6627);
 }
 
-
-void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
-{
+void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
+{    
     // Game & gameplay changes
-    alterGameStart(rom, options);
+    alterGameStart(rom, options, world);
     alterItemOrderInMenu(rom);
     alterLifestockHandlingInShops(rom);
     addStatueOfJyptaGoldsOverTime(rom);
@@ -1092,6 +1094,9 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     addRecordBookSave(rom);
     alterFahlChallenge(rom);
     addJewelsCheckForTeleporterToKazalt(rom);
+    addFunctionToItemsOnUse(rom);
+    alterGoldRewardsHandling(rom);
+    alterLanternHandling(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
@@ -1133,12 +1138,4 @@ void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options)
     deactivateRegionCheck(rom);
     changeHUDColor(rom, options);
     setKeyAsUniqueItem(rom);
-}
-
-void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options)
-{
-    // Post-generation stuff
-    addFunctionToItemsOnUse(rom);
-    alterGoldRewardsHandling(rom);
-    alterLanternHandling(rom);
 }

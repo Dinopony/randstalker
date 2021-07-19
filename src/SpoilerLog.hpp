@@ -14,14 +14,14 @@ public:
 		_world(world)
 	{}
 
-	void writeToFile()
+	bool writeToFile()
 	{
 		if (!_options.allowSpoilerLog() || _options.getSpoilerLogPath().empty())
-			return;
+			return false;
 
 		this->open(_options.getSpoilerLogPath());
 		if (!this->is_open())
-			return;
+			return false;
 
 		this->writeOptions();
 
@@ -31,6 +31,7 @@ public:
 		this->writeItems();
 
 		this->close();
+		return true;
 	}
 
 	void writeTitle(const std::string& title)
@@ -52,7 +53,12 @@ public:
 		*this << "Randomized Tibor trees: " << (_options.shuffleTiborTrees() ? "enabled" : "disabled") << "\n";
 		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";
 		*this << "In-game item tracker: " << (_options.addIngameItemTracker() ? "enabled" : "disabled") << "\n";
-		*this << "Starting location: " << spawnLocationToString(_options.getSpawnLocation()) << "\n";
+
+		if(_options.getSpawnLocation() == SpawnLocation::RANDOM)
+			*this << "Starting location: Random (" << spawnLocationToString(_world.spawnLocation) << ")\n";
+		else
+			*this << "Starting location: " << spawnLocationToString(_options.getSpawnLocation()) << "\n";
+			
 		*this << "Fill dungeon signs with hints: " << (_options.fillDungeonSignsWithHints() ? "enabled" : "disabled") << "\n";
 
 		*this << "\n";

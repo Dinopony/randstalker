@@ -46,7 +46,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 		_armorUpgrades			= args.getBoolean("armorupgrades", true);
 		_shuffleTiborTrees		= args.getBoolean("shuffletrees", false);
 		_saveAnywhereBook		= args.getBoolean("recordbook", true);
-		_spawnLocation			= spawnLocationFromString(args.getString("spawnlocation", "massan"));
+		_spawnLocation			= spawnLocationFromString(args.getString("spawnlocation", "random"));
 		_dungeonSignHints		= args.getBoolean("dungeonsignhints", false);
 		_allowSpoilerLog		= args.getBoolean("allowSpoilerLog", true);
 	}

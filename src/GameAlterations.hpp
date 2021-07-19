@@ -2,6 +2,6 @@
 
 namespace md { class ROM; }
 class RandomizerOptions;
+class World;
 
-void alterRomBeforeRandomization(md::ROM& rom, const RandomizerOptions& options);
-void alterRomAfterRandomization(md::ROM& rom, const RandomizerOptions& options);
+void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world);

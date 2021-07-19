@@ -13,7 +13,7 @@
 
 constexpr auto GOLD_SOURCES_COUNT = 30;
 
-struct World
+class World
 {
 public:
     World(const RandomizerOptions& options);

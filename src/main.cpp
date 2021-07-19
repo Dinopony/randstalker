@@ -74,28 +74,26 @@ int main(int argc, char* argv[])
 
 		md::ROM* rom = getInputROM(options.getInputROMPath());
 	
-		// Perform game changes unrelated with the randomization part. This is mostly changing the game mechanics or altering slightly
-		// a few maps by removing or changing NPCs.
-		alterRomBeforeRandomization(*rom, options);
-		
 		// Create a replica model of Landstalker world, randomize it and save it to the ROM	
 		World world(options);
 		WorldRandomizer randomizer(world, options);
+		
+		std::cout << "Randomizing world..." << std::endl;
 		randomizer.randomize();
 		world.writeToROM(*rom);
 
-		// Write a spoiler log to help the player
-		SpoilerLog(options, world).writeToFile();
-
-		// Perform game changes after the actual randomization. This is usually required when we need to point on a data block
-		// which we don't know the exact position before it is actually written.
-		alterRomAfterRandomization(*rom, options);
+		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
+		std::cout << "Applying patches..." << std::endl;
+		applyPatches(*rom, options, world);
 
 		rom->saveAs(options.getOutputROMPath());
-
 		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n" << std::endl;
 		std::cout << "Permalink: \"" << options.getPermalink() << "\"" << std::endl;
 		std::cout << "Share this permalink with other people to enable them building the exact same seed.\n" << std::endl;
+
+		// Write a spoiler log to help the player
+		SpoilerLog(options, world).writeToFile();
+		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n" << std::endl;
 
 		if ( options.mustPause() )
 		{

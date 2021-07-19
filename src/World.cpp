@@ -96,11 +96,6 @@ void World::writeToROM(md::ROM& rom)
 	for (auto& [key, itemSource] : itemSources)
 		itemSource->writeToROM(rom);
 
-    // Write spawn point
-    rom.setWord(0x0027F4, getSpawnLocationMapID(spawnLocation));
-    rom.setByte(0x0027FD, getSpawnLocationX(spawnLocation));
-    rom.setByte(0x002805, getSpawnLocationZ(spawnLocation));
-
     // Alter some static text lines to fit hints inside
     //  - Lithograph hint
     textLines[0x021] = GameText(redJewelHint + " \x1E" + purpleJewelHint).getOutput();
