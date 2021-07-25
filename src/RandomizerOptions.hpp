@@ -30,6 +30,7 @@ public:
 	const std::string getHUDColor() const { return _hudColor; }
 
 	// Seed-related options (included in permalink)
+	double getFillingRate() const { return _fillingRate; }
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool useRecordBook() const { return _saveAnywhereBook; }
@@ -49,6 +50,7 @@ private:
 	bool _addIngameItemTracker;
 	std::string _hudColor;
 
+	double _fillingRate;
 	bool _armorUpgrades;
 	bool _shuffleTiborTrees;
 	bool _saveAnywhereBook;

@@ -25,6 +25,7 @@
 //		--noPause				===> Don't ask to press a key at the end of generation (useful for automated generation systems)
 //
 //	Randomization options:
+//		--fillingRate			===> Set the randomizing algorithm step filling rate from 0.0 to 1.0 (default 0.20)
 //		--shuffleTrees			===> Randomize Tibor trees
 //		--noArmorUpgrades		===> Don't use armor upgrades, just place vanilla armors randomly
 //		--spawnLocation			===> Spawn point between Massan, Gumi and Ryuma
