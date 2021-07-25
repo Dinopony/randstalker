@@ -49,6 +49,7 @@ public:
 		*this << "Permalink: " << _options.getPermalink() << "\n";
 		*this << "Hash: " << _options.getHashSentence() << "\n\n";
 
+		*this << "Filling rate: " << std::to_string(_options.getFillingRate()) << "\n";
 		*this << "Armor upgrades: " << (_options.useArmorUpgrades() ? "enabled" : "disabled") << "\n";
 		*this << "Randomized Tibor trees: " << (_options.shuffleTiborTrees() ? "enabled" : "disabled") << "\n";
 		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";

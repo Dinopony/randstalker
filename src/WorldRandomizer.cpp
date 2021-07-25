@@ -107,8 +107,6 @@ void WorldRandomizer::randomizeDarkRooms()
 
 void WorldRandomizer::randomizeItems()
 {
-	constexpr double FILLING_RATE = 0.20;
-
 	_regionsToExplore.insert(_world.regions[RegionCode::MASSAN]);
 	_exploredRegions.clear();		// Regions already processed by the exploration algorithm
 	_itemSourcesToFill.clear();		// Reachable empty item sources which must be filled with a random item
@@ -142,7 +140,7 @@ void WorldRandomizer::randomizeItems()
 		// Fill a fraction of already available sources with filler items
 		if (!_itemSourcesToFill.empty())
 		{
-			size_t sourcesToFillCount = (size_t)(_itemSourcesToFill.size() * FILLING_RATE);
+			size_t sourcesToFillCount = (size_t)(_itemSourcesToFill.size() * _options.getFillingRate());
 			this->placeFillerItemsPhase(sourcesToFillCount);
 		}
 

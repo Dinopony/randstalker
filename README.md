@@ -63,6 +63,7 @@ With the following options being available:
 
 It also provides a few randomization options:
 
+- **--fillingRate=VAL**: sets the randomizing algorithm step filling rate with VAL from 0.0 to 1.0 (default 0.20)
 - **--shuffleTrees**: if set, Tibor trees connections are shuffled
 - **--noArmorUpgrades**: disable armor upgrades and replace them with random vanilla armors
 - **--noRecordBook**: disable the Record Book in inventory allowing to save anywhere
