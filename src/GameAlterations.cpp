@@ -1083,6 +1083,12 @@ void addFunctionToItemsOnUse(md::ROM& rom)
     rom.setWord(0x008647, 0x6627);
 }
 
+void shortenMirCutsceneAfterLakeShrine(md::ROM& rom)
+{
+    // Cut the cutscene script
+    rom.setWord(0x28A44, 0xE739);
+}
+
 void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {    
     // Game & gameplay changes
@@ -1138,4 +1144,5 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     deactivateRegionCheck(rom);
     changeHUDColor(rom, options);
     setKeyAsUniqueItem(rom);
+    shortenMirCutsceneAfterLakeShrine(rom);
 }
