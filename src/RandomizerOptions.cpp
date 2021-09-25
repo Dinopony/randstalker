@@ -62,12 +62,21 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 	// Personal options (not included in permalink)
 	_inputRomPath			= args.getString("inputrom", "./input.md");
 	
-	_outputRomPath			= args.getString("outputrom", "./");
-	if(*_outputRomPath.rbegin() != '/')
+	_outputRomPath = args.getString("outputrom", "./");
+	bool points_to_file = Tools::endsWith(_outputRomPath, ".md") || Tools::endsWith(_outputRomPath, ".bin");
+	if(!points_to_file && *_outputRomPath.rbegin() != '/')
 		_outputRomPath += "/";
 
-	_spoilerLogPath			= args.getString("outputlog", _outputRomPath);
-	if(*_spoilerLogPath.rbegin() != '/')
+	_spoilerLogPath = args.getString("outputlog", "");
+	if(_spoilerLogPath == "")
+	{
+		if(points_to_file)
+			_spoilerLogPath = "./"; // outputRomPath points to a file, use cwd for the spoiler log
+		else
+			_spoilerLogPath = _outputRomPath; // outputRomPath points to a directory, use the same for the spoiler log
+	}
+
+	if(!Tools::endsWith(_spoilerLogPath, ".log") && *_spoilerLogPath.rbegin() != '/')
 		_spoilerLogPath += "/";
 
 	_debugLogPath			= args.getString("debuglog", "./debug.log");

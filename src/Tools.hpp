@@ -106,4 +106,11 @@ namespace Tools
     inline void toLower(std::string& s) {
         std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
     }
+
+    inline bool endsWith(const std::string& haystack, const std::string& needle)
+    {
+        if (needle.size() > haystack.size())
+            return false;
+        return std::equal(needle.rbegin(), needle.rend(), haystack.rbegin());
+    }
 }
