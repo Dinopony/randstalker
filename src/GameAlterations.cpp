@@ -974,11 +974,13 @@ void addTeleportFunctionToSpellBook(md::ROM& rom)
     md::Code spellBookFunction;
     spellBookFunction.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
     spellBookFunction.movew(spawnPosition, addr_(0xFF5400));
-    spellBookFunction.movew(0x0808, addr_(0xFF5402));
+    spellBookFunction.movew(0x0708, addr_(0xFF5402)); // Reset subtiles position
     spellBookFunction.trap(0, { 0x00, 0x4D });
     spellBookFunction.jsr(0x44C);
     spellBookFunction.movew(spawnMapID, reg_D0); // Set MapID to spawn map
-    spellBookFunction.movew(0x0030, addr_(0xFF5412));
+    spellBookFunction.movew(0x0000, addr_(0xFF5412)); // Reset player height
+    spellBookFunction.moveb(0x00, addr_(0xFF5422)); // Reset ground height
+    spellBookFunction.moveb(0x00, addr_(0xFF5439)); // ^
     spellBookFunction.jsr(0x1586E);
     spellBookFunction.jsr(0x434);
     spellBookFunction.clrb(reg_D0);
