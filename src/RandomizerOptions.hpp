@@ -23,8 +23,18 @@ public:
 	
 	// Personal options (not included in permalink)
 	const std::string& getInputROMPath() const { return _inputRomPath; }
-	std::string getOutputROMPath() const { return _outputRomPath + this->getHashSentence() + ".md"; }
-	std::string getSpoilerLogPath() const { return _spoilerLogPath + this->getHashSentence() + ".log"; }
+	std::string getOutputROMPath() const
+	{ 
+		if(*_outputRomPath.rbegin() == '/')
+			return _outputRomPath + this->getHashSentence() + ".md";
+		return _outputRomPath;
+	}
+	std::string getSpoilerLogPath() const
+	{ 
+		if(*_spoilerLogPath.rbegin() == '/')
+			return _spoilerLogPath + this->getHashSentence() + ".log";
+		return _spoilerLogPath;
+	}
 
 	const std::string& getDebugLogPath() const { return _debugLogPath; }
 	bool mustPause() const { return _pauseAfterGeneration; }

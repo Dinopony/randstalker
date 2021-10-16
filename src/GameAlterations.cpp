@@ -995,12 +995,16 @@ void addTeleportFunctionToSpellBook(md::ROM& rom)
     uint16_t spawnMapID = rom.getWord(0x0027F4);
 
     // ------------- New spell book teleport function -------------
-    md::Code spellBookFunction;   // CSA_009A
+    md::Code spellBookFunction;
     spellBookFunction.movemToStack({ reg_D0_D7 }, { reg_A0_A6 });
     spellBookFunction.movew(spawnPosition, addr_(0xFF5400));
+    spellBookFunction.movew(0x0708, addr_(0xFF5402)); // Reset subtiles position
     spellBookFunction.trap(0, { 0x00, 0x4D });
     spellBookFunction.jsr(0x44C);
     spellBookFunction.movew(spawnMapID, reg_D0); // Set MapID to spawn map
+    spellBookFunction.movew(0x0000, addr_(0xFF5412)); // Reset player height
+    spellBookFunction.moveb(0x00, addr_(0xFF5422)); // Reset ground height
+    spellBookFunction.moveb(0x00, addr_(0xFF5439)); // ^
     spellBookFunction.jsr(0x1586E);
     spellBookFunction.jsr(0x434);
     spellBookFunction.clrb(reg_D0);
@@ -1107,13 +1111,11 @@ void addFunctionToItemsOnUse(md::ROM& rom)
     rom.setWord(0x008647, 0x6627);
 }
 
-
 void shortenMirCutsceneAfterLakeShrine(md::ROM& rom)
 {
     // Cut the cutscene script
     rom.setWord(0x28A44, 0xE739);
 }
-
 
 void renameItems(md::ROM& rom)
 {
@@ -1160,6 +1162,7 @@ void renameItems(md::ROM& rom)
     std::cout << "Renaming items with size " << itemNameBytes.size() << " instead of " <<  initialSize;
     rom.setBytes(0x29732, itemNameBytes);
 }
+
 
 void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {    
