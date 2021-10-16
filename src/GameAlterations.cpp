@@ -129,8 +129,8 @@ void alterItemOrderInMenu(md::ROM& rom)
         ITEM_SUN_STONE,     ITEM_BUYER_CARD,
         ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
         ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
-        ITEM_BLUE_RIBBON,   ITEM_SPELL_BOOK,
-        ITEM_GREEN_JEWEL,   0xFF,
+        ITEM_GREEN_JEWEL,   ITEM_SPELL_BOOK, 
+        ITEM_BLUE_RIBBON,   0xFF
         0xFF,               0xFF
     };
 
@@ -663,9 +663,6 @@ void fixMirTowerPriestRoomItems(md::ROM& rom)
         // After:	7F7F
     rom.setWord(0x024E5A, 0x7F7F);
 }
-
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////
