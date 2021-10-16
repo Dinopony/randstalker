@@ -1158,8 +1158,6 @@ void renameItems(md::ROM& rom)
 
     if(itemNameBytes.size() > initialSize)
         throw new RandomizerException("Item names size is above initial game size");
-
-    std::cout << "Renaming items with size " << itemNameBytes.size() << " instead of " <<  initialSize;
     rom.setBytes(0x29732, itemNameBytes);
 }
 
