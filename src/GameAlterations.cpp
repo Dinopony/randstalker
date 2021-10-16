@@ -1156,11 +1156,13 @@ void renameItems(md::ROM& rom)
     if(itemNameBytes.size() > initialSize)
         throw new RandomizerException("Item names size is above initial game size");
     rom.setBytes(0x29732, itemNameBytes);
-
-    // Fix Green Jewel not being obtainable
-    rom.setWord(0x293D4, 0x01FF);
 }
 
+void handleAdditionalJewels(md::ROM& rom)
+{
+    // Fix Green Jewel not being obtainable (max quantity 0)
+    rom.setWord(0x293D4, 0x01FF);
+}
 
 void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {    
@@ -1176,6 +1178,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
     alterLanternHandling(rom);
+    handleAdditionalJewels(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
