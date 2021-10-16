@@ -467,7 +467,7 @@ Item* WorldRandomizer::randomizeFortuneTellerHint()
 Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem)
 {
 	UnsortedSet<Item*> forbiddenOracleStoneItems = {
-		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL]
+		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL], _world.items[ITEM_GREEN_JEWEL]
 	};
 
 	// Also excluding items strictly needed to get to Oracle Stone's location
