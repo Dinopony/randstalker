@@ -9,7 +9,7 @@
 #include "Enums/SpawnLocations.hpp"
 #include "ArgumentDictionary.hpp"
 
-constexpr double DEFAULT_FILLING_RATE = 0.20;
+constexpr double DEFAULT_FILLING_RATE = 0.10;
 
 class RandomizerOptions 
 {
