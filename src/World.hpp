@@ -30,7 +30,7 @@ public:
     void writeToROM(md::ROM& rom);
 
 private:
-    void initItems(bool useArmorUpgrades);
+    void initItems(const RandomizerOptions& options);
     void initFillerItemsList();
     void initPriorityItemsList();
 
@@ -40,7 +40,7 @@ private:
     void initNPCRewards();
 
     void initRegions();
-    void initRegionPaths();
+    void initRegionPaths(const RandomizerOptions& options);
 
     void initRegionHints();
     void initHintSigns(bool replaceOGHints);
@@ -60,8 +60,7 @@ public:
 
     WorldRegion* darkenedRegion;
     
-    std::string redJewelHint;
-    std::string purpleJewelHint;
+    std::vector<std::string> jewelHints;
     std::string whereIsLithographHint;
     std::string fortuneTellerHint;
     std::string oracleStoneHint;

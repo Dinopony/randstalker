@@ -41,6 +41,28 @@ public:
         }
     }
 
+    int getInteger(const std::string& name, int defaultValue = 0) const
+    {
+        try {
+            return std::stoi(_argsMap.at(name));
+        } 
+        catch (std::out_of_range&) {}
+        catch (std::invalid_argument&) {}
+
+        return defaultValue;
+    }
+
+    double getDouble(const std::string& name, double defaultValue = 0.0) const
+    {
+        try {
+            return std::stod(_argsMap.at(name));
+        } 
+        catch (std::out_of_range&) {}
+        catch (std::invalid_argument&) {}
+
+        return defaultValue;
+    }
+
     bool getBoolean(const std::string& name, bool defaultValue = false) const
     {
         // "--noParam" <==> "--param=false"

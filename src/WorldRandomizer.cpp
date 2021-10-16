@@ -423,8 +423,12 @@ void WorldRandomizer::randomizeSpawnLocation()
 void WorldRandomizer::randomizeHints()
 {
 	// Lithograph hints
-	_world.redJewelHint = "Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".";
-	_world.purpleJewelHint = "Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".";
+	if(_options.getJewelCount() >= 1)
+		_world.jewelHints.push_back("Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".");
+	if(_options.getJewelCount() >= 2)
+		_world.jewelHints.push_back("Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".");
+	if(_options.getJewelCount() >= 3)
+		_world.jewelHints.push_back("Green Jewel is " + this->getRandomHintForItem(_world.items[ITEM_GREEN_JEWEL]) + ".");
 
 	// King Nole Cave "where is lithograph" hint sign
 	_world.whereIsLithographHint = "The lithograph will help you finding the jewels. It is " 

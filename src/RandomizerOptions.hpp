@@ -9,6 +9,8 @@
 #include "Enums/SpawnLocations.hpp"
 #include "ArgumentDictionary.hpp"
 
+constexpr double DEFAULT_FILLING_RATE = 0.20;
+
 class RandomizerOptions 
 {
 public:
@@ -30,6 +32,7 @@ public:
 	const std::string getHUDColor() const { return _hudColor; }
 
 	// Seed-related options (included in permalink)
+	uint8_t getJewelCount() const { return _jewelCount; }
 	double getFillingRate() const { return _fillingRate; }
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
@@ -50,6 +53,7 @@ private:
 	bool _addIngameItemTracker;
 	std::string _hudColor;
 
+	uint8_t _jewelCount;
 	double _fillingRate;
 	bool _armorUpgrades;
 	bool _shuffleTiborTrees;

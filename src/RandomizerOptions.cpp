@@ -20,13 +20,15 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 			}
 
 			_seed = std::stoul(tokens.at(1));
-			_fillingRate = std::stod(tokens.at(2));
-			_armorUpgrades = (tokens.at(3) == "t");
-			_shuffleTiborTrees = (tokens.at(4) == "t");
-			_saveAnywhereBook = (tokens.at(5) == "t");
-			_spawnLocation = spawnLocationFromString(tokens.at(6));
-			_dungeonSignHints = (tokens.at(7) == "t");
-			_allowSpoilerLog = (tokens.at(8) == "t");
+
+			_jewelCount = std::stoi(tokens.at(2));
+			_fillingRate = std::stod(tokens.at(3));
+			_armorUpgrades = (tokens.at(4) == "t");
+			_shuffleTiborTrees = (tokens.at(5) == "t");
+			_saveAnywhereBook = (tokens.at(6) == "t");
+			_spawnLocation = spawnLocationFromString(tokens.at(7));
+			_dungeonSignHints = (tokens.at(8) == "t");
+			_allowSpoilerLog = (tokens.at(9) == "t");
 		} 
 		catch(std::exception&) {
 			throw RandomizerException("Invalid permalink given.");
@@ -44,13 +46,8 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 		}
 
 		// Seed-related options (included in permalink)  
-		constexpr double DEFAULT_FILLING_RATE = 0.20;
-		try { 
-			_fillingRate = std::stod(args.getString("fillingrate", std::to_string(DEFAULT_FILLING_RATE)));
-		}
-		catch (std::invalid_argument&) {
-			_fillingRate = DEFAULT_FILLING_RATE;
-		}
+		_jewelCount 			= args.getInteger("jewelcount", 2);
+		_fillingRate			= args.getDouble("fillingrate", DEFAULT_FILLING_RATE);
 		_armorUpgrades			= args.getBoolean("armorupgrades", true);
 		_shuffleTiborTrees		= args.getBoolean("shuffletrees", false);
 		_saveAnywhereBook		= args.getBoolean("recordbook", true);
@@ -101,6 +98,7 @@ std::string RandomizerOptions::getPermalink() const
 	std::ostringstream permalinkBuilder;
 	permalinkBuilder 	<< MAJOR_RELEASE << ";"
 						<< _seed << ";"
+						<< _jewelCount << ";"
 						<< (std::to_string(_fillingRate)) << ";"
 						<< (_armorUpgrades ? "t" : "") << ";"
 						<< (_shuffleTiborTrees ? "t" : "") << ";"

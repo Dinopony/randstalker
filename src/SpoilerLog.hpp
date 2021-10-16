@@ -71,7 +71,12 @@ public:
 
 		*this << "- Fortune Teller: \"" << _world.fortuneTellerHint << "\"\n";
 		*this << "- Oracle Stone: \"" << _world.oracleStoneHint << "\"\n";
-		*this << "- Lithograph: \"" << _world.redJewelHint << " " << _world.purpleJewelHint << "\"\n";
+		
+		*this << "- Lithograph: \"";
+		for(const std::string& jewelHint : _world.jewelHints)
+			*this << jewelHint << " ";
+		*this << "\"\n";
+		
 		*this << "- King Nole's Cave sign: \"" << _world.whereIsLithographHint << "\"\n\n";
 
 		for (HintSign* sign : _world.hintSigns)

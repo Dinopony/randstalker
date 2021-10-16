@@ -15,7 +15,7 @@ void loadGameStrings(std::vector<std::string>& gameStrings);
 World::World(const RandomizerOptions& options) :
     spawnLocation(options.getSpawnLocation()), darkenedRegion(nullptr)
 {
-    this->initItems(options.useArmorUpgrades());
+    this->initItems(options);
     this->initFillerItemsList();
     this->initPriorityItemsList();
 
@@ -25,7 +25,7 @@ World::World(const RandomizerOptions& options) :
     this->initNPCRewards();
 
     this->initRegions();
-    this->initRegionPaths();
+    this->initRegionPaths(options);
 
     loadGameStrings(textLines);
     this->initRegionHints();
@@ -98,7 +98,21 @@ void World::writeToROM(md::ROM& rom)
 
     // Alter some static text lines to fit hints inside
     //  - Lithograph hint
-    textLines[0x021] = GameText(redJewelHint + " \x1E" + purpleJewelHint).getOutput();
+    std::string fullLithographHint;
+    if(jewelHints.empty())
+    {
+        fullLithographHint = "This tablet seems of no use...";
+    }
+    else
+    {
+        for(const std::string& jewelHint : jewelHints)
+        {
+            if(!fullLithographHint.empty())
+                fullLithographHint += " \x1E";
+            fullLithographHint += jewelHint;
+        }
+    }
+    textLines[0x021] = GameText(fullLithographHint).getOutput();
     //  - Fortune teller hint
     textLines[0x28D] = "\x1CHello dear, let me look at\nwhat your future is made of...\x1E";
     textLines[0x28E] = "\x1CI see... I see...\x1E\n" + GameText(fortuneTellerHint).getOutput();
@@ -125,7 +139,7 @@ void World::writeToROM(md::ROM& rom)
 }
 
 
-void World::initItems(bool useArmorUpgrades)
+void World::initItems(const RandomizerOptions& options)
 {
     this->addItem(new Item(ITEM_EKEEKE,            "EkeEke",            20));
     this->addItem(new Item(ITEM_MAGIC_SWORD,       "Magic Sword",       300));
@@ -157,9 +171,7 @@ void World::initItems(bool useArmorUpgrades)
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  200));
     this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        50));
     this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        250));
-    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         400));
     this->addItem(new Item(ITEM_PAWN_TICKET,       "Pawn Ticket",       100));
-    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      400));
     this->addItem(new Item(ITEM_GOLA_EYE,          "Gola's Eye",        400));
     this->addItem(new Item(ITEM_DEATH_STATUE,      "Death Statue",      150));
     this->addItem(new Item(ITEM_DAHL,              "Dahl",              100, false));
@@ -177,7 +189,11 @@ void World::initItems(bool useArmorUpgrades)
     this->addItem(new Item(ITEM_LIFESTOCK,         "Life Stock",        250, false));
     this->addItem(new Item(ITEM_NONE,              "No Item",           0));
 
-    if (useArmorUpgrades)
+    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         500));
+    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      500));
+    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       500));
+
+    if (options.useArmorUpgrades())
     {
         this->addItem(new Item(ITEM_STEEL_BREAST,   "Armor upgrade 1",  250));
         this->addItem(new Item(ITEM_CHROME_BREAST,  "Armor upgrade 2",  250));
@@ -1057,8 +1073,25 @@ void World::initRegions()
     };
 }
 
-void World::initRegionPaths()
+void World::initRegionPaths(const RandomizerOptions& options)
 {
+    // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
+    std::vector<Item*> requiredJewels;
+    if(options.getJewelCount() >= 1)
+    {
+        requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
+        requiredJewels.push_back(items[ITEM_RED_JEWEL]);
+    }
+    if(options.getJewelCount() >= 2)
+    {
+        requiredJewels.push_back(items[ITEM_PURPLE_JEWEL]);
+    }
+    if(options.getJewelCount() >= 3)
+    {
+        requiredJewels.push_back(items[ITEM_GREEN_JEWEL]);
+    }
+
+    // Create region paths with item conditions
 	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::ROUTE_MASSAN_GUMI]);
 	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::WATERFALL_SHRINE]);
@@ -1096,7 +1129,8 @@ void World::initRegionPaths()
 	regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
-	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], { items[ITEM_RED_JEWEL], items[ITEM_PURPLE_JEWEL], items[ITEM_LITHOGRAPH] });
+
+	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], requiredJewels);
 	regions[RegionCode::KAZALT]->addPathTo(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
 	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], { items[ITEM_LOGS], items[ITEM_LOGS] });

@@ -5,6 +5,7 @@
 #include "MegadriveTools/MdRom.hpp"
 #include "MegadriveTools/MdCode.hpp"
 #include "World.hpp"
+#include "Exceptions.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -129,7 +130,7 @@ void alterItemOrderInMenu(md::ROM& rom)
         ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
         ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
         ITEM_BLUE_RIBBON,   ITEM_SPELL_BOOK,
-        0xFF,               0xFF,
+        ITEM_GREEN_JEWEL,   0xFF,
         0xFF,               0xFF
     };
 
@@ -434,20 +435,43 @@ void alterMercatorSecondaryShopCheck(md::ROM& rom)
     rom.setWord(0x00A574, 0x4C05);
 }
 
-void addJewelsCheckForTeleporterToKazalt(md::ROM& rom)
+void addJewelsCheckForTeleporterToKazalt(md::ROM& rom, const RandomizerOptions& options)
 {
-    // ----------- Jewel textbox handling ----------------------
+    // ----------- Rejection textbox handling ------------
+    md::Code funcRejectKazaltTeleporter;
+
+    funcRejectKazaltTeleporter.jsr(0x22EE8); // open textbox
+    funcRejectKazaltTeleporter.movew(0x22, reg_D0);
+    funcRejectKazaltTeleporter.jsr(0x28FD8); // display text 
+    funcRejectKazaltTeleporter.jsr(0x22EA0); // close textbox
+    funcRejectKazaltTeleporter.rts();
+
+    uint32_t addrRejectKazaltTeleport = rom.injectCode(funcRejectKazaltTeleporter);
+
+    // ----------- Jewel checks handling ------------
     md::Code procHandleJewelsCheck;
 
-    procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
-    procHandleJewelsCheck.beq(3);
-    procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
-    procHandleJewelsCheck.bne(6);
-        procHandleJewelsCheck.jsr(0x22EE8); // open textbox
-        procHandleJewelsCheck.movew(0x22, reg_D0);
-        procHandleJewelsCheck.jsr(0x28FD8); // display text 
-        procHandleJewelsCheck.jsr(0x22EA0); // close textbox
-        procHandleJewelsCheck.rts();
+    if(options.getJewelCount() >= 1)
+    {
+        procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
+        procHandleJewelsCheck.bne(3);
+            procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+            procHandleJewelsCheck.rts();
+    }
+    if(options.getJewelCount() >= 2)
+    {
+        procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
+        procHandleJewelsCheck.bne(3);
+            procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+            procHandleJewelsCheck.rts();
+    }
+    if(options.getJewelCount() >= 3)
+    {
+        procHandleJewelsCheck.btst(0x1, addr_(0xFF105A)); // Test if green jewel is owned
+        procHandleJewelsCheck.bne(3);
+            procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+            procHandleJewelsCheck.rts();
+    }
     procHandleJewelsCheck.moveq(0x7, reg_D0);
     procHandleJewelsCheck.jsr(0xE110);  // "func_teleport_kazalt"
     procHandleJewelsCheck.jmp(0x62FA);
@@ -1090,6 +1114,53 @@ void shortenMirCutsceneAfterLakeShrine(md::ROM& rom)
     rom.setWord(0x28A44, 0xE739);
 }
 
+
+void renameItems(md::ROM& rom)
+{
+    std::vector<uint8_t> itemNameBytes;
+    rom.getDataChunk(0x29732, 0x29A0A, itemNameBytes);
+    std::vector<std::vector<uint8_t>> itemNames;
+
+    // Read item names
+    uint32_t addr = 0;
+    while(true)
+    {
+        uint16_t stringSize = itemNameBytes[addr++];
+        if(stringSize == 0xFF)
+            break;
+
+        // Clear Hotel Register & Island Map names to make space
+        if(itemNames.size() == ITEM_HOTEL_REGISTER || itemNames.size() == ITEM_ISLAND_MAP)
+            itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
+        // Rename all default equipments with "None"
+        else if(itemNames.size() == ITEM_NO_SWORD || itemNames.size() == ITEM_NO_ARMOR || itemNames.size() == ITEM_NO_BOOTS)
+            itemNames.push_back({ 0x18, 0x33, 0x32, 0x29 });
+        // Rename No52 into Green Jewel
+        else if(itemNames.size() == ITEM_NO52)
+            itemNames.push_back({ 0x11, 0x36, 0x29, 0x29, 0x32, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+        else
+            itemNames.push_back(std::vector<uint8_t>(itemNameBytes.begin() + addr, itemNameBytes.begin() + addr + stringSize));
+
+        addr += stringSize;
+    }
+
+    constexpr uint16_t initialSize = 0x29A0A - 0x29732;
+
+    itemNameBytes.clear();
+    for(const std::vector<uint8_t>& itemName : itemNames)
+    {
+        itemNameBytes.push_back((uint8_t)itemName.size());
+        itemNameBytes.insert(itemNameBytes.end(), itemName.begin() , itemName.end());
+    }
+    itemNameBytes.push_back(0xFF);
+
+    if(itemNameBytes.size() > initialSize)
+        throw new RandomizerException("Item names size is above initial game size");
+
+    std::cout << "Renaming items with size " << itemNameBytes.size() << " instead of " <<  initialSize;
+    rom.setBytes(0x29732, itemNameBytes);
+}
+
 void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {    
     // Game & gameplay changes
@@ -1100,7 +1171,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     quickenGaiaEffect(rom);
     addRecordBookSave(rom);
     alterFahlChallenge(rom);
-    addJewelsCheckForTeleporterToKazalt(rom);
+    addJewelsCheckForTeleporterToKazalt(rom, options);
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
     alterLanternHandling(rom);
@@ -1146,4 +1217,5 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     changeHUDColor(rom, options);
     setKeyAsUniqueItem(rom);
     shortenMirCutsceneAfterLakeShrine(rom);
+    renameItems(rom);
 }
