@@ -130,7 +130,7 @@ void alterItemOrderInMenu(md::ROM& rom)
         ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
         ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
         ITEM_GREEN_JEWEL,   ITEM_SPELL_BOOK, 
-        ITEM_BLUE_RIBBON,   0xFF
+        ITEM_BLUE_RIBBON,   0xFF,
         0xFF,               0xFF
     };
 
@@ -1156,6 +1156,9 @@ void renameItems(md::ROM& rom)
     if(itemNameBytes.size() > initialSize)
         throw new RandomizerException("Item names size is above initial game size");
     rom.setBytes(0x29732, itemNameBytes);
+
+    // Fix Green Jewel not being obtainable
+    rom.setWord(0x293D4, 0x01FF);
 }
 
 
