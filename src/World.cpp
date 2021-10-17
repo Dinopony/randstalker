@@ -11,7 +11,8 @@
 #include "Huffman/TextEncoder.hpp"
 
 World::World(const RandomizerOptions& options) :
-    spawnLocation(options.getSpawnLocation()), darkenedRegion(nullptr)
+    spawnLocation(options.getSpawnLocation()),
+    darkenedRegion(nullptr)
 {
     this->initItems(options);
     this->initFillerItemsList();

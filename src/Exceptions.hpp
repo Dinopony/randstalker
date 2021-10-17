@@ -4,6 +4,9 @@
 class RandomizerException
 {
 public:
+    RandomizerException() :  _message()
+    {}
+
     RandomizerException(const std::string& message) :  _message(message)
     {}
 

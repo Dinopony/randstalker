@@ -19,7 +19,8 @@ enum class SpawnLocation {
 
 std::string spawnLocationToString(SpawnLocation loc);
 int spawnLocationToNumber(SpawnLocation loc);
-SpawnLocation spawnLocationFromString(std::string locAsString, SpawnLocation defaultValue = SpawnLocation::RANDOM);
+SpawnLocation spawnLocationFromString(std::string locAsString);
+SpawnLocation spawnLocationFromString(std::string locAsString, SpawnLocation defaultValue);
 std::vector<SpawnLocation> getAllSpawnLocations();
 
 uint8_t getSpawnLocationX(SpawnLocation loc);

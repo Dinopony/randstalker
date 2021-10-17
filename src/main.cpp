@@ -72,6 +72,8 @@ int main(int argc, char* argv[])
 	try
 	{
 		RandomizerOptions options(argsDictionary);
+		options.print(std::cout);
+		options.printPersonalSettings(std::cout);
 
 		md::ROM* rom = getInputROM(options.getInputROMPath());
 	
@@ -79,22 +81,30 @@ int main(int argc, char* argv[])
 		World world(options);
 		WorldRandomizer randomizer(world, options);
 		
-		std::cout << "Randomizing world..." << std::endl;
+		std::cout << "Randomizing world...\n\n";
 		randomizer.randomize();
 		world.writeToROM(*rom);
 
 		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-		std::cout << "Applying patches..." << std::endl;
+		std::cout << "Applying patches...\n\n";
 		applyPatches(*rom, options, world);
 
 		rom->saveAs(options.getOutputROMPath());
-		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n" << std::endl;
-		std::cout << "Permalink: \"" << options.getPermalink() << "\"" << std::endl;
-		std::cout << "Share this permalink with other people to enable them building the exact same seed.\n" << std::endl;
+		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n";
 
 		// Write a spoiler log to help the player
 		SpoilerLog(options, world).writeToFile();
-		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n" << std::endl;
+		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n";
+
+		std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
+
+		if (argsDictionary.getBoolean("writepreset"))
+		{
+			auto json = options.toJSON();
+			std::ofstream presetFile("./preset.json");
+			presetFile << json.dump(4);
+			presetFile.close();
+		}
 
 		if ( options.mustPause() )
 		{

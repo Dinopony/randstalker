@@ -30,7 +30,7 @@ int spawnLocationToNumber(SpawnLocation loc)
     return -1;
 }
 
-SpawnLocation spawnLocationFromString(std::string locAsString, SpawnLocation defaultValue)
+SpawnLocation spawnLocationFromString(std::string locAsString)
 {
     const std::unordered_map<std::string, SpawnLocation> assocMap = {
         { "random",		SpawnLocation::RANDOM		},
@@ -52,13 +52,15 @@ SpawnLocation spawnLocationFromString(std::string locAsString, SpawnLocation def
         { "5",			SpawnLocation::KADO			}
     };
 
-    try
-    {
-        Tools::toLower(locAsString);
-        return assocMap.at(locAsString);
-    }
-    catch (std::out_of_range&)
-    {
+    Tools::toLower(locAsString);
+    return assocMap.at(locAsString);
+}
+
+SpawnLocation spawnLocationFromString(std::string locAsString, SpawnLocation defaultValue)
+{
+    try {
+        return spawnLocationFromString(locAsString);
+    } catch (std::out_of_range&) {
         return defaultValue;
     }
 }

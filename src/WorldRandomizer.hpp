@@ -43,7 +43,6 @@ private:
 	void unlockPhase();
 
 	// Third pass randomizations (after items)
-	void randomizeSpawnLocation();
 	void randomizeHints();
 	Item* randomizeFortuneTellerHint();
 	Item* randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem);

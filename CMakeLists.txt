@@ -21,6 +21,7 @@ set(SOURCES
 
     "src/Extlibs/Base64.hpp"
     "src/Extlibs/Base64.cpp"
+    "src/Extlibs/json.hpp"
 
     "src/Huffman/Bitfield.hpp"
     "src/Huffman/HuffmanTree.hpp"

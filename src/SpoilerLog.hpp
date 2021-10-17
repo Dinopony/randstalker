@@ -23,7 +23,8 @@ public:
 		if (!this->is_open())
 			return false;
 
-		this->writeOptions();
+		this->writeTitle("Options");
+		_options.print(*this);
 
 		*this << "Dark region: " << _world.darkenedRegion->getName() << "\n";
 		this->writeHints();
@@ -39,31 +40,6 @@ public:
 		*this << "\n===================================\n";
 		*this << "\t\t" << title;
 		*this << "\n===================================\n\n";
-	}
-
-	void writeOptions()
-	{
-		this->writeTitle("Options");
-
-		*this << "Seed: " << _options.getSeed() << "\n";
-		*this << "Permalink: " << _options.getPermalink() << "\n";
-		*this << "Hash: " << _options.getHashSentence() << "\n\n";
-
-		*this << "Jewel count: " << std::to_string(_options.getJewelCount()) << "\n";
-		*this << "Filling rate: " << std::to_string(_options.getFillingRate()) << "\n";
-		*this << "Armor upgrades: " << (_options.useArmorUpgrades() ? "enabled" : "disabled") << "\n";
-		*this << "Randomized Tibor trees: " << (_options.shuffleTiborTrees() ? "enabled" : "disabled") << "\n";
-		*this << "Record Book: " << (_options.useRecordBook() ? "enabled" : "disabled") << "\n";
-		*this << "In-game item tracker: " << (_options.addIngameItemTracker() ? "enabled" : "disabled") << "\n";
-
-		if(_options.getSpawnLocation() == SpawnLocation::RANDOM)
-			*this << "Starting location: Random (" << spawnLocationToString(_world.spawnLocation) << ")\n";
-		else
-			*this << "Starting location: " << spawnLocationToString(_options.getSpawnLocation()) << "\n";
-			
-		*this << "Fill dungeon signs with hints: " << (_options.fillDungeonSignsWithHints() ? "enabled" : "disabled") << "\n";
-
-		*this << "\n";
 	}
 
 	void writeHints()
