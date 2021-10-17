@@ -491,9 +491,6 @@ void World::initChests()
     itemSources[ItemSourceCode::CHEST_TIBOR_DUAL_LEFT] =                                new ItemChest(0xDC, "Tibor: left chest on 2 chest group");
     itemSources[ItemSourceCode::CHEST_TIBOR_DUAL_RIGHT] =                               new ItemChest(0xDD, "Tibor: right chest on 2 chest group");
 
-    // Force the contents of a few specific chests
- //   itemSources[ItemSourceCode::CHEST_KN_CAVE_KAZALT_TELEPORTER_ROOM]->setItem(items[ITEM_LITHOGRAPH]);
-
     // The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
     // 0x0E, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
 }

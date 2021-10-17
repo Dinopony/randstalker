@@ -5,67 +5,41 @@
 #include <set>
 #include "World.hpp"
 
-class SpoilerLog : private std::ofstream 
+class SpoilerLog : public nlohmann::json
 {
 public:
 	SpoilerLog(const RandomizerOptions& options, const World& world) : 
-		std::ofstream(),
+		nlohmann::json(),
 		_options(options),
 		_world(world)
-	{}
-
-	bool writeToFile()
 	{
-		if (!_options.allowSpoilerLog() || _options.getSpoilerLogPath().empty())
-			return false;
+		(*this)["settings"] = _options.toJSON();
+		(*this)["settings"]["seed"] = _options.getSeed();
+		(*this)["settings"]["permalink"] = _options.getPermalink();
+		(*this)["settings"]["hashSentence"] = _options.getHashSentence();
 
-		this->open(_options.getSpoilerLogPath());
-		if (!this->is_open())
-			return false;
-
-		this->writeTitle("Options");
-		_options.print(*this);
-
-		*this << "Dark region: " << _world.darkenedRegion->getName() << "\n";
+		(*this)["darkRegion"] = _world.darkenedRegion->getName();
+		
 		this->writeHints();
 		this->writeTiborTrees();
 		this->writeItems();
-
-		this->close();
-		return true;
-	}
-
-	void writeTitle(const std::string& title)
-	{
-		*this << "\n===================================\n";
-		*this << "\t\t" << title;
-		*this << "\n===================================\n\n";
 	}
 
 	void writeHints()
 	{
-		this->writeTitle("Hints");
-
-		*this << "- Fortune Teller: \"" << _world.fortuneTellerHint << "\"\n";
-		*this << "- Oracle Stone: \"" << _world.oracleStoneHint << "\"\n";
+		(*this)["hints"]["Fortune Teller"] = _world.fortuneTellerHint;
+		(*this)["hints"]["Oracle Stone"] = _world.oracleStoneHint;
+		(*this)["hints"]["Lithograph"] = _world.jewelHints;
+		(*this)["hints"]["King Nole's Cave sign"] = _world.whereIsLithographHint;		
 		
-		*this << "- Lithograph: \"";
-		for(const std::string& jewelHint : _world.jewelHints)
-			*this << jewelHint << " ";
-		*this << "\"\n";
-		
-		*this << "- King Nole's Cave sign: \"" << _world.whereIsLithographHint << "\"\n\n";
-
 		for (HintSign* sign : _world.hintSigns)
-			*this << "- " << sign->getDescription() << ": \"" << stripSpecialSymbolsFromString(_world.textLines.at(sign->getTextID())) << "\"\n";
+			(*this)["hints"][sign->getDescription()] = stripSpecialSymbolsFromString(_world.textLines.at(sign->getTextID()));
 	}
 
 	void writeTiborTrees()
 	{
 		if (_options.shuffleTiborTrees())
 		{
-			this->writeTitle("Tibor Trees");
-
 			std::pair<const TreeMap*, const TreeMap*> pairs[5];
 			for (const TreeMap& map : _world.treeMaps)
 			{
@@ -82,27 +56,23 @@ public:
 				else if (treeMapID == 0x01FE)	pairs[4].second = &map;
 			}
 
-			for (int i = 0; i < 5; ++i)
-				*this << "- " << pairs[i].first->getName() << " <===> " << pairs[i].second->getName() << "\n";
+			(*this)["tiborTrees"] = {
+				pairs[0].first->getName() + " <===> " + pairs[0].second->getName(),
+				pairs[1].first->getName() + " <===> " + pairs[1].second->getName(),
+				pairs[2].first->getName() + " <===> " + pairs[2].second->getName(),
+				pairs[3].first->getName() + " <===> " + pairs[3].second->getName(),
+				pairs[4].first->getName() + " <===> " + pairs[4].second->getName(),
+			};
 		}
 	}
 
 	void writeItems()
 	{
-		this->writeTitle("Items");
-
 		for (auto& [key, region] : _world.regions)
 		{
 			std::vector<ItemSource*> sources = region->getItemSources();
-			if (sources.empty())
-				continue;
-
-			*this << region->getName() << "\n";
-
-			for (ItemSource* source : sources)
-				if (source->getItem())
-					*this << "   |_ \"" << source->getName() << "\" : [" << source->getItem()->getName() << "]\n";
-			*this << "\n";
+			for(ItemSource* source : sources)
+				(*this)["items"][region->getName()][source->getName()] = source->getItem()->getName();
 		}
 	}
 

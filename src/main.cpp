@@ -93,7 +93,15 @@ int main(int argc, char* argv[])
 		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n";
 
 		// Write a spoiler log to help the player
-		SpoilerLog(options, world).writeToFile();
+		if(options.allowSpoilerLog() && !options.getSpoilerLogPath().empty())
+		{
+			SpoilerLog log(options, world);
+			std::ofstream spoilerFile(options.getSpoilerLogPath());
+			if (spoilerFile)
+				spoilerFile << log.dump(4);
+			spoilerFile.close();
+		}
+		
 		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n";
 
 		std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;

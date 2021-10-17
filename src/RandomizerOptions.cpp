@@ -146,14 +146,14 @@ void RandomizerOptions::validate()
 		else
 			_spoilerLogPath = _outputRomPath; // outputRomPath points to a directory, use the same for the spoiler log
 	}
-	if(!Tools::endsWith(_spoilerLogPath, ".log") && *_spoilerLogPath.rbegin() != '/')
+	if(!Tools::endsWith(_spoilerLogPath, ".json") && *_spoilerLogPath.rbegin() != '/')
 		_spoilerLogPath += "/";
 
 	// Add the filename afterwards
 	if(*_outputRomPath.rbegin() == '/')
 		_outputRomPath += this->getHashSentence() + ".md";
 	if(*_spoilerLogPath.rbegin() == '/')
-		_spoilerLogPath += this->getHashSentence() + ".log";
+		_spoilerLogPath += this->getHashSentence() + ".json";
 }
 
 SpawnLocation RandomizerOptions::getSpawnLocation() const
