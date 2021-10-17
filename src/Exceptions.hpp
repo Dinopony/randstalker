@@ -1,10 +1,10 @@
 #include <exception>
 #include <string>
 
-class RandomizerException : public std::exception
+class RandomizerException
 {
 public:
-    RandomizerException(const std::string& message) : std::exception(), _message(message)
+    RandomizerException(const std::string& message) :  _message(message)
     {}
 
     const char* what() const noexcept { return _message.c_str(); }
