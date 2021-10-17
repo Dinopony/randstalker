@@ -28,6 +28,10 @@ World::World(const RandomizerOptions& options) :
     this->initRegionPaths(options);
 
     loadGameStrings(textLines);
+    std::ostringstream oss;
+    oss << "Only the bearers of the " << (uint32_t)options.getJewelCount() << " jewels\n are worthy of entering\n King Nole's domain...\x1E";
+    textLines[0x022] = oss.str();
+
     this->initRegionHints();
     this->initHintSigns(options.fillDungeonSignsWithHints());
 
@@ -66,21 +70,19 @@ WorldRegion* World::getRegionForItem(Item* item)
     return regions[RegionCode::ENDGAME];
 }
 
-ItemSource* World::getItemSourceForItem(Item* item)
+std::vector<ItemSource*> World::getItemSourcesContainingItem(Item* item)
 {
-    for (auto& [key, region] : regions)
-    {
-        std::vector<ItemSource*> sources = region->getItemSources();
-        for (ItemSource* source : sources)
-        {
-            if (source->getItem() == item)
-            {
-                return source;
-            }
-        }
+	std::vector<ItemSource*> sourcesContainingItem;
+
+	for (auto& [key, region] : regions)
+	{
+		std::vector<ItemSource*> sources = region->getItemSources();
+		for (ItemSource* source : sources)
+			if (source->getItem() == item)
+				sourcesContainingItem.push_back(source);
     }
 
-    return nullptr;
+    return sourcesContainingItem;
 }
 
 void World::writeToROM(md::ROM& rom)
@@ -189,9 +191,18 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_LIFESTOCK,         "Life Stock",        250, false));
     this->addItem(new Item(ITEM_NONE,              "No Item",           0));
 
-    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         500));
-    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      500));
-    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       500));
+    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    {
+        this->addItem(new Item(ITEM_RED_JEWEL,      "Kazalt Jewel",     500, false));
+        this->addItem(new Item(ITEM_PURPLE_JEWEL,   "",                 500));
+        this->addItem(new Item(ITEM_GREEN_JEWEL,    "",                 500));
+    }
+    else
+    {
+        this->addItem(new Item(ITEM_RED_JEWEL,      "Red Jewel",        500));
+        this->addItem(new Item(ITEM_PURPLE_JEWEL,   "Purple Jewel",     500));
+        this->addItem(new Item(ITEM_GREEN_JEWEL,    "Green Jewel",      500));       
+    }
 
     if (options.useArmorUpgrades())
     {
@@ -1077,18 +1088,26 @@ void World::initRegionPaths(const RandomizerOptions& options)
 {
     // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
     std::vector<Item*> requiredJewels;
-    if(options.getJewelCount() >= 1)
+    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
     {
-        requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
-        requiredJewels.push_back(items[ITEM_RED_JEWEL]);
+        for(int i=0; i<options.getJewelCount() ; ++i)
+            requiredJewels.push_back(items[ITEM_RED_JEWEL]);
     }
-    if(options.getJewelCount() >= 2)
+    else
     {
-        requiredJewels.push_back(items[ITEM_PURPLE_JEWEL]);
-    }
-    if(options.getJewelCount() >= 3)
-    {
-        requiredJewels.push_back(items[ITEM_GREEN_JEWEL]);
+        if(options.getJewelCount() >= 1)
+        {
+            requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
+            requiredJewels.push_back(items[ITEM_RED_JEWEL]);
+        }
+        if(options.getJewelCount() >= 2)
+        {
+            requiredJewels.push_back(items[ITEM_PURPLE_JEWEL]);
+        }
+        if(options.getJewelCount() >= 3)
+        {
+            requiredJewels.push_back(items[ITEM_GREEN_JEWEL]);
+        }
     }
 
     // Create region paths with item conditions

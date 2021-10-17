@@ -40,6 +40,8 @@ void WorldRandomizer::randomize()
 
 	if(_options.shuffleTiborTrees())
 		this->randomizeTiborTrees();
+	
+	_debugLog.close();
 }
 
 
@@ -423,12 +425,21 @@ void WorldRandomizer::randomizeSpawnLocation()
 void WorldRandomizer::randomizeHints()
 {
 	// Lithograph hints
-	if(_options.getJewelCount() >= 1)
-		_world.jewelHints.push_back("Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".");
-	if(_options.getJewelCount() >= 2)
-		_world.jewelHints.push_back("Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".");
-	if(_options.getJewelCount() >= 3)
-		_world.jewelHints.push_back("Green Jewel is " + this->getRandomHintForItem(_world.items[ITEM_GREEN_JEWEL]) + ".");
+	if(_options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+	{
+		std::vector<ItemSource*> allSourcesContainingJewels = _world.getItemSourcesContainingItem(_world.items[ITEM_RED_JEWEL]);
+		for(ItemSource* source : allSourcesContainingJewels)
+			_world.jewelHints.push_back("A jewel is " + this->getRandomHintForItemSource(source) + ".");
+	}
+	else
+	{
+		if(_options.getJewelCount() >= 1)
+			_world.jewelHints.push_back("Red Jewel is " + this->getRandomHintForItem(_world.items[ITEM_RED_JEWEL]) + ".");
+		if(_options.getJewelCount() >= 2)
+			_world.jewelHints.push_back("Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".");
+		if(_options.getJewelCount() >= 3)
+			_world.jewelHints.push_back("Green Jewel is " + this->getRandomHintForItem(_world.items[ITEM_GREEN_JEWEL]) + ".");
+	}
 
 	// King Nole Cave "where is lithograph" hint sign
 	_world.whereIsLithographHint = "The lithograph will help you finding the jewels. It is " 
@@ -594,27 +605,29 @@ uint32_t WorldRandomizer::getNextElligibleHintableItemPos(std::vector<uint8_t> h
 
 std::string WorldRandomizer::getRandomHintForItem(Item* item)
 {
-	for (auto& [key, region] : _world.regions)
-	{
-		std::vector<ItemSource*> sources = region->getItemSources();
-		for (ItemSource* source : sources)
-		{
-			if (source->getItem() == item)
-			{
-				const std::vector<std::string>& regionHints = region->getHints();
-				const std::vector<std::string>& sourceHints = source->getHints();
-				
-				std::vector<std::string> allHints;
-				allHints.insert(allHints.end(), regionHints.begin(), regionHints.end());
-				allHints.insert(allHints.end(), sourceHints.begin(), sourceHints.end());
-				Tools::shuffle(allHints, _rng);
+	std::vector<ItemSource*> sources = _world.getItemSourcesContainingItem(item);
+	if(sources.empty())
+		return "in an unknown place";
 
-				return *allHints.begin();
-			}
-		}
-	}
+	Tools::shuffle(sources, _rng);
+	ItemSource* randomSource = *sources.begin();
+	return this->getRandomHintForItemSource(randomSource);
+}
 
-	return "in an unknown place";
+std::string WorldRandomizer::getRandomHintForItemSource(ItemSource* itemSource)
+{
+	const std::vector<std::string>& regionHints = itemSource->getRegion()->getHints();
+	const std::vector<std::string>& sourceHints = itemSource->getHints();
+		
+	std::vector<std::string> allHints;
+	allHints.insert(allHints.end(), regionHints.begin(), regionHints.end());
+	allHints.insert(allHints.end(), sourceHints.begin(), sourceHints.end());
+	
+	if(allHints.empty())
+		return "in an unknown place";
+
+	Tools::shuffle(allHints, _rng);
+	return *allHints.begin();
 }
 
 

@@ -11,7 +11,8 @@
 #include "TreeMap.hpp"
 #include "HintSign.hpp"
 
-constexpr auto GOLD_SOURCES_COUNT = 30;
+constexpr uint8_t GOLD_SOURCES_COUNT = 30;
+constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 3;
 
 class World
 {
@@ -22,7 +23,7 @@ public:
     void addItem(Item* item) { items[item->getID()] = item; }
 
     WorldRegion* getRegionForItem(Item* item);
-    ItemSource* getItemSourceForItem(Item* item);
+    std::vector<ItemSource*> getItemSourcesContainingItem(Item* item);
 
     const std::vector<Item*>& getFillerItemsList() const { return _fillerItems; }
     const std::vector<Item*>& getPriorityItemsList() const { return _priorityItems; }

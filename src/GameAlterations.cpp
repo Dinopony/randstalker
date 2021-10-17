@@ -13,7 +13,6 @@
 constexpr uint32_t customTextStorageMemoryAddress = 0xFF0014;
 constexpr uint32_t mapEntrancePositionStorageMemoryAddress = 0xFF0018;
 
-
 ///////////////////////////////////////////////////////////////////////////////////
 //       Game & gameplay changes
 ///////////////////////////////////////////////////////////////////////////////////
@@ -451,26 +450,40 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom, const RandomizerOptions& 
     // ----------- Jewel checks handling ------------
     md::Code procHandleJewelsCheck;
 
-    if(options.getJewelCount() >= 1)
+    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
     {
-        procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
-        procHandleJewelsCheck.bne(3);
+        procHandleJewelsCheck.movemToStack({reg_D1},{});
+        procHandleJewelsCheck.moveb(addr_(0xFF1054), reg_D1);
+        procHandleJewelsCheck.andib(0x0F, reg_D1);
+        procHandleJewelsCheck.cmpib(options.getJewelCount(), reg_D1); // Test if red jewel is owned
+        procHandleJewelsCheck.movemFromStack({reg_D1},{});
+        procHandleJewelsCheck.bgt(3);
             procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
             procHandleJewelsCheck.rts();
     }
-    if(options.getJewelCount() >= 2)
+    else
     {
-        procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
-        procHandleJewelsCheck.bne(3);
-            procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
-            procHandleJewelsCheck.rts();
-    }
-    if(options.getJewelCount() >= 3)
-    {
-        procHandleJewelsCheck.btst(0x1, addr_(0xFF105A)); // Test if green jewel is owned
-        procHandleJewelsCheck.bne(3);
-            procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
-            procHandleJewelsCheck.rts();
+        if(options.getJewelCount() >= 1)
+        {
+            procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
+            procHandleJewelsCheck.bne(3);
+                procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+                procHandleJewelsCheck.rts();
+        }
+        if(options.getJewelCount() >= 2)
+        {
+            procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
+            procHandleJewelsCheck.bne(3);
+                procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+                procHandleJewelsCheck.rts();
+        }
+        if(options.getJewelCount() >= 3)
+        {
+            procHandleJewelsCheck.btst(0x1, addr_(0xFF105A)); // Test if green jewel is owned
+            procHandleJewelsCheck.bne(3);
+                procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+                procHandleJewelsCheck.rts();
+        }
     }
     procHandleJewelsCheck.moveq(0x7, reg_D0);
     procHandleJewelsCheck.jsr(0xE110);  // "func_teleport_kazalt"
@@ -1114,7 +1127,7 @@ void shortenMirCutsceneAfterLakeShrine(md::ROM& rom)
     rom.setWord(0x28A44, 0xE739);
 }
 
-void renameItems(md::ROM& rom)
+void renameItems(md::ROM& rom, const RandomizerOptions& options)
 {
     std::vector<uint8_t> itemNameBytes;
     rom.getDataChunk(0x29732, 0x29A0A, itemNameBytes);
@@ -1128,7 +1141,16 @@ void renameItems(md::ROM& rom)
         if(stringSize == 0xFF)
             break;
 
-        // Clear Hotel Register & Island Map names to make space
+        if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+        {
+            // Clear "Purple Jewel" name to make room for other names since it's unused
+            if(itemNames.size() == ITEM_PURPLE_JEWEL)
+                itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
+            // Rename "Red Jewel" into the more generic "Kazalt Jewel"
+            else if(itemNames.size() == ITEM_RED_JEWEL)
+                itemNames.push_back(std::vector<uint8_t>({ 0x15, 0x25, 0x3E, 0x25, 0x30, 0x38, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30  }));
+        }   
+        // Clear Hotel Register & Island Map names to make room for other names
         if(itemNames.size() == ITEM_HOTEL_REGISTER || itemNames.size() == ITEM_ISLAND_MAP)
             itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
         // Rename all default equipments with "None"
@@ -1158,10 +1180,19 @@ void renameItems(md::ROM& rom)
     rom.setBytes(0x29732, itemNameBytes);
 }
 
-void handleAdditionalJewels(md::ROM& rom)
+void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
 {
-    // Fix Green Jewel not being obtainable (max quantity 0)
-    rom.setWord(0x293D4, 0x01FF);
+    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    {
+        // Set the max quantity for the generic "Kazalt Jewel" item to the required amount
+        rom.setByte(0x293A4, options.getJewelCount());
+    }
+    else if(options.getJewelCount() >= 3)
+    {
+        // Set a proper max quantity of 1 to Green Jewel
+        rom.setWord(0x293D4, 0x01FF);
+
+    }
 }
 
 void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -1178,7 +1209,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     addFunctionToItemsOnUse(rom);
     alterGoldRewardsHandling(rom);
     alterLanternHandling(rom);
-    handleAdditionalJewels(rom);
+    handleAdditionalJewels(rom, options);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
@@ -1221,5 +1252,5 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     changeHUDColor(rom, options);
     setKeyAsUniqueItem(rom);
     shortenMirCutsceneAfterLakeShrine(rom);
-    renameItems(rom);
+    renameItems(rom, options);
 }
