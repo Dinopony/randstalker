@@ -50,7 +50,7 @@ private:
 	uint32_t getNextElligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, UnsortedSet<Item*> itemsAlreadyObtainedAtSign);
 	
 	std::string getRandomHintForItem(Item* item);
-	std::string WorldRandomizer::getRandomHintForItemSource(ItemSource* itemSource);
+	std::string getRandomHintForItemSource(ItemSource* itemSource);
 
 	void randomizeTiborTrees();
 

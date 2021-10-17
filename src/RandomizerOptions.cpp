@@ -208,8 +208,8 @@ std::string RandomizerOptions::getPermalink() const
 
 void RandomizerOptions::print(std::ostream& stream) const
 {
-	constexpr char* trueStr = "enabled";
-	constexpr char* falseStr = "disabled";
+	constexpr const char* trueStr = "enabled";
+	constexpr const char* falseStr = "disabled";
 
 	stream << "Seed: " << _seed << "\n";
 	stream << "Permalink: " << this->getPermalink() << "\n";
@@ -233,8 +233,8 @@ void RandomizerOptions::print(std::ostream& stream) const
 
 void RandomizerOptions::printPersonalSettings(std::ostream& stream) const
 {
-	constexpr char* trueStr = "enabled";
-	constexpr char* falseStr = "disabled";
+	constexpr const char* trueStr = "enabled";
+	constexpr const char* falseStr = "disabled";
 
 	stream << "Input ROM path: " <<  _inputRomPath << "\n";
 	stream << "Output ROM path: " <<  _outputRomPath << "\n";
