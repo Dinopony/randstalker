@@ -110,7 +110,8 @@ int main(int argc, char* argv[])
 		{
 			auto json = options.toJSON();
 			std::ofstream presetFile("./preset.json");
-			presetFile << json.dump(4);
+			if(presetFile)
+				presetFile << json.dump(4);
 			presetFile.close();
 		}
 

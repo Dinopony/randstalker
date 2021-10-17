@@ -23,15 +23,6 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_addIngameItemTracker	(false),
 	_hudColor				("default")
 {
-	// Parse seed from args, or generate a random one if it's missing
-	std::string seedString = args.getString("seed", "random");
-	try {
-		_seed = (uint32_t) std::stoul(seedString);
-	} catch (std::invalid_argument&) {
-		_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
-		_seed *= _seed;
-	}
-
 	std::string permalinkString = args.getString("permalink");
 	if(!permalinkString.empty()) 
 	{
@@ -39,6 +30,15 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	}
 	else
 	{
+		// Parse seed from args, or generate a random one if it's missing
+		std::string seedString = args.getString("seed", "random");
+		try {
+			_seed = (uint32_t) std::stoul(seedString);
+		} catch (std::invalid_argument&) {
+			_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
+			_seed *= _seed;
+		}
+
 		std::string presetPath = args.getString("preset");
 		if(!presetPath.empty())
 			this->parseJsonPresetFile(presetPath);
