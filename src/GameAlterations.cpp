@@ -6,6 +6,7 @@
 #include "MegadriveTools/MdCode.hpp"
 #include "World.hpp"
 #include "Exceptions.hpp"
+#include "Assets.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -1192,6 +1193,11 @@ void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
         // Set a proper max quantity of 1 to Green Jewel
         rom.setWord(0x293D4, 0x01FF);
 
+        // Add a sprite for green jewel and make the item use it
+        std::vector<uint8_t> greenJewelSprite;
+        loadGreenJewelSprite(greenJewelSprite);
+        uint32_t greenJewelSpriteAddr = rom.injectDataBlock(greenJewelSprite);
+        rom.setLong(0x121648, greenJewelSpriteAddr);
     }
 }
 

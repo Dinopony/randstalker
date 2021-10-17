@@ -21,7 +21,7 @@ set(SOURCES
 
     "src/Extlibs/Base64.hpp"
     "src/Extlibs/Base64.cpp"
-                
+
     "src/Huffman/Bitfield.hpp"
     "src/Huffman/HuffmanTree.hpp"
     "src/Huffman/HuffmanTreeNode.hpp"
@@ -36,10 +36,11 @@ set(SOURCES
     "src/MegadriveTools/MdTypes.hpp"
 
     "src/ArgumentDictionary.hpp"
+    "src/Assets.cpp"
+    "src/Assets.hpp"
     "src/Exceptions.hpp"
     "src/GameAlterations.cpp"
     "src/GameAlterations.hpp"
-    "src/GameStrings.cpp"
     "src/GameText.hpp"
     "src/GameText.cpp"
     "src/HintSign.hpp"

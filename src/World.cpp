@@ -4,13 +4,11 @@
 #include "Enums/ItemSourceCodes.hpp"
 #include "Enums/RegionCodes.hpp"
 #include "Item.hpp"
+#include "Assets.hpp"
 #include "ItemSources.hpp"
 #include "GameText.hpp"
 #include "Huffman/Symbols.hpp"
 #include "Huffman/TextEncoder.hpp"
-
-void loadGameStrings(std::vector<std::string>& gameStrings);
-
 
 World::World(const RandomizerOptions& options) :
     spawnLocation(options.getSpawnLocation()), darkenedRegion(nullptr)
