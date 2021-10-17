@@ -1134,6 +1134,11 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
     rom.getDataChunk(0x29732, 0x29A0A, itemNameBytes);
     std::vector<std::vector<uint8_t>> itemNames;
 
+    // "Kazalt Jewel" mode is a specific mode when user asked for more jewels than we can provide individual items for.
+    // In that case, we only use one generic jewel item type which can be obtained several times, and check against this
+    // item's count instead of checking if every jewel type is owned at Kazalt teleporter
+    bool kazaltJewelMode = (options.getJewelCount() > MAX_INDIVIDUAL_JEWELS);
+
     // Read item names
     uint32_t addr = 0;
     while(true)
@@ -1142,15 +1147,6 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
         if(stringSize == 0xFF)
             break;
 
-        if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
-        {
-            // Clear "Purple Jewel" name to make room for other names since it's unused
-            if(itemNames.size() == ITEM_PURPLE_JEWEL)
-                itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
-            // Rename "Red Jewel" into the more generic "Kazalt Jewel"
-            else if(itemNames.size() == ITEM_RED_JEWEL)
-                itemNames.push_back(std::vector<uint8_t>({ 0x15, 0x25, 0x3E, 0x25, 0x30, 0x38, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30  }));
-        }   
         // Clear Hotel Register & Island Map names to make room for other names
         if(itemNames.size() == ITEM_HOTEL_REGISTER || itemNames.size() == ITEM_ISLAND_MAP)
             itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
@@ -1158,8 +1154,15 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
         else if(itemNames.size() == ITEM_NO_SWORD || itemNames.size() == ITEM_NO_ARMOR || itemNames.size() == ITEM_NO_BOOTS)
             itemNames.push_back({ 0x18, 0x33, 0x32, 0x29 });
         // Rename No52 into Green Jewel
-        else if(itemNames.size() == ITEM_NO52)
+        else if(itemNames.size() == ITEM_NO52 && !kazaltJewelMode)
             itemNames.push_back({ 0x11, 0x36, 0x29, 0x29, 0x32, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+        // Clear "Purple Jewel" name to make room for other names since it's unused in Kazalt Jewel mode
+        else if(itemNames.size() == ITEM_PURPLE_JEWEL && kazaltJewelMode)
+            itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
+        // Rename "Red Jewel" into the more generic "Kazalt Jewel" in Kazalt Jewel mode
+        else if(itemNames.size() == ITEM_RED_JEWEL && kazaltJewelMode)
+            itemNames.push_back(std::vector<uint8_t>({ 0x15, 0x25, 0x3E, 0x25, 0x30, 0x38, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 }));
+        // No specific treatment, just add it back as-is
         else
             itemNames.push_back(std::vector<uint8_t>(itemNameBytes.begin() + addr, itemNameBytes.begin() + addr + stringSize));
 
