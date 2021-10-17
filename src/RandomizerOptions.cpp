@@ -57,7 +57,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 	}
 
 	// Personal options (not included in permalink)
-	_inputRomPath			= args.getString("inputrom", "./input.md");
+	_inputRomPath = args.getString("inputrom", "./input.md");
 	
 	_outputRomPath = args.getString("outputrom", "./");
 	bool points_to_file = Tools::endsWith(_outputRomPath, ".md") || Tools::endsWith(_outputRomPath, ".bin");
@@ -80,6 +80,9 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args)
 	_pauseAfterGeneration	= args.getBoolean("pause", true);
 	_addIngameItemTracker	= args.getBoolean("ingametracker", false);
 	_hudColor				= args.getString("hudcolor", "default");
+
+	if(_jewelCount > 9)
+		throw RandomizerException("Jewel count must be between 0 and 9.");
 }
 
 std::vector<std::string> RandomizerOptions::getHashWords() const
