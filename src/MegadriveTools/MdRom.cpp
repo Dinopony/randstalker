@@ -1,18 +1,13 @@
 #include "MdRom.hpp"
 #include "MdCode.hpp"
 #include <fstream>
+#include <iostream>
 
 constexpr uint32_t ROM_SIZE = 2097152;
-constexpr uint32_t CODE_INJECTION_SECTOR_START_ADDRESS = 0x1FFAC0;
-constexpr uint32_t DATA_INJECTION_SECTOR_START_ADDRESS = 0x11FFF0;
 
 namespace md 
 {
-
-	ROM::ROM(const std::string& inputPath) :
-		_wasOpen(false),
-		_currentCodeInjectionAddress(CODE_INJECTION_SECTOR_START_ADDRESS),
-		_currentDataInjectionAddress(DATA_INJECTION_SECTOR_START_ADDRESS)
+	ROM::ROM(const std::string& inputPath) : _wasOpen(false)
 	{
 		_byteArray = new char[ROM_SIZE];
 
@@ -28,9 +23,8 @@ namespace md
 	ROM::ROM(const ROM& otherROM)
 	{
 		_wasOpen = otherROM._wasOpen;
-
-		_currentCodeInjectionAddress = otherROM._currentCodeInjectionAddress;
-		_currentDataInjectionAddress = otherROM._currentDataInjectionAddress;
+		_storedAddresses = otherROM._storedAddresses;
+		_emptyChunks = otherROM._emptyChunks;
 
 		_byteArray = new char[ROM_SIZE];
 		for (uint32_t i = 0; i < ROM_SIZE; ++i)
@@ -84,56 +78,37 @@ namespace md
 		this->setBytes(address, code.getBytes());
 	}
 
-	uint32_t ROM::injectByte(uint8_t byte)
+	uint32_t ROM::injectBytes(const std::vector<uint8_t>& bytes, const std::string& label)
 	{
-		uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
-		this->setByte(_currentCodeInjectionAddress, byte);
-		_currentCodeInjectionAddress += 0x01;
-		return injectionAddressOnStart;
-	}
-
-	uint32_t ROM::injectWord(uint16_t word)
-	{
-		uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
-		this->setWord(_currentCodeInjectionAddress, word);
-		_currentCodeInjectionAddress += 0x02;
-		return injectionAddressOnStart;
-	}
-
-	uint32_t ROM::injectLong(uint32_t longWord)
-	{
-		uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
-		this->setLong(_currentCodeInjectionAddress, longWord);
-		_currentCodeInjectionAddress += 0x04;
-		return injectionAddressOnStart;
+		uint32_t sizeToInject = (uint32_t)bytes.size();
+		uint32_t injectionAddress = this->reserveDataBlock(sizeToInject, label);
+		this->setBytes(injectionAddress, bytes);
+		return injectionAddress;
 	}
 
 	uint32_t ROM::injectCode(const Code& code, const std::string& label)
 	{
-		uint32_t injectionAddressOnStart = _currentCodeInjectionAddress;
-
-		const std::vector<uint8_t>& bytes = code.getBytes();
-		this->setBytes(_currentCodeInjectionAddress, bytes);
-		_currentCodeInjectionAddress += static_cast<uint32_t>(bytes.size());
-	
-		if (!label.empty())
-			this->storeAddress(label, injectionAddressOnStart);
-		return injectionAddressOnStart;
+		return this->injectBytes(code.getBytes(), label);
 	}
 
-	uint32_t ROM::injectDataBlock(std::vector<uint8_t> bytes, const std::string& name)
+	uint32_t ROM::reserveDataBlock(uint32_t byteCount, const std::string& label)
 	{
-		this->reserveDataBlock((uint16_t)bytes.size(), name);
-		this->setBytes(_currentDataInjectionAddress, bytes);
-		return _currentDataInjectionAddress;
-	}
+		for(auto& pair : _emptyChunks)
+		{
+			size_t chunkSize = (pair.second - pair.first) + 1;
+			if(chunkSize < byteCount)
+				continue;
 
-	uint32_t ROM::reserveDataBlock(uint16_t byteCount, const std::string& name)
-	{
-		_currentDataInjectionAddress -= byteCount;
-		if (!name.empty())
-			this->storeAddress(name, _currentDataInjectionAddress);
-		return _currentDataInjectionAddress;
+			uint32_t injectionAddress = pair.first;
+			pair.first += byteCount;
+
+			if (!label.empty())
+				this->storeAddress(label, injectionAddress);
+
+			return injectionAddress;
+		}
+
+		throw std::out_of_range("Not enough empty room inside the ROM to inject data");
 	}
 
 	void ROM::getDataChunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output)
@@ -152,6 +127,31 @@ namespace md
 	{
 		for (uint32_t addr = begin; addr < end; addr += 0x4)
 			output.push_back(this->getLong(addr));
+	}
+
+	void ROM::markChunkAsEmpty(uint32_t begin, uint32_t end)
+	{
+		for(auto& pair : _emptyChunks)
+		{
+			if((begin >= pair.first && begin < pair.second) || (end >= pair.first && end < pair.second))
+			{
+				std::cerr << "There is an overlap between empty chunks" << std::endl;
+				return;
+			}
+		}
+
+		for(uint32_t addr=begin ; addr < end ; ++addr)
+			this->setByte(addr, 0xFF);
+
+		_emptyChunks.push_back(std::make_pair(begin, end));
+	}
+
+	uint32_t ROM::countEmptyBytes() const
+	{
+		uint32_t count = 0;
+		for(auto& pair : _emptyChunks)
+			count += (pair.second - pair.first) + 1;
+		return count;
 	}
 
 	void ROM::saveAs(const std::string& outputPath)

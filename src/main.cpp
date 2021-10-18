@@ -76,7 +76,9 @@ int main(int argc, char* argv[])
 		options.printPersonalSettings(std::cout);
 
 		md::ROM* rom = getInputROM(options.getInputROMPath());
-	
+		rom->markChunkAsEmpty(0x11F380, 0x120000);
+		rom->markChunkAsEmpty(0x1FFAC0, 0x200000);
+
 		// Create a replica model of Landstalker world, randomize it and save it to the ROM	
 		World world(options);
 		WorldRandomizer randomizer(world, options);

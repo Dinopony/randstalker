@@ -215,6 +215,9 @@ public:
         //int sizeDiff = 0x38368 - writingAddress;
         //std::cout << "Saved " << sizeDiff << " bytes on textbanks.\n";
 
+        rom.markChunkAsEmpty(writingAddress, 0x38368);
+
+
         while (writingAddress < 0x38368)
         {
             rom.setByte(writingAddress, 0xFF);

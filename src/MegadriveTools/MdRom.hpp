@@ -27,23 +27,19 @@ namespace md {
 		void setBytes(uint32_t address, std::vector<uint8_t> bytes);
 		void setCode(uint32_t address, const Code& code);
 
-		uint32_t injectByte(uint8_t byte);
-		uint32_t injectWord(uint16_t word);
-		uint32_t injectLong(uint32_t longWord);
+		uint32_t injectBytes(const std::vector<uint8_t>& bytes, const std::string& label = "");
 		uint32_t injectCode(const Code& code, const std::string& label = "");
-
-		uint32_t injectDataBlock(std::vector<uint8_t> bytes, const std::string& name = "");
-		uint32_t reserveDataBlock(uint16_t byteCount, const std::string& name);
+		uint32_t reserveDataBlock(uint32_t byteCount, const std::string& label = "");
 
 		void storeAddress(const std::string& name, uint32_t address) { _storedAddresses[name] = address; }
 		uint32_t getStoredAddress(const std::string& name) { return _storedAddresses.at(name); }
 
-		uint32_t getCurrentDataInjectionAddress() { return _currentDataInjectionAddress; }
-		uint32_t getCurrentCodeInjectionAddress() { return _currentCodeInjectionAddress; }
-
 		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output);
 		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output);
 		void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output);
+
+		void markChunkAsEmpty(uint32_t begin, uint32_t end);
+		uint32_t countEmptyBytes() const;
 
 		void saveAs(const std::string& outputPath);
 
@@ -52,9 +48,9 @@ namespace md {
 
 		bool _wasOpen;
 		char* _byteArray;
-		uint32_t _currentCodeInjectionAddress;
-		uint32_t _currentDataInjectionAddress;
 		std::map<std::string, uint32_t> _storedAddresses;
+
+		std::vector<std::pair<uint32_t, uint32_t>> _emptyChunks;
 	};
 
 }

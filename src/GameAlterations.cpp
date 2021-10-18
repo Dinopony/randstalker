@@ -1199,7 +1199,7 @@ void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
         // Add a sprite for green jewel and make the item use it
         std::vector<uint8_t> greenJewelSprite;
         loadGreenJewelSprite(greenJewelSprite);
-        uint32_t greenJewelSpriteAddr = rom.injectDataBlock(greenJewelSprite);
+        uint32_t greenJewelSpriteAddr = rom.injectBytes(greenJewelSprite);
         rom.setLong(0x121648, greenJewelSpriteAddr);
     }
 }
