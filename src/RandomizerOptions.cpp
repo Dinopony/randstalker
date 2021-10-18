@@ -174,6 +174,18 @@ void RandomizerOptions::parseJSON(const Json& json)
 		_seed = json.at("seed");
 }
 
+Json RandomizerOptions::getPersonalSettingsAsJSON() const
+{
+	Json json;
+
+	json["inputROMPath"] = _inputRomPath;
+	json["outputROMPath"] = _outputRomPath;
+	json["spoilerLogPath"] = _spoilerLogPath;
+	json["addIngameItemTracker"] = _addIngameItemTracker;
+	json["hudColor"] = _hudColor;
+
+	return json;
+}
 
 void RandomizerOptions::validate()
 {
@@ -264,45 +276,3 @@ void RandomizerOptions::parsePermalink(const std::string& permalink)
 		throw RandomizerException("Invalid permalink given.");
 	}
 }
-
-void RandomizerOptions::print(std::ostream& stream) const
-{
-	constexpr const char* trueStr = "enabled";
-	constexpr const char* falseStr = "disabled";
-
-	stream << "Seed: " << _seed << "\n";
-	stream << "Permalink: " << this->getPermalink() << "\n";
-	stream << "Hash: " << this->getHashSentence() << "\n\n";
-
-	stream << "Starting location: ";
-	if(_spawnLocation == SpawnLocation::RANDOM)
-		stream << "Random (" << spawnLocationToString(this->getSpawnLocation()) << ")" << "\n";
-	else
-		stream << spawnLocationToString(this->getSpawnLocation()) << "\n";
-
-	stream << "Jewel Count: " << _jewelCount << "\n";
-	stream << "Armor upgrades: " << (_armorUpgrades ? trueStr : falseStr) << "\n";
-	stream << "Record Book: " << (_saveAnywhereBook ? trueStr : falseStr) << "\n";
-	stream << "Fill dungeon signs with hints: " << (_dungeonSignHints ? trueStr : falseStr) << "\n";
-	stream << "Starting life: " << (uint32_t)_startingLife << "\n\n";
-
-	stream << "Filling rate: " << _fillingRate << "\n";
-	stream << "Randomized Tibor trees: " << (_shuffleTiborTrees ? trueStr : falseStr) << "\n";
-
-	stream << "\n";
-}
-
-void RandomizerOptions::printPersonalSettings(std::ostream& stream) const
-{
-	constexpr const char* trueStr = "enabled";
-	constexpr const char* falseStr = "disabled";
-
-	stream << "Input ROM path: " <<  _inputRomPath << "\n";
-	stream << "Output ROM path: " <<  _outputRomPath << "\n";
-	stream << "Spoiler log path: " <<  _spoilerLogPath << "\n";
-	stream << "Add ingame item tracker: " << (_addIngameItemTracker ? trueStr : falseStr) << "\n";
-	stream << "HUD Color: " <<  _hudColor << "\n";
-
-	stream << "\n";
-}
-

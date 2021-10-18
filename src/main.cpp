@@ -75,27 +75,33 @@ int main(int argc, char* argv[])
 	{
 		// Parse options from command-line args, preset file, plando file...
 		RandomizerOptions options(argsDictionary);
-		options.print(std::cout);
-		options.printPersonalSettings(std::cout);
+		Json optionsAsJSON = options.toJSON();
+		std::cout << "Game settings : " << optionsAsJSON["gameSettings"].dump(2) << "\n\n";
+		std::cout << "Randomizer settings : " << optionsAsJSON["randomizerSettings"].dump(2) << "\n\n";
+		std::cout << "Personal settings : " << options.getPersonalSettingsAsJSON().dump(2) << "\n\n";
 
 		// Load input ROM and tag known empty chunks of data to know where to inject code / data
 		md::ROM* rom = getInputROM(options.getInputROMPath());
 		rom->markChunkAsEmpty(0x11F380, 0x120000);
 		rom->markChunkAsEmpty(0x1FFAC0, 0x200000);
 
-		// Create a replica model of Landstalker world, randomize or plandomize it and save it to the ROM	
 		World world(options);
+
 		if(options.isPlando())
 		{
+			// In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
+			// The software will act as a simple ROM patcher, without verifying the game is actually completable.
 			std::cout << "Plandomizing world...\n\n";
 			world.parseJSON(options.getInputPlandoJSON());
 		}
 		else
 		{
+			// In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
 			std::cout << "Randomizing world...\n\n";
 			WorldRandomizer randomizer(world, options);
 			randomizer.randomize();
 		}
+		
 		world.writeToROM(*rom);
 
 		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
