@@ -91,6 +91,10 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     rom.setByte(0x0027FD, getSpawnLocationX(world.spawnLocation));
     rom.setByte(0x002805, getSpawnLocationZ(world.spawnLocation));
 
+    // ------- Set spawn health ---------
+    rom.setByte(0x0027B4, options.getStartingLife()-1);
+    rom.setByte(0x0027BC, options.getStartingLife()-1);
+
     // ------- Remove no music flag ---------
     // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom
 

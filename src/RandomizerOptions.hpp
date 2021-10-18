@@ -40,6 +40,7 @@ public:
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool useRecordBook() const { return _saveAnywhereBook; }
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
+	uint8_t getStartingLife() const { return _startingLife; }
 
 	// Randomization options 
 	double getFillingRate() const { return _fillingRate; }
@@ -67,6 +68,7 @@ private:
 	bool _armorUpgrades;
 	bool _saveAnywhereBook;
 	bool _dungeonSignHints;
+	uint8_t _startingLife;
 
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)

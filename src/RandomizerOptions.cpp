@@ -10,6 +10,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_armorUpgrades			(true),
 	_saveAnywhereBook		(true),
 	_dungeonSignHints		(false),
+	_startingLife			(4),
 
 	_seed					(0),
 	_fillingRate			(DEFAULT_FILLING_RATE),
@@ -90,6 +91,7 @@ void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 	if(args.contains("armorupgrades")) 		_armorUpgrades = args.getBoolean("armorupgrades");
 	if(args.contains("recordbook")) 		_saveAnywhereBook = args.getBoolean("recordbook");
 	if(args.contains("dungeonsignhints")) 	_dungeonSignHints = args.getBoolean("dungeonsignhints");
+	if(args.contains("startinglife")) 		_startingLife = args.getInteger("startinglife");
 
 	if(args.contains("fillingrate")) 		_fillingRate = args.getDouble("fillingrate");
 	if(args.contains("shuffletrees")) 		_shuffleTiborTrees = args.getBoolean("shuffletrees");
@@ -122,6 +124,9 @@ Json RandomizerOptions::toJSON(bool ignoreDefaultValues) const
 		json["gameSettings"]["recordBook"] = _saveAnywhereBook;
 	if(!ignoreDefaultValues || _dungeonSignHints)
 		json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
+	if(!ignoreDefaultValues || _startingLife != 4)
+		json["gameSettings"]["startingLife"] = _startingLife;
+
 	if(!ignoreDefaultValues || _fillingRate != DEFAULT_FILLING_RATE)
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	if(!ignoreDefaultValues || _shuffleTiborTrees)
@@ -151,6 +156,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_saveAnywhereBook = gameSettingsJson.at("recordBook");
 		if(gameSettingsJson.contains("dungeonSignHints"))
 			_dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
+		if(gameSettingsJson.contains("startingLife"))
+			_startingLife = gameSettingsJson.at("startingLife");
 	}
 
 	if(json.contains("randomizerSettings") && !_plandoEnabled)
@@ -172,6 +179,9 @@ void RandomizerOptions::validate()
 {
 	if(_jewelCount > 9)
 		throw RandomizerException("Jewel count must be between 0 and 9.");
+
+	if(_startingLife == 0)
+		_startingLife = 1;
 
 	// Clean output ROM path and determine if it's a directory or a file
 	bool outputRomPathIsAFile = Tools::endsWith(_outputRomPath, ".md") || Tools::endsWith(_outputRomPath, ".bin");
@@ -272,10 +282,12 @@ void RandomizerOptions::print(std::ostream& stream) const
 
 	stream << "Jewel Count: " << _jewelCount << "\n";
 	stream << "Armor upgrades: " << (_armorUpgrades ? trueStr : falseStr) << "\n";
-	stream << "Filling rate: " << _fillingRate << "\n";
-	stream << "Randomized Tibor trees: " << (_shuffleTiborTrees ? trueStr : falseStr) << "\n";
 	stream << "Record Book: " << (_saveAnywhereBook ? trueStr : falseStr) << "\n";
 	stream << "Fill dungeon signs with hints: " << (_dungeonSignHints ? trueStr : falseStr) << "\n";
+	stream << "Starting life: " << (uint32_t)_startingLife << "\n\n";
+
+	stream << "Filling rate: " << _fillingRate << "\n";
+	stream << "Randomized Tibor trees: " << (_shuffleTiborTrees ? trueStr : falseStr) << "\n";
 
 	stream << "\n";
 }
