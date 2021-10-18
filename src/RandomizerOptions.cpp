@@ -5,14 +5,15 @@
 #include <iostream>
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
-	_seed					(0),
 	_spawnLocation			(SpawnLocation::RANDOM),
 	_jewelCount				(2),
-	_fillingRate			(DEFAULT_FILLING_RATE),
 	_armorUpgrades			(true),
 	_saveAnywhereBook		(true),
-	_shuffleTiborTrees		(false), 
 	_dungeonSignHints		(false),
+
+	_seed					(0),
+	_fillingRate			(DEFAULT_FILLING_RATE),
+	_shuffleTiborTrees		(false), 
 	_allowSpoilerLog		(true),
 
 	_inputRomPath			("./input.md"),
@@ -30,14 +31,13 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	if(!plandoPath.empty())
 	{
 		_plandoEnabled = true;
-		std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
 
+		std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
 		std::ifstream plandoFile(plandoPath);
 		if(!plandoFile)
 			throw RandomizerException("Could not open plando file at given path '" + plandoPath + "'");
-		
-		plandoFile >> _plandoJSON;
 
+		plandoFile >> _plandoJSON;
 		if(_plandoJSON.contains("plando_permalink"))
 			_plandoJSON = Json::from_msgpack(base64_decode(_plandoJSON.at("plando_permalink")));
 
@@ -85,14 +85,15 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 {
 	// Seed-related options (included in permalink)  
+	if(args.contains("spawnlocation")) 		_spawnLocation = spawnLocationFromString(args.getString("spawnlocation"));
 	if(args.contains("jewelcount"))			_jewelCount = args.getInteger("jewelcount");
-	if(args.contains("fillingrate")) 		_fillingRate = args.getDouble("fillingrate");
 	if(args.contains("armorupgrades")) 		_armorUpgrades = args.getBoolean("armorupgrades");
-	if(args.contains("shuffletrees")) 		_shuffleTiborTrees = args.getBoolean("shuffletrees");
 	if(args.contains("recordbook")) 		_saveAnywhereBook = args.getBoolean("recordbook");
 	if(args.contains("dungeonsignhints")) 	_dungeonSignHints = args.getBoolean("dungeonsignhints");
+
+	if(args.contains("fillingrate")) 		_fillingRate = args.getDouble("fillingrate");
+	if(args.contains("shuffletrees")) 		_shuffleTiborTrees = args.getBoolean("shuffletrees");
 	if(args.contains("allowSpoilerLog")) 	_allowSpoilerLog = args.getBoolean("allowSpoilerLog");
-	if(args.contains("spawnlocation")) 		_spawnLocation = spawnLocationFromString(args.getString("spawnlocation"));
 }
 
 void RandomizerOptions::parsePersonalArguments(const ArgumentDictionary& args)
