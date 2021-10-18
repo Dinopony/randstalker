@@ -18,7 +18,7 @@ public:
 	RandomizerOptions(const ArgumentDictionary& args);
 	
 	void parsePermalink(const std::string& permalink);
-	void parseJsonPresetFile(const std::string& presetPath);
+
 	void parseSettingsArguments(const ArgumentDictionary& args);
 	void parsePersonalArguments(const ArgumentDictionary& args);
 	void validate();
@@ -28,21 +28,25 @@ public:
 	std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
 	std::string getPermalink() const;
 
+	Json toJSON() const;
+	void parseJSON(const Json& json);
+
 	void print(std::ostream& stream) const;
 	void printPersonalSettings(std::ostream& stream) const;
-	nlohmann::json toJSON() const;
 
-	// Seed-related options (included in permalink)
+	// Game patching options 
 	SpawnLocation getSpawnLocation() const;
 	uint8_t getJewelCount() const { return _jewelCount; }
-	double getFillingRate() const { return _fillingRate; }
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool useRecordBook() const { return _saveAnywhereBook; }
-	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
+
+	// Randomization options 
+	double getFillingRate() const { return _fillingRate; }
+	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool allowSpoilerLog() const { return _allowSpoilerLog; }
 
-	// Personal options (not included in permalink)
+	// Personal options 
 	const std::string& getInputROMPath() const { return _inputRomPath; }
 	std::string getOutputROMPath() const { return _outputRomPath; }
 	std::string getSpoilerLogPath() const { return _spoilerLogPath; }
@@ -51,19 +55,28 @@ public:
 	bool addIngameItemTracker() const { return _addIngameItemTracker; }
 	const std::string getHUDColor() const { return _hudColor; }
 
+	// Plando-specific options
+	bool isPlando() const { return _plandoEnabled; }
+	const Json& getInputPlandoJSON() const { return _plandoJSON; }
+
 private:
-	// ------------- Preset Settings -------------
-	uint32_t _seed;
+	// ------------- Game patching settings -------------
+	// (included in permalink, presets & plandos)
 	SpawnLocation _spawnLocation;
 	uint32_t _jewelCount;
-	double _fillingRate;
 	bool _armorUpgrades;
 	bool _saveAnywhereBook;
-	bool _shuffleTiborTrees;
 	bool _dungeonSignHints;
+
+	// ------------- Randomization settings -------------
+	// (included in permalink & presets, not in plandos)
+	uint32_t _seed;
+	double _fillingRate;
+	bool _shuffleTiborTrees;
 	bool _allowSpoilerLog;
 
-	// ------------- Personal Settings -------------
+	// ------------- Personal settings -------------
+	// (not included in permalink nor presets)
 	std::string _inputRomPath;
 	std::string _outputRomPath;
 	std::string _spoilerLogPath;
@@ -71,4 +84,8 @@ private:
 	bool _pauseAfterGeneration;
 	bool _addIngameItemTracker;
 	std::string _hudColor;
+
+	// Plando-specific arguments
+	bool _plandoEnabled;
+	Json _plandoJSON;
 };

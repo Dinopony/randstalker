@@ -49,7 +49,6 @@ set(SOURCES
     "src/ItemSources.hpp"
     "src/RandomizerOptions.hpp"
     "src/RandomizerOptions.cpp"
-    "src/SpoilerLog.hpp"
     "src/Tools.hpp"
     "src/TreeMap.hpp"
     "src/UnsortedSet.hpp"

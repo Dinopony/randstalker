@@ -10,6 +10,7 @@
 #include "RandomizerOptions.hpp"
 #include "TreeMap.hpp"
 #include "HintSign.hpp"
+#include "Extlibs/json.hpp"
 
 constexpr uint8_t GOLD_SOURCES_COUNT = 30;
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 3;
@@ -21,6 +22,9 @@ public:
     ~World();
 
     void addItem(Item* item) { items[item->getID()] = item; }
+  
+    Item* getItemByName(const std::string& name) const;
+    WorldRegion* getRegionByName(const std::string& name) const;
 
     WorldRegion* getRegionForItem(Item* item);
     std::vector<ItemSource*> getItemSourcesContainingItem(Item* item);
@@ -29,6 +33,9 @@ public:
     const std::vector<Item*>& getPriorityItemsList() const { return _priorityItems; }
 
     void writeToROM(md::ROM& rom);
+
+    Json toJSON() const;
+    void parseJSON(const Json& json);
 
 private:
     void initItems(const RandomizerOptions& options);
@@ -66,13 +73,13 @@ public:
     std::string fortuneTellerHint;
     std::string oracleStoneHint;
 
-    std::vector<std::string> textLines;
-
     std::vector<TreeMap> treeMaps;
 
     SpawnLocation spawnLocation;
 
 private:
+    const RandomizerOptions& _options;
+
     std::vector<Item*> _fillerItems;
     std::vector<Item*> _priorityItems;
 };

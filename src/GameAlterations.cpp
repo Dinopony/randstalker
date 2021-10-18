@@ -1154,7 +1154,7 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
         else if(itemNames.size() == ITEM_NO_SWORD || itemNames.size() == ITEM_NO_ARMOR || itemNames.size() == ITEM_NO_BOOTS)
             itemNames.push_back({ 0x18, 0x33, 0x32, 0x29 });
         // Rename No52 into Green Jewel
-        else if(itemNames.size() == ITEM_NO52 && !kazaltJewelMode)
+        else if(itemNames.size() == ITEM_GREEN_JEWEL && !kazaltJewelMode)
             itemNames.push_back({ 0x11, 0x36, 0x29, 0x29, 0x32, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
         // Clear "Purple Jewel" name to make room for other names since it's unused in Kazalt Jewel mode
         else if(itemNames.size() == ITEM_PURPLE_JEWEL && kazaltJewelMode)

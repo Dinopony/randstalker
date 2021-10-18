@@ -52,7 +52,7 @@
 #define ITEM_IDOL_STONE 0x31
 #define ITEM_KEY 0x32
 #define ITEM_SAFETY_PASS 0x33
-#define ITEM_NO52 0x34 // Unused
+#define ITEM_GREEN_JEWEL 0x34 // Unused item in base game (No52)
 #define ITEM_BELL 0x35
 #define ITEM_SHORT_CAKE 0x36
 #define ITEM_GOLA_NAIL 0x37
@@ -65,5 +65,3 @@
 #define ITEM_LIFESTOCK 0x3E
 #define ITEM_NONE 0x3F
 #define ITEM_GOLDS_START 0x40
-
-#define ITEM_GREEN_JEWEL 0x34

@@ -557,7 +557,6 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		// "You shall find {item} in {place}" (45%)
 		else if (!hintableItemLocations.empty())
 		{
-
 			Item* hintedItem = nullptr;
 			for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
 			{
@@ -577,7 +576,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 			}
 		}
 
-		_world.textLines[sign->getTextID()] = GameText(hintText).getOutput();
+		sign->setText(hintText);
 	}
 }
 

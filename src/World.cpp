@@ -12,7 +12,8 @@
 
 World::World(const RandomizerOptions& options) :
     spawnLocation(options.getSpawnLocation()),
-    darkenedRegion(nullptr)
+    darkenedRegion(nullptr),
+    _options(options)
 {
     this->initItems(options);
     this->initFillerItemsList();
@@ -25,11 +26,6 @@ World::World(const RandomizerOptions& options) :
 
     this->initRegions();
     this->initRegionPaths(options);
-
-    loadGameStrings(textLines);
-    std::ostringstream oss;
-    oss << "Only the bearers of the " << (uint32_t)options.getJewelCount() << " jewels\n are worthy of entering\n King Nole's domain...\x1E";
-    textLines[0x022] = oss.str();
 
     this->initRegionHints();
     this->initHintSigns(options.fillDungeonSignsWithHints());
@@ -50,6 +46,30 @@ World::~World()
 		delete region;
     for (ItemShop* shop : shops)
         delete shop;
+}
+
+Item* World::getItemByName(const std::string& name) const
+{
+    if(name.empty())
+        return nullptr;
+
+    for (auto& [key, item] : items)
+        if(item->getName() == name)
+            return item;
+
+    return nullptr;
+}
+
+WorldRegion* World::getRegionByName(const std::string& name) const
+{
+    if(name.empty())
+        return nullptr;
+
+    for (auto& [key, region] : regions)
+        if(region->getName() == name)
+            return region;
+    
+    return nullptr;
 }
 
 WorldRegion* World::getRegionForItem(Item* item)
@@ -97,23 +117,35 @@ void World::writeToROM(md::ROM& rom)
 	for (auto& [key, itemSource] : itemSources)
 		itemSource->writeToROM(rom);
 
-    // Alter some static text lines to fit hints inside
+    // Alter game text lines
+    std::vector<std::string> textLines; 
+    loadGameStrings(textLines);
+
+    // Kazalt rejection message
+    textLines[0x022] = std::string("Only the bearers of the ") 
+        + std::to_string(_options.getJewelCount()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
+
+    // Regular sign hints
+    for (HintSign* sign : hintSigns)
+    {
+        std::vector<uint16_t> signTextIDs = sign->getTextIDs();
+    	textLines[signTextIDs[0]] = GameText(sign->getText()).getOutput();
+        for(auto it=signTextIDs.begin()+1 ; it != signTextIDs.end() ; ++it)
+            textLines[*it] = " ";
+    }
+
     //  - Lithograph hint
     std::string fullLithographHint;
-    if(jewelHints.empty())
+    for(const std::string& jewelHint : jewelHints)
     {
+        if(!fullLithographHint.empty())
+            fullLithographHint += " \x1E";
+        fullLithographHint += jewelHint;
+    }
+    if(fullLithographHint.empty())
         fullLithographHint = "This tablet seems of no use...";
-    }
-    else
-    {
-        for(const std::string& jewelHint : jewelHints)
-        {
-            if(!fullLithographHint.empty())
-                fullLithographHint += " \x1E";
-            fullLithographHint += jewelHint;
-        }
-    }
     textLines[0x021] = GameText(fullLithographHint).getOutput();
+
     //  - Fortune teller hint
     textLines[0x28D] = "\x1CHello dear, let me look at\nwhat your future is made of...\x1E";
     textLines[0x28E] = "\x1CI see... I see...\x1E\n" + GameText(fortuneTellerHint).getOutput();
@@ -1343,15 +1375,10 @@ void World::initHintSigns(bool fillDungeonSignsWithHints)
         hintSigns.push_back(new HintSign(0x0FE, "Thieves' Hideout entrance sign", regions[RegionCode::THIEVES_HIDEOUT]));
         hintSigns.push_back(new HintSign(0x0FF, "Thieves' Hideout second room sign", regions[RegionCode::THIEVES_HIDEOUT]));
         hintSigns.push_back(new HintSign(0x100, "Thieves' Hideout boss path sign", regions[RegionCode::THIEVES_HIDEOUT]));
-        hintSigns.push_back(new HintSign(0x12C, "Mir Tower sign before bridge room", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
+        hintSigns.push_back(new HintSign({0x12C,0x12D,0x12E}, "Mir Tower sign before bridge room", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
         hintSigns.push_back(new HintSign(0x12F, "Mir Tower bridge room sign", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
-        hintSigns.push_back(new HintSign(0x130, "Mir Tower library sign", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
-        hintSigns.push_back(new HintSign(0x132, "Mir Tower sign before library", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
-
-        // { 0x279F4, "King Nole's Palace boulder room 2nd sign" }
-
-        for (uint16_t textID = 0x12C; textID <= 0x133; ++textID)
-            textLines[textID] = " ";
+        hintSigns.push_back(new HintSign({0x130,0x131}, "Mir Tower library sign", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
+        hintSigns.push_back(new HintSign({0x132,0x133}, "Mir Tower sign before library", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
     }
 }
 
@@ -1421,4 +1448,111 @@ void World::initTreeMaps()
         TreeMap("Greenmaze entrance", 0x11E1DE, 0x11E1E6, 0x01FF),
         TreeMap("Greenmaze exit", 0x11E25E, 0x11E266, 0x01FE)
     };
+}
+
+Json World::toJSON() const
+{
+	Json json;
+
+    // Export hints
+    for(HintSign* sign : hintSigns)
+		json["hints"][sign->getDescription()] = sign->getText();
+    json["hints"]["Lithograph"] = jewelHints;
+    json["hints"]["Oracle Stone"] = oracleStoneHint;
+    json["hints"]["King Nole's Cave sign"] = whereIsLithographHint;
+    json["hints"]["Mercator fortune teller"] = fortuneTellerHint;
+
+    // Export darkened region
+    json["darkRegion"] = darkenedRegion->getName();
+
+    // Export item sources
+	for(auto& it : regions)
+	{
+		const WorldRegion& region = *it.second;
+		for(ItemSource* source : region.getItemSources())
+		{
+            Item* item = items.at(source->getItemID());
+			json["itemSources"][region.getName()][source->getName()] = item->getName();
+		}
+	}
+
+    return json;
+}
+
+void World::parseJSON(const Json& json)
+{
+    ////////// Item Sources ///////////////////////////////////////////
+    const Json& itemSourcesJson = json.at("itemSources");
+	for(auto& it : regions)
+	{
+		const WorldRegion& region = *it.second;
+        if(region.getItemSources().empty())
+            continue;
+
+        if(itemSourcesJson.contains(region.getName()))
+        {
+            const Json& regionJson = itemSourcesJson.at(region.getName());
+            for(ItemSource* source : region.getItemSources())
+            {
+                Item* item = items.at(source->getItemID());
+                if(regionJson.contains(source->getName()))
+                {
+                    std::string itemName = regionJson.at(source->getName());
+                    Item* item = this->getItemByName(itemName);
+                    if(item)
+                        source->setItem(item);
+                    else 
+                        std::cerr << "Item name '" << itemName << "' is invalid in plando JSON." << std::endl;
+                }
+                else std::cerr << "Item source '" << source->getName() << "' is missing from plando JSON." << std::endl;
+            }
+        }
+        else std::cerr << "Region '" << region.getName() << "' is missing from plando JSON." << std::endl;
+	}
+
+    ////////// Hints ///////////////////////////////////////////
+    const Json& hintsJson = json.at("hints");
+   
+    if(hintsJson.contains("Lithograph"))
+    {
+        if(hintsJson.at("Lithograph").is_array())
+        {
+            for(const std::string& jewelHint : hintsJson.at("Lithograph"))
+                jewelHints.push_back(jewelHint);
+        }
+        else std::cerr << "Lithograph hint must be an array of strings in plando JSON." << std::endl;
+    }
+
+    if(hintsJson.contains("Oracle Stone"))
+        oracleStoneHint = hintsJson.at("Oracle Stone");
+    else
+        std::cerr << "Oracle Stone hint is missing from plando JSON." << std::endl;
+
+    if(hintsJson.contains("King Nole's Cave sign"))
+        whereIsLithographHint = hintsJson.at("King Nole's Cave sign");
+    else
+        std::cerr << "King Nole's Cave sign hint is missing from plando JSON." << std::endl;
+
+    if(hintsJson.contains("Mercator fortune teller"))
+        fortuneTellerHint = hintsJson.at("Mercator fortune teller");
+    else
+        std::cerr << "Mercator fortune teller hint is missing from plando JSON." << std::endl;
+
+    for(HintSign* sign : hintSigns)
+    {
+        if(hintsJson.contains(sign->getDescription()))
+            sign->setText(hintsJson.at(sign->getDescription()));
+        else
+            std::cerr << "Sign hint '" << sign->getDescription() << "' is missing from plando JSON." << std::endl;
+    }
+
+    ////////// Miscellaneous ///////////////////////////////////////////
+    if(json.contains("darkRegion"))
+    {
+        std::string darkRegionName = json.at("darkRegion");
+        darkenedRegion = this->getRegionByName(darkRegionName);
+        if(!darkenedRegion)
+            std::cerr << "Darkened region name '" << darkRegionName << "' is invalid in plando JSON." << std::endl;
+    }
+    else std::cerr << "Darkened region is missing from plando JSON." << std::endl;
 }

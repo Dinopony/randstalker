@@ -21,10 +21,27 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_debugLogPath			(""),
 	_pauseAfterGeneration	(true),
 	_addIngameItemTracker	(false),
-	_hudColor				("default")
+	_hudColor				("default"),
+
+	_plandoEnabled			(false),
+	_plandoJSON				(nullptr)
 {
+	std::string plandoPath = args.getString("plando");
+	if(!plandoPath.empty())
+	{
+		_plandoEnabled = true;
+		std::ifstream plandoFile(plandoPath);
+		if(!plandoFile)
+			throw RandomizerException("Could not open plando file at given path '" + plandoPath + "'");
+		
+		std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
+
+		plandoFile >> _plandoJSON;
+		this->parseJSON(_plandoJSON);
+	}
+
 	std::string permalinkString = args.getString("permalink");
-	if(!permalinkString.empty()) 
+	if(!permalinkString.empty() && !_plandoEnabled) 
 	{
 		this->parsePermalink(permalinkString);
 	}
@@ -40,8 +57,18 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 		}
 
 		std::string presetPath = args.getString("preset");
-		if(!presetPath.empty())
-			this->parseJsonPresetFile(presetPath);
+		if(!presetPath.empty() && !_plandoEnabled)
+		{
+			std::ifstream presetFile(presetPath);
+			if(!presetFile)
+				throw RandomizerException("Could not open preset file at given path '" + presetPath + "'");
+
+			std::cout << "Reading preset file '" << presetPath << "'...\n\n";
+
+			Json presetJson;
+			presetFile >> presetJson;
+			this->parseJSON(presetJson);
+		}
 
 		this->parseSettingsArguments(args);
 	}
@@ -78,31 +105,6 @@ void RandomizerOptions::parsePermalink(const std::string& permalink)
 	}
 }
 
-void RandomizerOptions::parseJsonPresetFile(const std::string& presetPath)
-{
-	std::ifstream presetFile(presetPath);
-	if(!presetFile)
-		throw RandomizerException("Could not open preset file at given path '" + presetPath + "'");
-
-	std::cout << "Reading preset file '" << presetPath << "'...\n\n";
-
-	nlohmann::json presetJson;
-	presetFile >> presetJson;
-
-	if(presetJson.contains("jewelCount"))		presetJson.at("jewelCount").get_to(_jewelCount);
-	if(presetJson.contains("fillingRate"))		presetJson.at("fillingRate").get_to(_fillingRate);
-	if(presetJson.contains("armorUpgrades"))	presetJson.at("armorUpgrades").get_to(_armorUpgrades);
-	if(presetJson.contains("shuffleTrees"))		presetJson.at("shuffleTrees").get_to(_shuffleTiborTrees);
-	if(presetJson.contains("recordBook"))		presetJson.at("recordBook").get_to(_saveAnywhereBook);
-	if(presetJson.contains("dungeonSignHints")) presetJson.at("dungeonSignHints").get_to(_dungeonSignHints);
-	if(presetJson.contains("spawnLocation"))
-	{
-		std::string spawnLocStr;
-		presetJson.at("spawnLocation").get_to(spawnLocStr);
-		_spawnLocation = spawnLocationFromString(spawnLocStr);
-	}
-}
-
 void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 {
 	// Seed-related options (included in permalink)  
@@ -127,6 +129,57 @@ void RandomizerOptions::parsePersonalArguments(const ArgumentDictionary& args)
 	if(args.contains("ingametracker"))		_addIngameItemTracker = args.getBoolean("ingametracker");	
 	if(args.contains("hudcolor"))			_hudColor = args.getString("hudcolor");
 }
+
+Json RandomizerOptions::toJSON() const
+{
+	Json json;
+
+	json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
+	json["gameSettings"]["jewelCount"] = _jewelCount;
+	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
+	json["gameSettings"]["recordBook"] = _saveAnywhereBook;
+	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
+
+	json["randomizerSettings"]["fillingRate"] = _fillingRate;	
+	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
+	
+	return json;
+}
+
+void RandomizerOptions::parseJSON(const Json& json)
+{
+	if(json.contains("gameSettings"))
+	{
+		const Json& gameSettingsJson = json.at("gameSettings");
+
+		if(gameSettingsJson.contains("spawnLocation"))
+		{
+			std::string spawnLocStr;
+			gameSettingsJson.at("spawnLocation").get_to(spawnLocStr);
+			_spawnLocation = spawnLocationFromString(spawnLocStr);
+		}
+
+		if(gameSettingsJson.contains("jewelCount"))			
+			_jewelCount = gameSettingsJson.at("jewelCount");
+		if(gameSettingsJson.contains("armorUpgrades"))
+			_armorUpgrades = gameSettingsJson.at("armorUpgrades");
+		if(gameSettingsJson.contains("recordBook"))	
+			_saveAnywhereBook = gameSettingsJson.at("recordBook");
+		if(gameSettingsJson.contains("dungeonSignHints"))
+			_dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
+	}
+
+	if(json.contains("randomizerSettings"))
+	{
+		const Json& randomizerSettingsJson = json.at("randomizerSettings");
+
+		if(randomizerSettingsJson.contains("fillingRate"))
+			_fillingRate = randomizerSettingsJson.at("fillingRate");
+		if(randomizerSettingsJson.contains("shuffleTrees"))
+			_shuffleTiborTrees = randomizerSettingsJson.at("shuffleTrees");
+	}
+}
+
 
 void RandomizerOptions::validate()
 {
@@ -245,17 +298,3 @@ void RandomizerOptions::printPersonalSettings(std::ostream& stream) const
 	stream << "\n";
 }
 
-nlohmann::json RandomizerOptions::toJSON() const
-{
-	nlohmann::json presetJson;
-	
-	presetJson["jewelCount"] = _jewelCount;
-	presetJson["fillingRate"] = _fillingRate;
-	presetJson["armorUpgrades"] = _armorUpgrades;
-	presetJson["shuffleTrees"] = _shuffleTiborTrees;
-	presetJson["recordBook"] = _saveAnywhereBook;
-	presetJson["spawnLocation"] = spawnLocationToString(_spawnLocation);
-	presetJson["dungeonSignHints"] = _dungeonSignHints;
-
-	return presetJson;
-}

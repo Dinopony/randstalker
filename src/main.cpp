@@ -43,9 +43,11 @@
 #include "Tools.hpp"
 #include "World.hpp"
 #include "WorldRandomizer.hpp"
-#include "SpoilerLog.hpp"
 #include "ArgumentDictionary.hpp"
 #include "Exceptions.hpp"
+
+#include "WorldRegion.hpp"
+#include "ItemSources.hpp"
 
 md::ROM* getInputROM(std::string inputRomPath)
 {
@@ -71,20 +73,29 @@ int main(int argc, char* argv[])
 
 	try
 	{
+		// Parse options from command-line args, preset file, plando file...
 		RandomizerOptions options(argsDictionary);
 		options.print(std::cout);
 		options.printPersonalSettings(std::cout);
 
+		// Load input ROM and tag known empty chunks of data to know where to inject code / data
 		md::ROM* rom = getInputROM(options.getInputROMPath());
 		rom->markChunkAsEmpty(0x11F380, 0x120000);
 		rom->markChunkAsEmpty(0x1FFAC0, 0x200000);
 
-		// Create a replica model of Landstalker world, randomize it and save it to the ROM	
+		// Create a replica model of Landstalker world, randomize or plandomize it and save it to the ROM	
 		World world(options);
-		WorldRandomizer randomizer(world, options);
-		
-		std::cout << "Randomizing world...\n\n";
-		randomizer.randomize();
+		if(options.isPlando())
+		{
+			std::cout << "Plandomizing world...\n\n";
+			world.parseJSON(options.getInputPlandoJSON());
+		}
+		else
+		{
+			std::cout << "Randomizing world...\n\n";
+			WorldRandomizer randomizer(world, options);
+			randomizer.randomize();
+		}
 		world.writeToROM(*rom);
 
 		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
@@ -97,10 +108,20 @@ int main(int argc, char* argv[])
 		// Write a spoiler log to help the player
 		if(options.allowSpoilerLog() && !options.getSpoilerLogPath().empty())
 		{
-			SpoilerLog log(options, world);
+			Json json;
+			if(!options.isPlando())
+			{
+				json["permalink"] = options.getPermalink();
+				json["hashSentence"] = options.getHashSentence();
+				json["seed"] = options.getSeed();
+			}
+
+			json.merge_patch(options.toJSON());
+			json.merge_patch(world.toJSON());
+
 			std::ofstream spoilerFile(options.getSpoilerLogPath());
 			if (spoilerFile)
-				spoilerFile << log.dump(4);
+				spoilerFile << json.dump(4);
 			spoilerFile.close();
 		}
 		
@@ -108,9 +129,11 @@ int main(int argc, char* argv[])
 
 		std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
+		// TEMPORARY: Output current preset
 		if (argsDictionary.getBoolean("writepreset"))
 		{
-			auto json = options.toJSON();
+			Json json = options.toJSON();
+
 			std::ofstream presetFile("./preset.json");
 			if(presetFile)
 				presetFile << json.dump(4);
