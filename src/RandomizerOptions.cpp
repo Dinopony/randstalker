@@ -77,33 +77,6 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	this->validate();
 }
 
-void RandomizerOptions::parsePermalink(const std::string& permalink)
-{
-	try {
-		// Permalink case: extract seed related options from the decoded permalink
-		std::string decodedPermalink = base64_decode(permalink.substr(1, permalink.size()-2));
-		std::vector<std::string> tokens = Tools::split(decodedPermalink, ";");
-
-		std::string releaseVersion = tokens.at(0);
-		if(releaseVersion != MAJOR_RELEASE) {
-			throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + releaseVersion + ").");
-		}
-
-		_seed = std::stoul(tokens.at(1));
-
-		_jewelCount = std::stoi(tokens.at(2));
-		_fillingRate = std::stod(tokens.at(3));
-		_armorUpgrades = (tokens.at(4) == "t");
-		_shuffleTiborTrees = (tokens.at(5) == "t");
-		_saveAnywhereBook = (tokens.at(6) == "t");
-		_spawnLocation = spawnLocationFromString(tokens.at(7));
-		_dungeonSignHints = (tokens.at(8) == "t");
-		_allowSpoilerLog = (tokens.at(9) == "t");
-	}
-	catch(std::exception&) {
-		throw RandomizerException("Invalid permalink given.");
-	}
-}
 
 void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 {
@@ -130,18 +103,24 @@ void RandomizerOptions::parsePersonalArguments(const ArgumentDictionary& args)
 	if(args.contains("hudcolor"))			_hudColor = args.getString("hudcolor");
 }
 
-Json RandomizerOptions::toJSON() const
+Json RandomizerOptions::toJSON(bool ignoreDefaultValues) const
 {
 	Json json;
 
-	json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
-	json["gameSettings"]["jewelCount"] = _jewelCount;
-	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
-	json["gameSettings"]["recordBook"] = _saveAnywhereBook;
-	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
-
-	json["randomizerSettings"]["fillingRate"] = _fillingRate;	
-	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
+	if(!ignoreDefaultValues || _spawnLocation != SpawnLocation::RANDOM)
+		json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
+	if(!ignoreDefaultValues || _jewelCount != 2)
+		json["gameSettings"]["jewelCount"] = _jewelCount;
+	if(!ignoreDefaultValues || !_armorUpgrades)
+		json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
+	if(!ignoreDefaultValues || !_saveAnywhereBook)
+		json["gameSettings"]["recordBook"] = _saveAnywhereBook;
+	if(!ignoreDefaultValues || _dungeonSignHints)
+		json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
+	if(!ignoreDefaultValues || _fillingRate != DEFAULT_FILLING_RATE)
+		json["randomizerSettings"]["fillingRate"] = _fillingRate;
+	if(!ignoreDefaultValues || _shuffleTiborTrees)
+		json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
 	
 	return json;
 }
@@ -169,7 +148,7 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
 	}
 
-	if(json.contains("randomizerSettings"))
+	if(json.contains("randomizerSettings") && !_plandoEnabled)
 	{
 		const Json& randomizerSettingsJson = json.at("randomizerSettings");
 
@@ -178,6 +157,9 @@ void RandomizerOptions::parseJSON(const Json& json)
 		if(randomizerSettingsJson.contains("shuffleTrees"))
 			_shuffleTiborTrees = randomizerSettingsJson.at("shuffleTrees");
 	}
+
+	if(json.contains("seed") && !_plandoEnabled)
+		_seed = json.at("seed");
 }
 
 
@@ -244,19 +226,28 @@ std::vector<std::string> RandomizerOptions::getHashWords() const
 
 std::string RandomizerOptions::getPermalink() const
 {
-	std::ostringstream permalinkBuilder;
-	permalinkBuilder 	<< MAJOR_RELEASE << ";"
-						<< _seed << ";"
-						<< _jewelCount << ";"
-						<< (std::to_string(_fillingRate)) << ";"
-						<< (_armorUpgrades ? "t" : "") << ";"
-						<< (_shuffleTiborTrees ? "t" : "") << ";"
-						<< (_saveAnywhereBook ? "t" : "") << ";"
-						<< (spawnLocationToNumber(_spawnLocation)) << ";"
-						<< (_dungeonSignHints ? "t" : "") << ";"
-						<< (_allowSpoilerLog ? "t" : "");
-	
-	return "L" + base64_encode(permalinkBuilder.str()) + "S";
+	Json permalinkJson = this->toJSON(true);
+	permalinkJson["version"] = MAJOR_RELEASE;
+	permalinkJson["seed"] = _seed;
+
+	return "L" + base64_encode(Json::to_msgpack(permalinkJson)) + "S";
+}
+
+void RandomizerOptions::parsePermalink(const std::string& permalink)
+{
+	try {
+		Json permalinkJson = Json::from_msgpack(base64_decode(permalink.substr(1, permalink.size()-2)));
+
+		std::string releaseVersion = permalinkJson.at("version");
+		if(releaseVersion != MAJOR_RELEASE) {
+			throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + releaseVersion + ").");
+		}
+
+		this->parseJSON(permalinkJson);
+	}
+	catch(std::exception&) {
+		throw RandomizerException("Invalid permalink given.");
+	}
 }
 
 void RandomizerOptions::print(std::ostream& stream) const

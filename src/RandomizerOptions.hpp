@@ -28,7 +28,7 @@ public:
 	std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
 	std::string getPermalink() const;
 
-	Json toJSON() const;
+	Json toJSON(bool ignoreDefaultValues=false) const;
 	void parseJSON(const Json& json);
 
 	void print(std::ostream& stream) const;
