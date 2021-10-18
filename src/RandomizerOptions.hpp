@@ -31,9 +31,7 @@ public:
 	Json toJSON(bool ignoreDefaultValues=false) const;
 	void parseJSON(const Json& json);
 	Json getPersonalSettingsAsJSON() const;
-	void print(std::ostream& stream) const;
-	void printPersonalSettings(std::ostream& stream) const;
-
+	
 	// Game patching options 
 	SpawnLocation getSpawnLocation() const;
 	uint8_t getJewelCount() const { return _jewelCount; }
