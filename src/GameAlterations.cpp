@@ -975,8 +975,8 @@ void alterGoldRewardsHandling(md::ROM& rom)
     // Here, we moved the table of gold rewards to the end of the ROM so that we can handle 64 rewards up to 255 golds each.
     // In the new system, all item IDs after the "empty item" one (0x40 and above) are now gold rewards.
     
-    rom.setByte(0x0070DF, 0x40); // cmpi 3A, D0 >>> cmpi 40, D0
-    rom.setByte(0x0070E5, 0x40); // subi 3A, D0 >>> subi 40, D0
+    rom.setByte(0x0070DF, ITEM_GOLDS_START); // cmpi 3A, D0 >>> cmpi 40, D0
+    rom.setByte(0x0070E5, ITEM_GOLDS_START); // subi 3A, D0 >>> subi 40, D0
 
     // ------------- Function to put gold reward value in D0 ----------------
     // Input: D0 = gold reward ID (offset from 0x40)
