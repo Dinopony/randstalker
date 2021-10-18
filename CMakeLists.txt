@@ -20,6 +20,7 @@ set(SOURCES
     "src/Enums/SpawnLocations.cpp" 
 
     "src/Extlibs/Base64.hpp"
+    "src/Extlibs/Base64.cpp"
     "src/Extlibs/json.hpp"
 
     "src/Huffman/Bitfield.hpp"

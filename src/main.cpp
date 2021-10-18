@@ -45,7 +45,7 @@
 #include "WorldRandomizer.hpp"
 #include "ArgumentDictionary.hpp"
 #include "Exceptions.hpp"
-
+#include "Extlibs/Base64.hpp"
 #include "WorldRegion.hpp"
 #include "ItemSources.hpp"
 
@@ -123,6 +123,16 @@ int main(int argc, char* argv[])
 			if (spoilerFile)
 				spoilerFile << json.dump(4);
 			spoilerFile.close();
+
+			// If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
+			if (argsDictionary.getBoolean("encodeplando") && options.isPlando())
+			{
+				std::ofstream encodedPlandoFile("./encoded_plando.json");
+				Json fileJson;
+				fileJson["plando_permalink"] = base64_encode(Json::to_msgpack(json));
+				encodedPlandoFile << fileJson.dump(4);
+				encodedPlandoFile.close();
+			}
 		}
 		
 		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n";

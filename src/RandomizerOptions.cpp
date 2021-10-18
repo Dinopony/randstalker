@@ -24,19 +24,23 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_hudColor				("default"),
 
 	_plandoEnabled			(false),
-	_plandoJSON				(nullptr)
+	_plandoJSON				()
 {
 	std::string plandoPath = args.getString("plando");
 	if(!plandoPath.empty())
 	{
 		_plandoEnabled = true;
+		std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
+
 		std::ifstream plandoFile(plandoPath);
 		if(!plandoFile)
 			throw RandomizerException("Could not open plando file at given path '" + plandoPath + "'");
 		
-		std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
-
 		plandoFile >> _plandoJSON;
+
+		if(_plandoJSON.contains("plando_permalink"))
+			_plandoJSON = Json::from_msgpack(base64_decode(_plandoJSON.at("plando_permalink")));
+
 		this->parseJSON(_plandoJSON);
 	}
 
