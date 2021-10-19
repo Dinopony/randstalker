@@ -291,6 +291,21 @@ void World::initItems(const RandomizerOptions& options)
 
         item->setStartingQuantity(std::min<uint8_t>(quantity, 9));
     }
+
+    // Process custom item prices
+    const std::map<std::string, uint16_t>& itemPrices = options.getItemPrices();
+    for(auto& [itemName, price] : itemPrices)
+    {
+        Item* item = this->getItemByName(itemName);
+        if(!item)
+        {
+            std::stringstream msg;
+            msg << "Cannot set starting price of unknown item '" << itemName << "'";
+            throw RandomizerException(msg.str());
+        }
+
+        item->setGoldWorth(price);
+    }
 }
 
 void World::initChests()

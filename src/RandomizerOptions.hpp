@@ -34,6 +34,7 @@ public:
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
 	uint8_t getStartingLife() const { return _startingLife; }
 	const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
+	const std::map<std::string, uint16_t>& getItemPrices() const { return _itemPrices; }
 
 	// Randomization options
 	uint32_t getSeed() const { return _seed; }
@@ -72,6 +73,7 @@ private:
 	bool _dungeonSignHints;
 	uint8_t _startingLife;
 	std::map<std::string, uint8_t> _startingItems;
+	std::map<std::string, uint16_t> _itemPrices;
 
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)

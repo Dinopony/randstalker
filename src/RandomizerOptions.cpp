@@ -146,6 +146,8 @@ Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
 		json["gameSettings"]["startingLife"] = _startingLife;
 	if(!optimizeForPermalink || !_startingItems.empty())
 		json["gameSettings"]["startingItems"] = _startingItems;
+	if(!optimizeForPermalink || !_itemPrices.empty())
+		json["gameSettings"]["itemPrices"] = _itemPrices;
 
 	if(!optimizeForPermalink || _fillingRate != DEFAULT_FILLING_RATE)
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
@@ -195,6 +197,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_startingLife = gameSettingsJson.at("startingLife");
 		if(gameSettingsJson.contains("startingItems"))
 			_startingItems = gameSettingsJson.at("startingItems");
+		if(gameSettingsJson.contains("itemPrices"))
+			_itemPrices = gameSettingsJson.at("itemPrices");
 	}
 
 	if(json.contains("randomizerSettings") && !_plandoEnabled)
