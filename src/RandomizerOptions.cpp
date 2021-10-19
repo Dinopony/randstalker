@@ -149,14 +149,10 @@ Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	if(!optimizeForPermalink || _shuffleTiborTrees)
 		json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
-
 	if(!optimizeForPermalink || _customMandatoryItems)
-		for(auto& [key, val] : _mandatoryItems)
-			json["randomizerSettings"]["mandatoryItems"][key] = val;
-
-	if(!optimizeForPermalink || _customFillerItems)	
-		for(auto& [key, val] : _fillerItems)
-			json["randomizerSettings"]["fillerItems"][key] = val;
+		json["randomizerSettings"]["mandatoryItems"] = _mandatoryItems;
+	if(!optimizeForPermalink || _customFillerItems)
+		json["randomizerSettings"]["fillerItems"] = _fillerItems;
 
 	if(!this->isPlando())
 	{

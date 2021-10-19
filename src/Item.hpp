@@ -58,9 +58,7 @@ public:
         Item::setGoldWorth(goldWorth);
 
         std::ostringstream goldName;
-		goldName << (uint32_t)goldWorth << " gold";
-        if(goldWorth > 1)
-            goldName << "s";
+		goldName << (uint32_t)goldWorth << " golds";
         this->setName(goldName.str());
     }
 

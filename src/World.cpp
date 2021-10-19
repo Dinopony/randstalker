@@ -9,6 +9,7 @@
 #include "GameText.hpp"
 #include "Huffman/Symbols.hpp"
 #include "Huffman/TextEncoder.hpp"
+#include "Exceptions.hpp"
 
 World::World(const RandomizerOptions& options) :
     spawnLocation(options.getSpawnLocation()),
@@ -49,6 +50,13 @@ World::~World()
 Item* World::addGoldItem(uint8_t worth)
 {
     uint8_t highestGoldItemID = items.rbegin()->first;
+
+    // Try to find an item with the same worth
+    for(uint8_t i=ITEM_GOLDS_START ; i<highestGoldItemID ; ++i)
+        if(items[i]->getGoldWorth() == worth)
+            return items[i];
+
+    // If we consumed all item IDs, don't add it you fool!
     if(highestGoldItemID == 0xFF)
         return nullptr;
 
@@ -1436,20 +1444,35 @@ void World::parseJSON(const Json& json)
             const Json& regionJson = itemSourcesJson.at(region.getName());
             for(ItemSource* source : region.getItemSources())
             {
-                Item* item = items.at(source->getItemID());
                 if(regionJson.contains(source->getName()))
                 {
                     std::string itemName = regionJson.at(source->getName());
-                    Item* item = this->getItemByName(itemName);
+                    Item* item = this->parseItemFromName(itemName);
                     if(item)
+                    {
                         source->setItem(item);
-                    else 
-                        std::cerr << "Item name '" << itemName << "' is invalid in plando JSON." << std::endl;
+                    }
+                    else
+                    {
+                        std::stringstream msg;
+                        msg << "Item name '" << itemName << "' is invalid in plando JSON.";
+                        throw RandomizerException(msg.str());
+                    }
                 }
-                else std::cerr << "Item source '" << source->getName() << "' is missing from plando JSON." << std::endl;
+                else
+                {
+                    std::stringstream msg;
+                    msg << "Item source '" << source->getName() << "' is missing from plando JSON.";
+                    throw RandomizerException(msg.str());
+                }
             }
         }
-        else std::cerr << "Region '" << region.getName() << "' is missing from plando JSON." << std::endl;
+        else
+        {
+            std::stringstream msg;
+            msg << "Region '" << region.getName() << "' is missing from plando JSON.";
+            throw RandomizerException(msg.str());
+        }
 	}
 
     ////////// Hints ///////////////////////////////////////////
@@ -1462,30 +1485,34 @@ void World::parseJSON(const Json& json)
             for(const std::string& jewelHint : hintsJson.at("Lithograph"))
                 jewelHints.push_back(jewelHint);
         }
-        else std::cerr << "Lithograph hint must be an array of strings in plando JSON." << std::endl;
+        else throw RandomizerException("Lithograph hint must be an array of strings in plando JSON.");
     }
 
     if(hintsJson.contains("Oracle Stone"))
         oracleStoneHint = hintsJson.at("Oracle Stone");
     else
-        std::cerr << "Oracle Stone hint is missing from plando JSON." << std::endl;
+        throw RandomizerException("Oracle Stone hint is missing from plando JSON.");
 
     if(hintsJson.contains("King Nole's Cave sign"))
         whereIsLithographHint = hintsJson.at("King Nole's Cave sign");
     else
-        std::cerr << "King Nole's Cave sign hint is missing from plando JSON." << std::endl;
+        throw RandomizerException("King Nole's Cave sign hint is missing from plando JSON.");
 
     if(hintsJson.contains("Mercator fortune teller"))
         fortuneTellerHint = hintsJson.at("Mercator fortune teller");
     else
-        std::cerr << "Mercator fortune teller hint is missing from plando JSON." << std::endl;
+        throw RandomizerException("Mercator fortune teller hint is missing from plando JSON.");
 
     for(HintSign* sign : hintSigns)
     {
         if(hintsJson.contains(sign->getDescription()))
             sign->setText(hintsJson.at(sign->getDescription()));
         else
-            std::cerr << "Sign hint '" << sign->getDescription() << "' is missing from plando JSON." << std::endl;
+        {
+            std::stringstream msg;
+            msg << "Sign hint '" << sign->getDescription() << "' is missing from plando JSON.";
+            throw RandomizerException(msg.str());
+        }
     }
 
     ////////// Miscellaneous ///////////////////////////////////////////
@@ -1494,7 +1521,36 @@ void World::parseJSON(const Json& json)
         std::string darkRegionName = json.at("darkRegion");
         darkenedRegion = this->getRegionByName(darkRegionName);
         if(!darkenedRegion)
-            std::cerr << "Darkened region name '" << darkRegionName << "' is invalid in plando JSON." << std::endl;
+        {
+            std::stringstream msg;
+            msg << "Darkened region name '" << darkRegionName << "' is invalid in plando JSON.";
+            throw RandomizerException(msg.str());
+        }
     }
-    else std::cerr << "Darkened region is missing from plando JSON." << std::endl;
+    else throw RandomizerException("Darkened region is missing from plando JSON.");
+}
+
+Item* World::parseItemFromName(const std::string& itemName)
+{
+    Item* item = this->getItemByName(itemName);
+    if(item)
+        return item;
+
+    // If item is formatted as "X golds", parse X value and create the matching gold stack item
+    if(Tools::endsWith(itemName, "golds"))
+    {
+        size_t spaceIndex = itemName.find_first_of(' ');
+        if(spaceIndex == std::string::npos)
+            return nullptr;
+
+        std::string numberPart = itemName.substr(0, spaceIndex);
+        
+        try {
+            uint8_t goldValue = static_cast<uint8_t>(std::strtol(numberPart.c_str(), nullptr, 10));
+            return this->addGoldItem(goldValue);
+        }
+        catch(std::exception&) {}
+    }
+
+    return nullptr;
 }
