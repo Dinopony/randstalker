@@ -520,8 +520,15 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		ITEM_SUN_STONE,			ITEM_KEY,			ITEM_SAFETY_PASS,	ITEM_LOGS,
 		ITEM_GOLA_EYE,			ITEM_GOLA_NAIL,		ITEM_GOLA_FANG,		ITEM_GOLA_HORN
 	};
-	hintableItemLocations.erase(std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedFortuneItem->getID()));
-	hintableItemLocations.erase(std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedOracleStoneItem->getID()));
+	
+	auto it = std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedFortuneItem->getID());
+	if(it != hintableItemLocations.end())
+		hintableItemLocations.erase(it);
+
+	it = std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedOracleStoneItem->getID());
+	if(it != hintableItemLocations.end())
+		hintableItemLocations.erase(it);
+
 	Tools::shuffle(hintableItemLocations, _rng);
 
 	for (HintSign* sign : _world.hintSigns)
