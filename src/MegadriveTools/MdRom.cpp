@@ -66,10 +66,7 @@ namespace md
 	{
 		for (uint32_t i = 0; i < bytes.size(); ++i)
 		{
-			if (address + i >= ROM_SIZE)
-				return;
-
-			_byteArray[address + i] = bytes[i];
+			this->setByte(address + i, bytes[i]);
 		}
 	}
 
@@ -102,6 +99,10 @@ namespace md
 			uint32_t injectionAddress = pair.first;
 			pair.first += byteCount;
 
+			// Don't allow an empty chunk to begin with an odd address
+			if(pair.first % 2 != 0)
+				pair.first++;
+
 			if (!label.empty())
 				this->storeAddress(label, injectionAddress);
 
@@ -131,6 +132,10 @@ namespace md
 
 	void ROM::markChunkAsEmpty(uint32_t begin, uint32_t end)
 	{
+		// Don't allow an empty chunk to begin with an odd address
+		if(begin % 2 != 0)
+			begin++;
+
 		for(auto& pair : _emptyChunks)
 		{
 			if((begin >= pair.first && begin < pair.second) || (end >= pair.first && end < pair.second))
