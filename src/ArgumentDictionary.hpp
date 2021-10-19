@@ -29,7 +29,7 @@ public:
     }
 
     bool contains(const std::string& name) const {
-        return _argsMap.count(name) > 0;
+        return _argsMap.count(name) || _argsMap.count("no" + name);
     }
 
     std::string getString(const std::string& name, const std::string& defaultValue = "") const
