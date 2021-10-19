@@ -52,7 +52,7 @@ Item* World::addGoldItem(uint8_t worth)
     uint8_t highestGoldItemID = items.rbegin()->first;
 
     // Try to find an item with the same worth
-    for(uint8_t i=ITEM_GOLDS_START ; i<highestGoldItemID ; ++i)
+    for(uint8_t i=ITEM_GOLDS_START ; i<=highestGoldItemID ; ++i)
         if(items[i]->getGoldWorth() == worth)
             return items[i];
 
@@ -127,8 +127,8 @@ void World::writeToROM(md::ROM& rom)
     uint8_t highestGoldItemID = items.rbegin()->first;
     uint8_t goldItemsCount = (highestGoldItemID - ITEM_GOLDS_START) + 1;
     uint32_t addr = rom.reserveDataBlock(goldItemsCount, "data_gold_values");
-    for(uint8_t itemID = ITEM_GOLDS_START ; itemID < highestGoldItemID ; ++itemID)
-        rom.setByte(addr++, static_cast<uint8_t>(items[itemID]->getGoldWorth()));
+    for(uint8_t itemID = ITEM_GOLDS_START ; itemID <= highestGoldItemID ; ++itemID, ++addr)
+        rom.setByte(addr, static_cast<uint8_t>(items[itemID]->getGoldWorth()));
 
     // Write item info
     for (auto& [key, item] : items)

@@ -64,7 +64,6 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
         if(mshQuantity)
             inventoryFlagValue |= ((mshQuantity+1) & 0x0F) << 4;
 
-        std::cout << "Setting default value for items 0x" << std::hex << itemID << " ===> " << (uint32_t)inventoryFlagValue << std::endl;
         flagArray[0x40+(itemID/2)] = inventoryFlagValue;
     }
 

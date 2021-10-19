@@ -33,7 +33,7 @@ public:
 
     Json toJSON() const;
     void parseJSON(const Json& json);
-    Item* World::parseItemFromName(const std::string& itemName);
+    Item* parseItemFromName(const std::string& itemName);
     
 private:
     void initItems(const RandomizerOptions& options);
