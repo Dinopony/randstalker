@@ -58,7 +58,6 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 			_seed = (uint32_t) std::stoul(seedString);
 		} catch (std::invalid_argument&) {
 			_seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
-			_seed *= _seed;
 		}
 
 		std::string presetPath = args.getString("preset");
