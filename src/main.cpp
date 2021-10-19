@@ -76,9 +76,7 @@ int main(int argc, char* argv[])
 		// Parse options from command-line args, preset file, plando file...
 		RandomizerOptions options(argsDictionary);
 		Json optionsAsJSON = options.toJSON();
-		std::cout << "Game settings : " << optionsAsJSON["gameSettings"].dump(2) << "\n\n";
-		std::cout << "Randomizer settings : " << optionsAsJSON["randomizerSettings"].dump(2) << "\n\n";
-		std::cout << "Personal settings : " << options.getPersonalSettingsAsJSON().dump(2) << "\n\n";
+		std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
 
 		// Load input ROM and tag known empty chunks of data to know where to inject code / data
 		md::ROM* rom = getInputROM(options.getInputROMPath());
@@ -115,13 +113,6 @@ int main(int argc, char* argv[])
 		if(options.allowSpoilerLog() && !options.getSpoilerLogPath().empty())
 		{
 			Json json;
-			if(!options.isPlando())
-			{
-				json["permalink"] = options.getPermalink();
-				json["hashSentence"] = options.getHashSentence();
-				json["seed"] = options.getSeed();
-			}
-
 			json.merge_patch(options.toJSON());
 			json.merge_patch(world.toJSON());
 

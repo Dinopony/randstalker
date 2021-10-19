@@ -18,17 +18,11 @@ public:
 	RandomizerOptions(const ArgumentDictionary& args);
 	
 	void parsePermalink(const std::string& permalink);
-
 	void parseSettingsArguments(const ArgumentDictionary& args);
 	void parsePersonalArguments(const ArgumentDictionary& args);
 	void validate();
 
-	uint32_t getSeed() const { return _seed; }
-	std::vector<std::string> getHashWords() const;
-	std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
-	std::string getPermalink() const;
-
-	Json toJSON(bool ignoreDefaultValues=false) const;
+	Json toJSON(bool optimizeForPermalink=false) const;
 	void parseJSON(const Json& json);
 	Json getPersonalSettingsAsJSON() const;
 	
@@ -40,10 +34,15 @@ public:
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
 	uint8_t getStartingLife() const { return _startingLife; }
 
-	// Randomization options 
+	// Randomization options
+	uint32_t getSeed() const { return _seed; }
 	double getFillingRate() const { return _fillingRate; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool allowSpoilerLog() const { return _allowSpoilerLog; }
+
+	std::vector<std::string> getHashWords() const;
+	std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
+	std::string getPermalink() const;
 
 	// Personal options 
 	const std::string& getInputROMPath() const { return _inputRomPath; }

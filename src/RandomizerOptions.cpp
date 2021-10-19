@@ -109,28 +109,39 @@ void RandomizerOptions::parsePersonalArguments(const ArgumentDictionary& args)
 	if(args.contains("hudcolor"))			_hudColor = args.getString("hudcolor");
 }
 
-Json RandomizerOptions::toJSON(bool ignoreDefaultValues) const
+Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
 {
 	Json json;
 
-	if(!ignoreDefaultValues || _spawnLocation != SpawnLocation::RANDOM)
+	if(!optimizeForPermalink || _spawnLocation != SpawnLocation::RANDOM)
 		json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
-	if(!ignoreDefaultValues || _jewelCount != 2)
+	if(!optimizeForPermalink || _jewelCount != 2)
 		json["gameSettings"]["jewelCount"] = _jewelCount;
-	if(!ignoreDefaultValues || !_armorUpgrades)
+	if(!optimizeForPermalink || !_armorUpgrades)
 		json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
-	if(!ignoreDefaultValues || !_saveAnywhereBook)
+	if(!optimizeForPermalink || !_saveAnywhereBook)
 		json["gameSettings"]["recordBook"] = _saveAnywhereBook;
-	if(!ignoreDefaultValues || _dungeonSignHints)
+	if(!optimizeForPermalink || _dungeonSignHints)
 		json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
-	if(!ignoreDefaultValues || _startingLife != 4)
+	if(!optimizeForPermalink || _startingLife != 4)
 		json["gameSettings"]["startingLife"] = _startingLife;
 
-	if(!ignoreDefaultValues || _fillingRate != DEFAULT_FILLING_RATE)
+	if(!optimizeForPermalink || _fillingRate != DEFAULT_FILLING_RATE)
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
-	if(!ignoreDefaultValues || _shuffleTiborTrees)
+	if(!optimizeForPermalink || _shuffleTiborTrees)
 		json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
 	
+	if(!this->isPlando())
+	{
+		json["seed"] = _seed;
+		
+		if(!optimizeForPermalink)
+		{
+			json["permalink"] = getPermalink();
+			json["hashSentence"] = getHashSentence();
+		}
+	}
+
 	return json;
 }
 
@@ -254,7 +265,6 @@ std::string RandomizerOptions::getPermalink() const
 {
 	Json permalinkJson = this->toJSON(true);
 	permalinkJson["version"] = MAJOR_RELEASE;
-	permalinkJson["seed"] = _seed;
 
 	return "L" + base64_encode(Json::to_msgpack(permalinkJson)) + "S";
 }
