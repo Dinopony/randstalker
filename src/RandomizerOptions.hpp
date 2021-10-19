@@ -33,6 +33,7 @@ public:
 	bool useRecordBook() const { return _saveAnywhereBook; }
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
 	uint8_t getStartingLife() const { return _startingLife; }
+	const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
 
 	// Randomization options
 	uint32_t getSeed() const { return _seed; }
@@ -70,6 +71,7 @@ private:
 	bool _saveAnywhereBook;
 	bool _dungeonSignHints;
 	uint8_t _startingLife;
+	std::map<std::string, uint8_t> _startingItems;
 
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)

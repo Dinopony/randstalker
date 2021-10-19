@@ -276,6 +276,21 @@ void World::initItems(const RandomizerOptions& options)
 
     if(options.useRecordBook())
         items[ITEM_RECORD_BOOK]->setStartingQuantity(1);
+
+    // Process custom starting quantities for items
+    const std::map<std::string, uint8_t>& startingItems = options.getStartingItems();
+    for(auto& [itemName, quantity] : startingItems)
+    {
+        Item* item = this->getItemByName(itemName);
+        if(!item)
+        {
+            std::stringstream msg;
+            msg << "Cannot set starting quantity of unknown item '" << itemName << "'";
+            throw RandomizerException(msg.str());
+        }
+
+        item->setStartingQuantity(std::min<uint8_t>(quantity, 9));
+    }
 }
 
 void World::initChests()

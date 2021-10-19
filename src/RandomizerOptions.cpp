@@ -144,6 +144,8 @@ Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
 		json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
 	if(!optimizeForPermalink || _startingLife != 4)
 		json["gameSettings"]["startingLife"] = _startingLife;
+	if(!optimizeForPermalink || !_startingItems.empty())
+		json["gameSettings"]["startingItems"] = _startingItems;
 
 	if(!optimizeForPermalink || _fillingRate != DEFAULT_FILLING_RATE)
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
@@ -191,6 +193,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
 		if(gameSettingsJson.contains("startingLife"))
 			_startingLife = gameSettingsJson.at("startingLife");
+		if(gameSettingsJson.contains("startingItems"))
+			_startingItems = gameSettingsJson.at("startingItems");
 	}
 
 	if(json.contains("randomizerSettings") && !_plandoEnabled)
