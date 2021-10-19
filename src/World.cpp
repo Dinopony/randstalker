@@ -212,6 +212,7 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_MOON_STONE,        "Moon Stone",        150));
     this->addItem(new Item(ITEM_SATURN_STONE,      "Saturn Stone",      200));
     this->addItem(new Item(ITEM_VENUS_STONE,       "Venus Stone",       300));
+    this->addItem(new Item(ITEM_AWAKENING_BOOK,    "Awakening Book",    0));
     this->addItem(new Item(ITEM_DETOX_GRASS,       "Detox Grass",       20));
     this->addItem(new Item(ITEM_GAIA_STATUE,       "Statue of Gaia",    100));
     this->addItem(new Item(ITEM_GOLDEN_STATUE,     "Golden Statue",     200, false));
@@ -227,9 +228,16 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_SUN_STONE,         "Sun Stone",         300));
     this->addItem(new Item(ITEM_ARMLET,            "Armlet",            300));
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  200));
+    this->addItem(new Item(ITEM_DETOX_BOOK,        "Detox Book",        0));
+    this->addItem(new Item(ITEM_ANTICURSE_BOOK,    "AntiCurse Book",    0));
+    this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       0));
     this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        50));
+    this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    0));
+    this->addItem(new Item(ITEM_ISLAND_MAP,        "Island Map",        0));
     this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        250));
+    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         500));
     this->addItem(new Item(ITEM_PAWN_TICKET,       "Pawn Ticket",       100));
+    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      500));
     this->addItem(new Item(ITEM_GOLA_EYE,          "Gola's Eye",        400));
     this->addItem(new Item(ITEM_DEATH_STATUE,      "Death Statue",      150));
     this->addItem(new Item(ITEM_DAHL,              "Dahl",              100, false));
@@ -239,16 +247,18 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_IDOL_STONE,        "Idol Stone",        200));
     this->addItem(new Item(ITEM_KEY,               "Key",               150));
     this->addItem(new Item(ITEM_SAFETY_PASS,       "Safety Pass",       300));
+    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       500));
     this->addItem(new Item(ITEM_BELL,              "Bell",              200));
     this->addItem(new Item(ITEM_SHORT_CAKE,        "Short Cake",        150, false));
     this->addItem(new Item(ITEM_GOLA_NAIL,         "Gola's Nail",       800));
     this->addItem(new Item(ITEM_GOLA_HORN,         "Gola's Horn",       800));
     this->addItem(new Item(ITEM_GOLA_FANG,         "Gola's Fang",       800));
+    this->addItem(new Item(ITEM_NO_SWORD,          "Broad Sword",       0));
+    this->addItem(new Item(ITEM_NO_ARMOR,          "Leather Breast",    0));
+    this->addItem(new Item(ITEM_NO_BOOTS,          "Leather Boots",     0));
+    this->addItem(new Item(ITEM_NO_RING,           "No Ring",           0));
     this->addItem(new Item(ITEM_LIFESTOCK,         "Life Stock",        250, false));
     this->addItem(new Item(ITEM_NONE,              "No Item",           0));
-    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         500));
-    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      500));
-    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       500));
 
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
     {
@@ -263,6 +273,9 @@ void World::initItems(const RandomizerOptions& options)
         items[ITEM_SHELL_BREAST]->setGoldWorth(250);
         items[ITEM_HYPER_BREAST]->setGoldWorth(250);
     }
+
+    if(options.useRecordBook())
+        items[ITEM_RECORD_BOOK]->setStartingQuantity(1);
 }
 
 void World::initChests()

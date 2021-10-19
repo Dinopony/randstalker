@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <iostream>
 
 constexpr uint32_t customTextStorageMemoryAddress = 0xFF0014;
 constexpr uint32_t mapEntrancePositionStorageMemoryAddress = 0xFF0018;
@@ -50,9 +51,22 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     flagArray[0x2A] = 0x81;
     flagArray[0x2B] = 0x82;
 
-    // Give Record book
-    if(options.useRecordBook())
-        flagArray[0x51] |= 0x20;
+    // Set starting items
+    for(uint8_t itemID=0 ; itemID < ITEM_GOLDS_START ; itemID += 0x2)
+    {
+        uint8_t inventoryFlagValue = 0x0;
+
+        uint8_t lshQuantity = world.items.at(itemID)->getStartingQuantity();
+        if(lshQuantity)
+            inventoryFlagValue |= (lshQuantity+1) & 0x0F;
+
+        uint8_t mshQuantity = world.items.at(itemID+1)->getStartingQuantity();
+        if(mshQuantity)
+            inventoryFlagValue |= ((mshQuantity+1) & 0x0F) << 4;
+
+        std::cout << "Setting default value for items 0x" << std::hex << itemID << " ===> " << (uint32_t)inventoryFlagValue << std::endl;
+        flagArray[0x40+(itemID/2)] = inventoryFlagValue;
+    }
 
     // Setup inventory tracker if needed
     if (options.addIngameItemTracker())

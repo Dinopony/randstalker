@@ -10,6 +10,7 @@ public:
     Item(uint8_t itemID, const std::string& name, uint16_t goldWorth, bool isAllowedOnGround = true) :
         _itemID(itemID),
         _name(name),
+        _startingQuantity(0),
         _goldWorth(goldWorth),
         _isAllowedOnGround(isAllowedOnGround)
     {}
@@ -21,12 +22,15 @@ public:
 
     void setName(const std::string& name) { _name = name; }
     const std::string& getName() const { return _name; }
-
-    void setAllowedOnGround(bool allowed) { _isAllowedOnGround = allowed; }
-    bool isAllowedOnGround() const { return _isAllowedOnGround; }
+    
+    uint8_t getStartingQuantity() const { return _startingQuantity; }
+    void setStartingQuantity(uint8_t quantity) { _startingQuantity = quantity; }
     
     uint16_t getGoldWorth() { return _goldWorth; }
     virtual void setGoldWorth(uint16_t goldWorth) { _goldWorth = goldWorth; }
+
+    void setAllowedOnGround(bool allowed) { _isAllowedOnGround = allowed; }
+    bool isAllowedOnGround() const { return _isAllowedOnGround; }
 
     virtual void writeToROM(md::ROM& rom) const
     {
@@ -35,7 +39,9 @@ public:
 
 protected:
     uint8_t _itemID;
+
     std::string _name;
+    uint8_t _startingQuantity;
     uint16_t _goldWorth;
     bool _isAllowedOnGround;
 };
