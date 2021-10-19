@@ -21,7 +21,11 @@ public:
 
     void setName(const std::string& name) { _name = name; }
     const std::string& getName() const { return _name; }
+
+    void setAllowedOnGround(bool allowed) { _isAllowedOnGround = allowed; }
     bool isAllowedOnGround() const { return _isAllowedOnGround; }
+    
+    uint16_t getGoldWorth() { return _goldWorth; }
     virtual void setGoldWorth(uint16_t goldWorth) { _goldWorth = goldWorth; }
 
     virtual void writeToROM(md::ROM& rom) const
@@ -41,9 +45,11 @@ protected:
 class ItemGolds : public Item
 {
 public:
-    ItemGolds(uint8_t itemID) :
-        Item(itemID, "1 gold", 1, false)
-    {}
+    ItemGolds(uint8_t itemID, uint8_t goldWorth) :
+        Item(itemID, "Golds", 0, false)
+    {
+        this->setGoldWorth(goldWorth);
+    }
 
     virtual ~ItemGolds() {}
 
@@ -60,7 +66,7 @@ public:
 
     virtual void writeToROM(md::ROM& rom) const
     {
-        uint32_t baseGoldValuesAddress = rom.getStoredAddress("data_gold_values");
-        rom.setByte(baseGoldValuesAddress + (_itemID - ITEM_GOLDS_START), (uint8_t)_goldWorth);
+        // Do nothing, since it is not a real item
+        return;
     }
 };

@@ -39,6 +39,10 @@ public:
 	double getFillingRate() const { return _fillingRate; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
 	bool allowSpoilerLog() const { return _allowSpoilerLog; }
+	bool hasCustomMandatoryItems() const { return _customMandatoryItems; }
+	std::map<std::string, uint16_t> getMandatoryItems() const { return _mandatoryItems; }
+	bool hasCustomFillerItems() const { return _customFillerItems; }
+	std::map<std::string, uint16_t> getFillerItems() const { return _fillerItems; }
 
 	std::vector<std::string> getHashWords() const;
 	std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
@@ -73,6 +77,10 @@ private:
 	double _fillingRate;
 	bool _shuffleTiborTrees;
 	bool _allowSpoilerLog;
+	bool _customMandatoryItems;
+	std::map<std::string, uint16_t> _mandatoryItems;
+	bool _customFillerItems;
+	std::map<std::string, uint16_t> _fillerItems;
 
 	// ------------- Personal settings -------------
 	// (not included in permalink nor presets)

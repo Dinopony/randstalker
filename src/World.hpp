@@ -12,7 +12,6 @@
 #include "HintSign.hpp"
 #include "Extlibs/json.hpp"
 
-constexpr uint8_t GOLD_SOURCES_COUNT = 30;
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 3;
 
 class World
@@ -22,15 +21,13 @@ public:
     ~World();
 
     void addItem(Item* item) { items[item->getID()] = item; }
-  
+    Item* addGoldItem(uint8_t worth);
+
     Item* getItemByName(const std::string& name) const;
     WorldRegion* getRegionByName(const std::string& name) const;
 
     WorldRegion* getRegionForItem(Item* item);
     std::vector<ItemSource*> getItemSourcesContainingItem(Item* item);
-
-    const std::vector<Item*>& getFillerItemsList() const { return _fillerItems; }
-    const std::vector<Item*>& getPriorityItemsList() const { return _priorityItems; }
 
     void writeToROM(md::ROM& rom);
 
@@ -39,9 +36,6 @@ public:
 
 private:
     void initItems(const RandomizerOptions& options);
-    void initFillerItemsList();
-    void initPriorityItemsList();
-
     void initChests();
     void initGroundItems();
     void initShops();
@@ -63,23 +57,17 @@ public:
     std::map<RegionCode, WorldRegion*> regions;
     std::vector<WorldMacroRegion*> macroRegions;
     std::vector<ItemShop*> shops;
-
     std::vector<HintSign*> hintSigns;
+    std::vector<TreeMap> treeMaps;
 
+    SpawnLocation spawnLocation;
     WorldRegion* darkenedRegion;
-    
+
     std::vector<std::string> jewelHints;
     std::string whereIsLithographHint;
     std::string fortuneTellerHint;
     std::string oracleStoneHint;
 
-    std::vector<TreeMap> treeMaps;
-
-    SpawnLocation spawnLocation;
-
 private:
     const RandomizerOptions& _options;
-
-    std::vector<Item*> _fillerItems;
-    std::vector<Item*> _priorityItems;
 };

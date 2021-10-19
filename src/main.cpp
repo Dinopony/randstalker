@@ -76,6 +76,10 @@ int main(int argc, char* argv[])
 		// Parse options from command-line args, preset file, plando file...
 		RandomizerOptions options(argsDictionary);
 		Json optionsAsJSON = options.toJSON();
+		if(!options.hasCustomMandatoryItems())
+			optionsAsJSON["randomizerSettings"]["mandatoryItems"] = "default";
+		if(!options.hasCustomFillerItems())
+			optionsAsJSON["randomizerSettings"]["fillerItems"] = "default";
 		std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
 
 		// Load input ROM and tag known empty chunks of data to know where to inject code / data

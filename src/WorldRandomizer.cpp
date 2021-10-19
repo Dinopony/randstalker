@@ -1,16 +1,22 @@
 #include "WorldRandomizer.hpp"
 #include "Tools.hpp"
 #include "GameText.hpp"
+#include "Exceptions.hpp"
 #include <algorithm>
+#include <sstream>
 #include <set>
 
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
 	_options			(options),
-	_rng				()
+	_rng				(),
+	_goldItemsCount		(0)
 {
 	if (!options.getDebugLogPath().empty())
 		_debugLog.open(options.getDebugLogPath());
+	
+	this->initFillerItems();
+	this->initMandatoryItems();
 }
 
 WorldRandomizer::~WorldRandomizer() 
@@ -42,7 +48,47 @@ void WorldRandomizer::randomize()
 	_debugLog.close();
 }
 
+void WorldRandomizer::initFillerItems()
+{
+	std::map<std::string, uint16_t> fillerItemsDescription = _options.getFillerItems();
+	for (auto& [itemName, quantity] : fillerItemsDescription)
+	{
+		if(itemName == "Golds")
+		{
+			_goldItemsCount += quantity;
+			continue;
+		}
 
+		Item* item = _world.getItemByName(itemName);
+		if(!item)
+		{
+			std::stringstream msg;
+    		msg << "Unknown item '" << itemName << "' found in filler items.";
+			throw RandomizerException(msg.str());
+		}
+		
+		for(uint16_t i=0 ; i<quantity ; ++i)
+			_fillerItems.push_back(item);
+	}
+}
+
+void WorldRandomizer::initMandatoryItems()
+{
+	std::map<std::string, uint16_t> mandatoryItemsDescription = _options.getMandatoryItems();
+	for (auto& [itemName, quantity] : mandatoryItemsDescription)
+	{
+		Item* item = _world.getItemByName(itemName);
+		if(!item)
+		{
+			std::stringstream msg;
+    		msg << "Unknown item '" << itemName << "' found in mandatory items.";
+			throw RandomizerException(msg.str());
+		}
+		
+		for(uint16_t i=0 ; i<quantity ; ++i)
+			_mandatoryItems.push_back(item);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///		FIRST PASS RANDOMIZATIONS (before items)
@@ -53,13 +99,13 @@ void WorldRandomizer::randomizeGoldValues()
 	constexpr uint16_t averageGoldPerChest = 35;
 	constexpr double maxFactorOfTotalGoldValue = 0.16;
 
-	uint16_t totalGoldValue = averageGoldPerChest * GOLD_SOURCES_COUNT;
+	uint16_t totalGoldValue = averageGoldPerChest * _goldItemsCount;
 
-	for (uint8_t i = 0; i < GOLD_SOURCES_COUNT ; ++i)
+	for (uint8_t i = 0; i < _goldItemsCount ; ++i)
 	{
 		uint16_t goldValue;
 
-		if (i < GOLD_SOURCES_COUNT - 1)
+		if (i < _goldItemsCount - 1)
 		{
 			double proportion = (double) _rng() / (double) _rng.max();
 			double factor = (proportion * maxFactorOfTotalGoldValue);
@@ -78,7 +124,9 @@ void WorldRandomizer::randomizeGoldValues()
 
 		totalGoldValue -= goldValue;
 
-		_world.items[ITEM_GOLDS_START+i]->setGoldWorth(goldValue);
+		Item* goldItem = _world.addGoldItem(static_cast<uint8_t>(goldValue));
+		if(goldItem)
+			_fillerItems.push_back(goldItem);
 	}
 }
 
@@ -113,12 +161,11 @@ void WorldRandomizer::randomizeItems()
 	_playerInventory.clear();		// The current contents of player inventory at the given time in the exploration algorithm
 	_pendingPaths.clear();			// Paths leading to potentially unexplored regions, locked behind a key item which is not yet owned by the player
 
-	_fillerItems = _world.getFillerItemsList();
 	Tools::shuffle(_fillerItems, _rng);
 
 	_debugLog << "\n-------------------------------------------------\n";
-	_debugLog << "Step #0 (placing priority items)\n";
-	this->placePriorityItems();
+	_debugLog << "Step #0 (placing mandatory items)\n";
+	this->placeMandatoryItems();
 
 	uint32_t stepCount = 1;
 	while (!_pendingPaths.empty() || !_regionsToExplore.empty())
@@ -129,7 +176,7 @@ void WorldRandomizer::randomizeItems()
 		// Explore not yet explored regions, listing all item sources and paths for further exploration and processing
 		this->explorationPhase();
 
-		// Try unlocking paths and item sources with newly discovered items in pre-filled item sources (useful for plando)
+		// Try unlocking paths and item sources with newly discovered items in pre-filled item sources (useful for half-plando)
 		this->unlockPhase();
 
 		Tools::shuffle(_itemSourcesToFill, _rng);
@@ -168,11 +215,10 @@ void WorldRandomizer::randomizeItems()
 	_debugLog << "\t - " << _pendingPaths.size() << " pending paths\n";
 }
 
-void WorldRandomizer::placePriorityItems()
+void WorldRandomizer::placeMandatoryItems()
 {
-	// Priority items are filler items which are always placed first in the randomization, no matter what
-	std::vector<Item*> priorityItems = _world.getPriorityItemsList();
-	Tools::shuffle(priorityItems, _rng);
+	// Mandatory items are filler items which are always placed first in the randomization, no matter what
+	Tools::shuffle(_mandatoryItems, _rng);
 
 	std::vector<ItemSource*> allEmptyItemSources;
 	for (auto& [key, source] : _world.itemSources)
@@ -180,14 +226,14 @@ void WorldRandomizer::placePriorityItems()
 			allEmptyItemSources.push_back(source);
 	Tools::shuffle(allEmptyItemSources, _rng);
 
-	for (Item* itemToPlace : priorityItems)
+	for (Item* itemToPlace : _mandatoryItems)
 	{
 		for (ItemSource* source : allEmptyItemSources)
 		{
 			if (!source->getItem() && source->isItemCompatible(itemToPlace))
 			{
 				source->setItem(itemToPlace);
-				_debugLog << "\t > Placing priority item [" << itemToPlace->getName() << "] in \"" << source->getName() << "\"\n";
+				_debugLog << "\t > Placing mandatory item [" << itemToPlace->getName() << "] in \"" << source->getName() << "\"\n";
 				break;
 			}
 		}
@@ -474,9 +520,12 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 
 	// Also excluding items strictly needed to get to Oracle Stone's location
 	WorldRegion* itemRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
-	UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(itemRegion);
-	for (Item* item : strictlyNeededKeyItemsForOracleStone)
-		forbiddenOracleStoneItems.insert(item);
+	if(itemRegion)
+	{
+		UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(itemRegion);
+		for (Item* item : strictlyNeededKeyItemsForOracleStone)
+			forbiddenOracleStoneItems.insert(item);
+	}
 
 	std::vector<Item*> hintableItems;
 	for (Item* item : _strictlyNeededKeyItems)

@@ -16,8 +16,6 @@ World::World(const RandomizerOptions& options) :
     _options(options)
 {
     this->initItems(options);
-    this->initFillerItemsList();
-    this->initPriorityItemsList();
 
     this->initChests();
     this->initGroundItems();
@@ -46,6 +44,17 @@ World::~World()
 		delete region;
     for (ItemShop* shop : shops)
         delete shop;
+}
+
+Item* World::addGoldItem(uint8_t worth)
+{
+    uint8_t highestGoldItemID = items.rbegin()->first;
+    if(highestGoldItemID == 0xFF)
+        return nullptr;
+
+    Item* newItem = new ItemGolds(++highestGoldItemID, worth);
+    this->addItem(newItem);
+    return newItem;
 }
 
 Item* World::getItemByName(const std::string& name) const
@@ -86,7 +95,7 @@ WorldRegion* World::getRegionForItem(Item* item)
         }
     }
 
-    return regions[RegionCode::ENDGAME];
+    return nullptr;
 }
 
 std::vector<ItemSource*> World::getItemSourcesContainingItem(Item* item)
@@ -106,9 +115,13 @@ std::vector<ItemSource*> World::getItemSourcesContainingItem(Item* item)
 
 void World::writeToROM(md::ROM& rom)
 {
-    // Reserve a data block for gold values which will be filled when gold items will be encountered
-    rom.reserveDataBlock(GOLD_SOURCES_COUNT, "data_gold_values");
-	
+    // Write a data block for gold values
+    uint8_t highestGoldItemID = items.rbegin()->first;
+    uint8_t goldItemsCount = (highestGoldItemID - ITEM_GOLDS_START) + 1;
+    uint32_t addr = rom.reserveDataBlock(goldItemsCount, "data_gold_values");
+    for(uint8_t itemID = ITEM_GOLDS_START ; itemID < highestGoldItemID ; ++itemID)
+        rom.setByte(addr++, static_cast<uint8_t>(items[itemID]->getGoldWorth()));
+
     // Write item info
     for (auto& [key, item] : items)
 		item->writeToROM(rom);
@@ -183,6 +196,10 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_IRON_BOOTS,        "Iron Boots",        150));
     this->addItem(new Item(ITEM_HEALING_BOOTS,     "Healing Boots",     300));
     this->addItem(new Item(ITEM_SPIKE_BOOTS,       "Snow Spikes",       400));
+    this->addItem(new Item(ITEM_STEEL_BREAST,      "Steel Breast",      300));
+    this->addItem(new Item(ITEM_CHROME_BREAST,     "Chrome Breast",     400));
+    this->addItem(new Item(ITEM_SHELL_BREAST,      "Shell Breast",      500));
+    this->addItem(new Item(ITEM_HYPER_BREAST,      "Hyper Breast",      750));
     this->addItem(new Item(ITEM_MARS_STONE,        "Mars Stone",        150));
     this->addItem(new Item(ITEM_MOON_STONE,        "Moon Stone",        150));
     this->addItem(new Item(ITEM_SATURN_STONE,      "Saturn Stone",      200));
@@ -221,98 +238,23 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_GOLA_FANG,         "Gola's Fang",       800));
     this->addItem(new Item(ITEM_LIFESTOCK,         "Life Stock",        250, false));
     this->addItem(new Item(ITEM_NONE,              "No Item",           0));
+    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         500));
+    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      500));
+    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       500));
 
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
     {
-        this->addItem(new Item(ITEM_RED_JEWEL,      "Kazalt Jewel",     500, false));
-        this->addItem(new Item(ITEM_PURPLE_JEWEL,   "",                 500));
-        this->addItem(new Item(ITEM_GREEN_JEWEL,    "",                 500));
-    }
-    else
-    {
-        this->addItem(new Item(ITEM_RED_JEWEL,      "Red Jewel",        500));
-        this->addItem(new Item(ITEM_PURPLE_JEWEL,   "Purple Jewel",     500));
-        this->addItem(new Item(ITEM_GREEN_JEWEL,    "Green Jewel",      500));       
+        items[ITEM_RED_JEWEL]->setName("Kazalt Jewel");
+        items[ITEM_RED_JEWEL]->setAllowedOnGround(false);
     }
 
     if (options.useArmorUpgrades())
     {
-        this->addItem(new Item(ITEM_STEEL_BREAST,   "Armor upgrade 1",  250));
-        this->addItem(new Item(ITEM_CHROME_BREAST,  "Armor upgrade 2",  250));
-        this->addItem(new Item(ITEM_SHELL_BREAST,   "Armor upgrade 3",  250));
-        this->addItem(new Item(ITEM_HYPER_BREAST,   "Armor upgrade 4",  250));
+        items[ITEM_STEEL_BREAST]->setGoldWorth(250);
+        items[ITEM_CHROME_BREAST]->setGoldWorth(250);
+        items[ITEM_SHELL_BREAST]->setGoldWorth(250);
+        items[ITEM_HYPER_BREAST]->setGoldWorth(250);
     }
-    else
-    {
-        this->addItem(new Item(ITEM_STEEL_BREAST,   "Steel Breast",     300));
-        this->addItem(new Item(ITEM_CHROME_BREAST,  "Chrome Breast",    400));
-        this->addItem(new Item(ITEM_SHELL_BREAST,   "Shell Breast",     500));
-        this->addItem(new Item(ITEM_HYPER_BREAST,   "Hyper Breast",     750));
-    }
-
-    for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
-        this->addItem(new ItemGolds(ITEM_GOLDS_START+i));
-}
-
-void World::initFillerItemsList()
-{
-    _fillerItems = { 
-		items[ITEM_PAWN_TICKET], 	items[ITEM_SHORT_CAKE],		
-		items[ITEM_SPELL_BOOK],		items[ITEM_BLUE_RIBBON],	
-		items[ITEM_DEATH_STATUE],	items[ITEM_BELL]
-	};
-
-	for (uint8_t i = 0; i < 80; ++i)
-		_fillerItems.push_back(items[ITEM_LIFESTOCK]);
-	for (uint8_t i = 0; i < 55; ++i)
-		_fillerItems.push_back(items[ITEM_EKEEKE]);
-	for (uint8_t i = 0; i < 16; ++i)
-		_fillerItems.push_back(items[ITEM_DAHL]);
-	for (uint8_t i = 0; i < 12; ++i)
-		_fillerItems.push_back(items[ITEM_GAIA_STATUE]);
-	for (uint8_t i = 0; i < 10; ++i)
-		_fillerItems.push_back(items[ITEM_GOLDEN_STATUE]);
-	for (uint8_t i = 0; i < 10; ++i)
-		_fillerItems.push_back(items[ITEM_RESTORATION]);
-	for (uint8_t i = 0; i < 11; ++i)
-		_fillerItems.push_back(items[ITEM_DETOX_GRASS]);
-	for (uint8_t i = 0; i < 7; ++i)
-		_fillerItems.push_back(items[ITEM_MIND_REPAIR]);
-	for (uint8_t i = 0; i < 7; ++i)
-		_fillerItems.push_back(items[ITEM_ANTI_PARALYZE]);
-
-	for (uint8_t i = 0; i < GOLD_SOURCES_COUNT; ++i)
-		_fillerItems.push_back(items[ITEM_GOLDS_START + i]);
-
-	for (uint8_t i = 0; i < 4; ++i)
-		_fillerItems.push_back(items[ITEM_NONE]);
-}
-
-void World::initPriorityItemsList()
-{
-    _priorityItems = {
-		items[ITEM_MAGIC_SWORD],
-        items[ITEM_THUNDER_SWORD],
-		items[ITEM_ICE_SWORD],
-        items[ITEM_GAIA_SWORD],
-
-		items[ITEM_STEEL_BREAST],
-        items[ITEM_CHROME_BREAST],
-		items[ITEM_SHELL_BREAST],
-        items[ITEM_HYPER_BREAST],
-
-		items[ITEM_HEALING_BOOTS],
-        items[ITEM_IRON_BOOTS],
-		items[ITEM_FIREPROOF_BOOTS],		
-		
-		items[ITEM_MARS_STONE],
-        items[ITEM_MOON_STONE],			
-		items[ITEM_SATURN_STONE],
-        items[ITEM_VENUS_STONE],			
-		
-		items[ITEM_ORACLE_STONE],
-        items[ITEM_STATUE_JYPTA]
-	};
 }
 
 void World::initChests()

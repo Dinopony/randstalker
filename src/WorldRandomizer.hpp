@@ -25,17 +25,18 @@ public:
 	void randomize();
 
 private:
+	void initFillerItems();
+	void initMandatoryItems();
+
 	// First pass randomizations (before items)
 	void randomizeGoldValues();
 	void randomizeDarkRooms();
 
 	// Second pass randomizations (items)
 	void randomizeItems();
+	void placeMandatoryItems();
 	void analyzeStrictlyRequiredKeyItems();
 	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
-
-	void placePriorityItems();
-	void initFillerItems();
 
 	void placeFillerItemsPhase(size_t count, Item* lastResortFiller = nullptr);
 	void explorationPhase();
@@ -61,12 +62,15 @@ private:
 	std::ofstream _debugLog;
 	std::mt19937 _rng;
 
+	std::vector<Item*> _fillerItems;
+	std::vector<Item*> _mandatoryItems;
+	uint8_t _goldItemsCount;
+
 	UnsortedSet<WorldRegion*> _regionsToExplore;
 	UnsortedSet<WorldRegion*> _exploredRegions;
 	std::vector<ItemSource*> _itemSourcesToFill;
 	std::vector<Item*> _playerInventory;
 	std::vector<WorldPath*> _pendingPaths;
-	std::vector<Item*> _fillerItems;
 
 	UnsortedSet<Item*> _strictlyNeededKeyItems;
 };
