@@ -32,7 +32,6 @@ public:
 	SpawnLocation getSpawnLocation() const;
 	uint8_t getJewelCount() const { return _jewelCount; }
 	bool useArmorUpgrades() const { return _armorUpgrades; }
-	bool useRecordBook() const { return _saveAnywhereBook; }
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
 	uint8_t getStartingLife() const { return _startingLife; }
 	const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
@@ -73,7 +72,6 @@ private:
 	SpawnLocation _spawnLocation;
 	uint32_t _jewelCount;
 	bool _armorUpgrades;
-	bool _saveAnywhereBook;
 	bool _dungeonSignHints;
 	uint8_t _startingLife;
 	std::map<std::string, uint8_t> _startingItems;

@@ -8,9 +8,10 @@ RandomizerOptions::RandomizerOptions() :
 	_spawnLocation			(SpawnLocation::RANDOM),
 	_jewelCount				(2),
 	_armorUpgrades			(true),
-	_saveAnywhereBook		(true),
 	_dungeonSignHints		(false),
 	_startingLife			(4),
+	_startingItems			({{"Record Book",1}}),
+	_itemPrices				(),
 	_fixArmletSkip			(true),
 	_fixTreeCuttingGlitch	(true),
 
@@ -102,7 +103,7 @@ void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 	if(args.contains("spawnlocation")) 		_spawnLocation = spawnLocationFromString(args.getString("spawnlocation"));
 	if(args.contains("jewelcount"))			_jewelCount = args.getInteger("jewelcount");
 	if(args.contains("armorupgrades")) 		_armorUpgrades = args.getBoolean("armorupgrades");
-	if(args.contains("recordbook")) 		_saveAnywhereBook = args.getBoolean("recordbook");
+	if(args.contains("norecordbook")) 		_startingItems["Record Book"] = 0;
 	if(args.contains("dungeonsignhints")) 	_dungeonSignHints = args.getBoolean("dungeonsignhints");
 	if(args.contains("startinglife")) 		_startingLife = args.getInteger("startinglife");
 
@@ -130,7 +131,6 @@ Json RandomizerOptions::toJSON() const
 	json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
 	json["gameSettings"]["jewelCount"] = _jewelCount;
 	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
-	json["gameSettings"]["recordBook"] = _saveAnywhereBook;
 	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
 	json["gameSettings"]["startingLife"] = _startingLife;
 	json["gameSettings"]["startingItems"] = _startingItems;
@@ -169,8 +169,6 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_jewelCount = gameSettingsJson.at("jewelCount");
 		if(gameSettingsJson.contains("armorUpgrades"))
 			_armorUpgrades = gameSettingsJson.at("armorUpgrades");
-		if(gameSettingsJson.contains("recordBook"))	
-			_saveAnywhereBook = gameSettingsJson.at("recordBook");
 		if(gameSettingsJson.contains("dungeonSignHints"))
 			_dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
 		if(gameSettingsJson.contains("startingLife"))

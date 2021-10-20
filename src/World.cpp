@@ -274,9 +274,6 @@ void World::initItems(const RandomizerOptions& options)
         items[ITEM_HYPER_BREAST]->setGoldWorth(250);
     }
 
-    if(options.useRecordBook())
-        items[ITEM_RECORD_BOOK]->setStartingQuantity(1);
-
     // Process custom starting quantities for items
     const std::map<std::string, uint8_t>& startingItems = options.getStartingItems();
     for(auto& [itemName, quantity] : startingItems)
