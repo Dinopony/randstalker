@@ -212,7 +212,7 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_MOON_STONE,        "Moon Stone",        1,  150));
     this->addItem(new Item(ITEM_SATURN_STONE,      "Saturn Stone",      1,  200));
     this->addItem(new Item(ITEM_VENUS_STONE,       "Venus Stone",       1,  300));
-    this->addItem(new Item(ITEM_AWAKENING_BOOK,    "Awakening Book",    1,  0));
+    this->addItem(new Item(ITEM_AWAKENING_BOOK,    "Awakening Book",    1,  15));
     this->addItem(new Item(ITEM_DETOX_GRASS,       "Detox Grass",       9,  20));
     this->addItem(new Item(ITEM_GAIA_STATUE,       "Statue of Gaia",    9,  100));
     this->addItem(new Item(ITEM_GOLDEN_STATUE,     "Golden Statue",     9,  200, false));
@@ -232,7 +232,7 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_YELLOW_JEWEL,      "Yellow Jewel",      1,  500));
     this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       1,  200));
     this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        1,  200));
-    this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    1,  0));
+    this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    1,  15));
     this->addItem(new Item(ITEM_ISLAND_MAP,        "Island Map",        0,  0));
     this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        1,  250));
     this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         1,  500));

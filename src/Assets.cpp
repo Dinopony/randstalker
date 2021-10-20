@@ -227,7 +227,7 @@ void loadGameStrings(std::vector<std::string>& gameStrings)
         /* 0x68 */ 		"\x1C""to cure the curse?""\x19",
         /* 0x69 */ 		"\x1C""Ta-da!\nThe curse has been lifted.\x03",
         /* 0x6A */ 		"\x1C""I really want\nto help you""\x1A"".""\x1A"".""\x1A"".\nbut you're not cursed.\x03",
-        /* 0x6B */ 		"\x1C""That's an ""\x1D"".\nIt's essential in curing\nhallucinations.\x03",
+        /* 0x6B */ 		"\x1C""That's an ""\x1D"".\nIt can cure you of\nany bad condition.\x03",
         /* 0x6C */ 		"\x1C""Can you afford a\ncontribution of ""\x1B"" golds\x1E",
         /* 0x6D */ 		"\x1C""for the cure?""\x19",
         /* 0x6E */ 		"\x1C""Ahh...that's better!\nYour hallucinations are gone.\x03",
