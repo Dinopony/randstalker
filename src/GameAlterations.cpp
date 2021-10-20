@@ -925,7 +925,7 @@ void alterLanternHandling(md::ROM& rom)
             funcLanternCheck.btst(0x1, addr_(0xFF104D));
             funcLanternCheck.bne(3);
                 // Dark room with no lantern ===> darken the palette
-                funcLanternCheck.movew(0x0624, reg_D0);
+                funcLanternCheck.movew(0x0000, reg_D0);
                 funcLanternCheck.bra(2);
 
                 // Dark room with lantern ===> use lantern palette
