@@ -50,7 +50,21 @@ void WorldRandomizer::randomize()
 
 void WorldRandomizer::initFillerItems()
 {
-	std::map<std::string, uint16_t> fillerItemsDescription = _options.getFillerItems();
+	std::map<std::string, uint16_t> fillerItemsDescription;
+	if(_options.hasCustomFillerItems())
+	{
+		fillerItemsDescription = _options.getFillerItems();
+	}
+	else
+	{
+		fillerItemsDescription = { 
+			{"Life Stock", 80}, 	{"EkeEke", 55}, 		{"Golds", 30}, 			{"Dahl", 16}, 			
+			{"Statue of Gaia", 12},	{"Detox Grass", 11}, 	{"Golden Statue", 10}, 	{"Restoration", 10}, 	
+			{"Mind Repair", 7},		{"Anti Paralyze", 7}, 	{"No Item", 4},			{"Pawn Ticket", 1},
+			{"Short Cake", 1},		{"Bell", 1},			{"Blue Ribbon", 1},		{"Death Statue", 1}
+		};
+	}
+
 	for (auto& [itemName, quantity] : fillerItemsDescription)
 	{
 		if(itemName == "Golds")
@@ -74,14 +88,29 @@ void WorldRandomizer::initFillerItems()
 
 void WorldRandomizer::initMandatoryItems()
 {
-	std::map<std::string, uint16_t> mandatoryItemsDescription = _options.getMandatoryItems();
+	std::map<std::string, uint16_t> mandatoryItemsDescription;
+	if(_options.hasCustomMandatoryItems())
+	{
+		mandatoryItemsDescription = _options.getMandatoryItems();
+	}
+	else
+	{
+		mandatoryItemsDescription = {
+			{"Magic Sword", 1},		{"Thunder Sword", 1}, 	{"Sword of Ice", 1}, 	{"Sword of Gaia", 1},
+			{"Steel Breast", 1}, 	{"Chrome Breast", 1}, 	{"Shell Breast", 1}, 	{"Hyper Breast", 1},
+			{"Healing Boots", 1}, 	{"Iron Boots", 1}, 		{"Fireproof", 1},
+			{"Mars Stone", 1}, 		{"Moon Stone", 1}, 		{"Saturn Stone", 1}, 	{"Venus Stone", 1},
+			{"Oracle Stone", 1}, 	{"Statue of Jypta", 1}, {"Spell Book", 1},
+		};
+	}
+
 	for (auto& [itemName, quantity] : mandatoryItemsDescription)
 	{
 		Item* item = _world.getItemByName(itemName);
 		if(!item)
 		{
 			std::stringstream msg;
-    		msg << "Unknown item '" << itemName << "' found in mandatory items.";
+			msg << "Unknown item '" << itemName << "' found in mandatory items.";
 			throw RandomizerException(msg.str());
 		}
 		

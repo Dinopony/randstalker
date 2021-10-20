@@ -16,10 +16,8 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_fillingRate			(DEFAULT_FILLING_RATE),
 	_shuffleTiborTrees		(false), 
 	_allowSpoilerLog		(true),
-	_customMandatoryItems	(false),
-	_mandatoryItems			(),
-	_customFillerItems		(false),
-	_fillerItems			(),
+	_mandatoryItems			(nullptr),
+	_fillerItems			(nullptr),
 
 	_inputRomPath			("./input.md"),
 	_outputRomPath			("./"),
@@ -32,21 +30,6 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_plandoEnabled			(false),
 	_plandoJSON				()
 {
-	_mandatoryItems = { 
-		{"Magic Sword", 1},		{"Thunder Sword", 1}, 	{"Sword of Ice", 1}, 	{"Sword of Gaia", 1},
-		{"Steel Breast", 1}, 	{"Chrome Breast", 1}, 	{"Shell Breast", 1}, 	{"Hyper Breast", 1},
-		{"Healing Boots", 1}, 	{"Iron Boots", 1}, 		{"Fireproof", 1},
-		{"Mars Stone", 1}, 		{"Moon Stone", 1}, 		{"Saturn Stone", 1}, 	{"Venus Stone", 1},
-		{"Oracle Stone", 1}, 	{"Statue of Jypta", 1}, {"Spell Book", 1},
-	};
-
-	_fillerItems = { 
-		{"Life Stock", 80}, 	{"EkeEke", 55}, 		{"Golds", 30}, 			{"Dahl", 16}, 			
-		{"Statue of Gaia", 12},	{"Detox Grass", 11}, 	{"Golden Statue", 10}, 	{"Restoration", 10}, 	
-		{"Mind Repair", 7},		{"Anti Paralyze", 7}, 	{"No Item", 4},			{"Pawn Ticket", 1},
-		{"Short Cake", 1},		{"Bell", 1},			{"Blue Ribbon", 1},		{"Death Statue", 1}
-	};
-
 	std::string plandoPath = args.getString("plando");
 	if(!plandoPath.empty())
 	{
@@ -100,6 +83,13 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	this->validate();
 }
 
+RandomizerOptions::~RandomizerOptions()
+{
+	if(_mandatoryItems)
+		delete _mandatoryItems;
+	if(_fillerItems)
+		delete _fillerItems;
+}
 
 void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 {
@@ -153,10 +143,10 @@ Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	if(!optimizeForPermalink || _shuffleTiborTrees)
 		json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
-	if(!optimizeForPermalink || _customMandatoryItems)
-		json["randomizerSettings"]["mandatoryItems"] = _mandatoryItems;
-	if(!optimizeForPermalink || _customFillerItems)
-		json["randomizerSettings"]["fillerItems"] = _fillerItems;
+	if(!optimizeForPermalink || _mandatoryItems)
+		json["randomizerSettings"]["mandatoryItems"] = *_mandatoryItems;
+	if(!optimizeForPermalink || _fillerItems)
+		json["randomizerSettings"]["fillerItems"] = *_fillerItems;
 
 	if(!this->isPlando())
 	{
@@ -212,20 +202,18 @@ void RandomizerOptions::parseJSON(const Json& json)
 
 		if(randomizerSettingsJson.contains("mandatoryItems"))
 		{
-			_customMandatoryItems = true;
-			_mandatoryItems.clear();
+			_mandatoryItems = new std::map<std::string, uint16_t>();
 			const Json& mandatoryItemsJson = randomizerSettingsJson.at("mandatoryItems");
 			for(Json::const_iterator it=mandatoryItemsJson.begin() ; it!=mandatoryItemsJson.end() ; ++it)
-				_mandatoryItems.insert(std::make_pair(it.key(), it.value()));
+				_mandatoryItems->insert(std::make_pair(it.key(), it.value()));
 		}
 
 		if(randomizerSettingsJson.contains("fillerItems"))
 		{
-			_customFillerItems = true;
-			_fillerItems.clear();
+			_fillerItems = new std::map<std::string, uint16_t>();
 			const Json& fillerItemsJson = randomizerSettingsJson.at("fillerItems");
 			for(Json::const_iterator it=fillerItemsJson.begin() ; it!=fillerItemsJson.end() ; ++it)
-				_fillerItems.insert(std::make_pair(it.key(), it.value()));
+				_fillerItems->insert(std::make_pair(it.key(), it.value()));
 		}
 	}
 
