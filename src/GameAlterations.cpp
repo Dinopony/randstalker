@@ -551,6 +551,17 @@ void makeSwordOfGaiaWorkInVolcano(md::ROM& rom)
     rom.setCode(0x1611E, md::Code().jmp(procAddr));
 }
 
+void fixReverseGreenmazeFountainSoftlock(md::ROM& rom)
+{
+    // Pressing the button behind the locked door now triggers the flag "Visited Greenmaze Crossroads map"
+    rom.setByte(0x9C66C, 0xF1);
+    rom.setByte(0x9C66D, 0x00);
+
+    // Change the flag checked for lowering fountain to "Visited Greenmaze Crossroads map"
+    rom.setByte(0x500C, 0xF1);
+    rom.setByte(0x500D, 0x08);
+}
+
 void alterCasinoTicketHandling(md::ROM& rom)
 {
     // Remove ticket consumption on dialogue with the casino "bouncer"
@@ -1318,6 +1329,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     fixMirFightAfterLakeShrine(rom);
     fixMirTowerPriestRoomItems(rom);
     makeSwordOfGaiaWorkInVolcano(rom);
+    fixReverseGreenmazeFountainSoftlock(rom);
 
     // Specific map content changes
     removeMercatorCastleBackdoorGuard(rom);
