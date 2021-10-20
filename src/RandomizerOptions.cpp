@@ -174,7 +174,11 @@ void RandomizerOptions::parseJSON(const Json& json)
 		if(gameSettingsJson.contains("startingLife"))
 			_startingLife = gameSettingsJson.at("startingLife");
 		if(gameSettingsJson.contains("startingItems"))
-			_startingItems = gameSettingsJson.at("startingItems");
+		{
+			std::map<std::string, uint8_t> startingItems = gameSettingsJson.at("startingItems");
+			for(auto& [itemName, quantity] : startingItems)
+				_startingItems[itemName] = quantity;
+		}
 		if(gameSettingsJson.contains("itemPrices"))
 			_itemPrices = gameSettingsJson.at("itemPrices");
 		if(gameSettingsJson.contains("fixArmletSkip"))
