@@ -1159,8 +1159,8 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
         if(stringSize == 0xFF)
             break;
 
-        // Clear Hotel Register & Island Map names to make room for other names
-        if(itemNames.size() == ITEM_HOTEL_REGISTER || itemNames.size() == ITEM_ISLAND_MAP)
+        // Clear Island Map name to make room for other names
+        if(itemNames.size() == ITEM_ISLAND_MAP)
             itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
         // Rename all default equipments with "None"
         else if(itemNames.size() == ITEM_NO_SWORD || itemNames.size() == ITEM_NO_ARMOR || itemNames.size() == ITEM_NO_BOOTS)
