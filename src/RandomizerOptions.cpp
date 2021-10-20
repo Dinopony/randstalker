@@ -135,6 +135,7 @@ Json RandomizerOptions::toJSON() const
 	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
 	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
 	json["gameSettings"]["startingLife"] = _startingLife;
+	json["gameSettings"]["startingGold"] = _startingGold;
 	json["gameSettings"]["startingItems"] = _startingItems;
 	json["gameSettings"]["itemPrices"] = _itemPrices;
 	json["gameSettings"]["fixArmletSkip"] = _fixArmletSkip;
@@ -177,6 +178,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
 		if(gameSettingsJson.contains("startingLife"))
 			_startingLife = gameSettingsJson.at("startingLife");
+		if(gameSettingsJson.contains("startingGold"))
+			_startingGold = gameSettingsJson.at("startingGold");
 		if(gameSettingsJson.contains("startingItems"))
 		{
 			std::map<std::string, uint8_t> startingItems = gameSettingsJson.at("startingItems");

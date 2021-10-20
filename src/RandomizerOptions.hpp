@@ -34,6 +34,7 @@ public:
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
 	uint8_t getStartingLife() const { return _startingLife; }
+	uint16_t getStartingGold() const { return _startingGold; }
 	const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
 	const std::map<std::string, uint16_t>& getItemPrices() const { return _itemPrices; }
 	bool fixArmletSkip() const { return _fixArmletSkip; }
@@ -43,9 +44,9 @@ public:
 
 	// Randomization options
 	uint32_t getSeed() const { return _seed; }
+	bool allowSpoilerLog() const { return _allowSpoilerLog; }
 	double getFillingRate() const { return _fillingRate; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
-	bool allowSpoilerLog() const { return _allowSpoilerLog; }
 	bool hasCustomMandatoryItems() const { return _mandatoryItems != nullptr; }
 	const std::map<std::string, uint16_t>& getMandatoryItems() const { return *_mandatoryItems; }
 	bool hasCustomFillerItems() const { return _fillerItems != nullptr; }
@@ -76,6 +77,7 @@ private:
 	bool _armorUpgrades;
 	bool _dungeonSignHints;
 	uint8_t _startingLife;
+	uint16_t _startingGold;
 	std::map<std::string, uint8_t> _startingItems;
 	std::map<std::string, uint16_t> _itemPrices;
 	bool _fixArmletSkip;

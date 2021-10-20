@@ -83,21 +83,22 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
         flagArray[0x5C] |= 0x11;
     }
 
-    md::Code funcInitFlags;
+    md::Code funcInitGame;
 
     // Set the orientation byte of Nigel depending on spawn location on game start
-    funcInitFlags.moveb(getSpawnLocationOrientation(world.spawnLocation), addr_(0xFF5404));
+    funcInitGame.moveb(getSpawnLocationOrientation(world.spawnLocation), addr_(0xFF5404));
 
     for(int i=0 ; i<0x60 ; i+=0x2)
     {
         uint16_t value = (static_cast<uint16_t>(flagArray[i]) << 8) + static_cast<uint16_t>(flagArray[i+1]);
         if(value)
-            funcInitFlags.movew(value, addr_(0xFF1000+i));
+            funcInitGame.movew(value, addr_(0xFF1000+i));
     }
 
-    funcInitFlags.rts();
+    funcInitGame.movew(options.getStartingGold(), addr_(0xFF120E));
+    funcInitGame.rts();
 
-    uint32_t funcInitFlagsAddr = rom.injectCode(funcInitFlags);
+    uint32_t funcInitGameAddr = rom.injectCode(funcInitGame);
 
     // ------- Set spawn position ---------
     rom.setWord(0x0027F4, getSpawnLocationMapID(world.spawnLocation));
@@ -114,7 +115,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     // 0x002700:
         // Before: 	[08F9] bset 3 -> $FF1027
         // After:	[4EB9] jsr $1FFAD0 ; [4E71] nop
-    rom.setCode(0x002700, md::Code().jsr(funcInitFlagsAddr).nop());
+    rom.setCode(0x002700, md::Code().jsr(funcInitGameAddr).nop());
 
     // ------- Remove cutscene flag (no input allowed) ---------
     // Usually, when starting a new game, it is automatically put into "cutscene mode" to let the intro roll without allowing the player
