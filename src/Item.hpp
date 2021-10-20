@@ -7,12 +7,13 @@
 class Item
 {
 public:
-    Item(uint8_t itemID, const std::string& name, uint16_t goldWorth, bool isAllowedOnGround = true) :
-        _itemID(itemID),
-        _name(name),
-        _startingQuantity(0),
-        _goldWorth(goldWorth),
-        _isAllowedOnGround(isAllowedOnGround)
+    Item(uint8_t itemID, const std::string& name, uint8_t maxQuantity, uint16_t goldWorth, bool isAllowedOnGround = true) :
+        _itemID             (itemID),
+        _name               (name),
+        _startingQuantity   (0),
+        _maxQuantity        (maxQuantity),
+        _goldWorth          (goldWorth),
+        _isAllowedOnGround  (isAllowedOnGround)
     {}
 
     virtual ~Item() {}
@@ -26,6 +27,9 @@ public:
     uint8_t getStartingQuantity() const { return _startingQuantity; }
     void setStartingQuantity(uint8_t quantity) { _startingQuantity = quantity; }
     
+    uint8_t getMaxQuantity() const { return _maxQuantity; }
+    void setMaxQuantity(uint8_t quantity) { _maxQuantity = quantity; }
+
     uint16_t getGoldWorth() { return _goldWorth; }
     virtual void setGoldWorth(uint16_t goldWorth) { _goldWorth = goldWorth; }
 
@@ -34,13 +38,24 @@ public:
 
     virtual void writeToROM(md::ROM& rom) const
     {
-        rom.setWord(0x029306 + _itemID * 0x04, _goldWorth);
+        constexpr uint32_t itemInfoTableBaseAddr = 0x029304;
+        uint32_t thisItemBaseAddr = itemInfoTableBaseAddr + _itemID * 0x04;
+
+        // Set the max quantity
+        uint8_t verbAndMaxQuantity = rom.getByte(thisItemBaseAddr);
+        verbAndMaxQuantity &= 0xF0; // Keep the verb but erase the default quantity
+        verbAndMaxQuantity += _maxQuantity;
+        rom.setByte(thisItemBaseAddr, verbAndMaxQuantity);
+
+        // Set gold value
+        rom.setWord(thisItemBaseAddr + 0x2, _goldWorth);
     }
 
 protected:
     uint8_t _itemID;
 
     std::string _name;
+    uint8_t _maxQuantity;
     uint8_t _startingQuantity;
     uint16_t _goldWorth;
     bool _isAllowedOnGround;

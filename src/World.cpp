@@ -195,76 +195,70 @@ void World::writeToROM(md::ROM& rom)
 
 void World::initItems(const RandomizerOptions& options)
 {
-    this->addItem(new Item(ITEM_EKEEKE,            "EkeEke",            20));
-    this->addItem(new Item(ITEM_MAGIC_SWORD,       "Magic Sword",       300));
-    this->addItem(new Item(ITEM_ICE_SWORD,         "Sword of Ice",      300));
-    this->addItem(new Item(ITEM_THUNDER_SWORD,     "Thunder Sword",     500));
-    this->addItem(new Item(ITEM_GAIA_SWORD,        "Sword of Gaia",     300));
-    this->addItem(new Item(ITEM_FIREPROOF_BOOTS,   "Fireproof",         150));
-    this->addItem(new Item(ITEM_IRON_BOOTS,        "Iron Boots",        150));
-    this->addItem(new Item(ITEM_HEALING_BOOTS,     "Healing Boots",     300));
-    this->addItem(new Item(ITEM_SPIKE_BOOTS,       "Snow Spikes",       400));
-    this->addItem(new Item(ITEM_STEEL_BREAST,      "Steel Breast",      300));
-    this->addItem(new Item(ITEM_CHROME_BREAST,     "Chrome Breast",     400));
-    this->addItem(new Item(ITEM_SHELL_BREAST,      "Shell Breast",      500));
-    this->addItem(new Item(ITEM_HYPER_BREAST,      "Hyper Breast",      750));
-    this->addItem(new Item(ITEM_MARS_STONE,        "Mars Stone",        150));
-    this->addItem(new Item(ITEM_MOON_STONE,        "Moon Stone",        150));
-    this->addItem(new Item(ITEM_SATURN_STONE,      "Saturn Stone",      200));
-    this->addItem(new Item(ITEM_VENUS_STONE,       "Venus Stone",       300));
-    this->addItem(new Item(ITEM_AWAKENING_BOOK,    "Awakening Book",    0));
-    this->addItem(new Item(ITEM_DETOX_GRASS,       "Detox Grass",       20));
-    this->addItem(new Item(ITEM_GAIA_STATUE,       "Statue of Gaia",    100));
-    this->addItem(new Item(ITEM_GOLDEN_STATUE,     "Golden Statue",     200, false));
-    this->addItem(new Item(ITEM_MIND_REPAIR,       "Mind Repair",       20));
-    this->addItem(new Item(ITEM_CASINO_TICKET,     "Casino Ticket",     50));
-    this->addItem(new Item(ITEM_AXE_MAGIC,         "Axe Magic",         400));
-    this->addItem(new Item(ITEM_BLUE_RIBBON,       "Blue Ribbon",       50));
-    this->addItem(new Item(ITEM_BUYER_CARD,        "Buyer's Card",      150));
-    this->addItem(new Item(ITEM_LANTERN,           "Lantern",           100));
-    this->addItem(new Item(ITEM_GARLIC,            "Garlic",            200));
-    this->addItem(new Item(ITEM_ANTI_PARALYZE,     "Anti Paralyze",     20));
-    this->addItem(new Item(ITEM_STATUE_JYPTA,      "Statue of Jypta",   250));
-    this->addItem(new Item(ITEM_SUN_STONE,         "Sun Stone",         300));
-    this->addItem(new Item(ITEM_ARMLET,            "Armlet",            300));
-    this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  200));
-    this->addItem(new Item(ITEM_DETOX_BOOK,        "Detox Book",        0));
-    this->addItem(new Item(ITEM_ANTICURSE_BOOK,    "AntiCurse Book",    0));
-    this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       0));
-    this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        50));
-    this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    0));
-    this->addItem(new Item(ITEM_ISLAND_MAP,        "Island Map",        0));
-    this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        250));
-    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         500));
-    this->addItem(new Item(ITEM_PAWN_TICKET,       "Pawn Ticket",       100));
-    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      500));
-    this->addItem(new Item(ITEM_GOLA_EYE,          "Gola's Eye",        400));
-    this->addItem(new Item(ITEM_DEATH_STATUE,      "Death Statue",      150));
-    this->addItem(new Item(ITEM_DAHL,              "Dahl",              100, false));
-    this->addItem(new Item(ITEM_RESTORATION,       "Restoration",       40));
-    this->addItem(new Item(ITEM_LOGS,              "Logs",              200));
-    this->addItem(new Item(ITEM_ORACLE_STONE,      "Oracle Stone",      250));
-    this->addItem(new Item(ITEM_IDOL_STONE,        "Idol Stone",        200));
-    this->addItem(new Item(ITEM_KEY,               "Key",               150));
-    this->addItem(new Item(ITEM_SAFETY_PASS,       "Safety Pass",       300));
-    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       500));
-    this->addItem(new Item(ITEM_BELL,              "Bell",              200));
-    this->addItem(new Item(ITEM_SHORT_CAKE,        "Short Cake",        150, false));
-    this->addItem(new Item(ITEM_GOLA_NAIL,         "Gola's Nail",       800));
-    this->addItem(new Item(ITEM_GOLA_HORN,         "Gola's Horn",       800));
-    this->addItem(new Item(ITEM_GOLA_FANG,         "Gola's Fang",       800));
-    this->addItem(new Item(ITEM_NO_SWORD,          "Broad Sword",       0));
-    this->addItem(new Item(ITEM_NO_ARMOR,          "Leather Breast",    0));
-    this->addItem(new Item(ITEM_NO_BOOTS,          "Leather Boots",     0));
-    this->addItem(new Item(ITEM_NO_RING,           "No Ring",           0));
-    this->addItem(new Item(ITEM_LIFESTOCK,         "Life Stock",        250, false));
-    this->addItem(new Item(ITEM_NONE,              "No Item",           0));
-
-    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
-    {
-        items[ITEM_RED_JEWEL]->setName("Kazalt Jewel");
-        items[ITEM_RED_JEWEL]->setAllowedOnGround(false);
-    }
+    this->addItem(new Item(ITEM_EKEEKE,            "EkeEke",            9,  20));
+    this->addItem(new Item(ITEM_MAGIC_SWORD,       "Magic Sword",       1,  300));
+    this->addItem(new Item(ITEM_ICE_SWORD,         "Sword of Ice",      1,  300));
+    this->addItem(new Item(ITEM_THUNDER_SWORD,     "Thunder Sword",     1,  500));
+    this->addItem(new Item(ITEM_GAIA_SWORD,        "Sword of Gaia",     1,  300));
+    this->addItem(new Item(ITEM_FIREPROOF_BOOTS,   "Fireproof",         1,  150));
+    this->addItem(new Item(ITEM_IRON_BOOTS,        "Iron Boots",        1,  150));
+    this->addItem(new Item(ITEM_HEALING_BOOTS,     "Healing Boots",     1,  300));
+    this->addItem(new Item(ITEM_SPIKE_BOOTS,       "Snow Spikes",       1,  400));
+    this->addItem(new Item(ITEM_STEEL_BREAST,      "Steel Breast",      1,  300));
+    this->addItem(new Item(ITEM_CHROME_BREAST,     "Chrome Breast",     1,  400));
+    this->addItem(new Item(ITEM_SHELL_BREAST,      "Shell Breast",      1,  500));
+    this->addItem(new Item(ITEM_HYPER_BREAST,      "Hyper Breast",      1,  750));
+    this->addItem(new Item(ITEM_MARS_STONE,        "Mars Stone",        1,  150));
+    this->addItem(new Item(ITEM_MOON_STONE,        "Moon Stone",        1,  150));
+    this->addItem(new Item(ITEM_SATURN_STONE,      "Saturn Stone",      1,  200));
+    this->addItem(new Item(ITEM_VENUS_STONE,       "Venus Stone",       1,  300));
+    this->addItem(new Item(ITEM_AWAKENING_BOOK,    "Awakening Book",    0,  0));
+    this->addItem(new Item(ITEM_DETOX_GRASS,       "Detox Grass",       9,  20));
+    this->addItem(new Item(ITEM_GAIA_STATUE,       "Statue of Gaia",    9,  100));
+    this->addItem(new Item(ITEM_GOLDEN_STATUE,     "Golden Statue",     9,  200, false));
+    this->addItem(new Item(ITEM_MIND_REPAIR,       "Mind Repair",       9,  20));
+    this->addItem(new Item(ITEM_CASINO_TICKET,     "Casino Ticket",     1,  50));
+    this->addItem(new Item(ITEM_AXE_MAGIC,         "Axe Magic",         1,  400));
+    this->addItem(new Item(ITEM_BLUE_RIBBON,       "Blue Ribbon",       1,  50));
+    this->addItem(new Item(ITEM_BUYER_CARD,        "Buyer's Card",      1,  150));
+    this->addItem(new Item(ITEM_LANTERN,           "Lantern",           1,  100));
+    this->addItem(new Item(ITEM_GARLIC,            "Garlic",            1,  200));
+    this->addItem(new Item(ITEM_ANTI_PARALYZE,     "Anti Paralyze",     9,  20));
+    this->addItem(new Item(ITEM_STATUE_JYPTA,      "Statue of Jypta",   1,  250));
+    this->addItem(new Item(ITEM_SUN_STONE,         "Sun Stone",         1,  300));
+    this->addItem(new Item(ITEM_ARMLET,            "Armlet",            1,  300));
+    this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  1,  200));
+    this->addItem(new Item(ITEM_DETOX_BOOK,        "Detox Book",        0,  0));
+    this->addItem(new Item(ITEM_ANTICURSE_BOOK,    "AntiCurse Book",    0,  0));
+    this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       1,  0));
+    this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        1,  50));
+    this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    0,  0));
+    this->addItem(new Item(ITEM_ISLAND_MAP,        "Island Map",        0,  0));
+    this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        1,  250));
+    this->addItem(new Item(ITEM_RED_JEWEL,         "Red Jewel",         1,  500));
+    this->addItem(new Item(ITEM_PAWN_TICKET,       "Pawn Ticket",       9,  100));
+    this->addItem(new Item(ITEM_PURPLE_JEWEL,      "Purple Jewel",      1,  500));
+    this->addItem(new Item(ITEM_GOLA_EYE,          "Gola's Eye",        1,  400));
+    this->addItem(new Item(ITEM_DEATH_STATUE,      "Death Statue",      9,  150));
+    this->addItem(new Item(ITEM_DAHL,              "Dahl",              9,  100, false));
+    this->addItem(new Item(ITEM_RESTORATION,       "Restoration",       9,  40));
+    this->addItem(new Item(ITEM_LOGS,              "Logs",              1,  200));
+    this->addItem(new Item(ITEM_ORACLE_STONE,      "Oracle Stone",      1,  250));
+    this->addItem(new Item(ITEM_IDOL_STONE,        "Idol Stone",        1,  200));
+    this->addItem(new Item(ITEM_KEY,               "Key",               1,  150));
+    this->addItem(new Item(ITEM_SAFETY_PASS,       "Safety Pass",       1,  300));
+    this->addItem(new Item(ITEM_GREEN_JEWEL,       "Green Jewel",       1,  500));
+    this->addItem(new Item(ITEM_BELL,              "Bell",              1,  200));
+    this->addItem(new Item(ITEM_SHORT_CAKE,        "Short Cake",        9,  150, false));
+    this->addItem(new Item(ITEM_GOLA_NAIL,         "Gola's Nail",       1,  800));
+    this->addItem(new Item(ITEM_GOLA_HORN,         "Gola's Horn",       1,  800));
+    this->addItem(new Item(ITEM_GOLA_FANG,         "Gola's Fang",       1,  800));
+    this->addItem(new Item(ITEM_NO_SWORD,          "Broad Sword",       1,  0));
+    this->addItem(new Item(ITEM_NO_ARMOR,          "Leather Breast",    1,  0));
+    this->addItem(new Item(ITEM_NO_BOOTS,          "Leather Boots",     1,  0));
+    this->addItem(new Item(ITEM_NO_RING,           "No Ring",           1,  0));
+    this->addItem(new Item(ITEM_LIFESTOCK,         "Life Stock",        1,  250, false));
+    this->addItem(new Item(ITEM_NONE,              "No Item",           0,  0));
 
     if (options.useArmorUpgrades())
     {
@@ -302,6 +296,28 @@ void World::initItems(const RandomizerOptions& options)
         }
 
         item->setGoldWorth(price);
+    }
+
+    // Process custom item max quantities
+    const std::map<std::string, uint8_t>& itemMaxQuantities = options.getItemMaxQuantities();
+    for(auto& [itemName, maxQuantity] : itemMaxQuantities)
+    {
+        Item* item = this->getItemByName(itemName);
+        if(!item)
+        {
+            std::stringstream msg;
+            msg << "Cannot set max quantity of unknown item '" << itemName << "'";
+            throw RandomizerException(msg.str());
+        }
+
+        item->setMaxQuantity(maxQuantity);
+    }
+
+    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    {
+        items[ITEM_RED_JEWEL]->setName("Kazalt Jewel");
+        items[ITEM_RED_JEWEL]->setAllowedOnGround(false);
+        items[ITEM_RED_JEWEL]->setMaxQuantity(options.getJewelCount());
     }
 }
 

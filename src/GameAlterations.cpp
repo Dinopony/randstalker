@@ -532,9 +532,6 @@ void makeSwordOfGaiaWorkInVolcano(md::ROM& rom)
 
 void alterCasinoTicketHandling(md::ROM& rom)
 {
-    // Set the maximum amount of Casino Tickets to 1, displaying it as a unique item
-    rom.setByte(0x2935C, 0x01);
-
     // Remove ticket consumption on dialogue with the casino "bouncer"
     rom.setCode(0x277A8, md::Code().nop(2));
 
@@ -662,9 +659,6 @@ void fixKingNolesLabyrinthRafts(md::ROM& rom)
     rom.setWord(0x09E034, 0x0100);
     rom.setWord(0x09E04E, 0x0100);
     rom.setWord(0x09E051, 0x0100);
-
-    // Second raft is always here, so no need for two logs anymore, set the maximum amount of logs to one
-    rom.setByte(0x0293C0, 0x01);
 }
 
 void removeLogsRoomExitCheck(md::ROM& rom)
@@ -882,12 +876,6 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
     rom.setWord(0xFB36, color);
     rom.setWord(0x903C, color);
 //    rom.setWord(0x9020, color);
-}
-
-void setKeyAsUniqueItem(md::ROM& rom)
-{
-    // Set the maximum amount of keys to 1, displaying it as a unique item
-    rom.setByte(0x293CC, 0x01);
 }
 
 void alterLanternHandling(md::ROM& rom)
@@ -1204,15 +1192,10 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
 void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
 {
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
-    {
-        // Set the max quantity for the generic "Kazalt Jewel" item to the required amount
-        rom.setByte(0x293A4, options.getJewelCount());
-    }
-    else if(options.getJewelCount() >= 3)
-    {
-        // Set a proper max quantity of 1 to Green Jewel
-        rom.setWord(0x293D4, 0x01FF);
+        return;    
 
+    if(options.getJewelCount() >= 3)
+    {
         // Add a sprite for green jewel and make the item use it
         std::vector<uint8_t> greenJewelSprite;
         loadGreenJewelSprite(greenJewelSprite);
@@ -1278,7 +1261,6 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     // Miscellaneous
     deactivateRegionCheck(rom);
     changeHUDColor(rom, options);
-    setKeyAsUniqueItem(rom);
     shortenMirCutsceneAfterLakeShrine(rom);
     renameItems(rom, options);
 }

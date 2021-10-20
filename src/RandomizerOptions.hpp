@@ -38,6 +38,7 @@ public:
 	const std::map<std::string, uint16_t>& getItemPrices() const { return _itemPrices; }
 	bool fixArmletSkip() const { return _fixArmletSkip; }
 	bool fixTreeCuttingGlitch() const { return _fixTreeCuttingGlitch; }
+	const std::map<std::string, uint8_t>& getItemMaxQuantities() const { return _itemMaxQuantities; }
 
 	// Randomization options
 	uint32_t getSeed() const { return _seed; }
@@ -78,6 +79,7 @@ private:
 	std::map<std::string, uint16_t> _itemPrices;
 	bool _fixArmletSkip;
 	bool _fixTreeCuttingGlitch;
+	std::map<std::string, uint8_t> _itemMaxQuantities;
 
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)
