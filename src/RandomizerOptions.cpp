@@ -15,6 +15,7 @@ RandomizerOptions::RandomizerOptions() :
 	_fixArmletSkip			(true),
 	_fixTreeCuttingGlitch	(true),
 	_itemMaxQuantities		(),
+	_consumableRecordBook	(false),
 
 	_seed					(0),
 	_fillingRate			(DEFAULT_FILLING_RATE),
@@ -139,6 +140,7 @@ Json RandomizerOptions::toJSON() const
 	json["gameSettings"]["fixArmletSkip"] = _fixArmletSkip;
 	json["gameSettings"]["fixTreeCuttingGlitch"] = _fixTreeCuttingGlitch;
 	json["gameSettings"]["itemMaxQuantities"] = _itemMaxQuantities;
+	json["gameSettings"]["consumableRecordBook"] = _consumableRecordBook;
 
 	json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
@@ -189,6 +191,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_fixTreeCuttingGlitch = gameSettingsJson.at("fixTreeCuttingGlitch");
 		if(gameSettingsJson.contains("itemMaxQuantities"))
 			_itemMaxQuantities = gameSettingsJson.at("itemMaxQuantities");
+		if(gameSettingsJson.contains("consumableRecordBook"))
+			_consumableRecordBook = gameSettingsJson.at("consumableRecordBook");
 	}
 
 	if(json.contains("randomizerSettings") && !_plandoEnabled)

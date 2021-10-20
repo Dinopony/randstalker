@@ -205,7 +205,7 @@ void quickenGaiaEffect(md::ROM& rom)
     rom.setWord(0x16884, rom.getWord(0x16884) * factor);
 }
 
-void addRecordBookSave(md::ROM& rom)
+void addRecordBookSave(md::ROM& rom, const RandomizerOptions& options)
 {
     md::Code funcStoreCurrentMapAndPosition;
     funcStoreCurrentMapAndPosition.movew(addr_(0xFF1204), addr_(mapEntrancePositionStorageMemoryAddress));
@@ -218,6 +218,13 @@ void addRecordBookSave(md::ROM& rom)
     // On record book use, set stored position and map, then call the save game function. Then, restore Nigel's position and map as if nothing happened.
     md::Code funcSaveUsingRecordBook;
     funcSaveUsingRecordBook.movemToStack({ reg_D0, reg_D1 }, {});
+
+    if(options.consumableRecordBook())
+    {
+        funcSaveUsingRecordBook.moveb(reg_D0, addr_(0xFF1152));
+        funcSaveUsingRecordBook.jsr(0x8B98); // ConsumeItem
+    }
+
     funcSaveUsingRecordBook.movew(addr_(0xFF1204), reg_D0);
     funcSaveUsingRecordBook.movew(addr_(0xFF5400), reg_D1);
     
@@ -1220,7 +1227,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     alterLifestockHandlingInShops(rom);
     addStatueOfJyptaGoldsOverTime(rom);
     quickenGaiaEffect(rom);
-    addRecordBookSave(rom);
+    addRecordBookSave(rom, options);
     alterFahlChallenge(rom);
     addJewelsCheckForTeleporterToKazalt(rom, options);
     addFunctionToItemsOnUse(rom);

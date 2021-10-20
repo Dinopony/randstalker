@@ -230,8 +230,8 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  1,  200));
     this->addItem(new Item(ITEM_DETOX_BOOK,        "Detox Book",        0,  0));
     this->addItem(new Item(ITEM_ANTICURSE_BOOK,    "AntiCurse Book",    0,  0));
-    this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       1,  0));
-    this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        1,  50));
+    this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       1,  200));
+    this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        1,  200));
     this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    0,  0));
     this->addItem(new Item(ITEM_ISLAND_MAP,        "Island Map",        0,  0));
     this->addItem(new Item(ITEM_LITHOGRAPH,        "Lithograph",        1,  250));
@@ -266,6 +266,13 @@ void World::initItems(const RandomizerOptions& options)
         items[ITEM_CHROME_BREAST]->setGoldWorth(250);
         items[ITEM_SHELL_BREAST]->setGoldWorth(250);
         items[ITEM_HYPER_BREAST]->setGoldWorth(250);
+    }
+
+    if (options.consumableRecordBook())
+    {
+        items[ITEM_RECORD_BOOK]->setMaxQuantity(9);
+        uint16_t currentPrice = items[ITEM_RECORD_BOOK]->getGoldWorth();
+        items[ITEM_RECORD_BOOK]->setGoldWorth(currentPrice / 5);
     }
 
     // Process custom starting quantities for items

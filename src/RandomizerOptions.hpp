@@ -39,6 +39,7 @@ public:
 	bool fixArmletSkip() const { return _fixArmletSkip; }
 	bool fixTreeCuttingGlitch() const { return _fixTreeCuttingGlitch; }
 	const std::map<std::string, uint8_t>& getItemMaxQuantities() const { return _itemMaxQuantities; }
+	bool consumableRecordBook() const { return _consumableRecordBook; }
 
 	// Randomization options
 	uint32_t getSeed() const { return _seed; }
@@ -80,7 +81,8 @@ private:
 	bool _fixArmletSkip;
 	bool _fixTreeCuttingGlitch;
 	std::map<std::string, uint8_t> _itemMaxQuantities;
-
+	bool _consumableRecordBook;
+	
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)
 	uint32_t _seed;
