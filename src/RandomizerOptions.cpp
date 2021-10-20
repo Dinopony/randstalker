@@ -195,6 +195,10 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_startingItems = gameSettingsJson.at("startingItems");
 		if(gameSettingsJson.contains("itemPrices"))
 			_itemPrices = gameSettingsJson.at("itemPrices");
+		if(gameSettingsJson.contains("fixArmletSkip"))
+			_fixArmletSkip = gameSettingsJson.at("fixArmletSkip");
+		if(gameSettingsJson.contains("fixTreeCuttingGlitch"))
+			_fixTreeCuttingGlitch = gameSettingsJson.at("fixTreeCuttingGlitch");
 	}
 
 	if(json.contains("randomizerSettings") && !_plandoEnabled)
