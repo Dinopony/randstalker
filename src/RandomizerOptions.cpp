@@ -4,7 +4,7 @@
 #include "Tools.hpp"
 #include <iostream>
 
-RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
+RandomizerOptions::RandomizerOptions() :
 	_spawnLocation			(SpawnLocation::RANDOM),
 	_jewelCount				(2),
 	_armorUpgrades			(true),
@@ -31,6 +31,9 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 
 	_plandoEnabled			(false),
 	_plandoJSON				()
+{}
+
+RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
 	std::string plandoPath = args.getString("plando");
 	if(!plandoPath.empty())
@@ -120,50 +123,31 @@ void RandomizerOptions::parsePersonalArguments(const ArgumentDictionary& args)
 	if(args.contains("hudcolor"))			_hudColor = args.getString("hudcolor");
 }
 
-Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
+Json RandomizerOptions::toJSON() const
 {
 	Json json;
 
-	if(!optimizeForPermalink || _spawnLocation != SpawnLocation::RANDOM)
-		json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
-	if(!optimizeForPermalink || _jewelCount != 2)
-		json["gameSettings"]["jewelCount"] = _jewelCount;
-	if(!optimizeForPermalink || !_armorUpgrades)
-		json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
-	if(!optimizeForPermalink || !_saveAnywhereBook)
-		json["gameSettings"]["recordBook"] = _saveAnywhereBook;
-	if(!optimizeForPermalink || _dungeonSignHints)
-		json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
-	if(!optimizeForPermalink || _startingLife != 4)
-		json["gameSettings"]["startingLife"] = _startingLife;
-	if(!optimizeForPermalink || !_startingItems.empty())
-		json["gameSettings"]["startingItems"] = _startingItems;
-	if(!optimizeForPermalink || !_itemPrices.empty())
-		json["gameSettings"]["itemPrices"] = _itemPrices;
-	if(!optimizeForPermalink || !_fixArmletSkip)
-		json["gameSettings"]["fixArmletSkip"] = _fixArmletSkip;
-	if(!optimizeForPermalink || !_fixTreeCuttingGlitch)
-		json["gameSettings"]["fixTreeCuttingGlitch"] = _fixTreeCuttingGlitch;
+	json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
+	json["gameSettings"]["jewelCount"] = _jewelCount;
+	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
+	json["gameSettings"]["recordBook"] = _saveAnywhereBook;
+	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
+	json["gameSettings"]["startingLife"] = _startingLife;
+	json["gameSettings"]["startingItems"] = _startingItems;
+	json["gameSettings"]["itemPrices"] = _itemPrices;
+	json["gameSettings"]["fixArmletSkip"] = _fixArmletSkip;
+	json["gameSettings"]["fixTreeCuttingGlitch"] = _fixTreeCuttingGlitch;
 
-	if(!optimizeForPermalink || _fillingRate != DEFAULT_FILLING_RATE)
-		json["randomizerSettings"]["fillingRate"] = _fillingRate;
-	if(!optimizeForPermalink || _shuffleTiborTrees)
-		json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
-	if(!optimizeForPermalink || _mandatoryItems)
+	json["randomizerSettings"]["fillingRate"] = _fillingRate;
+	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
+
+	if(_mandatoryItems)
 		json["randomizerSettings"]["mandatoryItems"] = *_mandatoryItems;
-	if(!optimizeForPermalink || _fillerItems)
+	if(_fillerItems)
 		json["randomizerSettings"]["fillerItems"] = *_fillerItems;
 
 	if(!this->isPlando())
-	{
 		json["seed"] = _seed;
-		
-		if(!optimizeForPermalink)
-		{
-			json["permalink"] = getPermalink();
-			json["hashSentence"] = getHashSentence();
-		}
-	}
 
 	return json;
 }
@@ -213,17 +197,13 @@ void RandomizerOptions::parseJSON(const Json& json)
 		if(randomizerSettingsJson.contains("mandatoryItems"))
 		{
 			_mandatoryItems = new std::map<std::string, uint16_t>();
-			const Json& mandatoryItemsJson = randomizerSettingsJson.at("mandatoryItems");
-			for(Json::const_iterator it=mandatoryItemsJson.begin() ; it!=mandatoryItemsJson.end() ; ++it)
-				_mandatoryItems->insert(std::make_pair(it.key(), it.value()));
+			*(_mandatoryItems) = randomizerSettingsJson.at("mandatoryItems");
 		}
 
 		if(randomizerSettingsJson.contains("fillerItems"))
 		{
 			_fillerItems = new std::map<std::string, uint16_t>();
-			const Json& fillerItemsJson = randomizerSettingsJson.at("fillerItems");
-			for(Json::const_iterator it=fillerItemsJson.begin() ; it!=fillerItemsJson.end() ; ++it)
-				_fillerItems->insert(std::make_pair(it.key(), it.value()));
+			*(_fillerItems) = randomizerSettingsJson.at("fillerItems");
 		}
 	}
 
@@ -310,9 +290,36 @@ std::vector<std::string> RandomizerOptions::getHashWords() const
 
 std::string RandomizerOptions::getPermalink() const
 {
-	Json permalinkJson = this->toJSON(true);
-	permalinkJson["version"] = MAJOR_RELEASE;
+	RandomizerOptions defaultOptions;
+	Json defaultJson = defaultOptions.toJSON();
+	
+	Json jsonPatch = Json::diff(defaultJson, this->toJSON());
 
+	Json permalinkJson;
+
+	// Apply patch on an empty JSON
+	for (Json& patchPiece : jsonPatch)
+	{
+		Json* currentJson = &permalinkJson;
+
+		const std::string& path = patchPiece["path"];
+		std::vector<std::string> pathParts = Tools::split(path, "/");
+		for (size_t i=1 ; i < pathParts.size(); ++i)
+		{
+			if (i < pathParts.size() - 1)
+			{
+				if(!currentJson->contains(pathParts[i]))
+					(*currentJson)[pathParts[i]] = Json();
+				currentJson = &(currentJson->at(pathParts[i]));
+			}
+			else
+			{
+				(*currentJson)[pathParts[i]] = patchPiece["value"];
+			}
+		}
+	}
+
+	permalinkJson["version"] = MAJOR_RELEASE;
 	return "L" + base64_encode(Json::to_msgpack(permalinkJson)) + "S";
 }
 

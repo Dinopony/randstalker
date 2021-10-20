@@ -93,13 +93,13 @@ int main(int argc, char* argv[])
 		{
 			// In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
 			// The software will act as a simple ROM patcher, without verifying the game is actually completable.
-			std::cout << "Plandomizing world...\n\n";
+			std::cout << "Plandomizing world...\n";
 			world.parseJSON(options.getInputPlandoJSON());
 		}
 		else
 		{
 			// In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
-			std::cout << "Randomizing world...\n\n";
+			std::cout << "Randomizing world...\n";
 			WorldRandomizer randomizer(world, options);
 			randomizer.randomize();
 		}
@@ -107,11 +107,11 @@ int main(int argc, char* argv[])
 		world.writeToROM(*rom);
 
 		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-		std::cout << "Applying patches...\n\n";
+		std::cout << "Applying game patches...\n\n";
 		applyPatches(*rom, options, world);
 
 		rom->saveAs(options.getOutputROMPath());
-		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n";
+		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";
 
 		// Write a spoiler log to help the player
 		if(options.allowSpoilerLog() && !options.getSpoilerLogPath().empty())
@@ -119,6 +119,15 @@ int main(int argc, char* argv[])
 			Json json;
 			json.merge_patch(options.toJSON());
 			json.merge_patch(world.toJSON());
+
+			std::string permalink = options.getPermalink();
+			std::string hashSentence = options.getHashSentence();
+			json["permalink"] = permalink;
+			json["hashSentence"] = hashSentence;
+
+			std::cout << "Permalink: " << permalink << "\n\n";
+			std::cout << "Seed hash sentence: " << hashSentence << "\n\n";
+			std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
 			std::ofstream spoilerFile(options.getSpoilerLogPath());
 			if (spoilerFile)
@@ -136,9 +145,7 @@ int main(int argc, char* argv[])
 			}
 		}
 		
-		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n";
-
-		std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
+		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n\n";
 
 		// TEMPORARY: Output current preset
 		if (argsDictionary.getBoolean("writepreset"))

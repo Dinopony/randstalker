@@ -15,6 +15,7 @@ constexpr double DEFAULT_FILLING_RATE = 0.10;
 class RandomizerOptions 
 {
 public:
+	RandomizerOptions();
 	RandomizerOptions(const ArgumentDictionary& args);
 	~RandomizerOptions();
 	
@@ -23,7 +24,7 @@ public:
 	void parsePersonalArguments(const ArgumentDictionary& args);
 	void validate();
 
-	Json toJSON(bool optimizeForPermalink=false) const;
+	Json toJSON() const;
 	void parseJSON(const Json& json);
 	Json getPersonalSettingsAsJSON() const;
 	
