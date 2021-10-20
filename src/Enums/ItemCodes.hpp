@@ -33,8 +33,8 @@
 #define ITEM_SUN_STONE 0x1E
 #define ITEM_ARMLET 0x1F
 #define ITEM_EINSTEIN_WHISTLE 0x20
-#define ITEM_DETOX_BOOK 0x21 // Fake item
-#define ITEM_ANTICURSE_BOOK 0x22 // Fake item
+#define ITEM_BLUE_JEWEL 0x21 // Detox Book in base game
+#define ITEM_YELLOW_JEWEL 0x22 // AntiCurse Book in base game
 #define ITEM_RECORD_BOOK 0x23
 #define ITEM_SPELL_BOOK 0x24
 #define ITEM_HOTEL_REGISTER 0x25 // Fake item
@@ -52,7 +52,7 @@
 #define ITEM_IDOL_STONE 0x31
 #define ITEM_KEY 0x32
 #define ITEM_SAFETY_PASS 0x33
-#define ITEM_GREEN_JEWEL 0x34 // Unused item in base game (No52)
+#define ITEM_GREEN_JEWEL 0x34 // No52 in base game (unused item)
 #define ITEM_BELL 0x35
 #define ITEM_SHORT_CAKE 0x36
 #define ITEM_GOLA_NAIL 0x37
@@ -65,3 +65,4 @@
 #define ITEM_LIFESTOCK 0x3E
 #define ITEM_NONE 0x3F
 #define ITEM_GOLDS_START 0x40
+

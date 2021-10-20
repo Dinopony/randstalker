@@ -146,9 +146,9 @@ void alterItemOrderInMenu(md::ROM& rom)
         ITEM_SUN_STONE,     ITEM_BUYER_CARD,
         ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
         ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
-        ITEM_GREEN_JEWEL,   ITEM_SPELL_BOOK, 
-        ITEM_BLUE_RIBBON,   0xFF,
-        0xFF,               0xFF
+        ITEM_GREEN_JEWEL,   ITEM_BLUE_JEWEL,
+        ITEM_YELLOW_JEWEL,  ITEM_SPELL_BOOK,
+        ITEM_BLUE_RIBBON,   0xFF
     };
 
     uint32_t baseAddress = 0x00D55C;
@@ -505,6 +505,20 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom, const RandomizerOptions& 
         if(options.getJewelCount() >= 3)
         {
             procHandleJewelsCheck.btst(0x1, addr_(0xFF105A)); // Test if green jewel is owned
+            procHandleJewelsCheck.bne(3);
+                procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+                procHandleJewelsCheck.rts();
+        }
+        if(options.getJewelCount() >= 4)
+        {
+            procHandleJewelsCheck.btst(0x5, addr_(0xFF1050)); // Test if blue jewel is owned
+            procHandleJewelsCheck.bne(3);
+                procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
+                procHandleJewelsCheck.rts();
+        }
+        if(options.getJewelCount() >= 5)
+        {
+            procHandleJewelsCheck.btst(0x1, addr_(0xFF1051)); // Test if yellow jewel is owned
             procHandleJewelsCheck.bne(3);
                 procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
                 procHandleJewelsCheck.rts();
@@ -1168,6 +1182,12 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
         // Rename No52 into Green Jewel
         else if(itemNames.size() == ITEM_GREEN_JEWEL && !kazaltJewelMode)
             itemNames.push_back({ 0x11, 0x36, 0x29, 0x29, 0x32, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+        // Rename Detox Book into Blue Jewel
+        else if(itemNames.size() == ITEM_BLUE_JEWEL && !kazaltJewelMode)
+            itemNames.push_back({ 0x0C, 0x30, 0x39, 0x29, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+        // Rename AntiCurse Book into Yellow Jewel
+        else if(itemNames.size() == ITEM_YELLOW_JEWEL && !kazaltJewelMode)
+            itemNames.push_back({ 0x23, 0x29, 0x30, 0x30, 0x33, 0x3B, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
         // Clear "Purple Jewel" name to make room for other names since it's unused in Kazalt Jewel mode
         else if(itemNames.size() == ITEM_PURPLE_JEWEL && kazaltJewelMode)
             itemNames.push_back(std::vector<uint8_t>({ 0x00 }));
@@ -1201,13 +1221,31 @@ void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
         return;    
 
+    constexpr uint32_t itemSpritesTableBaseAddr = 0x121578;
+    
     if(options.getJewelCount() >= 3)
     {
         // Add a sprite for green jewel and make the item use it
         std::vector<uint8_t> greenJewelSprite;
         loadGreenJewelSprite(greenJewelSprite);
         uint32_t greenJewelSpriteAddr = rom.injectBytes(greenJewelSprite);
-        rom.setLong(0x121648, greenJewelSpriteAddr);
+        rom.setLong(itemSpritesTableBaseAddr + (ITEM_GREEN_JEWEL * 0x4), greenJewelSpriteAddr); // 0x121648
+    }
+    if(options.getJewelCount() >= 4)
+    {
+        // Add a sprite for blue jewel and make the item use it
+        std::vector<uint8_t> blueJewelSprite;
+        loadBlueJewelSprite(blueJewelSprite);
+        uint32_t blueJewelSpriteAddr = rom.injectBytes(blueJewelSprite);
+        rom.setLong(itemSpritesTableBaseAddr + (ITEM_BLUE_JEWEL * 0x4), blueJewelSpriteAddr);
+    }
+    if(options.getJewelCount() >= 5)
+    {
+        // Add a sprite for green jewel and make the item use it
+        std::vector<uint8_t> yellowJewelSprite;
+        loadYellowJewelSprite(yellowJewelSprite);
+        uint32_t yellowJewelSpriteAddr = rom.injectBytes(yellowJewelSprite);
+        rom.setLong(itemSpritesTableBaseAddr + (ITEM_YELLOW_JEWEL * 0x4), yellowJewelSpriteAddr);
     }
 }
 

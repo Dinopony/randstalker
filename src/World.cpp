@@ -228,8 +228,8 @@ void World::initItems(const RandomizerOptions& options)
     this->addItem(new Item(ITEM_SUN_STONE,         "Sun Stone",         1,  300));
     this->addItem(new Item(ITEM_ARMLET,            "Armlet",            1,  300));
     this->addItem(new Item(ITEM_EINSTEIN_WHISTLE,  "Einstein Whistle",  1,  200));
-    this->addItem(new Item(ITEM_DETOX_BOOK,        "Detox Book",        1,  0));
-    this->addItem(new Item(ITEM_ANTICURSE_BOOK,    "AntiCurse Book",    1,  0));
+    this->addItem(new Item(ITEM_BLUE_JEWEL,        "Blue Jewel",        1,  500));
+    this->addItem(new Item(ITEM_YELLOW_JEWEL,      "Yellow Jewel",      1,  500));
     this->addItem(new Item(ITEM_RECORD_BOOK,       "Record Book",       1,  200));
     this->addItem(new Item(ITEM_SPELL_BOOK,        "Spell Book",        1,  200));
     this->addItem(new Item(ITEM_HOTEL_REGISTER,    "Hotel Register",    1,  0));
@@ -1131,24 +1131,22 @@ void World::initRegionPaths(const RandomizerOptions& options)
     std::vector<Item*> requiredJewels;
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
     {
+        requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
         for(int i=0; i<options.getJewelCount() ; ++i)
             requiredJewels.push_back(items[ITEM_RED_JEWEL]);
     }
-    else
+    else if(options.getJewelCount() >= 1)
     {
-        if(options.getJewelCount() >= 1)
-        {
-            requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
-            requiredJewels.push_back(items[ITEM_RED_JEWEL]);
-        }
+        requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
+        requiredJewels.push_back(items[ITEM_RED_JEWEL]);
         if(options.getJewelCount() >= 2)
-        {
             requiredJewels.push_back(items[ITEM_PURPLE_JEWEL]);
-        }
         if(options.getJewelCount() >= 3)
-        {
             requiredJewels.push_back(items[ITEM_GREEN_JEWEL]);
-        }
+        if(options.getJewelCount() >= 4)
+            requiredJewels.push_back(items[ITEM_BLUE_JEWEL]);
+        if(options.getJewelCount() >= 5)
+            requiredJewels.push_back(items[ITEM_YELLOW_JEWEL]);
     }
 
     // Create region paths with item conditions

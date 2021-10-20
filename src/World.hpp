@@ -12,7 +12,7 @@
 #include "HintSign.hpp"
 #include "Extlibs/json.hpp"
 
-constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 3;
+constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
 
 class World
 {
