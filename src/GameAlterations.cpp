@@ -1204,6 +1204,14 @@ void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
     }
 }
 
+void makePawnTicketConsumable(md::ROM& rom)
+{
+    md::Code procConsumePawnTicket;
+    procConsumePawnTicket.jsr(0x8B98); // ConsumeItem
+    procConsumePawnTicket.nop(3);
+    rom.setCode(0x88D2, procConsumePawnTicket);
+}
+
 void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {    
     // Game & gameplay changes
@@ -1219,6 +1227,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     alterGoldRewardsHandling(rom);
     alterLanternHandling(rom);
     handleAdditionalJewels(rom, options);
+    makePawnTicketConsumable(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
