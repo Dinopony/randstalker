@@ -36,6 +36,8 @@ public:
 	uint8_t getStartingLife() const { return _startingLife; }
 	const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
 	const std::map<std::string, uint16_t>& getItemPrices() const { return _itemPrices; }
+	bool fixArmletSkip() const { return _fixArmletSkip; }
+	bool fixTreeCuttingGlitch() const { return _fixTreeCuttingGlitch; }
 
 	// Randomization options
 	uint32_t getSeed() const { return _seed; }
@@ -75,6 +77,8 @@ private:
 	uint8_t _startingLife;
 	std::map<std::string, uint8_t> _startingItems;
 	std::map<std::string, uint16_t> _itemPrices;
+	bool _fixArmletSkip;
+	bool _fixTreeCuttingGlitch;
 
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)

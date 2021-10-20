@@ -1270,8 +1270,10 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     replaceFaraInElderHouseByChest(rom);
 
     // Fix original game glitches & bugs
-    fixArmletSkip(rom);
-    fixTreeCuttingGlitch(rom);
+    if(options.fixArmletSkip())
+        fixArmletSkip(rom);
+    if(options.fixTreeCuttingGlitch())
+        fixTreeCuttingGlitch(rom);
 
     // Miscellaneous
     deactivateRegionCheck(rom);

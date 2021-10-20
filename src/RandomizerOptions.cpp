@@ -11,6 +11,8 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) :
 	_saveAnywhereBook		(true),
 	_dungeonSignHints		(false),
 	_startingLife			(4),
+	_fixArmletSkip			(true),
+	_fixTreeCuttingGlitch	(true),
 
 	_seed					(0),
 	_fillingRate			(DEFAULT_FILLING_RATE),
@@ -138,6 +140,10 @@ Json RandomizerOptions::toJSON(bool optimizeForPermalink) const
 		json["gameSettings"]["startingItems"] = _startingItems;
 	if(!optimizeForPermalink || !_itemPrices.empty())
 		json["gameSettings"]["itemPrices"] = _itemPrices;
+	if(!optimizeForPermalink || !_fixArmletSkip)
+		json["gameSettings"]["fixArmletSkip"] = _fixArmletSkip;
+	if(!optimizeForPermalink || !_fixTreeCuttingGlitch)
+		json["gameSettings"]["fixTreeCuttingGlitch"] = _fixTreeCuttingGlitch;
 
 	if(!optimizeForPermalink || _fillingRate != DEFAULT_FILLING_RATE)
 		json["randomizerSettings"]["fillingRate"] = _fillingRate;
