@@ -572,6 +572,15 @@ void alterCasinoTicketHandling(md::ROM& rom)
     rom.setCode(0x26BBA, md::Code().nop(5));
 }
 
+void addDoorForReverseSafetyPass(md::ROM& rom)
+{
+    // Alter map variants so that we are in map 0x27A while safety pass is not owned
+    rom.setWord(0xA50E, 0x5505); // Byte 1050 bit 5 is required to trigger map variant
+    rom.setWord(0xA514, 0x5505); // Byte 1050 bit 5 is required to trigger map variant
+
+    // Modify entities in map variant 0x27A to replace two NPCs by a door blocking the way out of Mercator
+    rom.setBytes(0x2153A, { 0x70, 0x2A, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00, 0x70, 0x2C, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00 });
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       Map check changes
@@ -1219,7 +1228,7 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
     for(const std::vector<uint8_t>& itemName : itemNames)
     {
         itemNameBytes.push_back((uint8_t)itemName.size());
-        itemNameBytes.insert(itemNameBytes.end(), itemName.begin() , itemName.end());
+        itemNameBytes.insert(itemNameBytes.end(), itemName.begin(), itemName.end());
     }
     itemNameBytes.push_back(0xFF);
 
@@ -1389,6 +1398,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     fixMirTowerPriestRoomItems(rom);
     makeSwordOfGaiaWorkInVolcano(rom);
     fixReverseGreenmazeFountainSoftlock(rom);
+    addDoorForReverseSafetyPass(rom);
 
     // Specific map content changes
     removeMercatorCastleBackdoorGuard(rom);

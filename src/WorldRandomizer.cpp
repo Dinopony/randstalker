@@ -435,20 +435,32 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 
 UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
 {
-	const UnsortedSet<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH], _world.items[ITEM_LANTERN] };
+	UnsortedSet<Item*> requiredItems;
+	UnsortedSet<WorldRegion*> exploredRegion;
+	this->recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(region, requiredItems, exploredRegion);
 
-	// We perform a backwards analysis here starting from endgame region and determining which key items are strictly needed to finish the seed
-	UnsortedSet<Item*> strictlyNeededKeyItems;
+	return requiredItems;
+}
+
+void WorldRandomizer::recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region, UnsortedSet<Item*>& requiredItems, UnsortedSet<WorldRegion*>& regionsExploredInPreviousSteps)
+{
+	const UnsortedSet<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH] };
+
+	WorldRegion* startingRegion = _world.regions[getSpawnLocationRegion(_options.getSpawnLocation())];
 	UnsortedSet<WorldRegion*> regionsToExplore = { region };
 	UnsortedSet<WorldRegion*> alreadyExploredRegions;
+
 	UnsortedSet<Item*> itemsToLocate;
 
+	// Step 1 : find a path from target region to start region or any region explored in a previous step, 
+	// while taking notes of required items on the way
 	while (!regionsToExplore.empty())
 	{
 		WorldRegion* exploredRegion = *regionsToExplore.begin();
 		regionsToExplore.erase(exploredRegion);
 		alreadyExploredRegions.insert(exploredRegion);
-
+		
+		bool shouldStopExploring = false;
 		const std::vector<WorldPath*>& pathsToRegion = exploredRegion->getIngoingPaths();
 		for (WorldPath* path : pathsToRegion)
 		{
@@ -457,34 +469,53 @@ UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(Wor
 					itemsToLocate.insert(neededItem);
 
 			WorldRegion* originRegion = path->getOrigin();
-			if (!alreadyExploredRegions.contains(originRegion))
+			if(originRegion == startingRegion || regionsExploredInPreviousSteps.contains(originRegion))
+			{
+				alreadyExploredRegions.insert(originRegion);
+				shouldStopExploring = true;
+				break;
+			}
+
+			if (!alreadyExploredRegions.contains(originRegion) && !regionsToExplore.contains(originRegion))
 				regionsToExplore.insert(originRegion);
 		}
 
-		while (regionsToExplore.empty() && !itemsToLocate.empty())
+		if(shouldStopExploring)
+			break;
+	}
+
+	regionsToExplore.clear();
+
+	// Update regions explored in previous steps
+	for(WorldRegion* region : alreadyExploredRegions)
+		regionsExploredInPreviousSteps.insert(region);
+
+	// Step 2 : for every item required on the way, we find where they are located and perform a recursive analysis
+	// from that region. Whenever that analysis reach one of the regions already processed, we're good to go.
+	// Then, for one required item that has not already been processed, 
+	// find a path from the item to an already explored region, and so forth
+	while (!itemsToLocate.empty())
+	{
+		Item* keyItemToLocate = *itemsToLocate.begin();
+		itemsToLocate.erase(keyItemToLocate);
+		if (!requiredItems.contains(keyItemToLocate))
 		{
-			Item* keyItemToLocate = *itemsToLocate.begin();
-			itemsToLocate.erase(keyItemToLocate);
-			if (!strictlyNeededKeyItems.contains(keyItemToLocate))
+			requiredItems.insert(keyItemToLocate);
+
+			for (const auto& [code, source] : _world.itemSources)
 			{
-				strictlyNeededKeyItems.insert(keyItemToLocate);
-
-				for (const auto& [code, source] : _world.itemSources)
+				if (source->getItem() == keyItemToLocate)
 				{
-					if (source->getItem() == keyItemToLocate)
-					{
-						WorldRegion* region = source->getRegion();
-						if (!alreadyExploredRegions.contains(region))
-							regionsToExplore.insert(region);
-
-						break;
-					}
+					WorldRegion* region = source->getRegion();
+					if (!regionsExploredInPreviousSteps.contains(region))
+						regionsToExplore.insert(region);
 				}
 			}
 		}
 	}
 
-	return strictlyNeededKeyItems;
+	for(WorldRegion* region : regionsToExplore)
+		this->recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(region, requiredItems, regionsExploredInPreviousSteps);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

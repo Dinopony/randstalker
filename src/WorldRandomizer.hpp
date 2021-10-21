@@ -36,7 +36,9 @@ private:
 	void randomizeItems();
 	void placeMandatoryItems();
 	void analyzeStrictlyRequiredKeyItems();
+
 	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
+	void recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region, UnsortedSet<Item*>& requiredItems, UnsortedSet<WorldRegion*>& regionsExploredInPreviousSteps);
 
 	void placeFillerItemsPhase(size_t count, Item* lastResortFiller = nullptr);
 	void explorationPhase();
