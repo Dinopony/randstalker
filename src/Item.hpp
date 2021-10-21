@@ -67,7 +67,7 @@ class ItemGolds : public Item
 {
 public:
     ItemGolds(uint8_t itemID, uint8_t goldWorth) :
-        Item(itemID, "Golds", 0, false)
+        Item(itemID, "Golds", 0, 1, false)
     {
         this->setGoldWorth(goldWorth);
     }
