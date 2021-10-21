@@ -505,6 +505,10 @@ void WorldRandomizer::randomizeHints()
 			_world.jewelHints.push_back("Purple Jewel is " + this->getRandomHintForItem(_world.items[ITEM_PURPLE_JEWEL]) + ".");
 		if(_options.getJewelCount() >= 3)
 			_world.jewelHints.push_back("Green Jewel is " + this->getRandomHintForItem(_world.items[ITEM_GREEN_JEWEL]) + ".");
+		if(_options.getJewelCount() >= 4)
+			_world.jewelHints.push_back("Blue Jewel is " + this->getRandomHintForItem(_world.items[ITEM_BLUE_JEWEL]) + ".");
+		if(_options.getJewelCount() >= 5)
+			_world.jewelHints.push_back("Yellow Jewel is " + this->getRandomHintForItem(_world.items[ITEM_YELLOW_JEWEL]) + ".");
 	}
 
 	// King Nole Cave "where is lithograph" hint sign
@@ -544,7 +548,8 @@ Item* WorldRandomizer::randomizeFortuneTellerHint()
 Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem)
 {
 	UnsortedSet<Item*> forbiddenOracleStoneItems = {
-		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL], _world.items[ITEM_GREEN_JEWEL]
+		forbiddenFortuneTellerItem, _world.items[ITEM_RED_JEWEL], _world.items[ITEM_PURPLE_JEWEL],
+		_world.items[ITEM_GREEN_JEWEL], _world.items[ITEM_BLUE_JEWEL], _world.items[ITEM_YELLOW_JEWEL]
 	};
 
 	// Also excluding items strictly needed to get to Oracle Stone's location
