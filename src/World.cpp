@@ -1150,56 +1150,50 @@ void World::initRegionPaths(const RandomizerOptions& options)
     }
 
     // Create region paths with item conditions
-	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::MASSAN]->addPathTo(regions[RegionCode::ROUTE_MASSAN_GUMI]);
-	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::WATERFALL_SHRINE]);
-	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::SWAMP_SHRINE], items[ITEM_IDOL_STONE], 2);
-    regions[RegionCode::SWAMP_SHRINE]->addPathTo(regions[RegionCode::MASSAN_AFTER_SWAMP_SHRINE]);
-    regions[RegionCode::SWAMP_SHRINE]->addPathTo(regions[RegionCode::GUMI_AFTER_SWAMP_SHRINE]);
-	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathTo(regions[RegionCode::GUMI]);
-	regions[RegionCode::GUMI]->addPathTo(regions[RegionCode::ROUTE_GUMI_RYUMA]);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::TIBOR]);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::RYUMA]);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::MERCATOR], items[ITEM_SAFETY_PASS], 3);
-	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathTo(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE]);
-	regions[RegionCode::RYUMA]->addPathTo(regions[RegionCode::THIEVES_HIDEOUT]);
-    regions[RegionCode::RYUMA]->addPathTo(regions[RegionCode::RYUMA_REPAIRED_LIGHTHOUSE], items[ITEM_SUN_STONE]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_DUNGEON]);
-    regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_CASINO], items[ITEM_CASINO_TICKET]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::CRYPT]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
-	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE]);
-	regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
-    regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::TWINKLE_VILLAGE]);
-    regions[RegionCode::MIR_TOWER_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR_BEHIND_TREES], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathTo(regions[RegionCode::MIR_TOWER_POST_GARLIC], { items[ITEM_GARLIC], items[ITEM_GARLIC] });
-	regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA_MINES]);
-    regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::VERLA]);
-	regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
-	regions[RegionCode::ROUTE_VERLA_DESTEL]->addPathTo(regions[RegionCode::DESTEL]);
-	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::ROUTE_AFTER_DESTEL]);
-	regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::DESTEL_WELL]);
-	regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE]);
-	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::LAKE_SHRINE]);
-    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::GREENMAZE_POST_WHISTLE], items[ITEM_EINSTEIN_WHISTLE]);
-	regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
+	regions[RegionCode::MASSAN]->addPathsBetween(regions[RegionCode::MASSAN_CAVE], items[ITEM_AXE_MAGIC]);
+	regions[RegionCode::MASSAN]->addPathsBetween(regions[RegionCode::ROUTE_MASSAN_GUMI]);
+	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathsBetween(regions[RegionCode::WATERFALL_SHRINE]);
+	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathsBetween(regions[RegionCode::SWAMP_SHRINE], items[ITEM_IDOL_STONE], 2);
+    regions[RegionCode::SWAMP_SHRINE]->addPathsBetween(regions[RegionCode::MASSAN_AFTER_SWAMP_SHRINE]);
+    regions[RegionCode::SWAMP_SHRINE]->addPathsBetween(regions[RegionCode::GUMI_AFTER_SWAMP_SHRINE]);
+	regions[RegionCode::ROUTE_MASSAN_GUMI]->addPathsBetween(regions[RegionCode::GUMI]);
+	regions[RegionCode::GUMI]->addPathsBetween(regions[RegionCode::ROUTE_GUMI_RYUMA]);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::TIBOR]);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::RYUMA]);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::MERCATOR], items[ITEM_SAFETY_PASS], 3);
+	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE]);
+	regions[RegionCode::RYUMA]->addPathsBetween(regions[RegionCode::THIEVES_HIDEOUT]);
+    regions[RegionCode::RYUMA]->addPathsBetween(regions[RegionCode::RYUMA_REPAIRED_LIGHTHOUSE], items[ITEM_SUN_STONE]);
+	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_DUNGEON]);
+    regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_CASINO], items[ITEM_CASINO_TICKET]);
+	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::CRYPT]);
+	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_SECTOR]);
+	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
+	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
+	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::VERLA_SECTOR], items[ITEM_SUN_STONE]);
+	regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
+    regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::TWINKLE_VILLAGE]);
+    regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_SECTOR_BEHIND_TREES], items[ITEM_AXE_MAGIC]);
+	regions[RegionCode::MIR_TOWER_PRE_GARLIC]->addPathsBetween(regions[RegionCode::MIR_TOWER_POST_GARLIC], { items[ITEM_GARLIC], items[ITEM_GARLIC] });
+	regions[RegionCode::VERLA_SECTOR]->addPathsBetween(regions[RegionCode::VERLA_MINES]);
+    regions[RegionCode::VERLA_SECTOR]->addPathsBetween(regions[RegionCode::VERLA]);
+	regions[RegionCode::VERLA_MINES]->addPathsBetween(regions[RegionCode::ROUTE_VERLA_DESTEL]);
+	regions[RegionCode::ROUTE_VERLA_DESTEL]->addPathsBetween(regions[RegionCode::DESTEL]);
+	regions[RegionCode::DESTEL]->addPathsBetween(regions[RegionCode::ROUTE_AFTER_DESTEL]);
+	regions[RegionCode::DESTEL]->addPathsBetween(regions[RegionCode::DESTEL_WELL]);
+	regions[RegionCode::DESTEL_WELL]->addPathsBetween(regions[RegionCode::ROUTE_LAKE_SHRINE]);
+	regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathsBetween(regions[RegionCode::LAKE_SHRINE]);
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathsBetween(regions[RegionCode::GREENMAZE_POST_WHISTLE], items[ITEM_EINSTEIN_WHISTLE]);
+	regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathsBetween(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
-	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
+	regions[RegionCode::MOUNTAINOUS_AREA]->addPathsBetween(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
 
-	regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], requiredJewels);
-	regions[RegionCode::KAZALT]->addPathTo(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
-	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
-	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], { items[ITEM_LOGS], items[ITEM_LOGS] });
-	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathTo(regions[RegionCode::KN_PALACE]);
-	regions[RegionCode::KN_PALACE]->addPathTo(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] });
-
-    regions[RegionCode::ROUTE_LAKE_SHRINE]->addPathTo(regions[RegionCode::DESTEL_WELL]);
-    regions[RegionCode::DESTEL_WELL]->addPathTo(regions[RegionCode::DESTEL]);
-    regions[RegionCode::DESTEL]->addPathTo(regions[RegionCode::ROUTE_VERLA_DESTEL]);
-    regions[RegionCode::ROUTE_VERLA_DESTEL]->addPathTo(regions[RegionCode::VERLA_MINES]);
-    regions[RegionCode::VERLA_MINES]->addPathTo(regions[RegionCode::VERLA_SECTOR]);
+	regions[RegionCode::KN_CAVE]->addPathsBetween(regions[RegionCode::KAZALT], requiredJewels);
+	regions[RegionCode::KAZALT]->addPathsBetween(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
+	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathsBetween(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
+	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathsBetween(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], { items[ITEM_LOGS], items[ITEM_LOGS] });
+	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathsBetween(regions[RegionCode::KN_PALACE]);
+	regions[RegionCode::KN_PALACE]->addPathsBetween(regions[RegionCode::ENDGAME], { items[ITEM_GOLA_FANG], items[ITEM_GOLA_HORN],  items[ITEM_GOLA_NAIL] });
 }
 
 void World::initRegionHints()

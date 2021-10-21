@@ -184,7 +184,7 @@ void WorldRandomizer::randomizeDarkRooms()
 
 void WorldRandomizer::randomizeItems()
 {
-	_regionsToExplore.insert(_world.regions[RegionCode::MASSAN]);
+	_regionsToExplore.insert(_world.regions[getSpawnLocationRegion(_options.getSpawnLocation())]);
 	_exploredRegions.clear();		// Regions already processed by the exploration algorithm
 	_itemSourcesToFill.clear();		// Reachable empty item sources which must be filled with a random item
 	_playerInventory.clear();		// The current contents of player inventory at the given time in the exploration algorithm
@@ -336,12 +336,15 @@ void WorldRandomizer::explorationPhase()
 		// List outgoing paths
 		for (WorldPath* outgoingPath : exploredRegion->getOutgoingPaths())
 		{
+			// If destination is already pending exploration (through another path) or has already been explored, just ignore it
+			WorldRegion* destination = outgoingPath->getDestination();
+			if (_regionsToExplore.contains(destination) || _exploredRegions.contains(destination))
+				continue;
+
 			if (outgoingPath->getMissingItemsToCross(_playerInventory).empty())
 			{
-				// For crossable paths, add destinations in regions to explore if not already explored / to process
-				WorldRegion* destination = outgoingPath->getDestination();
-				if (!_regionsToExplore.contains(destination) && !_exploredRegions.contains(destination))
-					_regionsToExplore.insert(destination);
+				// For crossable paths, add destination to the list of regions to explore
+				_regionsToExplore.insert(destination);
 			}
 			else
 			{

@@ -95,18 +95,27 @@ public:
 		itemSource->setRegion(this);
 	}
 
-	void addPathTo(WorldRegion* otherRegion, Item* requiredItem = nullptr, uint16_t weight = 1)
-	{
-		WorldPath* newPath = new WorldPath(this, otherRegion, requiredItem, weight);
-		_outgoingPaths.push_back(newPath);
-		otherRegion->_ingoingPaths.push_back(newPath);
-	}
-
-	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems, uint16_t weight = 1)
+	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems = {}, uint16_t weight = 1)
 	{
 		WorldPath* newPath = new WorldPath(this, otherRegion, requiredItems, weight);
 		_outgoingPaths.push_back(newPath);
 		otherRegion->_ingoingPaths.push_back(newPath);
+	}
+
+	void addPathTo(WorldRegion* otherRegion, Item* requiredItem, uint16_t weight = 1)
+	{
+		this->addPathTo(otherRegion, std::vector<Item*>({ requiredItem }), weight);
+	}
+
+	void addPathsBetween(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems = {}, uint16_t weight = 1)
+	{
+		this->addPathTo(otherRegion, requiredItems, weight);
+		otherRegion->addPathTo(this, requiredItems, weight);
+	}
+
+	void addPathsBetween(WorldRegion* otherRegion, Item* requiredItem, uint16_t weight = 1)
+	{
+		this->addPathsBetween(otherRegion, std::vector<Item*>({ requiredItem }), weight);
 	}
 
 	const std::vector<WorldPath*>& getIngoingPaths() const { return _ingoingPaths; }
