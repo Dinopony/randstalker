@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "RegionCodes.hpp"
 
 #define SPAWN_ORIENTATION_NE 0x08
 #define SPAWN_ORIENTATION_SE 0x48
@@ -14,6 +15,7 @@ enum class SpawnLocation {
     RYUMA,
     WATERFALL,
     KADO,
+    MERCATOR,
     RANDOM
 };
 
@@ -27,3 +29,4 @@ uint8_t getSpawnLocationX(SpawnLocation loc);
 uint8_t getSpawnLocationZ(SpawnLocation loc);
 uint16_t getSpawnLocationMapID(SpawnLocation loc);
 uint8_t getSpawnLocationOrientation(SpawnLocation loc);
+RegionCode getSpawnLocationRegion(SpawnLocation loc);
