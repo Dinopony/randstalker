@@ -421,7 +421,7 @@ void WorldRandomizer::unlockPhase()
 
 void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 {
-	_strictlyNeededKeyItems = this->analyzeStrictlyRequiredKeyItemsForRegion(_world.regions[RegionCode::ENDGAME]);
+	_strictlyNeededKeyItems = _world.getRequiredItemsToComplete();
 
 	// Output required item list to debug log if we are in debug mode
 	if (_debugLog)
@@ -432,7 +432,7 @@ void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
 			_debugLog << "\t- " << item->getName() << "\n";
 	}
 }
-
+/*
 UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
 {
 	UnsortedSet<Item*> requiredItems;
@@ -517,6 +517,7 @@ void WorldRandomizer::recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(WorldReg
 	for(WorldRegion* region : regionsToExplore)
 		this->recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(region, requiredItems, regionsExploredInPreviousSteps);
 }
+*/
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///		THIRD PASS RANDOMIZATIONS (after items)
@@ -590,7 +591,7 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 	WorldRegion* itemRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
 	if(itemRegion)
 	{
-		UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = this->analyzeStrictlyRequiredKeyItemsForRegion(itemRegion);
+		UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = _world.getRequiredItemsToReachRegion(itemRegion);
 		for (Item* item : strictlyNeededKeyItemsForOracleStone)
 			forbiddenOracleStoneItems.insert(item);
 	}
@@ -653,7 +654,7 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		std::string hintText;
 		double randomNumber = (double) _rng() / (double) _rng.max();
 		WorldRegion* signRegion = sign->getRegion();
-		UnsortedSet<Item*> itemsAlreadyObtainedAtSign = this->analyzeStrictlyRequiredKeyItemsForRegion(signRegion);
+		UnsortedSet<Item*> itemsAlreadyObtainedAtSign = _world.getRequiredItemsToReachRegion(signRegion);
 		int nextElligibleHintableItemsNecessityPos = this->getNextElligibleHintableItemPos(hintableItemsNecessity, itemsAlreadyObtainedAtSign);
 
 		// "Barren / pleasant surprise" (30%)

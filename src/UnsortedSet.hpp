@@ -19,6 +19,12 @@ public:
 			this->push_back(elem);
 	}
 
+	void insert(const UnsortedSet<T>& other) 
+	{
+		for(const T& elem : other)
+			this->insert(elem);
+	}
+
 	void erase(const T& elem)
 	{
 		auto iter = std::find(this->begin(), this->end(), elem);
@@ -29,5 +35,16 @@ public:
 	{
 		auto iter = std::find(this->begin(), this->end(), elem);
 		return iter != this->end();
+	}
+
+	UnsortedSet<T> diff(const UnsortedSet<T>& other) const
+	{
+		UnsortedSet<T> diff;
+		for(const T& elem : *this)
+		{
+			if(!other.contains(elem))
+				diff.insert(other);
+		}
+		return diff;
 	}
 };

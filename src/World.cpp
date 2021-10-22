@@ -1613,3 +1613,89 @@ Item* World::parseItemFromName(const std::string& itemName)
 
     return nullptr;
 }
+
+
+
+UnsortedSet<Item*> World::getRequiredItemsToReachRegion(WorldRegion* endRegion) const
+{
+	WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+	ExplorationPath fullPath = this->findLeastExpensivePathTo({ spawnRegion }, ExplorationPath(endRegion));
+
+    // Locate all the items required to go down this optimal path, and locate them.
+	UnsortedSet<Item*> pendingItems = fullPath.getRequiredItems();
+    while(!pendingItems.empty())
+    {
+        Item* firstPendingItem = *pendingItems.begin();
+        pendingItems.erase(firstPendingItem);
+
+        // For each item source carrying this item, if it is located in a unknown region,
+        // try to find a path between this region and any known region in our full path
+        for (const auto& [code, source] : itemSources)
+        {
+            if (source->getItem() == firstPendingItem)
+            {
+                WorldRegion* region = source->getRegion();
+                if(!fullPath.hasRegionAlreadyBeenExplored(region))
+                {
+                    // We pass along the already required items to avoid counting doubles for items we already need        
+                    const UnsortedSet<Item*>& currentRequiredItems = fullPath.getRequiredItems();
+                    ExplorationPath newPath = this->findLeastExpensivePathTo(fullPath.getExploredRegions(), ExplorationPath(region, currentRequiredItems));
+            
+                    // Determine the newly found required items so that we can locate them next time...
+                    UnsortedSet<Item*> newRequiredItems = newPath.getRequiredItems().diff(currentRequiredItems);
+                    pendingItems.insert(newRequiredItems);
+
+                    // Merge the paths so that regions that were explored are now known as explored
+                    fullPath.merge(newPath);
+                }
+            }
+        }
+    }
+
+	return fullPath.getRequiredItems();
+}
+
+ExplorationPath World::findLeastExpensivePathTo(const UnsortedSet<WorldRegion*>& targetRegions, const ExplorationPath& currentExplorationPath) const
+{
+	std::vector<ExplorationPath> resultExplorations;
+	WorldRegion* currentRegion = currentExplorationPath.getLatestRegion();
+
+	// If we have arrived to one of the target regions, end this exploration branch
+	if(targetRegions.contains(currentRegion))
+		return currentExplorationPath;
+
+	// For each exploration option we have, dig deeper
+	const std::vector<WorldPath*>& paths = currentRegion->getIngoingPaths();
+	for(WorldPath* path : paths)
+	{
+		WorldRegion* origin = path->getOrigin();
+		// If node has already been explored, it's a loop / backtrack so forget it
+		if(!currentExplorationPath.hasRegionAlreadyBeenExplored(origin))
+        {
+            ExplorationPath optimalPathForBranch = this->findLeastExpensivePathTo(targetRegions, currentExplorationPath.fork(path));
+            if(!optimalPathForBranch.isInvalid())
+			    resultExplorations.push_back(optimalPathForBranch);
+        }
+	}
+
+	// Handle cul-de-sacs
+	if(resultExplorations.empty())
+    {
+        ExplorationPath invalidPath = currentExplorationPath;
+        invalidPath.invalidate();
+        return invalidPath;
+    }
+
+    // Now that we have a list of the best exploration path for each child of this node, elect the least expensive one and return it
+	std::pair<ExplorationPath*, uint32_t> bestExplorationAndCost = std::make_pair(nullptr, UINT32_MAX);
+	for(ExplorationPath& explo : resultExplorations)
+	{
+		if(explo.getTotalCost() < bestExplorationAndCost.second)
+			bestExplorationAndCost = std::make_pair(&explo, explo.getTotalCost());
+	}
+
+	if(!bestExplorationAndCost.first)
+		throw RandomizerException("No best exploration found");
+
+	return *bestExplorationAndCost.first;
+}

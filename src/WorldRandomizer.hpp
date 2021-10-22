@@ -33,12 +33,9 @@ private:
 	void randomizeDarkRooms();
 
 	// Second pass randomizations (items)
-	void randomizeItems();
 	void placeMandatoryItems();
+	void randomizeItems();
 	void analyzeStrictlyRequiredKeyItems();
-
-	UnsortedSet<Item*> analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region);
-	void recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region, UnsortedSet<Item*>& requiredItems, UnsortedSet<WorldRegion*>& regionsExploredInPreviousSteps);
 
 	void placeFillerItemsPhase(size_t count, Item* lastResortFiller = nullptr);
 	void explorationPhase();

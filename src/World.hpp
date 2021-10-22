@@ -6,7 +6,9 @@
 #include "Item.hpp"
 #include "GameText.hpp"
 #include "WorldRegion.hpp"
+#include "WorldPath.hpp"
 #include "WorldMacroRegion.hpp"
+#include "ExplorationPath.hpp"
 #include "RandomizerOptions.hpp"
 #include "TreeMap.hpp"
 #include "HintSign.hpp"
@@ -34,6 +36,10 @@ public:
     Json toJSON() const;
     void parseJSON(const Json& json);
     Item* parseItemFromName(const std::string& itemName);
+
+    UnsortedSet<Item*> getRequiredItemsToReachRegion(WorldRegion* region) const;
+    UnsortedSet<Item*> getRequiredItemsToComplete() const { return this->getRequiredItemsToReachRegion(regions.at(RegionCode::ENDGAME)); }
+    ExplorationPath findLeastExpensivePathTo(const UnsortedSet<WorldRegion*>& targetRegions, const ExplorationPath& currentExplorationPath) const;
     
 private:
     void initItems(const RandomizerOptions& options);
