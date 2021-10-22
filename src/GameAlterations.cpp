@@ -575,8 +575,8 @@ void alterCasinoTicketHandling(md::ROM& rom)
 void addDoorForReverseSafetyPass(md::ROM& rom)
 {
     // Alter map variants so that we are in map 0x27A while safety pass is not owned
-    rom.setWord(0xA50E, 0x5505); // Byte 1050 bit 5 is required to trigger map variant
-    rom.setWord(0xA514, 0x5505); // Byte 1050 bit 5 is required to trigger map variant
+    rom.setWord(0xA50E, 0x5905); // Byte 1050 bit 5 is required to trigger map variant
+    rom.setWord(0xA514, 0x5905); // Byte 1050 bit 5 is required to trigger map variant
 
     // Modify entities in map variant 0x27A to replace two NPCs by a door blocking the way out of Mercator
     rom.setBytes(0x2153A, { 0x70, 0x2A, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00, 0x70, 0x2C, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00 });
