@@ -1,6 +1,9 @@
 #pragma once
+
 #include "WorldPath.hpp"
 #include "WorldRegion.hpp"
+
+#include <stdexcept>
 
 class ExplorationPath
 {
