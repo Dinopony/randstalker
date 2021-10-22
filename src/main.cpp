@@ -82,6 +82,13 @@ Json randomize(World& world, RandomizerOptions& options, ArgumentDictionary& arg
 	WorldRandomizer randomizer(world, options);
 	randomizer.randomize();
 
+	if (!options.getDebugLogPath().empty())
+	{
+		std::ofstream debugLogFile(options.getDebugLogPath());
+		debugLogFile << randomizer.getDebugLogAsJson().dump(4);
+		debugLogFile.close();
+	}
+
 	spoilerJson.merge_patch(world.toJSON());
 	spoilerJson["playthrough"] = randomizer.getPlaythroughAsJson();
 
