@@ -10,6 +10,7 @@ RandomizerOptions::RandomizerOptions() :
 	_armorUpgrades			(true),
 	_dungeonSignHints		(false),
 	_startingLife			(4),
+	_startingGold			(0),
 	_startingItems			({{"Record Book",1}}),
 	_itemPrices				(),
 	_fixArmletSkip			(true),

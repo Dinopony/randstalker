@@ -1463,6 +1463,9 @@ Json World::toJSON() const
 {
 	Json json;
 
+    // Export dark region
+    json["darkRegion"] = darkenedRegion->getName();
+
     // Export hints
     for(HintSign* sign : hintSigns)
 		json["hints"][sign->getDescription()] = sign->getText();
@@ -1470,9 +1473,6 @@ Json World::toJSON() const
     json["hints"]["Oracle Stone"] = oracleStoneHint;
     json["hints"]["King Nole's Cave sign"] = whereIsLithographHint;
     json["hints"]["Mercator fortune teller"] = fortuneTellerHint;
-
-    // Export darkened region
-    json["darkRegion"] = darkenedRegion->getName();
 
     // Export item sources
 	for(auto& it : regions)

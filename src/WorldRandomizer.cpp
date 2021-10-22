@@ -10,18 +10,11 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
 	_world				(world),
 	_options			(options),
 	_rng				(),
-	_goldItemsCount		(0)
+	_goldItemsCount		(0),
+	_debugLogJson		(options.toJSON())
 {
-	if (!options.getDebugLogPath().empty())
-		_debugLog.open(options.getDebugLogPath());
-	
 	this->initFillerItems();
 	this->initMandatoryItems();
-}
-
-WorldRandomizer::~WorldRandomizer() 
-{
-	_debugLog.close();
 }
 
 void WorldRandomizer::randomize()
@@ -36,16 +29,19 @@ void WorldRandomizer::randomize()
 	// 2nd pass: randomizing items
 	_rng.seed(rngSeed);
 	this->randomizeItems();
-	this->analyzeStrictlyRequiredKeyItems();
-	
+
+	// Analyse items required to complete the seed
+	_strictlyNeededKeyItems = _world.getRequiredItemsToComplete();
+	_debugLogJson["requiredItems"] = Json::array();
+	for (Item* item : _strictlyNeededKeyItems)
+		_debugLogJson["requiredItems"].push_back(item->getName());
+
 	// 3rd pass: randomizations happening AFTER randomizing items
 	_rng.seed(rngSeed);
 	this->randomizeHints();
 
 	if(_options.shuffleTiborTrees())
 		this->randomizeTiborTrees();
-	
-	_debugLog.close();
 }
 
 void WorldRandomizer::initFillerItems()
@@ -192,18 +188,15 @@ void WorldRandomizer::randomizeItems()
 
 	Tools::shuffle(_fillerItems, _rng);
 
-	_debugLog << "\n-------------------------------------------------\n";
-	_debugLog << "Step #0 (placing mandatory items)\n";
 	this->placeMandatoryItems();
 
 	uint32_t stepCount = 1;
 	while (!_pendingPaths.empty() || !_regionsToExplore.empty())
 	{
-		_debugLog << "\n-------------------------------------------------\n";
-		_debugLog << "Step #" << stepCount++ << "\n";
+		Json& debugLogStepJson = _debugLogJson["steps"][std::to_string(stepCount)];
 
 		// Explore not yet explored regions, listing all item sources and paths for further exploration and processing
-		this->explorationPhase();
+		this->explorationPhase(debugLogStepJson);
 
 		// Try unlocking paths and item sources with newly discovered items in pre-filled item sources (useful for half-plando)
 		this->unlockPhase();
@@ -211,41 +204,41 @@ void WorldRandomizer::randomizeItems()
 		Tools::shuffle(_itemSourcesToFill, _rng);
 
 		// Place one or several key items to unlock access to a path, opening new regions & item sources
-		this->placeKeyItemsPhase();
+		this->placeKeyItemsPhase(debugLogStepJson);
 
 		// Fill a fraction of already available sources with filler items
 		if (!_itemSourcesToFill.empty())
 		{
 			size_t sourcesToFillCount = (size_t)(_itemSourcesToFill.size() * _options.getFillingRate());
-			this->placeFillerItemsPhase(sourcesToFillCount);
+			this->placeFillerItemsPhase(debugLogStepJson, sourcesToFillCount);
 		}
 
 		// Try unlocking paths and item sources with the newly acquired key item
 		this->unlockPhase();
+		++stepCount;
 	}
 
 	// Place the remaining filler items, and put Ekeeke in the last empty sources
-	this->placeFillerItemsPhase(_itemSourcesToFill.size(), _world.items[ITEM_EKEEKE]);
+	Json& debugLogStepJson = _debugLogJson["steps"]["remainder"];
+	this->placeFillerItemsPhase(debugLogStepJson, _itemSourcesToFill.size(), _world.items[ITEM_EKEEKE]);
 
 	if (!_fillerItems.empty())
 	{
-		_debugLog << "\n-------------------------------\n";
-		_debugLog << "\tUnplaced items" << "\n\n";
-
+		debugLogStepJson["unplacedItems"] = Json::array();
 		for (Item* item : _fillerItems)
-			_debugLog << "- [" << item->getName() << "]\n";
+			debugLogStepJson["unplacedItems"].push_back(item->getName());
 	}
 
-	_debugLog << "\n-------------------------------------------------\n";
-	_debugLog << "End of generation\n";
-	_debugLog << "\t - " << _itemSourcesToFill.size() << " remaining sources to fill\n";
+	_debugLogJson["endState"]["remainingSourcesToFill"] = Json::array();
 	for(auto source : _itemSourcesToFill)
-		_debugLog << "\t\t - " << source->getName() << "\n";
-	_debugLog << "\t - " << _pendingPaths.size() << " pending paths\n";
+		_debugLogJson["endState"]["remainingSourcesToFill"].push_back(source->getName());
+	_debugLogJson["endState"]["pendingPaths"] = _pendingPaths.size();
 }
 
 void WorldRandomizer::placeMandatoryItems()
 {
+	_debugLogJson["steps"]["0"]["comment"] = "Placing mandatory items";
+
 	// Mandatory items are filler items which are always placed first in the randomization, no matter what
 	Tools::shuffle(_mandatoryItems, _rng);
 
@@ -262,17 +255,15 @@ void WorldRandomizer::placeMandatoryItems()
 			if (!source->getItem() && source->isItemCompatible(itemToPlace))
 			{
 				source->setItem(itemToPlace);
-				_debugLog << "\t > Placing mandatory item [" << itemToPlace->getName() << "] in \"" << source->getName() << "\"\n";
+				_debugLogJson["steps"]["0"]["placedItems"][source->getName()] = itemToPlace->getName();
 				break;
 			}
 		}
 	}
 }
 
-void WorldRandomizer::placeFillerItemsPhase(size_t count, Item* lastResortFiller)
+void WorldRandomizer::placeFillerItemsPhase(Json& debugLogStepJson, size_t count, Item* lastResortFiller)
 {
-	_debugLog << "\t > Filling " << count << " item sources with filler items...\n";
-
 	for (size_t i=0 ; i<count ; ++i)
 	{
 		ItemSource* itemSource = _itemSourcesToFill[0];
@@ -307,21 +298,21 @@ void WorldRandomizer::placeFillerItemsPhase(size_t count, Item* lastResortFiller
 		}
 
 		if(itemSource->getItem())
-		{
-			_debugLog << "\t\t - Filling \"" << itemSource->getName() << "\" with [" << itemSource->getItem()->getName() << "]\n";
-		}
+			debugLogStepJson["filledSources"][itemSource->getName()] = itemSource->getItem()->getName();
 	}
 }
 
-void WorldRandomizer::explorationPhase()
+void WorldRandomizer::explorationPhase(Json& debugLogStepJson)
 {
+	debugLogStepJson["exploredRegions"] = Json::array();
+
 	while (!_regionsToExplore.empty())
 	{
 		// Take and erase first region from regions to explore, add it to explored regions set.
 		WorldRegion* exploredRegion = *_regionsToExplore.begin();
 		_regionsToExplore.erase(exploredRegion);
 		_exploredRegions.insert(exploredRegion);
-		_debugLog << "\t > Exploring region \"" << exploredRegion->getName() << "\"...\n";
+		debugLogStepJson["exploredRegions"].push_back(exploredRegion->getName());
 
 		// List item sources to fill from this region.
 		const std::vector<ItemSource*> itemSources = exploredRegion->getItemSources();
@@ -355,7 +346,7 @@ void WorldRandomizer::explorationPhase()
 	}
 }
 
-void WorldRandomizer::placeKeyItemsPhase()
+void WorldRandomizer::placeKeyItemsPhase(Json& debugLogStepJson)
 {
 	if (_pendingPaths.empty())
 		return;
@@ -392,9 +383,11 @@ void WorldRandomizer::placeKeyItemsPhase()
 			throw NoAppropriateItemSourceException();
 
 		// Place the key item in the appropriate source, and also add it to player inventory
-		_debugLog << "\t > Key item is [" << keyItemToPlace->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
 		randomItemSource->setItem(keyItemToPlace);
+		_logicalPlaythrough.push_back(randomItemSource);
 		_playerInventory.push_back(keyItemToPlace);
+
+		debugLogStepJson["placedKeyItems"][randomItemSource->getName()] = keyItemToPlace->getName();
 	}
 }
 
@@ -419,105 +412,6 @@ void WorldRandomizer::unlockPhase()
 	}
 }
 
-void WorldRandomizer::analyzeStrictlyRequiredKeyItems()
-{
-	_strictlyNeededKeyItems = _world.getRequiredItemsToComplete();
-
-	// Output required item list to debug log if we are in debug mode
-	if (_debugLog)
-	{
-		_debugLog << "\n-------------------------------\n";
-		_debugLog << "\tItems required to finish the seed" << "\n\n";
-		for (Item* item : _strictlyNeededKeyItems)
-			_debugLog << "\t- " << item->getName() << "\n";
-	}
-}
-/*
-UnsortedSet<Item*> WorldRandomizer::analyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region)
-{
-	UnsortedSet<Item*> requiredItems;
-	UnsortedSet<WorldRegion*> exploredRegion;
-	this->recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(region, requiredItems, exploredRegion);
-
-	return requiredItems;
-}
-
-void WorldRandomizer::recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(WorldRegion* region, UnsortedSet<Item*>& requiredItems, UnsortedSet<WorldRegion*>& regionsExploredInPreviousSteps)
-{
-	const UnsortedSet<Item*> optionalItems = { _world.items[ITEM_LITHOGRAPH] };
-
-	WorldRegion* startingRegion = _world.regions[getSpawnLocationRegion(_options.getSpawnLocation())];
-	UnsortedSet<WorldRegion*> regionsToExplore = { region };
-	UnsortedSet<WorldRegion*> alreadyExploredRegions;
-
-	UnsortedSet<Item*> itemsToLocate;
-
-	// Step 1 : find a path from target region to start region or any region explored in a previous step, 
-	// while taking notes of required items on the way
-	while (!regionsToExplore.empty())
-	{
-		WorldRegion* exploredRegion = *regionsToExplore.begin();
-		regionsToExplore.erase(exploredRegion);
-		alreadyExploredRegions.insert(exploredRegion);
-		
-		bool shouldStopExploring = false;
-		const std::vector<WorldPath*>& pathsToRegion = exploredRegion->getIngoingPaths();
-		for (WorldPath* path : pathsToRegion)
-		{
-			for (Item* neededItem : path->getRequiredItems())
-				if (!optionalItems.contains(neededItem))
-					itemsToLocate.insert(neededItem);
-
-			WorldRegion* originRegion = path->getOrigin();
-			if(originRegion == startingRegion || regionsExploredInPreviousSteps.contains(originRegion))
-			{
-				alreadyExploredRegions.insert(originRegion);
-				shouldStopExploring = true;
-				break;
-			}
-
-			if (!alreadyExploredRegions.contains(originRegion) && !regionsToExplore.contains(originRegion))
-				regionsToExplore.insert(originRegion);
-		}
-
-		if(shouldStopExploring)
-			break;
-	}
-
-	regionsToExplore.clear();
-
-	// Update regions explored in previous steps
-	for(WorldRegion* region : alreadyExploredRegions)
-		regionsExploredInPreviousSteps.insert(region);
-
-	// Step 2 : for every item required on the way, we find where they are located and perform a recursive analysis
-	// from that region. Whenever that analysis reach one of the regions already processed, we're good to go.
-	// Then, for one required item that has not already been processed, 
-	// find a path from the item to an already explored region, and so forth
-	while (!itemsToLocate.empty())
-	{
-		Item* keyItemToLocate = *itemsToLocate.begin();
-		itemsToLocate.erase(keyItemToLocate);
-		if (!requiredItems.contains(keyItemToLocate))
-		{
-			requiredItems.insert(keyItemToLocate);
-
-			for (const auto& [code, source] : _world.itemSources)
-			{
-				if (source->getItem() == keyItemToLocate)
-				{
-					WorldRegion* region = source->getRegion();
-					if (!regionsExploredInPreviousSteps.contains(region))
-						regionsToExplore.insert(region);
-				}
-			}
-		}
-	}
-
-	for(WorldRegion* region : regionsToExplore)
-		this->recursiveAnalyzeStrictlyRequiredKeyItemsForRegion(region, requiredItems, regionsExploredInPreviousSteps);
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///		THIRD PASS RANDOMIZATIONS (after items)
@@ -755,4 +649,19 @@ void WorldRandomizer::randomizeTiborTrees()
 	Tools::shuffle(trees, _rng);
     for (uint8_t i = 0; i < _world.treeMaps.size(); ++i)
         _world.treeMaps[i].setTree(trees[i]);
+}
+
+Json WorldRandomizer::getPlaythroughAsJson() const
+{
+	Json json;
+
+	// Filter the logical playthrough to keep only strictly needed key items
+	for(ItemSource* source : _logicalPlaythrough)
+	{
+		Item* keyItemInSource = source->getItem();
+		if(_strictlyNeededKeyItems.contains(keyItemInSource))
+			json[source->getName()] = keyItemInSource->getName();
+	}
+
+	return json;
 }

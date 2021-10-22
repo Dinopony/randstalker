@@ -65,6 +65,65 @@ md::ROM* getInputROM(std::string inputRomPath)
 	return rom;
 }
 
+Json randomize(World& world, RandomizerOptions& options, ArgumentDictionary& argsDictionary)
+{
+	Json spoilerJson;
+
+	std::string permalink = options.getPermalink();
+	spoilerJson["permalink"] = permalink;
+	spoilerJson["hashSentence"] = options.getHashSentence();
+	spoilerJson.merge_patch(options.toJSON());
+
+	std::cout << "Permalink: " << permalink << "\n\n";
+	std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
+
+	// In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
+	std::cout << "Randomizing world...\n";
+	WorldRandomizer randomizer(world, options);
+	randomizer.randomize();
+
+	if (!options.getDebugLogPath().empty())
+	{
+		std::ofstream debugLogFile(options.getDebugLogPath());
+		debugLogFile << randomizer.getDebugLogAsJson().dump(4);
+		debugLogFile.close();
+	}
+
+	spoilerJson.merge_patch(world.toJSON());
+	spoilerJson["playthrough"] = randomizer.getPlaythroughAsJson();
+
+	return spoilerJson;
+}
+
+Json plandomize(World& world, RandomizerOptions& options, ArgumentDictionary& argsDictionary)
+{
+	std::cout << "Plandomizing world...\n";
+	Json spoilerJson;
+
+	// In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
+	// The software will act as a simple ROM patcher, without verifying the game is actually completable.
+
+	world.parseJSON(options.getInputPlandoJSON());
+
+	spoilerJson.merge_patch(options.toJSON());
+	spoilerJson.merge_patch(world.toJSON());
+
+	// If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
+	if (argsDictionary.getBoolean("encodeplando") && options.isPlando())
+	{
+		std::ofstream encodedPlandoFile("./encoded_plando.json");
+		Json fileJson;
+		fileJson["plando_permalink"] = base64_encode(Json::to_msgpack(spoilerJson));
+		encodedPlandoFile << fileJson.dump(4);
+		encodedPlandoFile.close();
+
+		std::cout << "Plando encoded to './encoded_plando.json'" << std::endl;
+		exit(0);
+	}
+
+	return spoilerJson;
+}
+
 int main(int argc, char* argv[])
 {
 	ArgumentDictionary argsDictionary(argc, argv);
@@ -82,6 +141,20 @@ int main(int argc, char* argv[])
 			optionsAsJSON["randomizerSettings"]["fillerItems"] = "default";
 		std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
 
+		// Output current preset
+		if (argsDictionary.getBoolean("writepreset"))
+		{
+			Json json = options.toJSON();
+
+			std::ofstream presetFile("./preset.json");
+			if(presetFile)
+				presetFile << json.dump(4);
+			presetFile.close();
+
+			std::cout << "Preset written to './preset.json'" << std::endl;
+			exit(0);
+		}
+
 		// Load input ROM and tag known empty chunks of data to know where to inject code / data
 		md::ROM* rom = getInputROM(options.getInputROMPath());
 		rom->markChunkAsEmpty(0x11F380, 0x120000);
@@ -89,21 +162,17 @@ int main(int argc, char* argv[])
 
 		World world(options);
 
+		Json spoilerJson;
 		if(options.isPlando())
 		{
-			// In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
-			// The software will act as a simple ROM patcher, without verifying the game is actually completable.
-			std::cout << "Plandomizing world...\n";
-			world.parseJSON(options.getInputPlandoJSON());
+			spoilerJson = plandomize(world, options, argsDictionary);
 		}
 		else
 		{
-			// In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
-			std::cout << "Randomizing world...\n";
-			WorldRandomizer randomizer(world, options);
-			randomizer.randomize();
+			spoilerJson = randomize(world, options, argsDictionary);
 		}
 		
+		std::cout << "Writing world to ROM...\n";
 		world.writeToROM(*rom);
 
 		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
@@ -116,47 +185,13 @@ int main(int argc, char* argv[])
 		// Write a spoiler log to help the player
 		if(options.allowSpoilerLog() && !options.getSpoilerLogPath().empty())
 		{
-			Json json;
-			json.merge_patch(options.toJSON());
-			json.merge_patch(world.toJSON());
-
-			std::string permalink = options.getPermalink();
-			std::string hashSentence = options.getHashSentence();
-			json["permalink"] = permalink;
-			json["hashSentence"] = hashSentence;
-
-			std::cout << "Permalink: " << permalink << "\n\n";
-			std::cout << "Seed hash sentence: " << hashSentence << "\n\n";
-			std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
-
 			std::ofstream spoilerFile(options.getSpoilerLogPath());
 			if (spoilerFile)
-				spoilerFile << json.dump(4);
+				spoilerFile << spoilerJson.dump(4);
 			spoilerFile.close();
-
-			// If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
-			if (argsDictionary.getBoolean("encodeplando") && options.isPlando())
-			{
-				std::ofstream encodedPlandoFile("./encoded_plando.json");
-				Json fileJson;
-				fileJson["plando_permalink"] = base64_encode(Json::to_msgpack(json));
-				encodedPlandoFile << fileJson.dump(4);
-				encodedPlandoFile.close();
-			}
 		}
 		
 		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n\n";
-
-		// TEMPORARY: Output current preset
-		if (argsDictionary.getBoolean("writepreset"))
-		{
-			Json json = options.toJSON();
-
-			std::ofstream presetFile("./preset.json");
-			if(presetFile)
-				presetFile << json.dump(4);
-			presetFile.close();
-		}
 
 		if ( options.mustPause() )
 		{

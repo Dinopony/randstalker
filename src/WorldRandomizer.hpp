@@ -20,9 +20,11 @@ class WorldRandomizer
 {
 public:
 	WorldRandomizer(World& world, const RandomizerOptions& options);
-	~WorldRandomizer();
 
 	void randomize();
+
+	Json getPlaythroughAsJson() const;
+	const Json& getDebugLogAsJson() const { return _debugLogJson; }
 
 private:
 	void initFillerItems();
@@ -35,11 +37,10 @@ private:
 	// Second pass randomizations (items)
 	void placeMandatoryItems();
 	void randomizeItems();
-	void analyzeStrictlyRequiredKeyItems();
 
-	void placeFillerItemsPhase(size_t count, Item* lastResortFiller = nullptr);
-	void explorationPhase();
-	void placeKeyItemsPhase();
+	void placeFillerItemsPhase(Json& debugLogStepJson, size_t count, Item* lastResortFiller = nullptr);
+	void explorationPhase(Json& debugLogStepJson);
+	void placeKeyItemsPhase(Json& debugLogStepJson);
 	void unlockPhase();
 
 	// Third pass randomizations (after items)
@@ -58,7 +59,7 @@ private:
 	World& _world;
 	const RandomizerOptions& _options;
 
-	std::ofstream _debugLog;
+	Json _debugLogJson;
 	std::mt19937 _rng;
 
 	std::vector<Item*> _fillerItems;
@@ -70,6 +71,8 @@ private:
 	std::vector<ItemSource*> _itemSourcesToFill;
 	std::vector<Item*> _playerInventory;
 	std::vector<WorldPath*> _pendingPaths;
+
+	std::vector<ItemSource*> _logicalPlaythrough;
 
 	UnsortedSet<Item*> _strictlyNeededKeyItems;
 };
