@@ -2,8 +2,7 @@
 
 #include "WorldPath.hpp"
 #include "WorldRegion.hpp"
-
-#include <stdexcept>
+#include "Exceptions.hpp"
 
 class ExplorationPath
 {
@@ -39,7 +38,7 @@ public:
         _exploredRegions.insert(path._exploredRegions);
         _requiredItems.insert(path._requiredItems);
         if(path._invalid)
-            throw std::exception("Trying to merge an invalid path");
+            throw RandomizerException("Trying to merge an invalid path");
     }
 
     bool isInvalid() const { return _invalid; }
