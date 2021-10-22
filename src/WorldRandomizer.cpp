@@ -394,6 +394,7 @@ void WorldRandomizer::placeKeyItemsPhase()
 		// Place the key item in the appropriate source, and also add it to player inventory
 		_debugLog << "\t > Key item is [" << keyItemToPlace->getName() << "], putting it in \"" << randomItemSource->getName() << "\"\n";
 		randomItemSource->setItem(keyItemToPlace);
+		_logicalPlaythrough.push_back(randomItemSource);
 		_playerInventory.push_back(keyItemToPlace);
 	}
 }
@@ -755,4 +756,19 @@ void WorldRandomizer::randomizeTiborTrees()
 	Tools::shuffle(trees, _rng);
     for (uint8_t i = 0; i < _world.treeMaps.size(); ++i)
         _world.treeMaps[i].setTree(trees[i]);
+}
+
+Json WorldRandomizer::getPlaythroughAsJson() const
+{
+	Json json;
+
+	// Filter the logical playthrough to keep only strictly needed key items
+	for(ItemSource* source : _logicalPlaythrough)
+	{
+		Item* keyItemInSource = source->getItem();
+		if(_strictlyNeededKeyItems.contains(keyItemInSource))
+			json[source->getName()] = keyItemInSource->getName();
+	}
+
+	return json;
 }

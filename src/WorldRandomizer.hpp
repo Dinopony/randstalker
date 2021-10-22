@@ -24,6 +24,8 @@ public:
 
 	void randomize();
 
+	Json getPlaythroughAsJson() const;
+	
 private:
 	void initFillerItems();
 	void initMandatoryItems();
@@ -70,6 +72,8 @@ private:
 	std::vector<ItemSource*> _itemSourcesToFill;
 	std::vector<Item*> _playerInventory;
 	std::vector<WorldPath*> _pendingPaths;
+
+	std::vector<ItemSource*> _logicalPlaythrough;
 
 	UnsortedSet<Item*> _strictlyNeededKeyItems;
 };
