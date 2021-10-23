@@ -38,7 +38,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     flagArray[0x06] = 0x7E;
     flagArray[0x07] = 0xB4;
     flagArray[0x08] = 0xFE;
-    flagArray[0x09] = 0x7E;
+    flagArray[0x09] = 0x7C;
     flagArray[0x12] = 0x1E;
     flagArray[0x13] = 0x43;
     flagArray[0x14] = 0x81;
@@ -1303,6 +1303,11 @@ void makePawnTicketConsumable(md::ROM& rom)
     rom.setCode(0x88D2, procConsumePawnTicket);
 }
 
+void makeKeyNotConsumedOnUse(md::ROM& rom)
+{
+    rom.setCode(0x8B34, md::Code().nop());
+}
+
 void alterCredits(md::ROM& rom)
 {
     constexpr uint32_t creditsTextBaseAddr = 0x9ED1A;
@@ -1377,6 +1382,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     alterLanternHandling(rom);
     handleAdditionalJewels(rom, options);
     makePawnTicketConsumable(rom);
+    makeKeyNotConsumedOnUse(rom);
     if (options.useArmorUpgrades())
         handleArmorUpgrades(rom);
 
