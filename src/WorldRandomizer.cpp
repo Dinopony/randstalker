@@ -15,6 +15,7 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
 {
 	this->initFillerItems();
 	this->initMandatoryItems();
+	this->initInventoryWithStartingItems();
 }
 
 void WorldRandomizer::randomize()
@@ -114,6 +115,17 @@ void WorldRandomizer::initMandatoryItems()
 			_mandatoryItems.push_back(item);
 	}
 }
+
+void WorldRandomizer::initInventoryWithStartingItems()
+{
+	for(const auto& [id, item] : _world.items)
+	{
+		uint8_t quantity = item->getStartingQuantity();
+		for(uint8_t i=0 ; i<quantity ; ++i)
+			_playerInventory.push_back(item);
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///		FIRST PASS RANDOMIZATIONS (before items)

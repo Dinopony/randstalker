@@ -29,7 +29,8 @@ public:
 private:
 	void initFillerItems();
 	void initMandatoryItems();
-
+	void initInventoryWithStartingItems();
+	
 	// First pass randomizations (before items)
 	void randomizeGoldValues();
 	void randomizeDarkRooms();
