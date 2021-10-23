@@ -33,7 +33,7 @@ public:
 	uint8_t getJewelCount() const { return _jewelCount; }
 	bool useArmorUpgrades() const { return _armorUpgrades; }
 	bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
-	uint8_t getStartingLife() const { return _startingLife; }
+	uint8_t getStartingLife() const;
 	uint16_t getStartingGold() const { return _startingGold; }
 	const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
 	const std::map<std::string, uint16_t>& getItemPrices() const { return _itemPrices; }

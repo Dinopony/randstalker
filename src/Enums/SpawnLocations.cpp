@@ -183,3 +183,20 @@ RegionCode getSpawnLocationRegion(SpawnLocation loc)
     }
     return RegionCode::ENDGAME;
 }
+
+uint8_t getSpawnLocationStartingLife(SpawnLocation loc)
+{
+    switch (loc)
+    {
+    case SpawnLocation::MASSAN:      return 4;
+    case SpawnLocation::GUMI:        return 6;
+    case SpawnLocation::RYUMA:       return 6;
+    case SpawnLocation::WATERFALL:   return 4;
+    case SpawnLocation::KADO:        return 6;
+    case SpawnLocation::MERCATOR:    return 10;
+    case SpawnLocation::VERLA:       return 16;
+    case SpawnLocation::DESTEL:      return 20;
+    case SpawnLocation::GREENMAZE:   return 16;
+    }
+    return 4;
+}

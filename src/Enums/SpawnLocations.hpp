@@ -33,3 +33,4 @@ uint8_t getSpawnLocationZ(SpawnLocation loc);
 uint16_t getSpawnLocationMapID(SpawnLocation loc);
 uint8_t getSpawnLocationOrientation(SpawnLocation loc);
 RegionCode getSpawnLocationRegion(SpawnLocation loc);
+uint8_t getSpawnLocationStartingLife(SpawnLocation loc);

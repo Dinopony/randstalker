@@ -9,7 +9,7 @@ RandomizerOptions::RandomizerOptions() :
 	_jewelCount				(2),
 	_armorUpgrades			(true),
 	_dungeonSignHints		(false),
-	_startingLife			(4),
+	_startingLife			(0),
 	_startingGold			(0),
 	_startingItems			({{"Record Book",1}}),
 	_itemPrices				(),
@@ -132,11 +132,11 @@ Json RandomizerOptions::toJSON() const
 {
 	Json json;
 
+	// Game settings 
 	json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
 	json["gameSettings"]["jewelCount"] = _jewelCount;
 	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
 	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
-	json["gameSettings"]["startingLife"] = _startingLife;
 	json["gameSettings"]["startingGold"] = _startingGold;
 	json["gameSettings"]["startingItems"] = _startingItems;
 	json["gameSettings"]["itemPrices"] = _itemPrices;
@@ -144,7 +144,10 @@ Json RandomizerOptions::toJSON() const
 	json["gameSettings"]["fixTreeCuttingGlitch"] = _fixTreeCuttingGlitch;
 	json["gameSettings"]["itemMaxQuantities"] = _itemMaxQuantities;
 	json["gameSettings"]["consumableRecordBook"] = _consumableRecordBook;
+	if(_startingLife > 0)
+		json["gameSettings"]["startingLife"] = _startingLife;
 
+	// Randomizer settings
 	json["randomizerSettings"]["allowSpoilerLog"] = _allowSpoilerLog;
 	json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
@@ -247,9 +250,6 @@ void RandomizerOptions::validate()
 	if(_jewelCount > 9)
 		throw RandomizerException("Jewel count must be between 0 and 9.");
 
-	if(_startingLife == 0)
-		_startingLife = 1;
-
 	// Clean output ROM path and determine if it's a directory or a file
 	bool outputRomPathIsAFile = Tools::endsWith(_outputRomPath, ".md") || Tools::endsWith(_outputRomPath, ".bin");
 	if(!outputRomPathIsAFile && *_outputRomPath.rbegin() != '/')
@@ -284,6 +284,16 @@ SpawnLocation RandomizerOptions::getSpawnLocation() const
 	}
 
 	return _spawnLocation; 
+}
+
+uint8_t RandomizerOptions::getStartingLife() const 
+{
+	// Starting life has been specified with a non-zero amount, use it
+	if(_startingLife > 0)
+		return _startingLife; 
+
+	SpawnLocation spawnLoc = this->getSpawnLocation();
+	return getSpawnLocationStartingLife(spawnLoc);
 }
 
 std::vector<std::string> RandomizerOptions::getHashWords() const
