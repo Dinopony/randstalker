@@ -10,6 +10,7 @@
 #include "Huffman/Symbols.hpp"
 #include "Huffman/TextEncoder.hpp"
 #include "Exceptions.hpp"
+#include "WorldSolver.hpp"
 
 World::World(const RandomizerOptions& options) :
     spawnLocation(options.getSpawnLocation()),
@@ -1131,13 +1132,11 @@ void World::initRegionPaths(const RandomizerOptions& options)
     std::vector<Item*> requiredJewels;
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
     {
-        requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
         for(int i=0; i<options.getJewelCount() ; ++i)
             requiredJewels.push_back(items[ITEM_RED_JEWEL]);
     }
     else if(options.getJewelCount() >= 1)
     {
-        requiredJewels.push_back(items[ITEM_LITHOGRAPH]);
         requiredJewels.push_back(items[ITEM_RED_JEWEL]);
         if(options.getJewelCount() >= 2)
             requiredJewels.push_back(items[ITEM_PURPLE_JEWEL]);
@@ -1169,7 +1168,6 @@ void World::initRegionPaths(const RandomizerOptions& options)
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::CRYPT]);
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_SECTOR]);
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
-	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
 	regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
     regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::TWINKLE_VILLAGE]);
     regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_SECTOR_BEHIND_TREES], items[ITEM_AXE_MAGIC]);
@@ -1186,13 +1184,23 @@ void World::initRegionPaths(const RandomizerOptions& options)
 	regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathsBetween(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathsBetween(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
 
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::MERCATOR]);
     regions[RegionCode::RYUMA_REPAIRED_LIGHTHOUSE]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SAFETY_PASS]);
 	regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
-	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
+
+    if(_options.handleGhostJumpingInLogic())
+        regions[RegionCode::MOUNTAINOUS_AREA]->addPathsBetween(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
+    else
+        regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
+
     regions[RegionCode::GREENMAZE_POST_WHISTLE]->addPathTo(regions[RegionCode::ROUTE_MASSAN_GUMI]);
     regions[RegionCode::LAKE_SHRINE]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
+	WorldPath* kazaltTeleporter = regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], requiredJewels);
+    kazaltTeleporter->addNonRequiredItemPlacedWhenCrossing(items[ITEM_LITHOGRAPH]);
+    regions[RegionCode::KAZALT]->addPathTo(regions[RegionCode::KN_CAVE]);
+    regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::MERCATOR]);
 
-	regions[RegionCode::KN_CAVE]->addPathsBetween(regions[RegionCode::KAZALT], requiredJewels);
 	regions[RegionCode::KAZALT]->addPathsBetween(regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]);
 	regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addPathsBetween(regions[RegionCode::KN_LABYRINTH_POST_SPIKES], items[ITEM_SPIKE_BOOTS]);
 	regions[RegionCode::KN_LABYRINTH_POST_SPIKES]->addPathsBetween(regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR], { items[ITEM_LOGS], items[ITEM_LOGS] });
@@ -1464,6 +1472,7 @@ Json World::toJSON() const
 	Json json;
 
     // Export dark region
+    json["spawnRegion"] = regions.at(getSpawnLocationRegion(spawnLocation))->getName();
     json["darkRegion"] = darkenedRegion->getName();
 
     // Export hints
@@ -1614,88 +1623,45 @@ Item* World::parseItemFromName(const std::string& itemName)
     return nullptr;
 }
 
-
-
-UnsortedSet<Item*> World::getRequiredItemsToReachRegion(WorldRegion* endRegion) const
+std::vector<Item*> World::findSmallestInventoryToReachRegion(WorldRegion* endRegion) const
 {
-	WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
-	ExplorationPath fullPath = this->findLeastExpensivePathTo({ spawnRegion }, ExplorationPath(endRegion));
+    WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+    WorldSolver solver(spawnRegion, endRegion);
+    solver.tryToSolve();
+    std::vector<Item*> inventory = solver.getInventory();
 
-    // Locate all the items required to go down this optimal path, and locate them.
-	UnsortedSet<Item*> pendingItems = fullPath.getRequiredItems();
-    while(!pendingItems.empty())
-    {
-        Item* firstPendingItem = *pendingItems.begin();
-        pendingItems.erase(firstPendingItem);
+    std::vector<Item*> minimalInventory;
 
-        // For each item source carrying this item, if it is located in a unknown region,
-        // try to find a path between this region and any known region in our full path
-        for (const auto& [code, source] : itemSources)
+    UnsortedSet<Item*> forbiddenItems;
+
+    for(Item* item : inventory)
+    {  
+        UnsortedSet<Item*> forbiddenItemsPlusOne = forbiddenItems;
+        forbiddenItemsPlusOne.insert(item);
+        
+        WorldSolver solver2(spawnRegion, endRegion);
+        solver2.forbidItems(forbiddenItemsPlusOne);
+        if(solver2.tryToSolve())
         {
-            if (source->getItem() == firstPendingItem)
-            {
-                WorldRegion* region = source->getRegion();
-                if(!fullPath.hasRegionAlreadyBeenExplored(region))
-                {
-                    // We pass along the already required items to avoid counting doubles for items we already need        
-                    const UnsortedSet<Item*>& currentRequiredItems = fullPath.getRequiredItems();
-                    ExplorationPath newPath = this->findLeastExpensivePathTo(fullPath.getExploredRegions(), ExplorationPath(region, currentRequiredItems));
-            
-                    // Determine the newly found required items so that we can locate them next time...
-                    UnsortedSet<Item*> newRequiredItems = newPath.getRequiredItems().diff(currentRequiredItems);
-                    pendingItems.insert(newRequiredItems);
-
-                    // Merge the paths so that regions that were explored are now known as explored
-                    fullPath.merge(newPath);
-                }
-            }
+            // Item can be freely removed: keep it removed for further solves
+            forbiddenItems = forbiddenItemsPlusOne;
+        }
+        else
+        {
+            // Item cannot be removed: it means it's required
+            minimalInventory.push_back(item);
         }
     }
-
-	return fullPath.getRequiredItems();
+ 
+    return minimalInventory;
 }
 
-ExplorationPath World::findLeastExpensivePathTo(const UnsortedSet<WorldRegion*>& targetRegions, const ExplorationPath& currentExplorationPath) const
+bool World::isMacroRegionAvoidable(WorldMacroRegion* macroRegion) const
 {
-	std::vector<ExplorationPath> resultExplorations;
-	WorldRegion* currentRegion = currentExplorationPath.getLatestRegion();
-
-	// If we have arrived to one of the target regions, end this exploration branch
-	if(targetRegions.contains(currentRegion))
-		return currentExplorationPath;
-
-	// For each exploration option we have, dig deeper
-	const std::vector<WorldPath*>& paths = currentRegion->getIngoingPaths();
-	for(WorldPath* path : paths)
-	{
-		WorldRegion* origin = path->getOrigin();
-		// If node has already been explored, it's a loop / backtrack so forget it
-		if(!currentExplorationPath.hasRegionAlreadyBeenExplored(origin))
-        {
-            ExplorationPath optimalPathForBranch = this->findLeastExpensivePathTo(targetRegions, currentExplorationPath.fork(path));
-            if(!optimalPathForBranch.isInvalid())
-			    resultExplorations.push_back(optimalPathForBranch);
-        }
-	}
-
-	// Handle cul-de-sacs
-	if(resultExplorations.empty())
-    {
-        ExplorationPath invalidPath = currentExplorationPath;
-        invalidPath.invalidate();
-        return invalidPath;
-    }
-
-    // Now that we have a list of the best exploration path for each child of this node, elect the least expensive one and return it
-	std::pair<ExplorationPath*, uint32_t> bestExplorationAndCost = std::make_pair(nullptr, UINT32_MAX);
-	for(ExplorationPath& explo : resultExplorations)
-	{
-		if(explo.getTotalCost() < bestExplorationAndCost.second)
-			bestExplorationAndCost = std::make_pair(&explo, explo.getTotalCost());
-	}
-
-	if(!bestExplorationAndCost.first)
-		throw RandomizerException("No best exploration found");
-
-	return *bestExplorationAndCost.first;
+    WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+    WorldRegion* endRegion = regions.at(RegionCode::ENDGAME);
+    WorldSolver solver(spawnRegion, endRegion);
+    solver.forbidTakingItemsFromRegions(macroRegion->getRegions());
+    
+    return solver.tryToSolve();
 }

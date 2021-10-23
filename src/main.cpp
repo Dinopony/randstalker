@@ -124,6 +124,16 @@ Json plandomize(World& world, RandomizerOptions& options, ArgumentDictionary& ar
 	return spoilerJson;
 }
 
+void displayOptions(const RandomizerOptions& options)
+{
+	Json optionsAsJSON = options.toJSON();
+	if(!options.hasCustomMandatoryItems())
+		optionsAsJSON["randomizerSettings"]["mandatoryItems"] = "default";
+	if(!options.hasCustomFillerItems())
+		optionsAsJSON["randomizerSettings"]["fillerItems"] = "default";
+	std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
+}
+
 int main(int argc, char* argv[])
 {
 	ArgumentDictionary argsDictionary(argc, argv);
@@ -134,12 +144,7 @@ int main(int argc, char* argv[])
 	{
 		// Parse options from command-line args, preset file, plando file...
 		RandomizerOptions options(argsDictionary);
-		Json optionsAsJSON = options.toJSON();
-		if(!options.hasCustomMandatoryItems())
-			optionsAsJSON["randomizerSettings"]["mandatoryItems"] = "default";
-		if(!options.hasCustomFillerItems())
-			optionsAsJSON["randomizerSettings"]["fillerItems"] = "default";
-		std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
+		displayOptions(options);
 
 		// Output current preset
 		if (argsDictionary.getBoolean("writepreset"))
@@ -183,15 +188,19 @@ int main(int argc, char* argv[])
 		std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";
 
 		// Write a spoiler log to help the player
-		if(options.allowSpoilerLog() && !options.getSpoilerLogPath().empty())
+		if(!options.getSpoilerLogPath().empty())
 		{
-			std::ofstream spoilerFile(options.getSpoilerLogPath());
-			if (spoilerFile)
-				spoilerFile << spoilerJson.dump(4);
-			spoilerFile.close();
+			if(options.allowSpoilerLog())
+			{
+				std::ofstream spoilerFile(options.getSpoilerLogPath());
+				if (spoilerFile)
+					spoilerFile << spoilerJson.dump(4);
+				spoilerFile.close();
+				std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n\n";
+			}
+			else
+				std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n\n";
 		}
-		
-		std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n\n";
 
 		if ( options.mustPause() )
 		{

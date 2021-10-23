@@ -31,9 +31,9 @@ void WorldRandomizer::randomize()
 	this->randomizeItems();
 
 	// Analyse items required to complete the seed
-	_strictlyNeededKeyItems = _world.getRequiredItemsToComplete();
+	_minimalItemsToComplete = _world.getRequiredItemsToComplete();
 	_debugLogJson["requiredItems"] = Json::array();
-	for (Item* item : _strictlyNeededKeyItems)
+	for (Item* item : _minimalItemsToComplete)
 		_debugLogJson["requiredItems"].push_back(item->getName());
 
 	// 3rd pass: randomizations happening AFTER randomizing items
@@ -485,13 +485,13 @@ Item* WorldRandomizer::randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem
 	WorldRegion* itemRegion = _world.getRegionForItem(_world.items[ITEM_ORACLE_STONE]);
 	if(itemRegion)
 	{
-		UnsortedSet<Item*> strictlyNeededKeyItemsForOracleStone = _world.getRequiredItemsToReachRegion(itemRegion);
-		for (Item* item : strictlyNeededKeyItemsForOracleStone)
+		std::vector<Item*> minimalItemsToReachOracleStone = _world.findSmallestInventoryToReachRegion(itemRegion);
+		for (Item* item : minimalItemsToReachOracleStone)
 			forbiddenOracleStoneItems.insert(item);
 	}
 
 	std::vector<Item*> hintableItems;
-	for (Item* item : _strictlyNeededKeyItems)
+	for (Item* item : _minimalItemsToComplete)
 	{
 		if(!forbiddenOracleStoneItems.contains(item))
 			hintableItems.push_back(item);
@@ -548,14 +548,14 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		std::string hintText;
 		double randomNumber = (double) _rng() / (double) _rng.max();
 		WorldRegion* signRegion = sign->getRegion();
-		UnsortedSet<Item*> itemsAlreadyObtainedAtSign = _world.getRequiredItemsToReachRegion(signRegion);
-		int nextElligibleHintableItemsNecessityPos = this->getNextElligibleHintableItemPos(hintableItemsNecessity, itemsAlreadyObtainedAtSign);
+		std::vector<Item*> itemsAlreadyObtainedAtSign = _world.findSmallestInventoryToReachRegion(signRegion);
+		int nextEligibleHintableItemsNecessityPos = this->getNextEligibleHintableItemPos(hintableItemsNecessity, itemsAlreadyObtainedAtSign);
 
 		// "Barren / pleasant surprise" (30%)
 		if (randomNumber < 0.3 && !macroRegionsAvailableForHints.empty())
 		{
 			WorldMacroRegion* macroRegion = *macroRegionsAvailableForHints.begin();
-			if (macroRegion->isBarren(_strictlyNeededKeyItems))
+			if (_world.isMacroRegionAvoidable(macroRegion))
 				hintText = "What you are looking for is not in " + macroRegion->getName() + ".";
 			else
 				hintText = "You might have a pleasant surprise wandering in " + macroRegion->getName() + ".";
@@ -563,15 +563,15 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 			macroRegionsAvailableForHints.erase(macroRegionsAvailableForHints.begin());
 		}
 		// "You will / won't need {item} to finish" (25%)
-		else if (randomNumber < 0.55 && nextElligibleHintableItemsNecessityPos >=0)
+		else if (randomNumber < 0.55 && nextEligibleHintableItemsNecessityPos >=0)
 		{
-			Item* hintedItem = _world.items[hintableItemsNecessity.at(nextElligibleHintableItemsNecessityPos)];
-			if (_strictlyNeededKeyItems.contains(hintedItem))
+			Item* hintedItem = _world.items[hintableItemsNecessity.at(nextEligibleHintableItemsNecessityPos)];
+			if (std::find(_minimalItemsToComplete.begin(), _minimalItemsToComplete.end(), hintedItem) != _minimalItemsToComplete.end())
 				hintText = "You will need " + hintedItem->getName() + " in your quest to King Nole's treasure.";
 			else
-				hintText = hintedItem->getName() + " is useless in your quest King Nole's treasure.";
+				hintText = hintedItem->getName() + " is useless in your quest to King Nole's treasure.";
 
-			hintableItemsNecessity.erase(hintableItemsNecessity.begin() + nextElligibleHintableItemsNecessityPos);
+			hintableItemsNecessity.erase(hintableItemsNecessity.begin() + nextEligibleHintableItemsNecessityPos);
 		}
 		// "You shall find {item} in {place}" (45%)
 		else if (!hintableItemLocations.empty())
@@ -580,8 +580,9 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 			for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
 			{
 				Item* testedItem = _world.items[hintableItemLocations[i]];
-				if (!itemsAlreadyObtainedAtSign.contains(testedItem))
+				if (std::find(itemsAlreadyObtainedAtSign.begin(), itemsAlreadyObtainedAtSign.end(), testedItem) == itemsAlreadyObtainedAtSign.end())
 				{
+					// If item was not already obtained at sign, we can hint it
 					hintedItem = testedItem;
 					hintableItemLocations.erase(hintableItemLocations.begin() + i);
 					break;
@@ -599,15 +600,13 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 	}
 }
 
-uint32_t WorldRandomizer::getNextElligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, UnsortedSet<Item*> itemsAlreadyObtainedAtSign)
+uint32_t WorldRandomizer::getNextEligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, const std::vector<Item*>& itemsAlreadyObtainedAtSign)
 {
 	for (uint32_t i = 0; i < hintableItemsNecessity.size(); ++i)
 	{
 		Item* testedItem = _world.items[hintableItemsNecessity[i]];
-		if (!itemsAlreadyObtainedAtSign.contains(testedItem))
-		{
+		if (std::find(itemsAlreadyObtainedAtSign.begin(), itemsAlreadyObtainedAtSign.end(), testedItem) == itemsAlreadyObtainedAtSign.end())
 			return i;
-		}
 	}
 	return -1;
 }
@@ -659,7 +658,7 @@ Json WorldRandomizer::getPlaythroughAsJson() const
 	for(ItemSource* source : _logicalPlaythrough)
 	{
 		Item* keyItemInSource = source->getItem();
-		if(_strictlyNeededKeyItems.contains(keyItemInSource))
+		if(std::find(_minimalItemsToComplete.begin(), _minimalItemsToComplete.end(), keyItemInSource) != _minimalItemsToComplete.end())
 			json[source->getName()] = keyItemInSource->getName();
 	}
 

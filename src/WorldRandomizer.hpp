@@ -48,7 +48,7 @@ private:
 	Item* randomizeFortuneTellerHint();
 	Item* randomizeOracleStoneHint(Item* forbiddenFortuneTellerItem);
 	void randomizeSignHints(Item* hintedFortuneItem, Item* hintedOracleStoneItem);
-	uint32_t getNextElligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, UnsortedSet<Item*> itemsAlreadyObtainedAtSign);
+	uint32_t getNextEligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, const std::vector<Item*>& itemsAlreadyObtainedAtSign);
 	
 	std::string getRandomHintForItem(Item* item);
 	std::string getRandomHintForItemSource(ItemSource* itemSource);
@@ -74,5 +74,5 @@ private:
 
 	std::vector<ItemSource*> _logicalPlaythrough;
 
-	UnsortedSet<Item*> _strictlyNeededKeyItems;
+	std::vector<Item*> _minimalItemsToComplete;
 };
