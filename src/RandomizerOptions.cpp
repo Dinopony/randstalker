@@ -145,6 +145,7 @@ Json RandomizerOptions::toJSON() const
 	json["gameSettings"]["itemMaxQuantities"] = _itemMaxQuantities;
 	json["gameSettings"]["consumableRecordBook"] = _consumableRecordBook;
 
+	json["randomizerSettings"]["allowSpoilerLog"] = _allowSpoilerLog;
 	json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
 	json["randomizerSettings"]["ghostJumpingInLogic"] = _ghostJumpingInLogic;
@@ -153,9 +154,6 @@ Json RandomizerOptions::toJSON() const
 		json["randomizerSettings"]["mandatoryItems"] = *_mandatoryItems;
 	if(_fillerItems)
 		json["randomizerSettings"]["fillerItems"] = *_fillerItems;
-
-	if(!this->isPlando())
-		json["seed"] = _seed;
 
 	return json;
 }
@@ -205,6 +203,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 	{
 		const Json& randomizerSettingsJson = json.at("randomizerSettings");
 
+		if(randomizerSettingsJson.contains("allowSpoilerLog"))
+			_allowSpoilerLog = randomizerSettingsJson.at("allowSpoilerLog");
 		if(randomizerSettingsJson.contains("fillingRate"))
 			_fillingRate = randomizerSettingsJson.at("fillingRate");
 		if(randomizerSettingsJson.contains("shuffleTrees"))
@@ -338,6 +338,8 @@ std::string RandomizerOptions::getPermalink() const
 	}
 
 	permalinkJson["version"] = MAJOR_RELEASE;
+	permalinkJson["seed"] = _seed;
+
 	return "L" + base64_encode(Json::to_msgpack(permalinkJson)) + "S";
 }
 
