@@ -1452,8 +1452,6 @@ void World::initDarkRooms()
     
     regions[RegionCode::KN_PALACE]->setDarkRooms(0x73, 0x8A);
 
-    regions[RegionCode::WITCH_HELGA_HUT]->setDarkRooms(0x311, 0x322);
-
     regions[RegionCode::TIBOR]->setDarkRooms(0x328, 0x32F);
 }
 
