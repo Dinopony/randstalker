@@ -1670,3 +1670,13 @@ bool World::isMacroRegionAvoidable(WorldMacroRegion* macroRegion) const
     
     return solver.tryToSolve();
 }
+
+bool World::isItemAvoidable(Item* item) const
+{
+    WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+    WorldRegion* endRegion = regions.at(RegionCode::ENDGAME);
+    WorldSolver solver(spawnRegion, endRegion);
+    solver.forbidItems({ item });
+
+    return solver.tryToSolve();
+}

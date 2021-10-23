@@ -38,7 +38,9 @@ public:
 
     std::vector<Item*> findSmallestInventoryToReachRegion(WorldRegion* endRegion) const;
     std::vector<Item*> getRequiredItemsToComplete() const { return this->findSmallestInventoryToReachRegion(regions.at(RegionCode::ENDGAME)); }
+  
     bool isMacroRegionAvoidable(WorldMacroRegion* macroRegion) const;
+    bool isItemAvoidable(Item* item) const;
 
 private:
     void initItems(const RandomizerOptions& options);

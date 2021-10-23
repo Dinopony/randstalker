@@ -2,9 +2,9 @@
 #include "Tools.hpp"
 #include "GameText.hpp"
 #include "Exceptions.hpp"
+#include "WorldSolver.hpp"
 #include <algorithm>
 #include <sstream>
-#include <set>
 
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
 	_world				(world),
@@ -578,10 +578,10 @@ void WorldRandomizer::randomizeSignHints(Item* hintedFortuneItem, Item* hintedOr
 		else if (randomNumber < 0.55 && nextEligibleHintableItemsNecessityPos >=0)
 		{
 			Item* hintedItem = _world.items[hintableItemsNecessity.at(nextEligibleHintableItemsNecessityPos)];
-			if (std::find(_minimalItemsToComplete.begin(), _minimalItemsToComplete.end(), hintedItem) != _minimalItemsToComplete.end())
+			if (!_world.isItemAvoidable(hintedItem))
 				hintText = "You will need " + hintedItem->getName() + " in your quest to King Nole's treasure.";
 			else
-				hintText = hintedItem->getName() + " is useless in your quest to King Nole's treasure.";
+				hintText = hintedItem->getName() + " is not required in your quest to King Nole's treasure.";
 
 			hintableItemsNecessity.erase(hintableItemsNecessity.begin() + nextEligibleHintableItemsNecessityPos);
 		}
