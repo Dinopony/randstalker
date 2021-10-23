@@ -114,7 +114,7 @@ uint8_t getSpawnLocationX(SpawnLocation loc)
     case SpawnLocation::DESTEL:       return 0x11;
     case SpawnLocation::GREENMAZE:    return 0x1D;
     }
-    return -1;
+    return 0x00;
 }
 
 uint8_t getSpawnLocationZ(SpawnLocation loc)
@@ -127,10 +127,11 @@ uint8_t getSpawnLocationZ(SpawnLocation loc)
     case SpawnLocation::WATERFALL:    return 0x1A;
     case SpawnLocation::KADO:         return 0x12;
     case SpawnLocation::MERCATOR:     return 0x0F;
+    case SpawnLocation::VERLA:        return 0x16;
     case SpawnLocation::DESTEL:       return 0x12;
     case SpawnLocation::GREENMAZE:    return 0x21;
     }
-    return -1;
+    return 0x00;
 }
 
 uint16_t getSpawnLocationMapID(SpawnLocation loc)
@@ -147,7 +148,7 @@ uint16_t getSpawnLocationMapID(SpawnLocation loc)
     case SpawnLocation::DESTEL:       return 0x2DF;
     case SpawnLocation::GREENMAZE:    return 0x233;
     }
-    return -1;
+    return 0x0000;
 }
 
 uint8_t getSpawnLocationOrientation(SpawnLocation loc)
@@ -164,7 +165,7 @@ uint8_t getSpawnLocationOrientation(SpawnLocation loc)
     case SpawnLocation::DESTEL:       return SPAWN_ORIENTATION_SW;
     case SpawnLocation::GREENMAZE:    return SPAWN_ORIENTATION_NE;
     }
-    return -1;
+    return SPAWN_ORIENTATION_SW;
 }
 
 RegionCode getSpawnLocationRegion(SpawnLocation loc)
