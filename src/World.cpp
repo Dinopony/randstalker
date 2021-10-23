@@ -1472,6 +1472,7 @@ Json World::toJSON() const
 	Json json;
 
     // Export dark region
+    json["spawnRegion"] = regions.at(getSpawnLocationRegion(spawnLocation))->getName();
     json["darkRegion"] = darkenedRegion->getName();
 
     // Export hints
