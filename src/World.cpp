@@ -760,13 +760,16 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_RYUMA_LIGHTHOUSE_LIFESTOCK]
     });
 
-    regions[RegionCode::THIEVES_HIDEOUT] = new WorldRegion("Thieves Hideout", { 
+    regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY] = new WorldRegion("Thieves Hideout (before keydoor)", { 
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_EKEEKE_ROLLING_BOULDER],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_DUAL_EKEEKE_LEFT],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_DUAL_EKEEKE_RIGHT],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_ENTRANCE_EKEEKE],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_POCKETS_CELL_LEFT],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_POCKETS_CELL_RIGHT],
+    });
+    
+    regions[RegionCode::THIEVES_HIDEOUT_POST_KEY] = new WorldRegion("Thieves Hideout (after keydoor)", { 
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_QUICK_CLIMB_LEFT],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_QUICK_CLIMB_RIGHT],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_FIRST_PLATFORM_ROOM],
@@ -1106,7 +1109,7 @@ void World::initRegions()
         new WorldMacroRegion("the swamp shrine",		{ regions[RegionCode::SWAMP_SHRINE] }),
         new WorldMacroRegion("Tibor",					{ regions[RegionCode::TIBOR] }),
         new WorldMacroRegion("the town of Ryuma",		{ regions[RegionCode::RYUMA], regions[RegionCode::RYUMA_REPAIRED_LIGHTHOUSE] }),
-        new WorldMacroRegion("the thieves' hideout",	{ regions[RegionCode::THIEVES_HIDEOUT] }),
+        new WorldMacroRegion("the thieves' hideout",	{ regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY], regions[RegionCode::THIEVES_HIDEOUT_POST_KEY] }),
         new WorldMacroRegion("witch Helga's hut",		{ regions[RegionCode::WITCH_HELGA_HUT] }),
         new WorldMacroRegion("the town of Mercator",	{ regions[RegionCode::MERCATOR], regions[RegionCode::MERCATOR_CASINO], regions[RegionCode::MERCATOR_SPECIAL_SHOP] }),
         new WorldMacroRegion("the crypt of Mercator",	{ regions[RegionCode::CRYPT] }),
@@ -1161,8 +1164,9 @@ void World::initRegionPaths(const RandomizerOptions& options)
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::RYUMA]);
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::MERCATOR], items[ITEM_SAFETY_PASS], 2);
 	regions[RegionCode::ROUTE_GUMI_RYUMA]->addPathsBetween(regions[RegionCode::WITCH_HELGA_HUT], items[ITEM_EINSTEIN_WHISTLE]);
-	regions[RegionCode::RYUMA]->addPathsBetween(regions[RegionCode::THIEVES_HIDEOUT]);
     regions[RegionCode::RYUMA]->addPathsBetween(regions[RegionCode::RYUMA_REPAIRED_LIGHTHOUSE], items[ITEM_SUN_STONE]);
+    regions[RegionCode::RYUMA]->addPathsBetween(regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]);
+   	regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]->addPathsBetween(regions[RegionCode::THIEVES_HIDEOUT_POST_KEY], items[ITEM_KEY]); 
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_DUNGEON]);
     regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_CASINO], items[ITEM_CASINO_TICKET]);
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::CRYPT]);
@@ -1236,7 +1240,8 @@ void World::initRegionHints()
     regions[RegionCode::LAKE_SHRINE]->addHint("in a shrine");
 
     regions[RegionCode::WATERFALL_SHRINE]->addHint("close to a waterfall");
-    regions[RegionCode::THIEVES_HIDEOUT]->addHint("close to a waterfall");
+    regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]->addHint("close to a waterfall");
+    regions[RegionCode::THIEVES_HIDEOUT_POST_KEY]->addHint("close to a waterfall");
     regions[RegionCode::KN_LABYRINTH_RAFT_SECTOR]->addHint("close to a waterfall");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_DAHL]->addHint("close to a waterfall");
     itemSources[ItemSourceCode::CHEST_GREENMAZE_WATERFALL_CAVE_GOLDS]->addHint("close to a waterfall");
@@ -1290,7 +1295,8 @@ void World::initRegionHints()
     regions[RegionCode::MASSAN_CAVE]->addHint("in a large cave");
     regions[RegionCode::KN_CAVE]->addHint("in a large cave");
     regions[RegionCode::DESTEL_WELL]->addHint("in a large cave");
-    regions[RegionCode::THIEVES_HIDEOUT]->addHint("in a large cave");
+    regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]->addHint("in a large cave");
+    regions[RegionCode::THIEVES_HIDEOUT_POST_KEY]->addHint("in a large cave");
 
     regions[RegionCode::KAZALT]->addHint("in King Nole's domain");
     regions[RegionCode::KN_LABYRINTH_PRE_SPIKES]->addHint("in King Nole's domain");
@@ -1347,7 +1353,8 @@ void World::initRegionHints()
     regions[RegionCode::WATERFALL_SHRINE]->addHint("in Waterfall Shrine");
     regions[RegionCode::SWAMP_SHRINE]->addHint("in Swamp Shrine");
     regions[RegionCode::LAKE_SHRINE]->addHint("in Lake Shrine");
-    regions[RegionCode::THIEVES_HIDEOUT]->addHint("in the Thieves' Hideout");
+    regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]->addHint("in the Thieves' Hideout");
+    regions[RegionCode::THIEVES_HIDEOUT_POST_KEY]->addHint("in the Thieves' Hideout");
     regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addHint("in the infamous Greenmaze");
     regions[RegionCode::GREENMAZE_POST_WHISTLE]->addHint("in the infamous Greenmaze");
     regions[RegionCode::TIBOR]->addHint("inside the elder tree called Tibor");
@@ -1389,9 +1396,9 @@ void World::initHintSigns(bool fillDungeonSignsWithHints)
 
     if (fillDungeonSignsWithHints)
     {
-        hintSigns.push_back(new HintSign(0x0FE, "Thieves' Hideout entrance sign", regions[RegionCode::THIEVES_HIDEOUT]));
-        hintSigns.push_back(new HintSign(0x0FF, "Thieves' Hideout second room sign", regions[RegionCode::THIEVES_HIDEOUT]));
-        hintSigns.push_back(new HintSign(0x100, "Thieves' Hideout boss path sign", regions[RegionCode::THIEVES_HIDEOUT]));
+        hintSigns.push_back(new HintSign(0x0FE, "Thieves' Hideout entrance sign", regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]));
+        hintSigns.push_back(new HintSign(0x0FF, "Thieves' Hideout second room sign", regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]));
+        hintSigns.push_back(new HintSign(0x100, "Thieves' Hideout boss path sign", regions[RegionCode::THIEVES_HIDEOUT_POST_KEY]));
         hintSigns.push_back(new HintSign({0x12C,0x12D,0x12E}, "Mir Tower sign before bridge room", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
         hintSigns.push_back(new HintSign(0x12F, "Mir Tower bridge room sign", regions[RegionCode::MIR_TOWER_PRE_GARLIC]));
         hintSigns.push_back(new HintSign({0x130,0x131}, "Mir Tower library sign", regions[RegionCode::MIR_TOWER_POST_GARLIC]));
@@ -1407,7 +1414,7 @@ void World::initDarkRooms()
         0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xC, 0xD, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1B, 0x1E
     });
     
-    regions[RegionCode::THIEVES_HIDEOUT]->setDarkRooms({
+    regions[RegionCode::THIEVES_HIDEOUT_PRE_KEY]->setDarkRooms({
         0xB9, 0xBA, 0xBC, 0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 
         0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD2, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE
     });
