@@ -59,7 +59,7 @@ set(SOURCES
     "src/WorldRandomizer.cpp"
     "src/WorldRegion.hpp"
     "src/WorldPath.hpp"
-    "src/ExplorationPath.hpp"
+    "src/WorldSolver.hpp"
     "src/main.cpp"
 )
 

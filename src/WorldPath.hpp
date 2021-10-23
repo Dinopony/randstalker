@@ -29,15 +29,22 @@ public:
 	WorldRegion* getDestination() const { return _destination; }
 	const std::vector<Item*>& getRequiredItems() const { return _requiredItems; }
 
-	std::vector<Item*> getMissingItemsToCross(std::vector<Item*> playerInventoryCopy)
+	std::vector<Item*> getMissingItemsToCross(std::vector<Item*> playerInventoryCopy, bool onlyHardRequiredItems = false)
 	{
-		std::vector<Item*> missingItems;
-		for (Item* requiredItem : _requiredItems)
+		std::vector<Item*> itemsToTest = _requiredItems;
+		if(!onlyHardRequiredItems)
 		{
-			auto iter = std::find(playerInventoryCopy.begin(), playerInventoryCopy.end(), requiredItem);
+			for(Item* item : _nonRequiredItemsPlacedWhenCrossing)
+				itemsToTest.push_back(item);
+		}
+
+		std::vector<Item*> missingItems;
+		for (Item* item : itemsToTest)
+		{
+			auto iter = std::find(playerInventoryCopy.begin(), playerInventoryCopy.end(), item);
 			if (iter == playerInventoryCopy.end())
 			{
-				missingItems.push_back(requiredItem);
+				missingItems.push_back(item);
 			}
 			else
 			{
@@ -50,6 +57,16 @@ public:
 		return missingItems;
 	}
 
+	void addNonRequiredItemPlacedWhenCrossing(Item* item)
+	{
+		_nonRequiredItemsPlacedWhenCrossing.push_back(item);
+	}
+
+	const std::vector<Item*>& getNonRequiredItemsPlacedWhenCrossing() const
+	{
+		return _nonRequiredItemsPlacedWhenCrossing;
+	}
+
 	void setRandomWeight(uint16_t randomWeight) { _randomWeight = randomWeight; }
 	uint16_t getRandomWeight() const { return _randomWeight; }
 
@@ -57,6 +74,7 @@ private:
 	WorldRegion* _origin;
 	WorldRegion* _destination;
 	std::vector<Item*> _requiredItems;
+	std::vector<Item*> _nonRequiredItemsPlacedWhenCrossing;
 	std::vector<uint16_t> _darkRooms;
 	uint16_t _randomWeight;
 };

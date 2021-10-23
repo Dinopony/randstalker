@@ -34,16 +34,17 @@ public:
 		itemSource->setRegion(this);
 	}
 
-	void addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems = {}, uint16_t weight = 1)
+	WorldPath* addPathTo(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems = {}, uint16_t weight = 1)
 	{
 		WorldPath* newPath = new WorldPath(this, otherRegion, requiredItems, weight);
 		_outgoingPaths.push_back(newPath);
 		otherRegion->_ingoingPaths.push_back(newPath);
+		return newPath;
 	}
 
-	void addPathTo(WorldRegion* otherRegion, Item* requiredItem, uint16_t weight = 1)
+	WorldPath* addPathTo(WorldRegion* otherRegion, Item* requiredItem, uint16_t weight = 1)
 	{
-		this->addPathTo(otherRegion, std::vector<Item*>({ requiredItem }), weight);
+		return this->addPathTo(otherRegion, std::vector<Item*>({ requiredItem }), weight);
 	}
 
 	void addPathsBetween(WorldRegion* otherRegion, const std::vector<Item*>& requiredItems = {}, uint16_t weight = 1)

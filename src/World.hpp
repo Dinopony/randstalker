@@ -8,7 +8,6 @@
 #include "WorldRegion.hpp"
 #include "WorldPath.hpp"
 #include "WorldMacroRegion.hpp"
-#include "ExplorationPath.hpp"
 #include "RandomizerOptions.hpp"
 #include "TreeMap.hpp"
 #include "HintSign.hpp"
@@ -37,10 +36,10 @@ public:
     void parseJSON(const Json& json);
     Item* parseItemFromName(const std::string& itemName);
 
-    UnsortedSet<Item*> getRequiredItemsToReachRegion(WorldRegion* region) const;
-    UnsortedSet<Item*> getRequiredItemsToComplete() const { return this->getRequiredItemsToReachRegion(regions.at(RegionCode::ENDGAME)); }
-    ExplorationPath findLeastExpensivePathTo(const UnsortedSet<WorldRegion*>& targetRegions, const ExplorationPath& currentExplorationPath) const;
-    
+    std::vector<Item*> findSmallestInventoryToReachRegion(WorldRegion* endRegion) const;
+    std::vector<Item*> getRequiredItemsToComplete() const { return this->findSmallestInventoryToReachRegion(regions.at(RegionCode::ENDGAME)); }
+    bool isMacroRegionAvoidable(WorldMacroRegion* macroRegion) const;
+
 private:
     void initItems(const RandomizerOptions& options);
     void initChests();
