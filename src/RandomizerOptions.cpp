@@ -19,9 +19,10 @@ RandomizerOptions::RandomizerOptions() :
 	_consumableRecordBook	(false),
 
 	_seed					(0),
+	_allowSpoilerLog		(true),
 	_fillingRate			(DEFAULT_FILLING_RATE),
 	_shuffleTiborTrees		(false), 
-	_allowSpoilerLog		(true),
+	_ghostJumpingInLogic	(false),
 	_mandatoryItems			(nullptr),
 	_fillerItems			(nullptr),
 
@@ -146,6 +147,7 @@ Json RandomizerOptions::toJSON() const
 
 	json["randomizerSettings"]["fillingRate"] = _fillingRate;
 	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
+	json["randomizerSettings"]["ghostJumpingInLogic"] = _ghostJumpingInLogic;
 
 	if(_mandatoryItems)
 		json["randomizerSettings"]["mandatoryItems"] = *_mandatoryItems;
@@ -207,6 +209,8 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_fillingRate = randomizerSettingsJson.at("fillingRate");
 		if(randomizerSettingsJson.contains("shuffleTrees"))
 			_shuffleTiborTrees = randomizerSettingsJson.at("shuffleTrees");
+		if(randomizerSettingsJson.contains("ghostJumpingInLogic"))
+			_ghostJumpingInLogic = randomizerSettingsJson.at("ghostJumpingInLogic");
 
 		if(randomizerSettingsJson.contains("mandatoryItems"))
 		{

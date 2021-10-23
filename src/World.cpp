@@ -1168,7 +1168,6 @@ void World::initRegionPaths(const RandomizerOptions& options)
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::CRYPT]);
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_SECTOR]);
 	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::MERCATOR_SPECIAL_SHOP], items[ITEM_BUYER_CARD]);
-	regions[RegionCode::MERCATOR]->addPathsBetween(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
 	regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_PRE_GARLIC], items[ITEM_ARMLET]);
     regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::TWINKLE_VILLAGE]);
     regions[RegionCode::MIR_TOWER_SECTOR]->addPathsBetween(regions[RegionCode::MIR_TOWER_SECTOR_BEHIND_TREES], items[ITEM_AXE_MAGIC]);
@@ -1185,9 +1184,16 @@ void World::initRegionPaths(const RandomizerOptions& options)
 	regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathsBetween(regions[RegionCode::MOUNTAINOUS_AREA], items[ITEM_AXE_MAGIC]);
 	regions[RegionCode::MOUNTAINOUS_AREA]->addPathsBetween(regions[RegionCode::KN_CAVE], items[ITEM_GOLA_EYE], 2);
 
+	regions[RegionCode::MERCATOR]->addPathTo(regions[RegionCode::GREENMAZE_PRE_WHISTLE], items[ITEM_KEY], 2);
+    regions[RegionCode::GREENMAZE_PRE_WHISTLE]->addPathTo(regions[RegionCode::MERCATOR]);
     regions[RegionCode::RYUMA_REPAIRED_LIGHTHOUSE]->addPathTo(regions[RegionCode::VERLA_SECTOR], items[ITEM_SAFETY_PASS]);
 	regions[RegionCode::VERLA_SECTOR]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
-	regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
+
+    if(_options.handleGhostJumpingInLogic())
+        regions[RegionCode::MOUNTAINOUS_AREA]->addPathsBetween(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
+    else
+        regions[RegionCode::MOUNTAINOUS_AREA]->addPathTo(regions[RegionCode::ROUTE_LAKE_SHRINE], items[ITEM_AXE_MAGIC]);
+
     regions[RegionCode::GREENMAZE_POST_WHISTLE]->addPathTo(regions[RegionCode::ROUTE_MASSAN_GUMI]);
     regions[RegionCode::LAKE_SHRINE]->addPathTo(regions[RegionCode::MIR_TOWER_SECTOR]);
 	WorldPath* kazaltTeleporter = regions[RegionCode::KN_CAVE]->addPathTo(regions[RegionCode::KAZALT], requiredJewels);

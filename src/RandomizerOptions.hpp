@@ -47,6 +47,7 @@ public:
 	bool allowSpoilerLog() const { return _allowSpoilerLog; }
 	double getFillingRate() const { return _fillingRate; }
 	bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
+	bool handleGhostJumpingInLogic() const { return _ghostJumpingInLogic; }
 	bool hasCustomMandatoryItems() const { return _mandatoryItems != nullptr; }
 	const std::map<std::string, uint16_t>& getMandatoryItems() const { return *_mandatoryItems; }
 	bool hasCustomFillerItems() const { return _fillerItems != nullptr; }
@@ -88,9 +89,10 @@ private:
 	// ------------- Randomization settings -------------
 	// (included in permalink & presets, not in plandos)
 	uint32_t _seed;
+	bool _allowSpoilerLog;
 	double _fillingRate;
 	bool _shuffleTiborTrees;
-	bool _allowSpoilerLog;
+	bool _ghostJumpingInLogic;
 	std::map<std::string, uint16_t>* _mandatoryItems;
 	std::map<std::string, uint16_t>* _fillerItems;
 
