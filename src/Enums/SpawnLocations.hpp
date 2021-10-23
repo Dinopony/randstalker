@@ -17,6 +17,7 @@ enum class SpawnLocation {
     KADO,
     MERCATOR,
     VERLA,
+    DESTEL,
     RANDOM
 };
 
