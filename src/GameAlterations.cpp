@@ -51,6 +51,10 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     flagArray[0x2A] = 0x81;
     flagArray[0x2B] = 0x82;
 
+    // Clear Verla soldiers if spawning in Verla
+    if(options.getSpawnLocation() == SpawnLocation::VERLA)
+        flagArray[0x26] += 0x18;
+
     // Set starting items
     for(uint8_t itemID=0 ; itemID < ITEM_GOLDS_START ; itemID += 0x2)
     {

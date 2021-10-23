@@ -13,6 +13,7 @@ std::string spawnLocationToString(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return "Near Waterfall Shrine";
     case SpawnLocation::KADO:		return "Kado's House";
     case SpawnLocation::MERCATOR:   return "Mercator";
+    case SpawnLocation::VERLA:      return "Verla";
     }
     return "???";
 }
@@ -28,6 +29,7 @@ int spawnLocationToNumber(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return 4;
     case SpawnLocation::KADO:		return 5;
     case SpawnLocation::MERCATOR:   return 6;
+    case SpawnLocation::VERLA:      return 7;
     }
     return -1;
 }
@@ -54,7 +56,10 @@ SpawnLocation spawnLocationFromString(std::string locAsString)
         { "5",			SpawnLocation::KADO			},
 
         { "mercator",   SpawnLocation::MERCATOR		},
-        { "6",			SpawnLocation::MERCATOR		}
+        { "6",			SpawnLocation::MERCATOR		},
+        
+        { "verla",      SpawnLocation::VERLA		},
+        { "7",			SpawnLocation::VERLA		}
     };
 
     Tools::toLower(locAsString);
@@ -79,6 +84,7 @@ std::vector<SpawnLocation> getAllSpawnLocations()
         SpawnLocation::WATERFALL, 
         SpawnLocation::KADO,
         SpawnLocation::MERCATOR,
+        SpawnLocation::VERLA
     };
 }
 
@@ -92,6 +98,7 @@ uint8_t getSpawnLocationX(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return 0x38;
     case SpawnLocation::KADO:		return 0x16;
     case SpawnLocation::MERCATOR:	return 0x10;
+    case SpawnLocation::VERLA:	    return 0x16;
     }
     return -1;
 }
@@ -106,6 +113,7 @@ uint8_t getSpawnLocationZ(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return 0x1A;
     case SpawnLocation::KADO:		return 0x12;
     case SpawnLocation::MERCATOR:	return 0x0F;
+    case SpawnLocation::VERLA:	    return 0x16;
     }
     return -1;
 }
@@ -120,6 +128,7 @@ uint16_t getSpawnLocationMapID(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return 0x214;
     case SpawnLocation::KADO:		return 0x1BA;
     case SpawnLocation::MERCATOR:	return 0x2B3;
+    case SpawnLocation::VERLA:	    return 0x2D2;
     }
     return -1;
 }
@@ -134,6 +143,7 @@ uint8_t getSpawnLocationOrientation(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return SPAWN_ORIENTATION_SE;
     case SpawnLocation::KADO:		return SPAWN_ORIENTATION_NW;
     case SpawnLocation::MERCATOR:	return SPAWN_ORIENTATION_SW;
+    case SpawnLocation::VERLA:	    return SPAWN_ORIENTATION_SW;
     }
     return -1;
 }
@@ -148,6 +158,7 @@ RegionCode getSpawnLocationRegion(SpawnLocation loc)
     case SpawnLocation::WATERFALL:	return RegionCode::ROUTE_MASSAN_GUMI;
     case SpawnLocation::KADO:		return RegionCode::ROUTE_GUMI_RYUMA;
     case SpawnLocation::MERCATOR:	return RegionCode::MERCATOR;
+    case SpawnLocation::VERLA:	    return RegionCode::VERLA;
     }
     return RegionCode::ENDGAME;
 }
