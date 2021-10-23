@@ -18,6 +18,7 @@ enum class SpawnLocation {
     MERCATOR,
     VERLA,
     DESTEL,
+    GREENMAZE,
     RANDOM
 };
 
