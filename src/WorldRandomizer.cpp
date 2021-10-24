@@ -24,6 +24,7 @@ void WorldRandomizer::randomize()
 
 	// 1st pass: randomizations happening BEFORE randomizing items
 	_rng.seed(rngSeed);
+	this->randomizeSpawnLocation();
 	this->randomizeGoldValues();
 	this->randomizeDarkRooms();
 
@@ -131,6 +132,14 @@ void WorldRandomizer::initInventoryWithStartingItems()
 ///		FIRST PASS RANDOMIZATIONS (before items)
 ///////////////////////////////////////////////////////////////////////////////////////
 
+void WorldRandomizer::randomizeSpawnLocation()
+{
+	std::vector<SpawnLocation> possibleSpawnLocations = _options.getPossibleSpawnLocations();
+	Tools::shuffle(possibleSpawnLocations, _rng);
+	const SpawnLocation& spawnLoc = getSpawnLocationFromName(possibleSpawnLocations.begin()->getName());
+	_world.setSpawnLocation(possibleSpawnLocations[0]);
+}
+
 void WorldRandomizer::randomizeGoldValues()
 {
 	constexpr uint16_t averageGoldPerChest = 35;
@@ -192,7 +201,7 @@ void WorldRandomizer::randomizeDarkRooms()
 
 void WorldRandomizer::randomizeItems()
 {
-	_regionsToExplore.insert(_world.regions[getSpawnLocationRegion(_options.getSpawnLocation())]);
+	_regionsToExplore = { _world.getSpawnRegion() };
 	_exploredRegions.clear();		// Regions already processed by the exploration algorithm
 	_itemSourcesToFill.clear();		// Reachable empty item sources which must be filled with a random item
 	_playerInventory.clear();		// The current contents of player inventory at the given time in the exploration algorithm

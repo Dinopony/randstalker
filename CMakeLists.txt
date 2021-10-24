@@ -16,8 +16,6 @@ set(SOURCES
     "src/Enums/ItemCodes.hpp"
     "src/Enums/ItemSourceCodes.hpp"
     "src/Enums/RegionCodes.hpp"
-    "src/Enums/SpawnLocations.hpp"
-    "src/Enums/SpawnLocations.cpp" 
 
     "src/Extlibs/Base64.hpp"
     "src/Extlibs/Base64.cpp"
@@ -49,6 +47,8 @@ set(SOURCES
     "src/ItemSources.hpp"
     "src/RandomizerOptions.hpp"
     "src/RandomizerOptions.cpp"
+    "src/SpawnLocation.hpp"
+    "src/SpawnLocation.cpp" 
     "src/Tools.hpp"
     "src/TreeMap.hpp"
     "src/UnsortedSet.hpp"

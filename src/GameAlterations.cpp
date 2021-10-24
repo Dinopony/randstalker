@@ -52,7 +52,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     flagArray[0x2B] = 0x82;
 
     // Clear Verla soldiers if spawning in Verla
-    if(options.getSpawnLocation() == SpawnLocation::VERLA)
+    if(world.getSpawnLocation().getName() == "verla")
         flagArray[0x26] += 0x18;
 
     // Set starting items
@@ -90,7 +90,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     md::Code funcInitGame;
 
     // Set the orientation byte of Nigel depending on spawn location on game start
-    funcInitGame.moveb(getSpawnLocationOrientation(world.spawnLocation), addr_(0xFF5404));
+    funcInitGame.moveb(world.getSpawnLocation().getOrientation(), addr_(0xFF5404));
 
     for(int i=0 ; i<0x60 ; i+=0x2)
     {
@@ -105,13 +105,16 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     uint32_t funcInitGameAddr = rom.injectCode(funcInitGame);
 
     // ------- Set spawn position ---------
-    rom.setWord(0x0027F4, getSpawnLocationMapID(world.spawnLocation));
-    rom.setByte(0x0027FD, getSpawnLocationX(world.spawnLocation));
-    rom.setByte(0x002805, getSpawnLocationZ(world.spawnLocation));
+    rom.setWord(0x0027F4, world.getSpawnLocation().getMapID());
+    rom.setByte(0x0027FD, world.getSpawnLocation().getPositionX());
+    rom.setByte(0x002805, world.getSpawnLocation().getPositionY());
 
     // ------- Set spawn health ---------
-    rom.setByte(0x0027B4, options.getStartingLife()-1);
-    rom.setByte(0x0027BC, options.getStartingLife()-1);
+    uint8_t startingLife = options.getStartingLife();
+    if(!startingLife)
+        startingLife = world.getSpawnLocation().getStartingLife();
+    rom.setByte(0x0027B4, startingLife-1);
+    rom.setByte(0x0027BC, startingLife-1);
 
     // ------- Remove no music flag ---------
     // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom

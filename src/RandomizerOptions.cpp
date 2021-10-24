@@ -5,7 +5,6 @@
 #include <iostream>
 
 RandomizerOptions::RandomizerOptions() :
-	_spawnLocation			(SpawnLocation::RANDOM),
 	_jewelCount				(2),
 	_armorUpgrades			(true),
 	_dungeonSignHints		(false),
@@ -36,7 +35,11 @@ RandomizerOptions::RandomizerOptions() :
 
 	_plandoEnabled			(false),
 	_plandoJSON				()
-{}
+{
+	const std::map<std::string, SpawnLocation>& allSpawnLocations = getAllSpawnLocations();
+	for(auto it : allSpawnLocations)
+		_possibleSpawnLocations.push_back(it.second);
+}
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
@@ -103,8 +106,23 @@ RandomizerOptions::~RandomizerOptions()
 
 void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
 {
-	// Seed-related options (included in permalink)  
-	if(args.contains("spawnlocation")) 		_spawnLocation = spawnLocationFromString(args.getString("spawnlocation"));
+	if(args.contains("spawnlocation"))
+	{
+		std::string spawnLocAsString = args.getString("spawnlocation");
+		Tools::toLower(spawnLocAsString);
+		if(spawnLocAsString == "random")
+		{
+			const std::map<std::string, SpawnLocation>& allSpawnLocations = getAllSpawnLocations();
+			for(auto it : allSpawnLocations)
+				_possibleSpawnLocations.push_back(it.second);
+		}
+		else
+		{
+			SpawnLocation spawnLocation = getSpawnLocationFromName(spawnLocAsString);
+			_possibleSpawnLocations = { spawnLocation };
+		}
+	}
+
 	if(args.contains("jewelcount"))			_jewelCount = args.getInteger("jewelcount");
 	if(args.contains("armorupgrades")) 		_armorUpgrades = args.getBoolean("armorupgrades");
 	if(args.contains("norecordbook")) 		_startingItems["Record Book"] = 0;
@@ -133,7 +151,6 @@ Json RandomizerOptions::toJSON() const
 	Json json;
 
 	// Game settings 
-	json["gameSettings"]["spawnLocation"] = spawnLocationToString(_spawnLocation);
 	json["gameSettings"]["jewelCount"] = _jewelCount;
 	json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
 	json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
@@ -150,6 +167,11 @@ Json RandomizerOptions::toJSON() const
 	// Randomizer settings
 	json["randomizerSettings"]["allowSpoilerLog"] = _allowSpoilerLog;
 	json["randomizerSettings"]["fillingRate"] = _fillingRate;
+
+	json["randomizerSettings"]["spawnLocations"] = Json::array();
+	for(const SpawnLocation& spawnLoc : _possibleSpawnLocations)
+		json["randomizerSettings"]["spawnLocations"].push_back(spawnLoc.getName());
+
 	json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
 	json["randomizerSettings"]["ghostJumpingInLogic"] = _ghostJumpingInLogic;
 
@@ -166,13 +188,6 @@ void RandomizerOptions::parseJSON(const Json& json)
 	if(json.contains("gameSettings"))
 	{
 		const Json& gameSettingsJson = json.at("gameSettings");
-
-		if(gameSettingsJson.contains("spawnLocation"))
-		{
-			std::string spawnLocStr;
-			gameSettingsJson.at("spawnLocation").get_to(spawnLocStr);
-			_spawnLocation = spawnLocationFromString(spawnLocStr);
-		}
 
 		if(gameSettingsJson.contains("jewelCount"))			
 			_jewelCount = gameSettingsJson.at("jewelCount");
@@ -210,6 +225,19 @@ void RandomizerOptions::parseJSON(const Json& json)
 			_allowSpoilerLog = randomizerSettingsJson.at("allowSpoilerLog");
 		if(randomizerSettingsJson.contains("fillingRate"))
 			_fillingRate = randomizerSettingsJson.at("fillingRate");
+
+		if(randomizerSettingsJson.contains("spawnLocations"))
+		{
+			_possibleSpawnLocations = {};
+			std::vector<std::string> spawnLocNames = randomizerSettingsJson.at("spawnLocations");
+			for(const std::string& name : spawnLocNames)
+				_possibleSpawnLocations.push_back(getSpawnLocationFromName(name));
+		}
+		else if(randomizerSettingsJson.contains("spawnLocation"))
+		{
+			_possibleSpawnLocations = { getSpawnLocationFromName(randomizerSettingsJson.at("spawnLocation")) };
+		}
+
 		if(randomizerSettingsJson.contains("shuffleTrees"))
 			_shuffleTiborTrees = randomizerSettingsJson.at("shuffleTrees");
 		if(randomizerSettingsJson.contains("ghostJumpingInLogic"))
@@ -250,6 +278,9 @@ void RandomizerOptions::validate()
 	if(_jewelCount > 9)
 		throw RandomizerException("Jewel count must be between 0 and 9.");
 
+	if(_possibleSpawnLocations.empty())
+		throw RandomizerException("An empty list of spawn locations was given");
+
 	// Clean output ROM path and determine if it's a directory or a file
 	bool outputRomPathIsAFile = Tools::endsWith(_outputRomPath, ".md") || Tools::endsWith(_outputRomPath, ".bin");
 	if(!outputRomPathIsAFile && *_outputRomPath.rbegin() != '/')
@@ -271,29 +302,6 @@ void RandomizerOptions::validate()
 		_outputRomPath += this->getHashSentence() + ".md";
 	if(*_spoilerLogPath.rbegin() == '/')
 		_spoilerLogPath += this->getHashSentence() + ".json";
-}
-
-SpawnLocation RandomizerOptions::getSpawnLocation() const
-{
-	if(_spawnLocation == SpawnLocation::RANDOM)
-	{
-		std::mt19937 rng(_seed);
-		std::vector<SpawnLocation> spawnLocs = getAllSpawnLocations();
-		Tools::shuffle(spawnLocs, rng);
-		return *spawnLocs.begin();
-	}
-
-	return _spawnLocation; 
-}
-
-uint8_t RandomizerOptions::getStartingLife() const 
-{
-	// Starting life has been specified with a non-zero amount, use it
-	if(_startingLife > 0)
-		return _startingLife; 
-
-	SpawnLocation spawnLoc = this->getSpawnLocation();
-	return getSpawnLocationStartingLife(spawnLoc);
 }
 
 std::vector<std::string> RandomizerOptions::getHashWords() const

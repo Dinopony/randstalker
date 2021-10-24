@@ -30,6 +30,10 @@ public:
     WorldRegion* getRegionForItem(Item* item);
     std::vector<ItemSource*> getItemSourcesContainingItem(Item* item);
 
+    void setSpawnLocation(const SpawnLocation& spawnLocation) { _spawnLocation = spawnLocation; }
+    const SpawnLocation& getSpawnLocation() const { return _spawnLocation; }
+    WorldRegion* getSpawnRegion() const { return regions.at(_spawnLocation.getRegion()); }
+
     void writeToROM(md::ROM& rom);
 
     Json toJSON() const;
@@ -68,7 +72,6 @@ public:
     std::vector<HintSign*> hintSigns;
     std::vector<TreeMap> treeMaps;
 
-    SpawnLocation spawnLocation;
     WorldRegion* darkenedRegion;
 
     std::vector<std::string> jewelHints;
@@ -78,4 +81,6 @@ public:
 
 private:
     const RandomizerOptions& _options;
+
+    SpawnLocation _spawnLocation;
 };

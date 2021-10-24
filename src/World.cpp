@@ -13,7 +13,6 @@
 #include "WorldSolver.hpp"
 
 World::World(const RandomizerOptions& options) :
-    spawnLocation(options.getSpawnLocation()),
     darkenedRegion(nullptr),
     _options(options)
 {
@@ -1482,7 +1481,7 @@ Json World::toJSON() const
 	Json json;
 
     // Export dark region
-    json["spawnRegion"] = regions.at(getSpawnLocationRegion(spawnLocation))->getName();
+    json["spawnLocation"] = _spawnLocation.getName();
     json["darkRegion"] = darkenedRegion->getName();
 
     // Export hints
@@ -1594,6 +1593,18 @@ void World::parseJSON(const Json& json)
     }
 
     ////////// Miscellaneous ///////////////////////////////////////////
+    if(json.contains("spawnLocation"))
+    {
+        std::string darkRegionName = json.at("darkRegion");
+        darkenedRegion = this->getRegionByName(darkRegionName);
+        if(!darkenedRegion)
+        {
+            std::stringstream msg;
+            msg << "Darkened region name '" << darkRegionName << "' is invalid in plando JSON.";
+            throw RandomizerException(msg.str());
+        }
+    }
+
     if(json.contains("darkRegion"))
     {
         std::string darkRegionName = json.at("darkRegion");
@@ -1635,7 +1646,7 @@ Item* World::parseItemFromName(const std::string& itemName)
 
 std::vector<Item*> World::findSmallestInventoryToReachRegion(WorldRegion* endRegion) const
 {
-    WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+    WorldRegion* spawnRegion = this->getSpawnRegion();
     WorldSolver solver(spawnRegion, endRegion);
     solver.tryToSolve();
     std::vector<Item*> inventory = solver.getInventory();
@@ -1668,7 +1679,7 @@ std::vector<Item*> World::findSmallestInventoryToReachRegion(WorldRegion* endReg
 
 bool World::isMacroRegionAvoidable(WorldMacroRegion* macroRegion) const
 {
-    WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+    WorldRegion* spawnRegion = this->getSpawnRegion();
     WorldRegion* endRegion = regions.at(RegionCode::ENDGAME);
     WorldSolver solver(spawnRegion, endRegion);
     solver.forbidTakingItemsFromRegions(macroRegion->getRegions());
@@ -1678,7 +1689,7 @@ bool World::isMacroRegionAvoidable(WorldMacroRegion* macroRegion) const
 
 bool World::isItemAvoidable(Item* item) const
 {
-    WorldRegion* spawnRegion = regions.at(getSpawnLocationRegion(spawnLocation));
+    WorldRegion* spawnRegion = this->getSpawnRegion();
     WorldRegion* endRegion = regions.at(RegionCode::ENDGAME);
     WorldSolver solver(spawnRegion, endRegion);
     solver.forbidItems({ item });

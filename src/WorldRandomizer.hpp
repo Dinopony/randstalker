@@ -32,6 +32,7 @@ private:
 	void initInventoryWithStartingItems();
 	
 	// First pass randomizations (before items)
+	void randomizeSpawnLocation();
 	void randomizeGoldValues();
 	void randomizeDarkRooms();
 
