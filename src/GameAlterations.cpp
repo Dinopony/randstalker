@@ -615,7 +615,8 @@ void makeRyumaMayorSaveable(md::ROM& rom)
 
     // --------------- Fixes for Ryuma's mayor reward ---------------
     // Change the second reward from "fixed 100 golds" to "item with ID located at 0x2837F"
-    rom.setLong(0x2837E, 0x000017E8);
+    rom.setByte(0x2837E, 0x00);
+    rom.setWord(0x28380, 0x17E8);
 
     // Remove the "I think we need an exorcism" dialogue for the mayor when progression flags are much further in the game
     rom.setWord(0x2648E, 0xF908); // CheckFlagAndDisplayMessage
