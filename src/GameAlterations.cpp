@@ -33,7 +33,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     flagArray[0x00] = 0xB1;
     flagArray[0x02] = 0xD5;
     flagArray[0x03] = 0xE0;
-    flagArray[0x04] = 0xDF;
+    flagArray[0x04] = 0xD5;
     flagArray[0x05] = 0x60;
     flagArray[0x06] = 0x7C;
     flagArray[0x07] = 0xB4;
@@ -584,6 +584,47 @@ void addDoorForReverseSafetyPass(md::ROM& rom)
 
     // Modify entities in map variant 0x27A to replace two NPCs by a door blocking the way out of Mercator
     rom.setBytes(0x2153A, { 0x70, 0x2A, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00, 0x70, 0x2C, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00 });
+}
+
+void makeRyumaMayorSaveable(md::ROM& rom)
+{
+    // --------------- Fixes for thieves hideout treasure room ---------------
+    // Disable the cutscene when opening vanilla lithograph chest
+    rom.setCode(0x136BE, md::Code().rts());
+
+    // Disable Friday blocker in the treasure room by removing last entity from the map
+    rom.setWord(0x9BA62, 0xFEFE); // Why does that even work? I don't know...
+
+    // Set the "Mayor freed" flag to byte 10D6, bit 4 (which happens to be the "Visited treasure room with mayor variant" flag)
+    rom.setWord(0xA3F4, 0xD604);
+
+    // Remove the "remove all NPCs on flag set" trigger in treasure room by putting it to an impossible flag
+    rom.setByte(0x1A9C0, 0x01);
+
+    // Inject custom code "on map enter" to set the flag when it is convenient to do so
+    md::Code onMapEnterFunction;
+    onMapEnterFunction.lea(0xFF10C0, reg_A0); // Do the instruction that was replaced the hook call
+    // When entering the cavern where we save Ryuma's mayor, set the flag "mayor is saved"
+    onMapEnterFunction.cmpib(0xE0, reg_D0);
+    onMapEnterFunction.bne(2);
+        onMapEnterFunction.bset(0x01, addr_(0xFF1004));
+    onMapEnterFunction.rts();
+
+    uint32_t onMapEnterFunctionAddr = rom.injectCode(onMapEnterFunction);
+    rom.setCode(0x2952, md::Code().jsr(onMapEnterFunctionAddr));
+
+    // --------------- Fixes for Ryuma's mayor reward ---------------
+    // Change the second reward from "fixed 100 golds" to "item with ID located at 0x2837F"
+    rom.setLong(0x2837E, 0x000017E8);
+
+    // Remove the "I think we need an exorcism" dialogue for the mayor when progression flags are much further in the game
+    rom.setWord(0x2648E, 0xF908); // CheckFlagAndDisplayMessage
+    rom.setWord(0x26490, 0x0023); // on bit 3 of flag FF1004
+    rom.setWord(0x26492, 0x1801); // Script ID for post-reward dialogue
+    rom.setWord(0x26494, 0x17FF); // Script ID for reward cutscene
+    rom.setCode(0x26496, md::Code().rts());
+    // Clear out the rest
+    rom.setLong(0x26498, 0xFFFFFFFF);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1409,6 +1450,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     makeSwordOfGaiaWorkInVolcano(rom);
     fixReverseGreenmazeFountainSoftlock(rom);
     addDoorForReverseSafetyPass(rom);
+    makeRyumaMayorSaveable(rom);
 
     // Specific map content changes
     removeMercatorCastleBackdoorGuard(rom);

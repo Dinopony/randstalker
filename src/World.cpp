@@ -676,6 +676,8 @@ void World::initNPCRewards()
     itemSources[ItemSourceCode::NPC_HIDDEN_DWARF_RESTORATION] = new ItemReward(0x0288DF, "Greenmaze hidden dwarf (Restoration in OG)");
     itemSources[ItemSourceCode::NPC_ARTHUR_CASINO_TICKET] =     new ItemReward(0x02815F, "Arthur reward (Casino Ticket in OG)");
     itemSources[ItemSourceCode::NPC_FAHL_PAWN_TICKET] =         new ItemReward(0x0284A5, "Fahl's dojo challenge reward (Pawn Ticket in OG)");
+    itemSources[ItemSourceCode::NPC_RYUMA_MAYOR_REWARD_1] =     new ItemReward(0x02837B, "Ryuma's mayor first reward (Safety Pass in OG)"); 
+    itemSources[ItemSourceCode::NPC_RYUMA_MAYOR_REWARD_2] =     new ItemReward(0x02837F, "Ryuma's mayor second reward (100g in OG)"); 
 }
 
 void World::initRegions()
@@ -783,7 +785,10 @@ void World::initRegions()
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_5G],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_50G],
         itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_LIFESTOCK],
-        itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_EKEEKE]
+        itemSources[ItemSourceCode::CHEST_THIEVES_HIDEOUT_REWARD_EKEEKE],
+        // Located at Ryuma but conditioned by mayor being saved
+        itemSources[ItemSourceCode::NPC_RYUMA_MAYOR_REWARD_1],
+        itemSources[ItemSourceCode::NPC_RYUMA_MAYOR_REWARD_2]
     });
 
     regions[RegionCode::WITCH_HELGA_HUT] = new WorldRegion("Witch Helga's Hut", { 
