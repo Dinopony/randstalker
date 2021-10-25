@@ -72,7 +72,7 @@ public:
         return *this;
     }
 
-    virtual void writeToROM(md::ROM& rom) const
+    virtual void write_to_rom(md::ROM& rom) const
     {
         // Do nothing, since it is not a real item
         return;
