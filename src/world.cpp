@@ -342,7 +342,8 @@ void World::write_to_rom(md::ROM& rom)
     for (auto& [k, hint_source]: _hint_sources)
     {
         std::vector<uint16_t> text_ids = hint_source->text_ids();
-    	textLines[text_ids[0]] = GameText(hint_source->text()).getOutput();
+        uint8_t textbox_size = hint_source->small_textbox() ? 2 : 3;
+        textLines[text_ids[0]] = GameText(hint_source->text(), textbox_size).getOutput();
         for(auto it=text_ids.begin()+1 ; it != text_ids.end() ; ++it)
             textLines[*it] = " ";
     }

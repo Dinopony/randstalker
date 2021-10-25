@@ -1,10 +1,16 @@
 #include "game_text.hpp"
 #include <sstream>
 
-GameText::GameText() : _currentLineLength(0), _currentLineCount(0)
+GameText::GameText(uint8_t lines_in_textbox) : 
+	_currentLineLength	(0), 
+	_currentLineCount	(0), 
+	_linesInTextbox		(lines_in_textbox)
 {}
 
-GameText::GameText(const std::string& text) : _currentLineLength(0), _currentLineCount(0)
+GameText::GameText(const std::string& text, uint8_t lines_in_textbox) : 
+	_currentLineLength	(0), 
+	_currentLineCount	(0), 
+	_linesInTextbox		(lines_in_textbox)
 {
 	this->setText(text);
 }
@@ -51,7 +57,7 @@ void GameText::addCharacter(char character)
 		if (*_outputText.rbegin() == ' ')
 			_outputText = _outputText.substr(0, _outputText.size() - 1);
 
-		if (++_currentLineCount == 3)
+		if (++_currentLineCount == _linesInTextbox)
 		{
 			_outputText += "\x1E";
 			_currentLineCount = 0;

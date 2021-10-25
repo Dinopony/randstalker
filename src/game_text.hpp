@@ -7,8 +7,8 @@
 class GameText
 {
 public:
-	GameText();
-	GameText(const std::string& text);
+	GameText(uint8_t lines_in_textbox = 3);
+	GameText(const std::string& text, uint8_t lines_in_textbox = 3);
 
 	const std::string& getText() const { return _initialText; }
 	void setText(const std::string& text);
@@ -25,4 +25,5 @@ private:
 	std::string _outputText;
 	uint16_t _currentLineLength;
 	uint8_t _currentLineCount;
+	uint8_t _linesInTextbox;
 };

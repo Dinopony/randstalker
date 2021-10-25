@@ -773,8 +773,8 @@ void loadGameStrings(std::vector<std::string>& gameStrings)
         /* 0x28A */ 	"\x1C""Then the lighthouse\nwill be restored!\x1E",
         /* 0x28B */ 	"\x1C""I think you're smart \nenough to get through \nGreenmaze on your own.\x03",
         /* 0x28C */ 	"\x1C""You got the ""\x1D""!\nMy crystal ball never lies....\x03",
-        /* 0x28D */ 	"\x1C""\x1CHello dear, let me look at\nwhat your future is made of...\x1E",
-        /* 0x28E */ 	"", /* Fortune teller hint */
+        /* 0x28D */ 	"\x1C""Hello dear, let me look at\nwhat your future is made of... I see...\x1AI see...\x1A\x1E",
+        /* 0x28E */ 	"\x1C", /* Fortune teller hint */
         /* 0x28F */ 	"\x1C""I want to be young again.....\x03",
         /* 0x290 */ 	"\x1C""Hi, cutie!\nAm I pretty?\nAm I young? La-la-la!\x03",
         /* 0x291 */ 	"\x1C""If my mom really becomes\nyoung, I can boast to all my\nfriends!\x03",

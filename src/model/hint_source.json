@@ -4,14 +4,16 @@
         "textIds": [
             33
         ],
-        "special": true
+        "special": true,
+        "smallTextbox": true
     },
     {
         "description": "Oracle Stone",
         "textIds": [
             25
         ],
-        "special": true
+        "special": true,
+        "smallTextbox": true
     },
     {
         "description": "Mercator fortune teller",

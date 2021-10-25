@@ -459,14 +459,14 @@ void WorldRandomizer::randomize_lithograph_hint()
 	std::stringstream lithograph_hint;
 	if(_options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
 	{
-		std::vector<ItemSource*> allSourcesContainingJewels = _world.item_sources_with_item(_world.item(ITEM_RED_JEWEL));
 		bool first = true;
+		std::vector<ItemSource*> allSourcesContainingJewels = _world.item_sources_with_item(_world.item(ITEM_RED_JEWEL));
 		for(ItemSource* source : allSourcesContainingJewels)
 		{
 			if(first)
 				first = false;
 			else
-				lithograph_hint << "\x1E\n";
+				lithograph_hint << "\n";
 			lithograph_hint << "A jewel is " << this->getRandomHintForItemSource(source) << ".";
 		}
 	}
@@ -474,13 +474,13 @@ void WorldRandomizer::randomize_lithograph_hint()
 	{
 		lithograph_hint << "Red Jewel is " << this->getRandomHintForItem(_world.item(ITEM_RED_JEWEL)) << ".";
 		if(_options.getJewelCount() >= 2)
-			lithograph_hint << "\x1E\nPurple Jewel is " << this->getRandomHintForItem(_world.item(ITEM_PURPLE_JEWEL)) << ".";
+			lithograph_hint << "\nPurple Jewel is " << this->getRandomHintForItem(_world.item(ITEM_PURPLE_JEWEL)) << ".";
 		if(_options.getJewelCount() >= 3)
-			lithograph_hint << "\x1E\nGreen Jewel is " << this->getRandomHintForItem(_world.item(ITEM_GREEN_JEWEL)) << ".";
+			lithograph_hint << "\nGreen Jewel is " << this->getRandomHintForItem(_world.item(ITEM_GREEN_JEWEL)) << ".";
 		if(_options.getJewelCount() >= 4)
-			lithograph_hint << "\x1E\nBlue Jewel is " << this->getRandomHintForItem(_world.item(ITEM_BLUE_JEWEL)) << ".";
+			lithograph_hint << "\nBlue Jewel is " << this->getRandomHintForItem(_world.item(ITEM_BLUE_JEWEL)) << ".";
 		if(_options.getJewelCount() >= 5)
-			lithograph_hint << "\x1E\nYellow Jewel is " << this->getRandomHintForItem(_world.item(ITEM_YELLOW_JEWEL)) << ".";
+			lithograph_hint << "\nYellow Jewel is " << this->getRandomHintForItem(_world.item(ITEM_YELLOW_JEWEL)) << ".";
 	}
 	else
 		lithograph_hint << "This tablet seems of no use...";
@@ -516,7 +516,7 @@ Item* WorldRandomizer::randomize_fortune_teller_hint()
 		fortuneItemName = "a horn";
 
 	std::stringstream fortune_teller_hint;
-	fortune_teller_hint << "I see... I see...\x1E\nI see " << fortuneItemName << " " << this->getRandomHintForItem(hinted_item) << ".";
+	fortune_teller_hint << "I see " << fortuneItemName << " " << this->getRandomHintForItem(hinted_item) << ".";
 	_world.hint_sources().at("Mercator fortune teller")->text(fortune_teller_hint.str());
 
 	return hinted_item;
