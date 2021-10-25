@@ -6,7 +6,7 @@
 #include "world.hpp"
 #include "game_text.hpp"
 #include "exceptions.hpp"
-#include "Assets.hpp"
+#include "assets.hpp"
 
 #include <cstdint>
 #include <vector>

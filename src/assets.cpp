@@ -1,4 +1,4 @@
-#include "Assets.hpp"
+#include "assets.hpp"
 
 void loadGreenJewelSprite(std::vector<uint8_t>& output)
 {
