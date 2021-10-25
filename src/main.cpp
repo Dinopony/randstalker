@@ -38,7 +38,7 @@
 #include <string>
 #include <iostream>
 
-#include "extlibs/Base64.hpp"
+#include "extlibs/base64.hpp"
 
 #include "md_tools/rom.hpp"
 

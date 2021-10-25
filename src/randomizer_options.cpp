@@ -1,7 +1,7 @@
 #include "randomizer_options.hpp"
 
 #include <iostream>
-#include "extlibs/Base64.hpp"
+#include "extlibs/base64.hpp"
 #include "tools/tools.hpp"
 #include "exceptions.hpp"
 
