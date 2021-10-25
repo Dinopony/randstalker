@@ -633,6 +633,9 @@ void makeRyumaMayorSaveable(md::ROM& rom)
     // --------------- Fixes for other events depending on those flags ---------------
     // Make Ryuma's shop open without saving the mayor
     rom.setByte(0x1A64D, 0x00);
+
+    // Make Tibor open without saving the mayor
+    rom.setByte(0x501D, 0x10);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
