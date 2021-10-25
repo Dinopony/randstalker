@@ -5,7 +5,7 @@
 #include "randomizer_options.hpp"
 #include "world.hpp"
 #include "game_text.hpp"
-#include "Exceptions.hpp"
+#include "exceptions.hpp"
 #include "Assets.hpp"
 
 #include <cstdint>

@@ -1,6 +1,6 @@
 #include "item_source.hpp"
 #include "world_region.hpp"
-#include "../Exceptions.hpp"
+#include "../exceptions.hpp"
 
 ItemSource::ItemSource(const std::string& name, WorldRegion* region, const std::vector<std::string>& hints) :
     _name   (name),

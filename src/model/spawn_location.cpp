@@ -1,5 +1,5 @@
 #include "SpawnLocation.hpp"
-#include "Exceptions.hpp"
+#include "exceptions.hpp"
 #include <unordered_map>
 
 const std::map<std::string, SpawnLocation>& getAllSpawnLocations()

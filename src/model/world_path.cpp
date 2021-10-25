@@ -1,6 +1,6 @@
 #include "world_path.hpp"
 #include "world_region.hpp"
-#include "../Exceptions.hpp"
+#include "../exceptions.hpp"
 
 WorldPath::WorldPath(WorldRegion* from_region, WorldRegion* to_region, uint16_t weight, 
 				    std::vector<Item*> required_items, std::vector<Item*> items_placed_when_crossing) :
