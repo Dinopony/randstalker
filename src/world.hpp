@@ -57,12 +57,12 @@ public:
 
     Json to_json() const;
     void parse_json(const Json& json);
-    Item* parseItemFromName(const std::string& itemName);
+    Item* parse_item_from_name(const std::string& itemName);
 
-    std::vector<Item*> findSmallestInventoryToReachRegion(WorldRegion* endRegion) const;
-    std::vector<Item*> getRequiredItemsToComplete() const { return this->findSmallestInventoryToReachRegion(_regions.at("end")); }
+    std::vector<Item*> find_smallest_inventory_to_reach(WorldRegion* end_region) const;
+    std::vector<Item*> find_smallest_inventory_to_complete() const { return this->find_smallest_inventory_to_reach(_regions.at("end")); }
   
-    bool is_macro_region_avoidable(WorldMacroRegion* macroRegion) const;
+    bool is_macro_region_avoidable(WorldMacroRegion* macro_region) const;
     bool is_item_avoidable(Item* item) const;
 
 private:
@@ -76,10 +76,10 @@ private:
     void init_tree_maps();
 
 private:
-	std::map<uint8_t, Item*> _items;
+    std::map<uint8_t, Item*> _items;
     std::map<std::string, WorldRegion*> _regions;
     std::map<std::pair<WorldRegion*, WorldRegion*>, WorldPath*> _paths;
-	std::vector<ItemSource*> _item_sources;
+    std::vector<ItemSource*> _item_sources;
     std::map<std::string, SpawnLocation*> _spawn_locations;
     std::map<std::string, HintSource*> _hint_sources;
     std::vector<WorldMacroRegion*> _macro_regions;

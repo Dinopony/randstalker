@@ -36,7 +36,7 @@ void WorldRandomizer::randomize()
     this->randomizeItems();
 
     // Analyse items required to complete the seed
-    _minimalItemsToComplete = _world.getRequiredItemsToComplete();
+    _minimalItemsToComplete = _world.find_smallest_inventory_to_complete();
     _debugLogJson["requiredItems"] = Json::array();
     for (Item* item : _minimalItemsToComplete)
         _debugLogJson["requiredItems"].push_back(item->name());
@@ -536,7 +536,7 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbiddenFortuneTellerI
     WorldRegion* first_item_region = sources.at(0)->region();
     if(first_item_region)
     {
-        std::vector<Item*> min_items_to_reach = _world.findSmallestInventoryToReachRegion(first_item_region);
+        std::vector<Item*> min_items_to_reach = _world.find_smallest_inventory_to_reach(first_item_region);
         for (Item* item : min_items_to_reach)
             forbiddenOracleStoneItems.insert(item);
     }
@@ -606,7 +606,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hintedFortuneItem, Item* hinted
         std::string hintText;
         double randomNumber = (double) _rng() / (double) _rng.max();
         WorldRegion* region = hint_source->region();
-        std::vector<Item*> itemsAlreadyObtainedAtSign = _world.findSmallestInventoryToReachRegion(region);
+        std::vector<Item*> itemsAlreadyObtainedAtSign = _world.find_smallest_inventory_to_reach(region);
         int nextEligibleHintableItemsNecessityPos = this->getNextEligibleHintableItemPos(hintableItemsNecessity, itemsAlreadyObtainedAtSign);
 
         // "Barren / pleasant surprise" (30%)

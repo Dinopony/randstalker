@@ -155,8 +155,8 @@ void World::init_items()
     }
 
     // Process custom starting quantities for items
-    const std::map<std::string, uint8_t>& startingItems = _options.getStartingItems();
-    for(auto& [item_name, quantity] : startingItems)
+    const std::map<std::string, uint8_t>& starting_items = _options.getStartingItems();
+    for(auto& [item_name, quantity] : starting_items)
     {
         Item* item = this->item(item_name);
         if(!item)
@@ -170,8 +170,8 @@ void World::init_items()
     }
 
     // Process custom item prices
-    const std::map<std::string, uint16_t>& itemPrices = _options.getItemPrices();
-    for(auto& [item_name, price] : itemPrices)
+    const std::map<std::string, uint16_t>& item_prices = _options.getItemPrices();
+    for(auto& [item_name, price] : item_prices)
     {
         Item* item = this->item(item_name);
         if(!item)
@@ -185,8 +185,8 @@ void World::init_items()
     }
 
     // Process custom item max quantities
-    const std::map<std::string, uint8_t>& itemMaxQuantities = _options.getItemMaxQuantities();
-    for(auto& [item_name, maxQuantity] : itemMaxQuantities)
+    const std::map<std::string, uint8_t>& item_max_quantities = _options.getItemMaxQuantities();
+    for(auto& [item_name, max_quantity] : item_max_quantities)
     {
         Item* item = this->item(item_name);
         if(!item)
@@ -196,7 +196,7 @@ void World::init_items()
             throw RandomizerException(msg.str());
         }
 
-        item->max_quantity(maxQuantity);
+        item->max_quantity(max_quantity);
     }
 
     if(_options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
@@ -316,10 +316,10 @@ void World::init_tree_maps()
 void World::write_to_rom(md::ROM& rom)
 {
     // Write a data block for gold values
-    uint8_t highestGoldItemID = _items.rbegin()->first;
-    uint8_t goldItemsCount = (highestGoldItemID - ITEM_GOLDS_START) + 1;
-    uint32_t addr = rom.reserveDataBlock(goldItemsCount, "data_gold_values");
-    for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highestGoldItemID ; ++item_id, ++addr)
+    uint8_t highest_item_id = _items.rbegin()->first;
+    uint8_t gold_items_count = (highest_item_id - ITEM_GOLDS_START) + 1;
+    uint32_t addr = rom.reserveDataBlock(gold_items_count, "data_gold_values");
+    for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
         rom.setByte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
 
     // Write item info
@@ -331,11 +331,11 @@ void World::write_to_rom(md::ROM& rom)
         source->write_to_rom(rom);
 
     // Alter game text lines
-    std::vector<std::string> textLines; 
-    loadGameStrings(textLines);
+    std::vector<std::string> text_lines; 
+    loadGameStrings(text_lines);
 
     // Kazalt rejection message
-    textLines[0x022] = std::string("Only the bearers of the ") 
+    text_lines[0x022] = std::string("Only the bearers of the ") 
         + std::to_string(_options.getJewelCount()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 
     // Hint sources
@@ -343,29 +343,27 @@ void World::write_to_rom(md::ROM& rom)
     {
         std::vector<uint16_t> text_ids = hint_source->text_ids();
         uint8_t textbox_size = hint_source->small_textbox() ? 2 : 3;
-        textLines[text_ids[0]] = GameText(hint_source->text(), textbox_size).getOutput();
+        text_lines[text_ids[0]] = GameText(hint_source->text(), textbox_size).getOutput();
         for(auto it=text_ids.begin()+1 ; it != text_ids.end() ; ++it)
-            textLines[*it] = " ";
+            text_lines[*it] = " ";
     }
 
     // Write all text lines into text banks
-    TextEncoder encoder(rom, textLines);
+    TextEncoder encoder(rom, text_lines);
 
     // Inject dark rooms as a data block
-    const std::vector<uint16_t>& darkRooms = _dark_region->dark_map_ids();
-    uint16_t darkRoomsByteCount = static_cast<uint16_t>(darkRooms.size() + 1) * 0x02;
-    uint32_t darkRoomsArrayAddress = rom.reserveDataBlock(darkRoomsByteCount, "data_dark_rooms");
+    const std::vector<uint16_t>& dark_map_ids = _dark_region->dark_map_ids();
+    uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
+    uint32_t dark_maps_address = rom.reserveDataBlock(dark_maps_byte_count, "data_dark_rooms");
     uint8_t i = 0;
-    for (uint16_t roomID : darkRooms)
-        rom.setWord(darkRoomsArrayAddress + (i++) * 0x2, roomID);
-    rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
+    for (uint16_t map_id : dark_map_ids)
+        rom.setWord(dark_maps_address + (i++) * 0x2, map_id);
+    rom.setWord(dark_maps_address + i * 0x2, 0xFFFF);
 
     // Write Tibor tree map connections
     for (WorldTeleportTree* teleport_tree : _teleport_trees)
         teleport_tree->write_to_rom(rom);
 }
-
-
 
 Json World::to_json() const
 {
@@ -396,22 +394,22 @@ Json World::to_json() const
 void World::parse_json(const Json& json)
 {
     ////////// Item Sources ///////////////////////////////////////////
-    const Json& itemSourcesJson = json.at("itemSources");
+    const Json& item_sources_json = json.at("itemSources");
     for(auto& it : _regions)
     {
         const WorldRegion& region = *it.second;
         if(region.item_sources().empty())
             continue;
 
-        if(itemSourcesJson.contains(region.name()))
+        if(item_sources_json.contains(region.name()))
         {
-            const Json& regionJson = itemSourcesJson.at(region.name());
+            const Json& region_json = item_sources_json.at(region.name());
             for(ItemSource* source : region.item_sources())
             {
-                if(regionJson.contains(source->name()))
+                if(region_json.contains(source->name()))
                 {
-                    std::string item_name = regionJson.at(source->name());
-                    Item* item = this->parseItemFromName(item_name);
+                    std::string item_name = region_json.at(source->name());
+                    Item* item = this->parse_item_from_name(item_name);
                     if(item)
                     {
                         source->item(item);
@@ -420,14 +418,14 @@ void World::parse_json(const Json& json)
                     {
                         std::stringstream msg;
                         msg << "Item name '" << item_name << "' is invalid in plando JSON.";
-                        throw RandomizerException(msg.str());
+                        throw JsonParsingException(msg.str());
                     }
                 }
                 else
                 {
                     std::stringstream msg;
                     msg << "Item source '" << source->name() << "' is missing from plando JSON.";
-                    throw RandomizerException(msg.str());
+                    throw JsonParsingException(msg.str());
                 }
             }
         }
@@ -435,32 +433,32 @@ void World::parse_json(const Json& json)
         {
             std::stringstream msg;
             msg << "Region '" << region.name() << "' is missing from plando JSON.";
-            throw RandomizerException(msg.str());
+            throw JsonParsingException(msg.str());
         }
     }
 
     ////////// Hints ///////////////////////////////////////////
-    const Json& hintsJson = json.at("hints");
+    const Json& hints_json = json.at("hints");
     for(auto& [description, source] : _hint_sources)
     {
-        if(hintsJson.contains(description))
+        if(hints_json.contains(description))
         {
-            if(hintsJson.at(description).is_array())
+            if(hints_json.at(description).is_array())
             {
                 std::vector<std::string> hint_lines;
-                for(const std::string& line : hintsJson.at(description))
+                for(const std::string& line : hints_json.at(description))
                     hint_lines.push_back(line);
                 std::string hint = Tools::join(hint_lines, "\n");
                 source->text(hint);
             }
             else
-                source->text(hintsJson.at(description));
+                source->text(hints_json.at(description));
         }
         else
         {
             std::stringstream msg;
             msg << "Hint source '" << description << "' is missing from plando JSON.";
-            throw RandomizerException(msg.str());
+            throw JsonParsingException(msg.str());
         }
     }
 
@@ -480,19 +478,19 @@ void World::parse_json(const Json& json)
 
     if(json.contains("darkRegion"))
     {
-        std::string darkRegionName = json.at("darkRegion");
-        _dark_region = this->region(darkRegionName);
+        std::string dark_region_name = json.at("darkRegion");
+        _dark_region = this->region(dark_region_name);
         if(!_dark_region)
         {
             std::stringstream msg;
-            msg << "Darkened region name '" << darkRegionName << "' is invalid in plando JSON.";
+            msg << "Darkened region name '" << dark_region_name << "' is invalid in plando JSON.";
             throw JsonParsingException(msg.str());
         }
     }
-    else throw RandomizerException("Darkened region is missing from plando JSON.");
+    else throw JsonParsingException("Darkened region is missing from plando JSON.");
 }
 
-Item* World::parseItemFromName(const std::string& item_name)
+Item* World::parse_item_from_name(const std::string& item_name)
 {
     Item* item = this->item(item_name);
     if(item)
@@ -501,15 +499,15 @@ Item* World::parseItemFromName(const std::string& item_name)
     // If item is formatted as "X golds", parse X value and create the matching gold stack item
     if(Tools::endsWith(item_name, "golds"))
     {
-        size_t spaceIndex = item_name.find_first_of(' ');
-        if(spaceIndex == std::string::npos)
+        size_t space_index = item_name.find_first_of(' ');
+        if(space_index == std::string::npos)
             return nullptr;
 
-        std::string numberPart = item_name.substr(0, spaceIndex);
+        std::string number_part = item_name.substr(0, space_index);
         
         try {
-            uint8_t goldValue = static_cast<uint8_t>(std::strtol(numberPart.c_str(), nullptr, 10));
-            return this->add_gold_item(goldValue);
+            uint8_t gold_value = static_cast<uint8_t>(std::strtol(number_part.c_str(), nullptr, 10));
+            return this->add_gold_item(gold_value);
         }
         catch(std::exception&) {}
     }
@@ -517,54 +515,54 @@ Item* World::parseItemFromName(const std::string& item_name)
     return nullptr;
 }
 
-std::vector<Item*> World::findSmallestInventoryToReachRegion(WorldRegion* endRegion) const
+std::vector<Item*> World::find_smallest_inventory_to_reach(WorldRegion* end_region) const
 {
-    WorldRegion* spawnRegion = _active_spawn_location->region();
-    WorldSolver solver(spawnRegion, endRegion);
+    WorldRegion* spawn_region = _active_spawn_location->region();
+    WorldSolver solver(spawn_region, end_region);
     solver.tryToSolve();
     std::vector<Item*> inventory = solver.getInventory();
 
-    std::vector<Item*> minimalInventory;
+    std::vector<Item*> minimal_inventory;
 
-    UnsortedSet<Item*> forbiddenItems;
+    UnsortedSet<Item*> forbidden_items;
 
     for(Item* item : inventory)
     {  
-        UnsortedSet<Item*> forbiddenItemsPlusOne = forbiddenItems;
-        forbiddenItemsPlusOne.insert(item);
+        UnsortedSet<Item*> forbidden_items_plus_one = forbidden_items;
+        forbidden_items_plus_one.insert(item);
         
-        WorldSolver solver2(spawnRegion, endRegion);
-        solver2.forbidItems(forbiddenItemsPlusOne);
+        WorldSolver solver2(spawn_region, end_region);
+        solver2.forbidItems(forbidden_items_plus_one);
         if(solver2.tryToSolve())
         {
             // Item can be freely removed: keep it removed for further solves
-            forbiddenItems = forbiddenItemsPlusOne;
+            forbidden_items = forbidden_items_plus_one;
         }
         else
         {
             // Item cannot be removed: it means it's required
-            minimalInventory.push_back(item);
+            minimal_inventory.push_back(item);
         }
     }
  
-    return minimalInventory;
+    return minimal_inventory;
 }
 
-bool World::is_macro_region_avoidable(WorldMacroRegion* macroRegion) const
+bool World::is_macro_region_avoidable(WorldMacroRegion* macro_region) const
 {
-    WorldRegion* spawnRegion = _active_spawn_location->region();
-    WorldRegion* endRegion = _regions.at("end");
-    WorldSolver solver(spawnRegion, endRegion);
-    solver.forbidTakingItemsFromRegions(macroRegion->regions());
+    WorldRegion* spawn_region = _active_spawn_location->region();
+    WorldRegion* end_region = _regions.at("end");
+    WorldSolver solver(spawn_region, end_region);
+    solver.forbidTakingItemsFromRegions(macro_region->regions());
     
     return solver.tryToSolve();
 }
 
 bool World::is_item_avoidable(Item* item) const
 {
-    WorldRegion* spawnRegion = _active_spawn_location->region();
-    WorldRegion* endRegion = _regions.at("end");
-    WorldSolver solver(spawnRegion, endRegion);
+    WorldRegion* spawn_region = _active_spawn_location->region();
+    WorldRegion* end_region = _regions.at("end");
+    WorldSolver solver(spawn_region, end_region);
     solver.forbidItems({ item });
 
     return solver.tryToSolve();
