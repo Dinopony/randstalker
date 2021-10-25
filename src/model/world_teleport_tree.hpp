@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <string>
-#include "md_tools/rom.hpp"
+#include "../md_tools/rom.hpp"
 
 class WorldTeleportTree {
 public:
