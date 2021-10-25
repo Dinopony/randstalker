@@ -306,7 +306,6 @@ std::string RandomizerOptions::getPermalink() const
     Json defaultJson = defaultOptions.to_json();
     
     Json jsonPatch = Json::diff(defaultJson, this->to_json());
-
     Json permalinkJson;
 
     // Apply patch on an empty JSON
@@ -324,10 +323,10 @@ std::string RandomizerOptions::getPermalink() const
                     (*currentJson)[pathParts[i]] = Json();
                 currentJson = &(currentJson->at(pathParts[i]));
             }
+            else if(pathParts[i] == "-")
+                (*currentJson).push_back(patchPiece["value"]);
             else
-            {
                 (*currentJson)[pathParts[i]] = patchPiece["value"];
-            }
         }
     }
 
