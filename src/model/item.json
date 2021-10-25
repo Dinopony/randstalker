@@ -333,7 +333,7 @@
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 100,
-        "allowedOnGround": true
+        "allowedOnGround": false
     },
     {
         "id": 42,
