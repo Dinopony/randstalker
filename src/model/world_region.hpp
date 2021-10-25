@@ -12,14 +12,14 @@ private:
     std::string _name;
     std::vector<ItemSource*> _item_sources;
     std::vector<WorldPath*> _outgoing_paths;
-    std::vector<WorldPath*> _ingoing_paths;	
+    std::vector<WorldPath*> _ingoing_paths;    
     std::vector<std::string> _hints;
     std::vector<uint16_t> _dark_map_ids;
 
 public:
     WorldRegion(const std::string& id, const std::string& name, const std::vector<std::string>& hints = {}, const std::vector<uint16_t> dark_map_ids = {}) :
-        _id	          (id),
-        _name		  (name),
+        _id           (id),
+        _name         (name),
         _item_sources (),
         _hints        (hints),
         _dark_map_ids (dark_map_ids)

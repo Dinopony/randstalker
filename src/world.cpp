@@ -38,22 +38,22 @@ World::World(const RandomizerOptions& options) :
 
 World::~World()
 {
-	for (auto& [key, item] : _items)
-		delete item;
+    for (auto& [key, item] : _items)
+        delete item;
     for (auto& [key, region] : _regions)
-		delete region;
+        delete region;
     for (auto& [key, path] : _paths)
-		delete path;
+        delete path;
     for (ItemSource* source : _item_sources)
-		delete source;
+        delete source;
     for (auto& [key, spawn_loc] : _spawn_locations)
-		delete spawn_loc;
+        delete spawn_loc;
     for (auto& [key, hint_source] : _hint_sources)
-		delete hint_source;
+        delete hint_source;
     for (WorldMacroRegion* macro : _macro_regions)
-		delete macro;
+        delete macro;
     for (WorldTeleportTree* teleport_tree : _teleport_trees)
-		delete teleport_tree;
+        delete teleport_tree;
 }
 
 Item* World::item(const std::string& name) const
@@ -118,14 +118,14 @@ void World::add_path(WorldPath* path)
 
 std::vector<ItemSource*> World::item_sources_with_item(Item* item)
 {
-	std::vector<ItemSource*> sources_with_item;
+    std::vector<ItemSource*> sources_with_item;
 
-	for (auto& [key, region] : _regions)
-	{
-		std::vector<ItemSource*> sources = region->item_sources();
-		for (ItemSource* source : sources)
-			if (source->item() == item)
-				sources_with_item.push_back(source);
+    for (auto& [key, region] : _regions)
+    {
+        std::vector<ItemSource*> sources = region->item_sources();
+        for (ItemSource* source : sources)
+            if (source->item() == item)
+                sources_with_item.push_back(source);
     }
 
     return sources_with_item;
@@ -324,11 +324,11 @@ void World::write_to_rom(md::ROM& rom)
 
     // Write item info
     for (auto& [key, item] : _items)
-		item->write_to_rom(rom);
+        item->write_to_rom(rom);
 
     // Write item sources' contents
-	for (ItemSource* source : _item_sources)
-		source->write_to_rom(rom);
+    for (ItemSource* source : _item_sources)
+        source->write_to_rom(rom);
 
     // Alter game text lines
     std::vector<std::string> textLines; 
@@ -361,15 +361,15 @@ void World::write_to_rom(md::ROM& rom)
     rom.setWord(darkRoomsArrayAddress + i * 0x2, 0xFFFF);
 
     // Write Tibor tree map connections
-	for (WorldTeleportTree* teleport_tree : _teleport_trees)
-		teleport_tree->write_to_rom(rom);
+    for (WorldTeleportTree* teleport_tree : _teleport_trees)
+        teleport_tree->write_to_rom(rom);
 }
 
 
 
 Json World::to_json() const
 {
-	Json json;
+    Json json;
 
     // Export dark region
     json["spawnLocation"] = _active_spawn_location->id();
@@ -377,18 +377,18 @@ Json World::to_json() const
 
     // Export hints
     for(auto& [description, source] : _hint_sources)
-		json["hints"][description] = source->text();
+        json["hints"][description] = source->text();
 
     // Export item sources
-	for(auto& it : _regions)
-	{
-		const WorldRegion& region = *it.second;
-		for(ItemSource* source : region.item_sources())
-		{
+    for(auto& it : _regions)
+    {
+        const WorldRegion& region = *it.second;
+        for(ItemSource* source : region.item_sources())
+        {
             Item* item = _items.at(source->item_id());
-			json["itemSources"][region.name()][source->name()] = item->name();
-		}
-	}
+            json["itemSources"][region.name()][source->name()] = item->name();
+        }
+    }
 
     return json;
 }
@@ -397,9 +397,9 @@ void World::parse_json(const Json& json)
 {
     ////////// Item Sources ///////////////////////////////////////////
     const Json& itemSourcesJson = json.at("itemSources");
-	for(auto& it : _regions)
-	{
-		const WorldRegion& region = *it.second;
+    for(auto& it : _regions)
+    {
+        const WorldRegion& region = *it.second;
         if(region.item_sources().empty())
             continue;
 
@@ -437,7 +437,7 @@ void World::parse_json(const Json& json)
             msg << "Region '" << region.name() << "' is missing from plando JSON.";
             throw RandomizerException(msg.str());
         }
-	}
+    }
 
     ////////// Hints ///////////////////////////////////////////
     const Json& hintsJson = json.at("hints");

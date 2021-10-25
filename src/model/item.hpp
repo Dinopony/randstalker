@@ -66,7 +66,7 @@ public:
         Item::gold_value(value);
 
         std::ostringstream new_name;
-		new_name << (uint32_t)value << " golds";
+        new_name << (uint32_t)value << " golds";
         name(new_name.str());
 
         return *this;

@@ -3,12 +3,12 @@
 #include "../exceptions.hpp"
 
 WorldPath::WorldPath(WorldRegion* from_region, WorldRegion* to_region, uint16_t weight, 
-				    std::vector<Item*> required_items, std::vector<Item*> items_placed_when_crossing) :
-	_from_region				(from_region),
-	_to_region					(to_region),
-	_weight						(weight),
-	_required_items				(required_items),
-	_items_placed_when_crossing	(items_placed_when_crossing)
+                    std::vector<Item*> required_items, std::vector<Item*> items_placed_when_crossing) :
+    _from_region                 (from_region),
+    _to_region                   (to_region),
+    _weight                      (weight),
+    _required_items              (required_items),
+    _items_placed_when_crossing  (items_placed_when_crossing)
 {
     _from_region->add_outgoing_path(this);
     _to_region->add_ingoing_path(this);
@@ -16,57 +16,57 @@ WorldPath::WorldPath(WorldRegion* from_region, WorldRegion* to_region, uint16_t 
 
 std::vector<Item*> WorldPath::missing_items_to_cross(std::vector<Item*> player_inventory_copy, bool only_strictly_required_items)
 {
-	std::vector<Item*> items_to_test = _required_items;
-	if(!only_strictly_required_items)
-	{
-		for(Item* item : _items_placed_when_crossing)
-			items_to_test.push_back(item);
-	}
+    std::vector<Item*> items_to_test = _required_items;
+    if(!only_strictly_required_items)
+    {
+        for(Item* item : _items_placed_when_crossing)
+            items_to_test.push_back(item);
+    }
 
-	std::vector<Item*> missing_items;
-	for (Item* item : items_to_test)
-	{
-		auto iter = std::find(player_inventory_copy.begin(), player_inventory_copy.end(), item);
-		if (iter == player_inventory_copy.end())
-		{
-			missing_items.push_back(item);
-		}
-		else
-		{
-			// If item has been found, remove it from the inventory copy for it not to count several times
-			// (case where quantity needed is > 1)
-			player_inventory_copy.erase(iter);
-		}
-	}
+    std::vector<Item*> missing_items;
+    for (Item* item : items_to_test)
+    {
+        auto iter = std::find(player_inventory_copy.begin(), player_inventory_copy.end(), item);
+        if (iter == player_inventory_copy.end())
+        {
+            missing_items.push_back(item);
+        }
+        else
+        {
+            // If item has been found, remove it from the inventory copy for it not to count several times
+            // (case where quantity needed is > 1)
+            player_inventory_copy.erase(iter);
+        }
+    }
 
-	return missing_items;
+    return missing_items;
 }
 
 Json WorldPath::to_json(bool two_way) const
 {
-	Json json;
+    Json json;
 
-	json["fromId"] = _from_region->id();
-	json["toId"] = _to_region->id();
-	json["twoWay"] = two_way;
+    json["fromId"] = _from_region->id();
+    json["toId"] = _to_region->id();
+    json["twoWay"] = two_way;
 
-	if(_weight > 1)
-		json["weight"] = _weight;
+    if(_weight > 1)
+        json["weight"] = _weight;
 
-	if(!_required_items.empty())
-	{
-		json["requiredItems"] = Json::array();
-		for(Item* item : _required_items)
-			json["requiredItems"].push_back(item->name());
-	}
+    if(!_required_items.empty())
+    {
+        json["requiredItems"] = Json::array();
+        for(Item* item : _required_items)
+            json["requiredItems"].push_back(item->name());
+    }
 
-	if(!_items_placed_when_crossing.empty())
-	{
-		for(Item* item : _items_placed_when_crossing)
-			json["itemsPlacedWhenCrossing"].push_back(item->name());
-	}
+    if(!_items_placed_when_crossing.empty())
+    {
+        for(Item* item : _items_placed_when_crossing)
+            json["itemsPlacedWhenCrossing"].push_back(item->name());
+    }
 
-	return json;
+    return json;
 }
 
 static Item* find_item_from_name(const std::map<uint8_t, Item*>& items, const std::string& name)

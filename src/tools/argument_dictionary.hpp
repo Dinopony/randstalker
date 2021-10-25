@@ -7,12 +7,12 @@
 
 class ArgumentDictionary {
 private:
-	std::map<std::string, std::string> _argsMap;
+    std::map<std::string, std::string> _argsMap;
 
 public:
     ArgumentDictionary(int argc, char* argv[])
     {
-    	for (int i = 1; i < argc; ++i)
+        for (int i = 1; i < argc; ++i)
         {
             std::string param = argv[i];
             if (param[0] != '-' || param[1] != '-')
