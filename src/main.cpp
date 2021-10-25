@@ -38,16 +38,20 @@
 #include <string>
 #include <iostream>
 
-#include "MegadriveTools/MdRom.hpp"
-#include "GameAlterations.hpp"
-#include "Tools.hpp"
-#include "World.hpp"
-#include "WorldRandomizer.hpp"
-#include "ArgumentDictionary.hpp"
-#include "Exceptions.hpp"
-#include "Extlibs/Base64.hpp"
-#include "WorldRegion.hpp"
-#include "ItemSources.hpp"
+#include "extlibs/Base64.hpp"
+
+#include "md_tools/rom.hpp"
+
+#include "model/world_region.hpp"
+#include "model/item_source.hpp"
+
+#include "tools/argument_dictionary.hpp"
+#include "tools/tools.hpp"
+
+#include "exceptions.hpp"
+#include "game_patches.hpp"
+#include "world.hpp"
+#include "world_randomizer.hpp"
 
 md::ROM* getInputROM(std::string inputRomPath)
 {
@@ -72,7 +76,7 @@ Json randomize(World& world, RandomizerOptions& options, ArgumentDictionary& arg
 	std::string permalink = options.getPermalink();
 	spoilerJson["permalink"] = permalink;
 	spoilerJson["hashSentence"] = options.getHashSentence();
-	spoilerJson.merge_patch(options.toJSON());
+	spoilerJson.merge_patch(options.to_json());
 
 	std::cout << "Permalink: " << permalink << "\n\n";
 	std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
@@ -89,7 +93,7 @@ Json randomize(World& world, RandomizerOptions& options, ArgumentDictionary& arg
 		debugLogFile.close();
 	}
 
-	spoilerJson.merge_patch(world.toJSON());
+	spoilerJson.merge_patch(world.to_json());
 	spoilerJson["playthrough"] = randomizer.getPlaythroughAsJson();
 
 	return spoilerJson;
@@ -103,10 +107,10 @@ Json plandomize(World& world, RandomizerOptions& options, ArgumentDictionary& ar
 	// In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
 	// The software will act as a simple ROM patcher, without verifying the game is actually completable.
 
-	world.parseJSON(options.getInputPlandoJSON());
+	world.parse_json(options.getInputPlandoJSON());
 
-	spoilerJson.merge_patch(options.toJSON());
-	spoilerJson.merge_patch(world.toJSON());
+	spoilerJson.merge_patch(options.to_json());
+	spoilerJson.merge_patch(world.to_json());
 
 	// If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
 	if (argsDictionary.getBoolean("encodeplando") && options.isPlando())
@@ -126,7 +130,7 @@ Json plandomize(World& world, RandomizerOptions& options, ArgumentDictionary& ar
 
 void displayOptions(const RandomizerOptions& options)
 {
-	Json optionsAsJSON = options.toJSON();
+	Json optionsAsJSON = options.to_json();
 	if(!options.hasCustomMandatoryItems())
 		optionsAsJSON["randomizerSettings"]["mandatoryItems"] = "default";
 	if(!options.hasCustomFillerItems())
@@ -149,7 +153,7 @@ int main(int argc, char* argv[])
 		// Output current preset
 		if (argsDictionary.getBoolean("writepreset"))
 		{
-			Json json = options.toJSON();
+			Json json = options.to_json();
 
 			std::ofstream presetFile("./preset.json");
 			if(presetFile)
@@ -176,9 +180,9 @@ int main(int argc, char* argv[])
 		{
 			spoilerJson = randomize(world, options, argsDictionary);
 		}
-		
+
 		std::cout << "Writing world to ROM...\n";
-		world.writeToROM(*rom);
+		world.write_to_rom(*rom);
 
 		// Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
 		std::cout << "Applying game patches...\n\n";

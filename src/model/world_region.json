@@ -1,0 +1,407 @@
+[
+    {
+        "id": "massan",
+        "name": "Massan",
+        "hints": [
+            "in a village",
+            "in a region inhabited by bears",
+            "in the village of Massan"
+        ]
+    },
+    {
+        "id": "massan_cave",
+        "name": "Massan Cave",
+        "hints": [
+            "in a large cave",
+            "in Massan cave"
+        ],
+        "dark_map_ids": [
+            803, 804, 805, 806, 807
+        ]
+    },
+    {
+        "id": "route_massan_gumi",
+        "name": "Route between Massan and Gumi",
+        "hints": [
+            "on a route",
+            "in a region inhabited by bears",
+            "between Massan and Gumi"
+        ]
+    },
+    {
+        "id": "waterfall_shrine",
+        "name": "Waterfall Shrine",
+        "hints": [
+            "in a shrine",
+            "close to a waterfall",
+            "in a region inhabited by bears",
+            "in Waterfall Shrine"
+        ],
+        "dark_map_ids": [
+            174, 175, 176, 177, 178, 179, 180, 181, 182
+        ]
+    },
+    {
+        "id": "swamp_shrine",
+        "name": "Swamp Shrine",
+        "hints": [
+            "in a shrine",
+            "near a swamp",
+            "in a region inhabited by bears",
+            "in Swamp Shrine"
+        ],
+        "dark_map_ids": [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 30
+        ]
+    },
+    {
+        "id": "massan_after_swamp_shrine",
+        "name": "Massan (after Swamp Shrine)",
+        "hints": [
+            "in a village",
+            "in the village of Massan"
+        ]
+    },
+    {
+        "id": "gumi_after_swamp_shrine",
+        "name": "Gumi (after Swamp Shrine)",
+        "hints": [
+            "in a village",
+            "in the village of Gumi"
+        ]
+    },
+    {
+        "id": "gumi",
+        "name": "Gumi",
+        "hints": [
+            "in a village",
+            "in a region inhabited by bears",
+            "in the village of Gumi"
+        ]
+    },
+    {
+        "id": "route_gumi_ryuma",
+        "name": "Route from Gumi to Ryuma",
+        "hints": [
+            "on a route",
+            "in a region inhabited by bears",
+            "between Gumi and Ryuma"
+        ]
+    },
+    {
+        "id": "tibor",
+        "name": "Tibor",
+        "hints": [
+            "among the trees",
+            "inside the elder tree called Tibor"
+        ],
+        "dark_map_ids": [
+            808, 809, 810, 811, 812, 813, 814, 815
+        ]
+    },
+    {
+        "id": "ryuma",
+        "name": "Ryuma",
+        "hints": [
+            "in a town",
+            "in the town of Ryuma"
+        ]
+    },
+    {
+        "id": "ryuma_lighthouse_repaired",
+        "name": "Ryuma (repaired lighthouse)",
+        "hints": [
+            "in a town",
+            "in the town of Ryuma"
+        ]
+    },
+    {
+        "id": "thieves_hideout_pre_key",
+        "name": "Thieves Hideout (before keydoor)",
+        "hints": [
+            "close to a waterfall",
+            "in a large cave",
+            "in the Thieves' Hideout"
+        ],
+        "dark_map_ids": [
+            185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 
+            203, 204, 205, 206, 207, 208, 210, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222
+        ]
+    },
+    {
+        "id": "thieves_hideout_post_key",
+        "name": "Thieves Hideout (after keydoor)",
+        "hints": [
+            "close to a waterfall",
+            "in a large cave",
+            "in the Thieves' Hideout"
+        ]
+    },
+    {
+        "id": "helga_hut",
+        "name": "Witch Helga's Hut",
+        "hints": [
+            "near a swamp",
+            "in the hut of a witch called Helga"
+        ]
+    },
+    {
+        "id": "mercator",
+        "name": "Mercator",
+        "hints": [
+            "in a town",
+            "in the town of Mercator"
+        ]
+    },
+    {
+        "id": "mercator_casino",
+        "name": "Mercator casino"
+    },
+    {
+        "id": "mercator_dungeon",
+        "name": "Mercator Dungeon",
+        "dark_map_ids": [
+            37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 76, 80, 81, 82, 91, 92
+        ]
+    },
+    {
+        "id": "crypt",
+        "name": "Crypt",
+        "hints": [
+            "hidden in the depths of Mercator",
+            "in Mercator crypt"
+        ],
+        "dark_map_ids": [
+            646, 647, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 658, 659
+        ]
+    },
+    {
+        "id": "mercator_special_shop",
+        "name": "Mercator special shop"
+    },
+    {
+        "id": "mir_tower_sector",
+        "name": "Mir Tower sector",
+        "hints": [
+            "on a route",
+            "nearby Mir Tower"
+        ]
+    },
+    {
+        "id": "mir_tower_sector_trees",
+        "name": "Mir Tower sector (behind trees)",
+        "hints": [
+            "on a route",
+            "among the trees",
+            "nearby Mir Tower"
+        ]
+    },
+    {
+        "id": "twinkle_village",
+        "name": "Twinkle village",
+        "hints": [
+            "in a village",
+            "in Twinkle village"
+        ]
+    },
+    {
+        "id": "mir_tower_pre_garlic",
+        "name": "Mir Tower (pre-garlic)",
+        "hints": [
+            "inside a tower",
+            "in Mir Tower"
+        ],
+        "dark_map_ids": [
+            750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 
+            767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784
+        ]
+    },
+    {
+        "id": "mir_tower_post_garlic",
+        "name": "Mir Tower (post-garlic)",
+        "hints": [
+            "inside a tower",
+            "in Mir Tower"
+        ]
+    },
+    {
+        "id": "greenmaze_pre_whistle",
+        "name": "Greenmaze (pre-whistle)",
+        "hints": [
+            "among the trees",
+            "in the infamous Greenmaze"
+        ]
+    },
+    {
+        "id": "greenmaze_post_whistle",
+        "name": "Greenmaze (post-whistle)",
+        "hints": [
+            "among the trees",
+            "in the infamous Greenmaze"
+        ]
+    },
+    {
+        "id": "verla_shore",
+        "name": "Verla shore",
+        "hints": [
+            "on a route",
+            "nearby the town of Verla"
+        ]
+    },
+    {
+        "id": "verla",
+        "name": "Verla",
+        "hints": [
+            "in a town",
+            "in the town of Verla"
+        ]
+    },
+    {
+        "id": "verla_mines",
+        "name": "Verla Mines",
+        "hints": [
+            "in Verla Mines"
+        ],
+        "dark_map_ids": [
+            227, 228, 229, 230, 231, 232, 233, 234, 235, 237, 239, 240, 241, 242, 243, 244, 246, 
+            247, 248, 250, 253, 254, 255, 256, 258, 259, 266, 268, 269
+        ]
+    },
+    {
+        "id": "route_verla_destel",
+        "name": "Route between Verla and Destel",
+        "hints": [
+            "on a route",
+            "in Destel region",
+            "between Verla and Destel"
+        ]
+    },
+    {
+        "id": "destel",
+        "name": "Destel",
+        "hints": [
+            "in a village",
+            "in Destel region",
+            "in the village of Destel"
+        ]
+    },
+    {
+        "id": "route_after_destel",
+        "name": "Route after Destel",
+        "hints": [
+            "on a route",
+            "near a lake",
+            "in Destel region",
+            "on the route to the lake after Destel"
+        ]
+    },
+    {
+        "id": "destel_well",
+        "name": "Destel Well",
+        "hints": [
+            "in Destel region",
+            "in a large cave",
+            "in Destel Well"
+        ],
+        "dark_map_ids": [
+            270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290
+        ]
+    },
+    {
+        "id": "route_lake_shrine",
+        "name": "Route to Lake Shrine",
+        "hints": [
+            "on a route",
+            "near a lake",
+            "on the mountainous path to Lake Shrine"
+        ]
+    },
+    {
+        "id": "lake_shrine",
+        "name": "Lake Shrine",
+        "hints": [
+            "in a shrine",
+            "near a lake",
+            "in Lake Shrine"
+        ],
+        "dark_map_ids": [
+            291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 
+            307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 
+            323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 
+            339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354
+        ]
+    },
+    {
+        "id": "mountainous_area",
+        "name": "Mountainous Area",
+        "hints": [
+            "in a mountainous area"
+        ]
+    },
+    {
+        "id": "king_nole_cave",
+        "name": "King Nole's Cave",
+        "hints": [
+            "in a large cave",
+            "in King Nole's cave"
+        ],
+        "dark_map_ids": [
+            145, 147, 150, 152, 154, 155, 156, 158, 160, 161, 162, 164, 166, 170, 171, 172
+        ]
+    },
+    {
+        "id": "kazalt",
+        "name": "Kazalt",
+        "hints": [
+            "in King Nole's domain",
+            "in Kazalt"
+        ]
+    },
+    {
+        "id": "king_nole_labyrinth_pre_spikes",
+        "name": "King Nole's Labyrinth (pre-spikes)",
+        "hints": [
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ],
+        "dark_map_ids": [
+            355, 356, 357, 358, 359, 360, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 
+            373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 
+            390, 391, 392, 393, 394, 395, 396, 397, 398, 405, 406, 408, 409, 410, 411, 412, 413, 
+            414, 415, 416, 417, 418, 419, 420, 422, 423
+        ]
+    },
+    {
+        "id": "king_nole_labyrinth_post_spikes",
+        "name": "King Nole's Labyrinth (post-spikes)",
+        "hints": [
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    {
+        "id": "king_nole_labyrinth_raft",
+        "name": "King Nole's Labyrinth (raft sector)",
+        "hints": [
+            "close to a waterfall",
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    {
+        "id": "king_nole_palace",
+        "name": "King Nole's Palace",
+        "hints": [
+            "in King Nole's domain",
+            "in King Nole's palace"
+        ],
+        "dark_map_ids": [
+            115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 
+            131, 132, 133, 134, 135, 136, 137, 138
+        ]
+    },
+    {
+        "id": "end",
+        "name": "The End"
+    }
+]

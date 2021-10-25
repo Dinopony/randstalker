@@ -353,3 +353,4 @@ cmake_install.cmake
 *.sln
 
 .vscode/*
+*.hxx

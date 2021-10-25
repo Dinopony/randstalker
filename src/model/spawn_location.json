@@ -1,0 +1,83 @@
+[
+    {
+        "id": "massan",
+        "mapID": 600,
+        "posX": 31,
+        "posY": 25,
+        "orientation": 136,
+        "regionId": "massan",
+        "startingLife": 4
+    },
+    {
+        "id": "gumi",
+        "mapID": 606,
+        "posX": 16,
+        "posY": 15,
+        "orientation": 136,
+        "regionId": "gumi",
+        "startingLife": 4
+    },
+    {
+        "id": "ryuma",
+        "mapID": 616,
+        "posX": 17,
+        "posY": 20,
+        "orientation": 72,
+        "regionId": "ryuma",
+        "startingLife": 4
+    },
+    {
+        "id": "waterfall",
+        "mapID": 532,
+        "posX": 56,
+        "posY": 26,
+        "orientation": 72,
+        "regionId": "route_massan_gumi",
+        "startingLife": 4
+    },
+    {
+        "id": "kado",
+        "mapID": 442,
+        "posX": 22,
+        "posY": 18,
+        "orientation": 200,
+        "regionId": "route_gumi_ryuma",
+        "startingLife": 4
+    },
+    {
+        "id": "mercator",
+        "mapID": 691,
+        "posX": 16,
+        "posY": 15,
+        "orientation": 136,
+        "regionId": "mercator",
+        "startingLife": 10
+    },
+    {
+        "id": "greenmaze",
+        "mapID": 563,
+        "posX": 29,
+        "posY": 33,
+        "orientation": 8,
+        "regionId": "greenmaze_pre_whistle",
+        "startingLife": 10
+    },
+    {
+        "id": "verla",
+        "mapID": 722,
+        "posX": 22,
+        "posY": 22,
+        "orientation": 136,
+        "regionId": "verla",
+        "startingLife": 16
+    },
+    {
+        "id": "destel",
+        "mapID": 735,
+        "posX": 17,
+        "posY": 18,
+        "orientation": 136,
+        "regionId": "destel",
+        "startingLife": 20
+    }
+]

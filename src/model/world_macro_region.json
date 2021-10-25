@@ -1,0 +1,156 @@
+[
+    {
+        "name": "the village of Massan",
+        "regionIds": [
+            "massan",
+            "massan_after_swamp_shrine"
+        ]
+    },
+    {
+        "name": "the cave near Massan",
+        "regionIds": [
+            "massan_cave"
+        ]
+    },
+    {
+        "name": "the waterfall shrine",
+        "regionIds": [
+            "waterfall_shrine"
+        ]
+    },
+    {
+        "name": "the village of Gumi",
+        "regionIds": [
+            "gumi",
+            "gumi_after_swamp_shrine"
+        ]
+    },
+    {
+        "name": "the swamp shrine",
+        "regionIds": [
+            "swamp_shrine"
+        ]
+    },
+    {
+        "name": "Tibor",
+        "regionIds": [
+            "tibor"
+        ]
+    },
+    {
+        "name": "the town of Ryuma",
+        "regionIds": [
+            "ryuma",
+            "ryuma_lighthouse_repaired"
+        ]
+    },
+    {
+        "name": "the thieves' hideout",
+        "regionIds": [
+            "thieves_hideout_pre_key",
+            "thieves_hideout_post_key"
+        ]
+    },
+    {
+        "name": "witch Helga's hut",
+        "regionIds": [
+            "helga_hut"
+        ]
+    },
+    {
+        "name": "the town of Mercator",
+        "regionIds": [
+            "mercator",
+            "mercator_casino",
+            "mercator_special_shop"
+        ]
+    },
+    {
+        "name": "the crypt of Mercator",
+        "regionIds": [
+            "crypt"
+        ]
+    },
+    {
+        "name": "the dungeon of Mercator",
+        "regionIds": [
+            "mercator_dungeon"
+        ]
+    },
+    {
+        "name": "Mir Tower",
+        "regionIds": [
+            "mir_tower_pre_garlic",
+            "mir_tower_post_garlic"
+        ]
+    },
+    {
+        "name": "Greenmaze",
+        "regionIds": [
+            "greenmaze_pre_whistle",
+            "greenmaze_post_whistle"
+        ]
+    },
+    {
+        "name": "the town of Verla",
+        "regionIds": [
+            "verla"
+        ]
+    },
+    {
+        "name": "Verla mine",
+        "regionIds": [
+            "verla_mines"
+        ]
+    },
+    {
+        "name": "the village of Destel",
+        "regionIds": [
+            "destel"
+        ]
+    },
+    {
+        "name": "Destel well",
+        "regionIds": [
+            "destel_well"
+        ]
+    },
+    {
+        "name": "the lake shrine",
+        "regionIds": [
+            "lake_shrine"
+        ]
+    },
+    {
+        "name": "the mountainous area",
+        "regionIds": [
+            "mountainous_area"
+        ]
+    },
+    {
+        "name": "King Nole's cave",
+        "regionIds": [
+            "king_nole_cave"
+        ]
+    },
+    {
+        "name": "the town of Kazalt",
+        "regionIds": [
+            "kazalt"
+        ]
+    },
+    {
+        "name": "King Nole's labyrinth",
+        "regionIds": [
+            "king_nole_labyrinth_pre_spikes",
+            "king_nole_labyrinth_post_spikes",
+            "king_nole_labyrinth_raft"
+        ]
+    },
+    {
+        "name": "King Nole's palace",
+        "regionIds": [
+            "king_nole_palace"
+        ]
+    }
+]
