@@ -629,6 +629,10 @@ void makeRyumaMayorSaveable(md::ROM& rom)
     rom.setCode(0x26496, md::Code().rts());
     // Clear out the rest
     rom.setLong(0x26498, 0xFFFFFFFF);
+
+    // --------------- Fixes for other events depending on those flags ---------------
+    // Make Ryuma's shop open without saving the mayor
+    rom.setByte(0x1A64D, 0x00);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
