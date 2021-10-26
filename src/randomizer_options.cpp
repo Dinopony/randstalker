@@ -32,7 +32,7 @@ RandomizerOptions::RandomizerOptions() :
     _debugLogPath             (""),
     _pauseAfterGeneration     (true),
     _add_ingame_item_tracker  (false),
-    _hud_color                 ("default"),
+    _hud_color                ("default"),
 
     _plando_enabled           (false),
     _plando_json              ()
@@ -40,50 +40,50 @@ RandomizerOptions::RandomizerOptions() :
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
-    std::string plandoPath = args.getString("plando");
-    if(!plandoPath.empty())
+    std::string plando_path = args.getString("plando");
+    if(!plando_path.empty())
     {
         _plando_enabled = true;
 
-        std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
-        std::ifstream plandoFile(plandoPath);
-        if(!plandoFile)
-            throw RandomizerException("Could not open plando file at given path '" + plandoPath + "'");
+        std::cout << "Reading plando file '" << plando_path << "'...\n\n";
+        std::ifstream plando_file(plando_path);
+        if(!plando_file)
+            throw RandomizerException("Could not open plando file at given path '" + plando_path + "'");
 
-        plandoFile >> _plando_json;
+        plando_file >> _plando_json;
         if(_plando_json.contains("plando_permalink"))
             _plando_json = Json::from_msgpack(base64_decode(_plando_json.at("plando_permalink")));
 
         this->parse_json(_plando_json);
     }
 
-    std::string permalinkString = args.getString("permalink");
-    if(!permalinkString.empty() && !_plando_enabled) 
+    std::string permalink_string = args.getString("permalink");
+    if(!permalink_string.empty() && !_plando_enabled) 
     {
-        this->parse_permalink(permalinkString);
+        this->parse_permalink(permalink_string);
     }
     else
     {
         // Parse seed from args, or generate a random one if it's missing
-        std::string seedString = args.getString("seed", "random");
+        std::string seed_string = args.getString("seed", "random");
         try {
-            _seed = (uint32_t) std::stoul(seedString);
+            _seed = (uint32_t) std::stoul(seed_string);
         } catch (std::invalid_argument&) {
             _seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
         }
 
-        std::string presetPath = args.getString("preset");
-        if(!presetPath.empty() && !_plando_enabled)
+        std::string preset_path = args.getString("preset");
+        if(!preset_path.empty() && !_plando_enabled)
         {
-            std::ifstream presetFile(presetPath);
-            if(!presetFile)
-                throw RandomizerException("Could not open preset file at given path '" + presetPath + "'");
+            std::ifstream preset_file(preset_path);
+            if(!preset_file)
+                throw RandomizerException("Could not open preset file at given path '" + preset_path + "'");
 
-            std::cout << "Reading preset file '" << presetPath << "'...\n\n";
+            std::cout << "Reading preset file '" << preset_path << "'...\n\n";
 
-            Json presetJson;
-            presetFile >> presetJson;
-            this->parse_json(presetJson);
+            Json preset_json;
+            preset_file >> preset_json;
+            this->parse_json(preset_json);
         }
 
         this->parse_arguments(args);
@@ -105,12 +105,12 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
 {
     if(args.contains("spawnlocation"))
     {
-        std::string spawnLocAsString = args.getString("spawnlocation");
-        Tools::toLower(spawnLocAsString);
-        if(spawnLocAsString == "random")
+        std::string spawn_name = args.getString("spawnlocation");
+        Tools::toLower(spawn_name);
+        if(spawn_name == "random")
             _possible_spawn_locations = {};
         else
-            _possible_spawn_locations = { spawnLocAsString };
+            _possible_spawn_locations = { spawn_name };
     }
 
     if(args.contains("jewelcount"))           _jewel_count = args.getInteger("jewelcount");
@@ -341,9 +341,9 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     try {
         Json permalink_json = Json::from_msgpack(base64_decode(permalink.substr(1, permalink.size()-2)));
 
-        std::string releaseVersion = permalink_json.at("version");
-        if(releaseVersion != MAJOR_RELEASE) {
-            throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + releaseVersion + ").");
+        std::string version = permalink_json.at("version");
+        if(version != MAJOR_RELEASE) {
+            throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + version + ").");
         }
 
         this->parse_json(permalink_json);

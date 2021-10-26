@@ -1,137 +1,19 @@
-#include "tools/megadrive/rom.hpp"
-#include "tools/megadrive/code.hpp"
-#include "tools/game_text.hpp"
+#include "../tools/megadrive/rom.hpp"
+#include "../tools/megadrive/code.hpp"
+#include "../tools/game_text.hpp"
 
-#include "game_patches.hpp"
-#include "randomizer_options.hpp"
-#include "world.hpp"
-#include "exceptions.hpp"
+#include "../randomizer_options.hpp"
+#include "../world.hpp"
+#include "../exceptions.hpp"
 
 #include <cstdint>
 #include <vector>
 #include <iostream>
 
-constexpr uint32_t customTextStorageMemoryAddress = 0xFF0014;
-constexpr uint32_t mapEntrancePositionStorageMemoryAddress = 0xFF0018;
-
 ///////////////////////////////////////////////////////////////////////////////////
 //       Game & gameplay changes
 ///////////////////////////////////////////////////////////////////////////////////
 
-void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World& world)
-{
-    // ------- Inject flags init function ---------
-    // Init function used to set story flags to specific values at the very beginning of the game, opening some usually closed paths
-    // and removing some useless cutscenes (considering them as "already seen").
-
-    uint8_t flagArray[0x60];
-    for(int i=0 ; i<0x60 ; ++i)
-        flagArray[i] = 0x0;
-
-    // Setup story flags
-    flagArray[0x00] = 0xB1;
-    flagArray[0x02] = 0xD5;
-    flagArray[0x03] = 0xE0;
-    flagArray[0x04] = 0xD5;
-    flagArray[0x05] = 0x60;
-    flagArray[0x06] = 0x7C;
-    flagArray[0x07] = 0xB4;
-    flagArray[0x08] = 0xFE;
-    flagArray[0x09] = 0x7E;
-    flagArray[0x12] = 0x1E;
-    flagArray[0x13] = 0x43;
-    flagArray[0x14] = 0x81;
-    flagArray[0x17] = 0x48;
-    flagArray[0x20] = 0x70;
-    flagArray[0x26] = 0x80;
-    flagArray[0x27] = 0x22;
-    flagArray[0x28] = 0xE0;
-    flagArray[0x29] = 0x40;
-    flagArray[0x2A] = 0x81;
-    flagArray[0x2B] = 0x82;
-
-    // Clear Verla soldiers if spawning in Verla
-    if(world.active_spawn_location()->id() == "verla")
-        flagArray[0x26] += 0x18;
-
-    // Set starting items
-    for(uint8_t item_id=0 ; item_id < ITEM_GOLDS_START ; item_id += 0x2)
-    {
-        uint8_t inventoryFlagValue = 0x0;
-
-        uint8_t lshQuantity = world.item(item_id)->starting_quantity();
-        if(lshQuantity)
-            inventoryFlagValue |= (lshQuantity+1) & 0x0F;
-
-        uint8_t mshQuantity = world.item(item_id+1)->starting_quantity();
-        if(mshQuantity)
-            inventoryFlagValue |= ((mshQuantity+1) & 0x0F) << 4;
-
-        flagArray[0x40+(item_id/2)] = inventoryFlagValue;
-    }
-
-    // Setup inventory tracker if needed
-    if (options.add_ingame_item_tracker())
-    {
-        flagArray[0x4B] |= 0x10;
-        flagArray[0x4C] |= 0x10;
-        flagArray[0x4D] |= 0x11;
-        flagArray[0x4F] |= 0x11;
-        flagArray[0x50] |= 0x01;
-        flagArray[0x55] |= 0x10;
-        flagArray[0x57] |= 0x10;
-        flagArray[0x58] |= 0x10;
-        flagArray[0x59] |= 0x11;
-        flagArray[0x5B] |= 0x10;
-        flagArray[0x5C] |= 0x11;
-    }
-
-    md::Code funcInitGame;
-
-    // Set the orientation byte of Nigel depending on spawn location on game start
-    funcInitGame.moveb(world.active_spawn_location()->orientation(), addr_(0xFF5404));
-
-    for(int i=0 ; i<0x60 ; i+=0x2)
-    {
-        uint16_t value = (static_cast<uint16_t>(flagArray[i]) << 8) + static_cast<uint16_t>(flagArray[i+1]);
-        if(value)
-            funcInitGame.movew(value, addr_(0xFF1000+i));
-    }
-
-    funcInitGame.movew(options.starting_gold(), addr_(0xFF120E));
-    funcInitGame.rts();
-
-    uint32_t funcInitGameAddr = rom.inject_code(funcInitGame);
-
-    // ------- Set spawn position ---------
-    rom.set_word(0x0027F4, world.active_spawn_location()->map_id());
-    rom.set_byte(0x0027FD, world.active_spawn_location()->position_x());
-    rom.set_byte(0x002805, world.active_spawn_location()->position_y());
-
-    // ------- Set spawn health ---------
-    uint8_t startingLife = options.starting_life();
-    if(!startingLife)
-        startingLife = world.active_spawn_location()->starting_life();
-    rom.set_byte(0x0027B4, startingLife-1);
-    rom.set_byte(0x0027BC, startingLife-1);
-
-    // ------- Remove no music flag ---------
-    // Replace the bitset of the no music flag by a jump to the injected flags init function located at the end of the rom
-
-    // 0x002700:
-        // Before: 	[08F9] bset 3 -> $FF1027
-        // After:	[4EB9] jsr $1FFAD0 ; [4E71] nop
-    rom.set_code(0x002700, md::Code().jsr(funcInitGameAddr).nop());
-
-    // ------- Remove cutscene flag (no input allowed) ---------
-    // Usually, when starting a new game, it is automatically put into "cutscene mode" to let the intro roll without allowing the player
-    // to move or pause, or do anything at all. We need to remove that cutscene flag to enable the player actually playing the game.
-
-    // 0x00281A:
-        // Before:	[33FC] move.w 0x00FE -> $FF12DE
-        // After:	[4E71] nop (4 times)
-    rom.set_code(0x281A, md::Code().nop(4));
-}
 
 void alterItemOrderInMenu(md::ROM& rom)
 {
@@ -174,103 +56,10 @@ void alterLifestockHandlingInShops(md::ROM& rom)
         rom.set_byte(addr, 0xFF);
 }
 
-void addStatueOfJyptaGoldsOverTime(md::ROM& rom)
-{
-    constexpr uint16_t goldsPerCycle = 0x0001;
 
-    // ============== Function to handle walk abilities (healing boots, jypta statue...) ==============
-    md::Code funcHandleWalkAbilities;
 
-    // If Statue of Jypta is owned, gain gold over time
-    funcHandleWalkAbilities.btst(0x5, addr_(0xFF104E));
-    funcHandleWalkAbilities.beq(3);
-    funcHandleWalkAbilities.movew(goldsPerCycle, reg_D0);
-    funcHandleWalkAbilities.jsr(0x177DC);   // rom.stored_address("func_earn_gold");
 
-    // If Healing boots are equipped, gain life over time
-    funcHandleWalkAbilities.cmpib(0x7, addr_(0xFF1150));
-    funcHandleWalkAbilities.bne(4);
-    funcHandleWalkAbilities.movew(0x100, reg_D0);
-    funcHandleWalkAbilities.lea(0xFF5400, reg_A5);
-    funcHandleWalkAbilities.jsr(0x1780E);   // rom.stored_address("func_heal_hp");
 
-    funcHandleWalkAbilities.rts();
-
-    uint32_t funcAddr = rom.inject_code(funcHandleWalkAbilities);
-
-    // ============== Hook the function inside game code ==============
-    rom.set_code(0x16696, md::Code().nop(5));
-    rom.set_code(0x166D0, md::Code().jsr(funcAddr).nop(4));
-}
-
-void quickenGaiaEffect(md::ROM& rom)
-{
-    constexpr uint8_t factor = 3;
-
-    rom.set_word(0x1686C, rom.get_word(0x1686C) * factor);
-    rom.set_word(0x16878, rom.get_word(0x16878) * factor);
-    rom.set_word(0x16884, rom.get_word(0x16884) * factor);
-}
-
-void addRecordBookSave(md::ROM& rom, const RandomizerOptions& options)
-{
-    md::Code funcStoreCurrentMapAndPosition;
-    funcStoreCurrentMapAndPosition.movew(addr_(0xFF1204), addr_(mapEntrancePositionStorageMemoryAddress));
-    funcStoreCurrentMapAndPosition.movew(addr_(0xFF5400), addr_(mapEntrancePositionStorageMemoryAddress+2));
-    funcStoreCurrentMapAndPosition.rts();
-    uint32_t funcStoreCurrentMapAndPositionAddr = rom.inject_code(funcStoreCurrentMapAndPosition);
-
-    // -------- Function to save game using record book --------
-
-    // On record book use, set stored position and map, then call the save game function. Then, restore Nigel's position and map as if nothing happened.
-    md::Code funcSaveUsingRecordBook;
-    funcSaveUsingRecordBook.movem_to_stack({ reg_D0, reg_D1 }, {});
-
-    if(options.consumable_record_book())
-    {
-        funcSaveUsingRecordBook.moveb(reg_D0, addr_(0xFF1152));
-        funcSaveUsingRecordBook.jsr(0x8B98); // ConsumeItem
-    }
-
-    funcSaveUsingRecordBook.movew(addr_(0xFF1204), reg_D0);
-    funcSaveUsingRecordBook.movew(addr_(0xFF5400), reg_D1);
-    
-    funcSaveUsingRecordBook.movew(addr_(mapEntrancePositionStorageMemoryAddress), addr_(0xFF1204));
-    funcSaveUsingRecordBook.movew(addr_(mapEntrancePositionStorageMemoryAddress+2), addr_(0xFF5400));
-    funcSaveUsingRecordBook.jsr(0x1592); // "func_save_game"
-
-    funcSaveUsingRecordBook.movew(reg_D0, addr_(0xFF1204));
-    funcSaveUsingRecordBook.movew(reg_D1, addr_(0xFF5400));
-    funcSaveUsingRecordBook.movem_from_stack({ reg_D0, reg_D1 }, {});
-
-    funcSaveUsingRecordBook.rts();
-    rom.inject_code(funcSaveUsingRecordBook, "func_save_game_record_book");
-
-    // -------- Procedure injections to store map entrance position --------
-    
-    // Regular map transition position storage injection
-    md::Code procRegularMapTransition;
-    procRegularMapTransition.movew(addr_(reg_A0, 0x4), addr_(0xFF5400));
-    procRegularMapTransition.jsr(funcStoreCurrentMapAndPositionAddr);
-    procRegularMapTransition.nop();
-    rom.set_code(0xA0F6, procRegularMapTransition);
-
-    // Update stored map and position on load
-    md::Code funcLoad;
-    funcLoad.jsr(0x15C2); // "func_load_game"
-    funcLoad.jsr(funcStoreCurrentMapAndPositionAddr);
-    funcLoad.rts();
-    uint32_t funcLoadAddr = rom.inject_code(funcLoad);
-    rom.set_code(0xEF46, md::Code().jsr(funcLoadAddr));
-
-    // "Falling" map transition position storage injection
-//    md::Code funStoreMapEntrancePositionFall;
-//    funStoreMapEntrancePositionFall.movew(addr_(0xFF5400), addr_(mapEntrancePositionStorageMemoryAddress));
-//    funStoreMapEntrancePositionFall.tstw(addr_(0xFF5430));
-//    funStoreMapEntrancePositionFall.rts();
-//    uint32_t funcStoreMapEntrancePositionFallAddr = rom.inject_code(funStoreMapEntrancePositionFall);
-//    rom.set_code(0x6368, md::Code().jsr(funcStoreMapEntrancePositionFallAddr));
-}
 
 void alterFahlChallenge(md::ROM& rom)
 {
@@ -398,73 +187,7 @@ void handleArmorUpgrades(md::ROM& rom)
 //       Item check changes
 ///////////////////////////////////////////////////////////////////////////////////
 
-void fixAxeMagicCheck(md::ROM& rom)
-{
-    // Changes the Axe Magic check when slashing a tree from bit 0 of flag 1003 to "Axe Magic owned"
-    // 0x16262:
-        // Before:	[0839] btst 0 in FF1003
-        // After:	[0839] btst 5 in FF104B
-    rom.set_word(0x016264, 0x0005);
-    rom.set_word(0x016268, 0x104B);
-}
 
-void fixSafetyPassCheck(md::ROM& rom)
-{
-    // Change Mercator door opened check from bit 7 of flag 1004 to "Safety Pass owned"
-    // 0x004FF8:
-        // Before:	04 0F (0F & 7 = 7 -----> bit 7 of FF1004)
-        // After:	59 0D (0D & 7 = 5 -----> bit 5 of FF1059)
-    rom.set_word(0x004FF8, 0x590D);
-}
-
-void fixArmletCheck(md::ROM& rom)
-{
-    // Change Armlet check from bit 6 of flag 1014 to "Armlet owned".
-    // This one was tricky because there are TWO checks to change (the one to remove the "repelled" textbox + tornado, 
-    // and another one to remove the invisible wall added in US version), and any of those checks remove the armlet from inventory
-    // on completion.
-
-    // Actually changed the flag which is check for both triggers
-    // 0x09C803:
-        // Before:	14 06 (bit 6 of FF1014)
-        // After:	4F 05 (bit 5 of FF104F)
-    rom.set_word(0x09C803, 0x4F05);
-    // 0x09C7F3: same as above
-    rom.set_word(0x09C7F3, 0x4F05);
-    
-    // Prevent the game from removing the armlet from the inventory
-    // 0x013A80: put a RTS instead of the armlet removal and all (not exactly sure why it works perfectly, but it does)
-        // Before:  4E F9
-        // After:	4E 75 (rts)
-    rom.set_code(0x013A8A, md::Code().rts());
-}
-
-void fixSunstoneCheck(md::ROM& rom)
-{
-    // Change Sunstone check for repairing the lighthouse from bit 2 of flag 1026 to "Susntone owned"
-    // 0x09D091:
-        // Before:	26 02 (bit 2 of FF1026)
-        // After:	4F 01 (bit 1 of FF104F)
-    rom.set_word(0x09D091, 0x4F01);
-}
-
-void fixDogTalkingCheck(md::ROM& rom)
-{
-    // Change doggo talking check from bit 4 of flag 1024 to "Einstein Whistle owned"
-    // 0x0253C0:
-        // Before:	01 24 (0124 >> 3 = 24 and 0124 & 7 = 04 -----> bit 4 of FF1024)
-        // After:	02 81 (0281 >> 3 = 50 and 0281 & 7 = 01 -----> bit 1 of FF1050)
-    rom.set_word(0x0253C0, 0x0281);
-}
-
-void alterMercatorSecondaryShopCheck(md::ROM& rom)
-{
-    // Change the Mercator secondary shop check so that it sells item as long as you own Buyer's Card
-    // 0x00A574:
-        // Before:	2A 04 (bit 4 of FF102A)
-        // After:	4C 05 (bit 5 of FF104C)
-    rom.set_word(0x00A574, 0x4C05);
-}
 
 void addJewelsCheckForTeleporterToKazalt(md::ROM& rom, const RandomizerOptions& options)
 {
@@ -569,14 +292,6 @@ void fixReverseGreenmazeFountainSoftlock(md::ROM& rom)
     rom.set_byte(0x500D, 0x08);
 }
 
-void alterCasinoTicketHandling(md::ROM& rom)
-{
-    // Remove ticket consumption on dialogue with the casino "bouncer"
-    rom.set_code(0x277A8, md::Code().nop(2));
-
-    // Remove Arthur giving his item another time if casino ticket is not owned
-    rom.set_code(0x26BBA, md::Code().nop(5));
-}
 
 void addDoorForReverseSafetyPass(md::ROM& rom)
 {
@@ -689,7 +404,6 @@ void alterKingNolesCaveTeleporterCheck(md::ROM& rom)
 
     // We need to inject a procedure checking "is D0 equal to FF" to replace the "bmi" previously used which was preventing
     // from checking flags above 0x80 (the one we need to check is 0xD0).
-
     md::Code procImproveFlagCheck;
 
     procImproveFlagCheck.moveb(addr_(reg_A0, 0x2), reg_D0);     // 1028 0002
@@ -716,7 +430,6 @@ void makeMercatorDocksShopAlwaysOpen(md::ROM& rom)
 void makeArthurAlwaysPresentInThroneRoom(md::ROM& rom)
 {
     // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
-
     // 0x01A904: 
         // Before:  AAA0 (bit 5 of flag 2A, affecting entity 0) 
         // After:   8000 (bit 0 of flag 00, affecting entity 0)
@@ -760,7 +473,8 @@ void fixKingNolesLabyrinthRafts(md::ROM& rom)
 
 void removeLogsRoomExitCheck(md::ROM& rom)
 {
-    // Remove logs check
+    // Usually, when trying to leave the room where you get Logs in the vanilla game without having taken both logs, a dwarf
+    // comes and prevents you from leaving. Here, we remove that check since we cannot softlock anymore on the raft.
     rom.set_code(0x011EC4, md::Code().bra());
 }
 
@@ -858,7 +572,7 @@ void replaceLumberjackByChest(md::ROM& rom)
 
 void replaceSickMerchantByChest(md::ROM& rom)
 {
-    // Neutralize map entrance triggers for both the shop and the backroom to remove the "sidequest complete" check.
+    // Neutralize map variant triggers for both the shop and the backroom to remove the "sidequest complete" check.
     // Either we forced them to be always true or always false
     rom.set_word(0x0050B4, 0x0008);  // Before: 0x2A0C (bit 4 of 102A) | After: 0x0008 (bit 0 of 1000 - always true)
     rom.set_word(0x00A568, 0x3F07);	// Before: 0x2A04 (bit 4 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
@@ -871,7 +585,7 @@ void replaceSickMerchantByChest(md::ROM& rom)
     // Transform the sick merchant into a chest
     rom.set_word(0x021D0E, 0xCE92);  // First word: position, orientation and palette (CE16 => CE92)
     rom.set_word(0x021D10, 0x0000);  // Second word: ??? (3000 => 0000)
-    rom.set_word(0x021D12, 0x0012);  // Third word: type (006D = Lumberjack NPC => 0012 = chest)
+    rom.set_word(0x021D12, 0x0012);  // Third word: type (006D = sick merchant NPC => 0012 = chest)
 //	rom.set_word(0x021D14, 0x0000); 
 
     // Move the kid to hide the fact that the bed looks broken af
@@ -975,101 +689,6 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
 //    rom.set_word(0x9020, color);
 }
 
-void alterLanternHandling(md::ROM& rom)
-{
-//    rom.storeAddress("data_dark_rooms", 0x8800);
-
-    // ----------------------------------------
-    // Function to darken the color palette currently used to draw the map
-    // Input :  D0 = AND mask to apply to palette
-
-    md::Code funcAlterPalette; // 0x0402 to darken
-
-    funcAlterPalette.movem_to_stack({ reg_D1, reg_D2 }, { reg_A0 });
-    funcAlterPalette.lea(0xFF0080, reg_A0);
-    funcAlterPalette.movew(0x20, reg_D1);
-    funcAlterPalette.label("loop");
-        funcAlterPalette.movew(addr_(reg_A0), reg_D2);
-        funcAlterPalette.andw(reg_D0, reg_D2);
-        funcAlterPalette.movew(reg_D2, addr_(reg_A0));
-        funcAlterPalette.adda(0x2, reg_A0);
-        funcAlterPalette.dbra(reg_D1, "loop");
-    funcAlterPalette.movem_from_stack({ reg_D1, reg_D2 }, { reg_A0 });
-    funcAlterPalette.rts();
-
-    uint32_t funcAlterPaletteAddr = rom.inject_code(funcAlterPalette);
-
-    // ----------------------------------------
-    // Function to check if the current room is supposed to be dark, and process differently 
-    // depending on whether or not we own the lantern
-    md::Code funcLanternCheck;
-
-    funcLanternCheck.lea(rom.stored_address("data_dark_rooms"), reg_A0);
-    funcLanternCheck.label("loop_start");
-    funcLanternCheck.movew(addr_(reg_A0), reg_D0);
-    funcLanternCheck.bmi(14);
-        funcLanternCheck.cmpw(addr_(0xFF1204), reg_D0);
-        funcLanternCheck.bne(10);
-            // We are in a dark room
-            funcLanternCheck.movem_to_stack({ reg_D0 }, {});
-            funcLanternCheck.btst(0x1, addr_(0xFF104D));
-            funcLanternCheck.bne(3);
-                // Dark room with no lantern ===> darken the palette
-                funcLanternCheck.movew(0x0000, reg_D0);
-                funcLanternCheck.bra(2);
-
-                // Dark room with lantern ===> use lantern palette
-                funcLanternCheck.movew(0x0CCC, reg_D0);
-            funcLanternCheck.jsr(funcAlterPaletteAddr);
-            funcLanternCheck.movem_from_stack({ reg_D0 }, {});
-            funcLanternCheck.rts();
-        funcLanternCheck.addql(0x2, reg_A0);
-        funcLanternCheck.bra("loop_start");
-    funcLanternCheck.clrb(reg_D7);
-    funcLanternCheck.rts();
-
-    rom.set_code(0x87BE, funcLanternCheck);
-
-    // ----------------------------------------
-    // Function to change the palette used on map transition (already exist in OG, slightly modified)
-    md::Code funcChangeMapPalette;
-
-    funcChangeMapPalette.cmpb(addr_(0xFF112F), reg_D4);
-    funcChangeMapPalette.beq(12);
-        funcChangeMapPalette.moveb(reg_D4, addr_(0xFF112F));
-        funcChangeMapPalette.lea(0x11C926, reg_A0);
-        funcChangeMapPalette.mulu(bval_(0x1A), reg_D4);
-        funcChangeMapPalette.adda(reg_D4, reg_A0);
-        funcChangeMapPalette.lea(0xFF0084, reg_A1);
-        funcChangeMapPalette.movew(0x000C, reg_D0);
-        funcChangeMapPalette.jsr(0x96A);
-        funcChangeMapPalette.clrw(addr_(0xFF0080));
-        funcChangeMapPalette.movew(0x0CCC, addr_(0xFF0082));
-        funcChangeMapPalette.clrw(addr_(0xFF009E));
-        funcChangeMapPalette.jsr(0x87BE); // TOOD: This call could be moved to the function which calls this one on menu exit
-    funcChangeMapPalette.rts();
-
-    rom.set_code(0x2D64, funcChangeMapPalette);
-    
-    // ----------------------------------------
-    // Pseudo-function used to extend the global palette init function, used to call the lantern check
-    // after initing all palettes (both map & entities)
-    md::Code funcExtendPaletteInit;
-
-    funcExtendPaletteInit.movew(0x0CCC, addr_(0xFF00A2));
-    funcExtendPaletteInit.jsr(0x1A4414);
-    funcExtendPaletteInit.jsr(0x87BE);
-    funcExtendPaletteInit.rts();
-
-    rom.set_long(0x19522, rom.inject_code(funcExtendPaletteInit));
-
-    // ----------------------------------------
-    // Replace the "dark room" palette from King Nole's Labyrinth by the lit room palette
-    constexpr uint32_t litRoomPaletteAddr = 0x11CD1C;
-    constexpr uint32_t darkRoomPaletteAddr = 0x11CD36;
-    for (uint8_t i = 0; i < 0x1A; ++i)
-        rom.set_byte(darkRoomPaletteAddr + i, rom.get_byte(litRoomPaletteAddr + i));
-}
 
 void alterGoldRewardsHandling(md::ROM& rom)
 {
@@ -1098,130 +717,6 @@ void alterGoldRewardsHandling(md::ROM& rom)
     // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
     // After:       jsr to injected function
     rom.set_code(0x0070E8, md::Code().jsr(funcAddr));
-}
-
-void addTeleportFunctionToSpellBook(md::ROM& rom)
-{
-    uint16_t spawnX = rom.get_byte(0x0027FD);
-    uint16_t spawnZ = rom.get_byte(0x002805);
-    uint16_t spawnPosition = (spawnX << 8) + spawnZ;
-    uint16_t spawnMapID = rom.get_word(0x0027F4);
-
-    // ------------- New spell book teleport function -------------
-    md::Code spellBookFunction;
-    spellBookFunction.movem_to_stack({ reg_D0_D7 }, { reg_A0_A6 });
-    spellBookFunction.movew(spawnPosition, addr_(0xFF5400));
-    spellBookFunction.movew(0x0708, addr_(0xFF5402)); // Reset subtiles position
-    spellBookFunction.trap(0, { 0x00, 0x4D });
-    spellBookFunction.jsr(0x44C);
-    spellBookFunction.movew(spawnMapID, reg_D0); // Set MapID to spawn map
-    spellBookFunction.movew(0x0000, addr_(0xFF5412)); // Reset player height
-    spellBookFunction.moveb(0x00, addr_(0xFF5422)); // Reset ground height
-    spellBookFunction.moveb(0x00, addr_(0xFF5439)); // ^
-    spellBookFunction.jsr(0x1586E);
-    spellBookFunction.jsr(0x434);
-    spellBookFunction.clrb(reg_D0);
-    spellBookFunction.jsr(0x2824);
-    spellBookFunction.jsr(0x410);
-    spellBookFunction.jsr(0x8EB4);
-    spellBookFunction.movem_from_stack({ reg_D0_D7 }, { reg_A0_A6 });
-    spellBookFunction.rts();
-    rom.inject_code(spellBookFunction, "func_spell_book");
-
-    // ------------- Extended item post use table -------------
-    uint32_t newPostUseTableAddr = rom.reserve_data_block(0x2A+6, "new_post_use_table");
-    // PostUseGarlic
-    rom.set_long(newPostUseTableAddr, 0x00008BE8); 
-    rom.set_word(newPostUseTableAddr+4, 0x9BFF);
-    newPostUseTableAddr += 6;
-    // PostUseEinsteinWhistle
-    rom.set_long(newPostUseTableAddr, 0x00008BF2); 
-    rom.set_word(newPostUseTableAddr+4, 0xA0FF);
-    newPostUseTableAddr += 6;
-    // PostUsePostUseGolasEye
-    rom.set_long(newPostUseTableAddr, 0x00008C7C); 
-    rom.set_word(newPostUseTableAddr+4, 0xABFF);
-    newPostUseTableAddr += 6;
-    // PostUseIdolStone
-    rom.set_long(newPostUseTableAddr, 0x00008C8E); 
-    rom.set_word(newPostUseTableAddr+4, 0xB1FF);
-    newPostUseTableAddr += 6;
-    // PostUseKey
-    rom.set_long(newPostUseTableAddr, 0x00008CB6); 
-    rom.set_word(newPostUseTableAddr+4, 0xB2FF);
-    newPostUseTableAddr += 6;
-    // PostUseShortcake
-    rom.set_long(newPostUseTableAddr, 0x00008CF6); 
-    rom.set_word(newPostUseTableAddr+4, 0xB6FF);
-    newPostUseTableAddr += 6;
-    // PostUseSpellbook
-    rom.set_long(newPostUseTableAddr, rom.stored_address("func_spell_book")); 
-    rom.set_word(newPostUseTableAddr+4, 0xA4FF);
-    newPostUseTableAddr += 6;
-    // End
-    rom.set_long(newPostUseTableAddr, 0xFFFFFFFF); 
-    rom.set_word(newPostUseTableAddr+4, 0xFFFF);
-
-    // ------------- New function to read the new table -------------
-    md::Code newPostUseTableLookupProc;
-    newPostUseTableLookupProc.moveb(addr_(0x00FF1152), reg_D0);
-    newPostUseTableLookupProc.lea(rom.stored_address("new_post_use_table"), reg_A0);
-    newPostUseTableLookupProc.label("newPostUseTableLookupProc_loop");
-    newPostUseTableLookupProc.moveb(addr_(reg_A0, 0x04), reg_D2);
-    newPostUseTableLookupProc.cmpib(0xFF, reg_D2);
-    newPostUseTableLookupProc.beq(7);
-    newPostUseTableLookupProc.cmpb(reg_D0, reg_D2);
-    newPostUseTableLookupProc.beq(3);
-    newPostUseTableLookupProc.addql(0x06, reg_A0);
-    newPostUseTableLookupProc.bra("newPostUseTableLookupProc_loop");
-    newPostUseTableLookupProc.movel(addr_(reg_A0), reg_A0);
-    newPostUseTableLookupProc.jmp(addr_(reg_A0));
-    newPostUseTableLookupProc.rts();
-    uint32_t newPostUseTableLookupProcAddr = rom.inject_code(newPostUseTableLookupProc);
-
-    // ------------- JMP to override old lookup function by the new one -------------
-    md::Code postUseTableInjectorCall;
-    postUseTableInjectorCall.jmp(newPostUseTableLookupProcAddr);
-    rom.set_code(0x8BC8, postUseTableInjectorCall);
-
-    // Replace "consume Spell Book" by "trigger post use effect"
-    rom.set_long(0x88C6, 0x600002EA); // bra loc_8BB2 >>> Mark used item as "has post use effect"
-}
-
-
-void addFunctionToItemsOnUse(md::ROM& rom)
-{
-    addTeleportFunctionToSpellBook(rom);
-
-    // ------------- Extended item handling function -------------
-
-    md::Code funcExtendedItemHandling;
-
-    funcExtendedItemHandling.cmpib(ITEM_RECORD_BOOK, reg_D0);
-    funcExtendedItemHandling.bne(3);
-        funcExtendedItemHandling.jsr(rom.stored_address("func_save_game_record_book"));
-        funcExtendedItemHandling.rts();
-    funcExtendedItemHandling.cmpib(ITEM_SPELL_BOOK, reg_D0);
-    funcExtendedItemHandling.bne(3);
-        funcExtendedItemHandling.jsr(0xDC1C); // "func_abracadabra"
-        funcExtendedItemHandling.rts();
-    funcExtendedItemHandling.cmpib(ITEM_LITHOGRAPH, reg_D0);
-    funcExtendedItemHandling.bne(3);
-        funcExtendedItemHandling.movew(0x21, reg_D0);  // funcExtendedItemHandling.movel(rom.stored_address("data_lithograph_hint_text"), addr_(0xFF0014));
-        funcExtendedItemHandling.jsr(0x22E90);
-    funcExtendedItemHandling.rts();
-    
-    uint32_t funcExtendedItemHandlingAddr = rom.inject_code(funcExtendedItemHandling);
-
-    rom.set_code(0x00DBA8, md::Code().jsr(funcExtendedItemHandlingAddr).nop(4));
-
-    // -------------------- Other modifications ---------------------
-
-    // To remove the "Nothing happened..." text, the item must be put in a list which has a finite size.
-    // We replace the Blue Ribbon (0x18) by the Record Book (0x23) to do so.
-    rom.set_byte(0x008642, 0x23);
-    // Same for Lithograph (0x27) remplacing Lantern (0x1A)
-    rom.set_word(0x008647, 0x6627);
 }
 
 void shortenMirCutsceneAfterLakeShrine(md::ROM& rom)
@@ -1292,70 +787,8 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
     rom.set_bytes(0x29732, itemNameBytes);
 }
 
-#include "assets/blue_jewel.bin.hxx"
-#include "assets/green_jewel.bin.hxx"
-#include "assets/yellow_jewel.bin.hxx"
 
-void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
-{
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-        return;    
 
-    constexpr uint32_t itemSpritesTableBaseAddr = 0x121578;
-    
-    if(options.jewel_count() >= 3)
-    {
-        // Add a sprite for green jewel and make the item use it
-        uint32_t greenJewelSpriteAddr = rom.inject_bytes(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE);
-        rom.set_long(itemSpritesTableBaseAddr + (ITEM_GREEN_JEWEL * 0x4), greenJewelSpriteAddr); // 0x121648
-    }
-    if(options.jewel_count() >= 4)
-    {
-        // Add a sprite for blue jewel and make the item use it
-        uint32_t blueJewelSpriteAddr = rom.inject_bytes(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE);
-        rom.set_long(itemSpritesTableBaseAddr + (ITEM_BLUE_JEWEL * 0x4), blueJewelSpriteAddr);
-    }
-    if(options.jewel_count() >= 5)
-    {
-        // Add a sprite for green jewel and make the item use it
-        uint32_t yellowJewelSpriteAddr = rom.inject_bytes(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE);
-        rom.set_long(itemSpritesTableBaseAddr + (ITEM_YELLOW_JEWEL * 0x4), yellowJewelSpriteAddr);
-    }
-
-    // Remove jewels replaced from book IDs from priest stands
-    constexpr uint8_t emptyItem = ITEM_NONE + 0xC0;
-    rom.set_byte(0x21037, emptyItem); // Massan Blue Jewel
-    rom.set_byte(0x2103F, emptyItem); // Massan Yellow Jewel
-    rom.set_byte(0x21193, emptyItem); // Gumi Blue Jewel
-    rom.set_byte(0x2119B, emptyItem); // Gumi Yellow Jewel
-    rom.set_byte(0x21287, emptyItem); // Ryuma Blue Jewel
-    rom.set_byte(0x2128F, emptyItem); // Ryuma Yellow Jewel
-    rom.set_byte(0x21D77, emptyItem); // Mercator Blue Jewel
-    rom.set_byte(0x21D6F, emptyItem); // Mercator Yellow Jewel
-    rom.set_byte(0x21F79, emptyItem); // Verla Blue Jewel
-    rom.set_byte(0x21F71, emptyItem); // Verla Yellow Jewel
-    rom.set_byte(0x22099, emptyItem); // Destel Blue Jewel
-    rom.set_byte(0x220A1, emptyItem); // Destel Yellow Jewel
-    rom.set_byte(0x22137, emptyItem); // Kazalt Blue Jewel
-    rom.set_byte(0x2213F, emptyItem); // Kazalt Yellow Jewel
-
-    // Make the Awakening Book (the only one remaining in churches) heal all status conditions
-    rom.set_code(0x24F6C, md::Code().nop(6));
-    rom.set_code(0x24FB8, md::Code().moveb(0xFF, reg_D0));
-}
-
-void makePawnTicketConsumable(md::ROM& rom)
-{
-    md::Code procConsumePawnTicket;
-    procConsumePawnTicket.jsr(0x8B98); // ConsumeItem
-    procConsumePawnTicket.nop(3);
-    rom.set_code(0x88D2, procConsumePawnTicket);
-}
-
-void makeKeyNotConsumedOnUse(md::ROM& rom)
-{
-    rom.set_code(0x8B34, md::Code().nop());
-}
 
 void alterCredits(md::ROM& rom)
 {
@@ -1415,35 +848,16 @@ void alterCredits(md::ROM& rom)
         rom.set_byte(addr, 0x00);
 }
 
-void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& world)
-{    
-    // Game & gameplay changes
-    alterGameStart(rom, options, world);
-    alterItemOrderInMenu(rom);
-    alterLifestockHandlingInShops(rom);
-    addStatueOfJyptaGoldsOverTime(rom);
-    quickenGaiaEffect(rom);
-    addRecordBookSave(rom, options);
-    alterFahlChallenge(rom);
-    addJewelsCheckForTeleporterToKazalt(rom, options);
-    addFunctionToItemsOnUse(rom);
+void apply_other_patches(md::ROM& rom, const RandomizerOptions& options, const World& world)
+{
+    // Item source behavior changes
     alterGoldRewardsHandling(rom);
-    alterLanternHandling(rom);
-    handleAdditionalJewels(rom, options);
-    makePawnTicketConsumable(rom);
-    makeKeyNotConsumedOnUse(rom);
+    alterLifestockHandlingInShops(rom);
     if (options.use_armor_upgrades())
         handleArmorUpgrades(rom);
+    fixFaraLifestockChest(rom);
+    alterFahlChallenge(rom);
 
-    // Flag-reading changes (from story flag reading to inventory reading)
-    fixAxeMagicCheck(rom);
-    fixSafetyPassCheck(rom);
-    fixArmletCheck(rom);
-    fixSunstoneCheck(rom);
-    fixDogTalkingCheck(rom);
-    alterMercatorSecondaryShopCheck(rom);
-    alterCasinoTicketHandling(rom);
-    
     // Specific map check changes
     alterWaterfallShrineSecretStairsCheck(rom);
     makeFallingRibbonAlwaysThere(rom);
@@ -1457,15 +871,15 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     fixMirTowerPriestRoomItems(rom);
     makeSwordOfGaiaWorkInVolcano(rom);
     fixReverseGreenmazeFountainSoftlock(rom);
-    addDoorForReverseSafetyPass(rom);
+    addJewelsCheckForTeleporterToKazalt(rom, options);
     makeRyumaMayorSaveable(rom);
 
-    // Specific map content changes
+    // Map content changes
+    replaceSickMerchantByChest(rom);
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
-    fixFaraLifestockChest(rom);
+    addDoorForReverseSafetyPass(rom); 
     replaceLumberjackByChest(rom);
-    replaceSickMerchantByChest(rom);
     replaceFaraInElderHouseByChest(rom);
 
     // Fix original game glitches & bugs
@@ -1474,10 +888,13 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     if(options.fix_tree_cutting_glitch())
         fix_tree_cutting_glitch(rom);
 
+    // UI changes
+    alterItemOrderInMenu(rom);
+    renameItems(rom, options);
+    changeHUDColor(rom, options);
+
     // Miscellaneous
     deactivateRegionCheck(rom);
-    changeHUDColor(rom, options);
-    shortenMirCutsceneAfterLakeShrine(rom);
-    renameItems(rom, options);
     alterCredits(rom);
+    shortenMirCutsceneAfterLakeShrine(rom);
 }

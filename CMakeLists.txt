@@ -69,10 +69,13 @@ set(SOURCES
     "src/model/world_region.hpp"
     "src/model/world_teleport_tree.hpp"
 
-    "src/exceptions.hpp"
-    "src/game_patches.cpp"
-    "src/game_patches.hpp"
+    "src/patches/patches.hpp"
+    "src/patches/game_init.cpp"
+    "src/patches/item_behavior.cpp"
+    "src/patches/story_flag_reading.cpp"
+    "src/patches/other_patches.cpp"
 
+    "src/exceptions.hpp"
     "src/randomizer_options.hpp"
     "src/randomizer_options.cpp"
     "src/world.cpp"

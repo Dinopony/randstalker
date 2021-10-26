@@ -43,12 +43,13 @@
 #include "model/world_region.hpp"
 #include "model/item_source.hpp"
 
+#include "patches/patches.hpp"
+
 #include "tools/megadrive/rom.hpp"
 #include "tools/argument_dictionary.hpp"
 #include "tools/tools.hpp"
 
 #include "exceptions.hpp"
-#include "game_patches.hpp"
 #include "world.hpp"
 #include "world_randomizer.hpp"
 
@@ -186,8 +187,11 @@ int main(int argc, char* argv[])
 
         // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
         std::cout << "Applying game patches...\n\n";
-        applyPatches(*rom, options, world);
-
+        patch_game_init(*rom, options, world);
+        patch_story_flag_reading(*rom, options, world);
+        patch_item_behavior(*rom, options, world);
+        apply_other_patches(*rom, options, world);
+        
         rom->save_as(options.output_rom_path());
         std::cout << "Randomized rom outputted to \"" << options.output_rom_path() << "\".\n\n";
 
