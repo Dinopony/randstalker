@@ -71,7 +71,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     }
 
     // Setup inventory tracker if needed
-    if (options.addIngameItemTracker())
+    if (options.add_ingame_item_tracker())
     {
         flagArray[0x4B] |= 0x10;
         flagArray[0x4C] |= 0x10;
@@ -98,7 +98,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
             funcInitGame.movew(value, addr_(0xFF1000+i));
     }
 
-    funcInitGame.movew(options.getStartingGold(), addr_(0xFF120E));
+    funcInitGame.movew(options.starting_gold(), addr_(0xFF120E));
     funcInitGame.rts();
 
     uint32_t funcInitGameAddr = rom.inject_code(funcInitGame);
@@ -109,7 +109,7 @@ void alterGameStart(md::ROM& rom, const RandomizerOptions& options, const World&
     rom.set_byte(0x002805, world.active_spawn_location()->position_y());
 
     // ------- Set spawn health ---------
-    uint8_t startingLife = options.getStartingLife();
+    uint8_t startingLife = options.starting_life();
     if(!startingLife)
         startingLife = world.active_spawn_location()->starting_life();
     rom.set_byte(0x0027B4, startingLife-1);
@@ -226,7 +226,7 @@ void addRecordBookSave(md::ROM& rom, const RandomizerOptions& options)
     md::Code funcSaveUsingRecordBook;
     funcSaveUsingRecordBook.movem_to_stack({ reg_D0, reg_D1 }, {});
 
-    if(options.consumableRecordBook())
+    if(options.consumable_record_book())
     {
         funcSaveUsingRecordBook.moveb(reg_D0, addr_(0xFF1152));
         funcSaveUsingRecordBook.jsr(0x8B98); // ConsumeItem
@@ -482,12 +482,12 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom, const RandomizerOptions& 
     // ----------- Jewel checks handling ------------
     md::Code procHandleJewelsCheck;
 
-    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         procHandleJewelsCheck.movem_to_stack({reg_D1},{});
         procHandleJewelsCheck.moveb(addr_(0xFF1054), reg_D1);
         procHandleJewelsCheck.andib(0x0F, reg_D1);
-        procHandleJewelsCheck.cmpib(options.getJewelCount(), reg_D1); // Test if red jewel is owned
+        procHandleJewelsCheck.cmpib(options.jewel_count(), reg_D1); // Test if red jewel is owned
         procHandleJewelsCheck.movem_from_stack({reg_D1},{});
         procHandleJewelsCheck.bgt(3);
             procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
@@ -495,35 +495,35 @@ void addJewelsCheckForTeleporterToKazalt(md::ROM& rom, const RandomizerOptions& 
     }
     else
     {
-        if(options.getJewelCount() >= 1)
+        if(options.jewel_count() >= 1)
         {
             procHandleJewelsCheck.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
             procHandleJewelsCheck.bne(3);
                 procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
                 procHandleJewelsCheck.rts();
         }
-        if(options.getJewelCount() >= 2)
+        if(options.jewel_count() >= 2)
         {
             procHandleJewelsCheck.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
             procHandleJewelsCheck.bne(3);
                 procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
                 procHandleJewelsCheck.rts();
         }
-        if(options.getJewelCount() >= 3)
+        if(options.jewel_count() >= 3)
         {
             procHandleJewelsCheck.btst(0x1, addr_(0xFF105A)); // Test if green jewel is owned
             procHandleJewelsCheck.bne(3);
                 procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
                 procHandleJewelsCheck.rts();
         }
-        if(options.getJewelCount() >= 4)
+        if(options.jewel_count() >= 4)
         {
             procHandleJewelsCheck.btst(0x5, addr_(0xFF1050)); // Test if blue jewel is owned
             procHandleJewelsCheck.bne(3);
                 procHandleJewelsCheck.jsr(addrRejectKazaltTeleport);
                 procHandleJewelsCheck.rts();
         }
-        if(options.getJewelCount() >= 5)
+        if(options.jewel_count() >= 5)
         {
             procHandleJewelsCheck.btst(0x1, addr_(0xFF1051)); // Test if yellow jewel is owned
             procHandleJewelsCheck.bne(3);
@@ -911,7 +911,7 @@ void replaceFaraInElderHouseByChest(md::ROM& rom)
 //       Original game bugs & glitches fixes
 ///////////////////////////////////////////////////////////////////////////////////
 
-void fixArmletSkip(md::ROM& rom)
+void fix_armlet_skip(md::ROM& rom)
 {
     // Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
     // 0x02030C:
@@ -920,7 +920,7 @@ void fixArmletSkip(md::ROM& rom)
     rom.set_byte(0x02030C, 0x85);
 }
 
-void fixTreeCuttingGlitch(md::ROM& rom)
+void fix_tree_cutting_glitch(md::ROM& rom)
 {
     // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
     md::Code funcFixTreeCuttingGlitch;
@@ -956,7 +956,7 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
     // 0x824 is the default purple color from the original game
     uint16_t color = 0x0824;
 
-    std::string hudColor = options.getHUDColor();
+    std::string hudColor = options.hud_color();
     Tools::toLower(hudColor);
 
     if (hudColor == "red")              color = 0x228;
@@ -1239,7 +1239,7 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
     // "Kazalt Jewel" mode is a specific mode when user asked for more jewels than we can provide individual items for.
     // In that case, we only use one generic jewel item type which can be obtained several times, and check against this
     // item's count instead of checking if every jewel type is owned at Kazalt teleporter
-    bool kazaltJewelMode = (options.getJewelCount() > MAX_INDIVIDUAL_JEWELS);
+    bool kazaltJewelMode = (options.jewel_count() > MAX_INDIVIDUAL_JEWELS);
 
     // Read item names
     uint32_t addr = 0;
@@ -1298,24 +1298,24 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
 
 void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
 {
-    if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
         return;    
 
     constexpr uint32_t itemSpritesTableBaseAddr = 0x121578;
     
-    if(options.getJewelCount() >= 3)
+    if(options.jewel_count() >= 3)
     {
         // Add a sprite for green jewel and make the item use it
         uint32_t greenJewelSpriteAddr = rom.inject_bytes(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE);
         rom.set_long(itemSpritesTableBaseAddr + (ITEM_GREEN_JEWEL * 0x4), greenJewelSpriteAddr); // 0x121648
     }
-    if(options.getJewelCount() >= 4)
+    if(options.jewel_count() >= 4)
     {
         // Add a sprite for blue jewel and make the item use it
         uint32_t blueJewelSpriteAddr = rom.inject_bytes(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE);
         rom.set_long(itemSpritesTableBaseAddr + (ITEM_BLUE_JEWEL * 0x4), blueJewelSpriteAddr);
     }
-    if(options.getJewelCount() >= 5)
+    if(options.jewel_count() >= 5)
     {
         // Add a sprite for green jewel and make the item use it
         uint32_t yellowJewelSpriteAddr = rom.inject_bytes(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE);
@@ -1432,7 +1432,7 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     handleAdditionalJewels(rom, options);
     makePawnTicketConsumable(rom);
     makeKeyNotConsumedOnUse(rom);
-    if (options.useArmorUpgrades())
+    if (options.use_armor_upgrades())
         handleArmorUpgrades(rom);
 
     // Flag-reading changes (from story flag reading to inventory reading)
@@ -1469,10 +1469,10 @@ void applyPatches(md::ROM& rom, const RandomizerOptions& options, const World& w
     replaceFaraInElderHouseByChest(rom);
 
     // Fix original game glitches & bugs
-    if(options.fixArmletSkip())
-        fixArmletSkip(rom);
-    if(options.fixTreeCuttingGlitch())
-        fixTreeCuttingGlitch(rom);
+    if(options.fix_armlet_skip())
+        fix_armlet_skip(rom);
+    if(options.fix_tree_cutting_glitch())
+        fix_tree_cutting_glitch(rom);
 
     // Miscellaneous
     deactivateRegionCheck(rom);

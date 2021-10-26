@@ -75,8 +75,8 @@ public:
     void parse_json(const Json& json);
     Item* parse_item_from_name(const std::string& itemName);
 
-    std::vector<Item*> find_smallest_inventory_to_reach(WorldRegion* end_region) const;
-    std::vector<Item*> find_smallest_inventory_to_complete() const { return this->find_smallest_inventory_to_reach(_regions.at("end")); }
+    std::vector<Item*> minimal_inventory_to_reach(WorldRegion* end_region) const;
+    std::vector<Item*> minimal_inventory_to_complete() const { return this->minimal_inventory_to_reach(_regions.at("end")); }
   
     bool is_macro_region_avoidable(WorldMacroRegion* macro_region) const;
     bool is_item_avoidable(Item* item) const;

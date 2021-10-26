@@ -10,55 +10,55 @@
 #include "world_solver.hpp"
 
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
-    _world          (world),
-    _options        (options),
-    _rng            (),
-    _goldItemsCount (0),
-    _debugLogJson   (options.to_json())
+    _world            (world),
+    _options          (options),
+    _rng              (),
+    _gold_items_count (0),
+    _debug_log_json   (options.to_json())
 {
-    this->initFillerItems();
-    this->initMandatoryItems();
-    this->initInventoryWithStartingItems();
+    this->init_filler_items();
+    this->init_mandatory_items();
+    this->init_inventory();
 }
 
 void WorldRandomizer::randomize()
 {
-    uint32_t rngSeed = _options.getSeed();
+    uint32_t rngSeed = _options.seed();
 
     // 1st pass: randomizations happening BEFORE randomizing items
     _rng.seed(rngSeed);
-    this->randomizeSpawnLocation();
-    this->randomizeGoldValues();
+    this->randomize_spawn_location();
+    this->randomize_gold_values();
     this->randomize_dark_rooms();
 
     // 2nd pass: randomizing items
     _rng.seed(rngSeed);
-    this->randomizeItems();
+    this->randomize_items();
 
     // Analyse items required to complete the seed
-    _minimalItemsToComplete = _world.find_smallest_inventory_to_complete();
-    _debugLogJson["requiredItems"] = Json::array();
-    for (Item* item : _minimalItemsToComplete)
-        _debugLogJson["requiredItems"].push_back(item->name());
+    _minimal_items_to_complete = _world.minimal_inventory_to_complete();
+    _debug_log_json["requiredItems"] = Json::array();
+    for (Item* item : _minimal_items_to_complete)
+        _debug_log_json["requiredItems"].push_back(item->name());
 
     // 3rd pass: randomizations happening AFTER randomizing items
     _rng.seed(rngSeed);
     this->randomize_hints();
 
-    if(_options.shuffleTiborTrees())
+    if(_options.shuffle_tibor_trees())
         this->randomize_tibor_trees();
 }
 
-void WorldRandomizer::initFillerItems()
+void WorldRandomizer::init_filler_items()
 {
-    std::map<std::string, uint16_t> fillerItemsDescription;
-    if(_options.hasCustomFillerItems())
+    std::map<std::string, uint16_t> filler_items_desc;
+    if(_options.has_custom_filler_items())
     {
-        fillerItemsDescription = _options.getFillerItems();
+        filler_items_desc = _options.filler_items();
     }
     else
     {
-        fillerItemsDescription = { 
+        filler_items_desc = { 
             {"Life Stock", 80},      {"EkeEke", 55},         {"Golds", 30},          {"Dahl", 16},             
             {"Statue of Gaia", 12},  {"Detox Grass", 11},    {"Golden Statue", 10},  {"Restoration", 10},     
             {"Mind Repair", 7},      {"Anti Paralyze", 7},   {"No Item", 4},         {"Pawn Ticket", 1},
@@ -66,37 +66,37 @@ void WorldRandomizer::initFillerItems()
         };
     }
 
-    for (auto& [itemName, quantity] : fillerItemsDescription)
+    for (auto& [item_name, quantity] : filler_items_desc)
     {
-        if(itemName == "Golds")
+        if(item_name == "Golds")
         {
-            _goldItemsCount += quantity;
+            _gold_items_count += quantity;
             continue;
         }
 
-        Item* item = _world.item(itemName);
+        Item* item = _world.item(item_name);
         if(!item)
         {
             std::stringstream msg;
-            msg << "Unknown item '" << itemName << "' found in filler items.";
+            msg << "Unknown item '" << item_name << "' found in filler items.";
             throw RandomizerException(msg.str());
         }
         
         for(uint16_t i=0 ; i<quantity ; ++i)
-            _fillerItems.push_back(item);
+            _filler_items.push_back(item);
     }
 }
 
-void WorldRandomizer::initMandatoryItems()
+void WorldRandomizer::init_mandatory_items()
 {
-    std::map<std::string, uint16_t> mandatoryItemsDescription;
-    if(_options.hasCustomMandatoryItems())
+    std::map<std::string, uint16_t> mandatory_items_desc;
+    if(_options.has_custom_mandatory_items())
     {
-        mandatoryItemsDescription = _options.getMandatoryItems();
+        mandatory_items_desc = _options.mandatory_items();
     }
     else
     {
-        mandatoryItemsDescription = {
+        mandatory_items_desc = {
             {"Magic Sword", 1},      {"Thunder Sword", 1},     {"Sword of Ice", 1},     {"Sword of Gaia", 1},
             {"Steel Breast", 1},     {"Chrome Breast", 1},     {"Shell Breast", 1},     {"Hyper Breast", 1},
             {"Healing Boots", 1},    {"Iron Boots", 1},        {"Fireproof", 1},
@@ -105,7 +105,7 @@ void WorldRandomizer::initMandatoryItems()
         };
     }
 
-    for (auto& [item_name, quantity] : mandatoryItemsDescription)
+    for (auto& [item_name, quantity] : mandatory_items_desc)
     {
         Item* item = _world.item(item_name);
         if(!item)
@@ -120,13 +120,13 @@ void WorldRandomizer::initMandatoryItems()
     }
 }
 
-void WorldRandomizer::initInventoryWithStartingItems()
+void WorldRandomizer::init_inventory()
 {
     for(const auto& [id, item] : _world.items())
     {
         uint8_t quantity = item->starting_quantity();
         for(uint8_t i=0 ; i<quantity ; ++i)
-            _playerInventory.push_back(item);
+            _inventory.push_back(item);
     }
 }
 
@@ -135,9 +135,9 @@ void WorldRandomizer::initInventoryWithStartingItems()
 ///        FIRST PASS RANDOMIZATIONS (before items)
 ///////////////////////////////////////////////////////////////////////////////////////
 
-void WorldRandomizer::randomizeSpawnLocation()
+void WorldRandomizer::randomize_spawn_location()
 {
-    std::vector<std::string> possible_spawn_locations = _options.getPossibleSpawnLocations();
+    std::vector<std::string> possible_spawn_locations = _options.possible_spawn_locations();
     if(possible_spawn_locations.empty())
     {
         for(auto& [id, spawn] : _world.spawn_locations())
@@ -145,43 +145,43 @@ void WorldRandomizer::randomizeSpawnLocation()
     }
 
     Tools::shuffle(possible_spawn_locations, _rng);
-    SpawnLocation* spawnLoc = _world.spawn_locations().at(possible_spawn_locations[0]);
-    _world.active_spawn_location(spawnLoc);
+    SpawnLocation* spawn = _world.spawn_locations().at(possible_spawn_locations[0]);
+    _world.active_spawn_location(spawn);
 }
 
-void WorldRandomizer::randomizeGoldValues()
+void WorldRandomizer::randomize_gold_values()
 {
-    constexpr uint16_t averageGoldPerChest = 35;
-    constexpr double maxFactorOfTotalGoldValue = 0.16;
+    constexpr uint16_t AVERAGE_GOLD_PER_CHEST = 35;
+    constexpr double MAX_FACTOR_OF_TOTAL_GOLD = 0.16;
 
-    uint16_t totalGoldValue = averageGoldPerChest * _goldItemsCount;
+    uint16_t total_gold = AVERAGE_GOLD_PER_CHEST * _gold_items_count;
 
-    for (uint8_t i = 0; i < _goldItemsCount ; ++i)
+    for (uint8_t i = 0; i < _gold_items_count ; ++i)
     {
-        uint16_t goldValue;
+        uint16_t gold_value;
 
-        if (i < _goldItemsCount - 1)
+        if (i < _gold_items_count - 1)
         {
             double proportion = (double) _rng() / (double) _rng.max();
-            double factor = (proportion * maxFactorOfTotalGoldValue);
+            double factor = (proportion * MAX_FACTOR_OF_TOTAL_GOLD);
 
-            goldValue = (uint16_t)((double)totalGoldValue * factor);
+            gold_value = (uint16_t)((double)total_gold * factor);
         }
         else
         {
-            goldValue = totalGoldValue;
+            gold_value = total_gold;
         }
 
-        if (goldValue == 0)
-            goldValue = 1;
-        else if (goldValue > 255)
-            goldValue = 255;
+        if (gold_value == 0)
+            gold_value = 1;
+        else if (gold_value > 255)
+            gold_value = 255;
 
-        totalGoldValue -= goldValue;
+        total_gold -= gold_value;
 
-        Item* goldItem = _world.add_gold_item(static_cast<uint8_t>(goldValue));
-        if(goldItem)
-            _fillerItems.push_back(goldItem);
+        Item* gold_item = _world.add_gold_item(static_cast<uint8_t>(gold_value));
+        if(gold_item)
+            _filler_items.push_back(gold_item);
     }
 }
 
@@ -206,235 +206,237 @@ void WorldRandomizer::randomize_dark_rooms()
 ///        SECOND PASS RANDOMIZATIONS (items)
 ///////////////////////////////////////////////////////////////////////////////////////
 
-void WorldRandomizer::randomizeItems()
+void WorldRandomizer::randomize_items()
 {
-    _regionsToExplore = { _world.active_spawn_location()->region() };
-    _exploredRegions.clear();        // Regions already processed by the exploration algorithm
-    _itemSourcesToFill.clear();        // Reachable empty item sources which must be filled with a random item
-    _playerInventory.clear();        // The current contents of player inventory at the given time in the exploration algorithm
-    _pendingPaths.clear();            // Paths leading to potentially unexplored regions, locked behind a key item which is not yet owned by the player
+    _regions_to_explore = { _world.active_spawn_location()->region() };
+    _explored_regions.clear();        // Regions already processed by the exploration algorithm
+    _item_sources_to_fill.clear();        // Reachable empty item sources which must be filled with a random item
+    _inventory.clear();        // The current contents of player inventory at the given time in the exploration algorithm
+    _pending_paths.clear();            // Paths leading to potentially unexplored regions, locked behind a key item which is not yet owned by the player
 
-    Tools::shuffle(_fillerItems, _rng);
+    Tools::shuffle(_filler_items, _rng);
 
-    this->placeMandatoryItems();
+    this->place_mandatory_items();
 
-    uint32_t stepCount = 1;
-    while (!_pendingPaths.empty() || !_regionsToExplore.empty())
+    uint32_t step_count = 1;
+    while (!_pending_paths.empty() || !_regions_to_explore.empty())
     {
-        Json& debugLogStepJson = _debugLogJson["steps"][std::to_string(stepCount)];
+        Json& debug_step_json = _debug_log_json["steps"][std::to_string(step_count)];
 
         // Explore not yet explored regions, listing all item sources and paths for further exploration and processing
-        this->explorationPhase(debugLogStepJson);
+        this->exploration_phase(debug_step_json);
 
         // Try unlocking paths and item sources with newly discovered items in pre-filled item sources (useful for half-plando)
-        this->unlockPhase();
+        this->unlock_phase();
 
-        Tools::shuffle(_itemSourcesToFill, _rng);
+        Tools::shuffle(_item_sources_to_fill, _rng);
 
         // Place one or several key items to unlock access to a path, opening new regions & item sources
-        this->placeKeyItemsPhase(debugLogStepJson);
+        this->place_key_items_phase(debug_step_json);
 
         // Fill a fraction of already available sources with filler items
-        if (!_itemSourcesToFill.empty())
+        if (!_item_sources_to_fill.empty())
         {
-            size_t sourcesToFillCount = (size_t)(_itemSourcesToFill.size() * _options.getFillingRate());
-            this->placeFillerItemsPhase(debugLogStepJson, sourcesToFillCount);
+            size_t sourcesToFillCount = (size_t)(_item_sources_to_fill.size() * _options.filling_rate());
+            this->place_filler_items_phase(debug_step_json, sourcesToFillCount);
         }
 
         // Try unlocking paths and item sources with the newly acquired key item
-        this->unlockPhase();
-        ++stepCount;
+        this->unlock_phase();
+        ++step_count;
     }
 
     // Place the remaining filler items, and put Ekeeke in the last empty sources
-    Json& debugLogStepJson = _debugLogJson["steps"]["remainder"];
-    this->placeFillerItemsPhase(debugLogStepJson, _itemSourcesToFill.size(), _world.item(ITEM_EKEEKE));
+    Json& debug_step_json = _debug_log_json["steps"]["remainder"];
+    this->place_filler_items_phase(debug_step_json, _item_sources_to_fill.size(), _world.item(ITEM_EKEEKE));
 
-    if (!_fillerItems.empty())
+    if (!_filler_items.empty())
     {
-        debugLogStepJson["unplacedItems"] = Json::array();
-        for (Item* item : _fillerItems)
-            debugLogStepJson["unplacedItems"].push_back(item->name());
+        debug_step_json["unplacedItems"] = Json::array();
+        for (Item* item : _filler_items)
+            debug_step_json["unplacedItems"].push_back(item->name());
     }
 
-    _debugLogJson["endState"]["remainingSourcesToFill"] = Json::array();
-    for(auto source : _itemSourcesToFill)
-        _debugLogJson["endState"]["remainingSourcesToFill"].push_back(source->name());
-    _debugLogJson["endState"]["pendingPaths"] = _pendingPaths.size();
+    _debug_log_json["endState"]["remainingSourcesToFill"] = Json::array();
+    for(auto source : _item_sources_to_fill)
+        _debug_log_json["endState"]["remainingSourcesToFill"].push_back(source->name());
+    _debug_log_json["endState"]["pending_paths"] = _pending_paths.size();
 }
 
-void WorldRandomizer::placeMandatoryItems()
+void WorldRandomizer::place_mandatory_items()
 {
-    _debugLogJson["steps"]["0"]["comment"] = "Placing mandatory items";
+    _debug_log_json["steps"]["0"]["comment"] = "Placing mandatory items";
 
     // Mandatory items are filler items which are always placed first in the randomization, no matter what
     Tools::shuffle(_mandatoryItems, _rng);
 
-    std::vector<ItemSource*> allEmptyItemSources;
+    std::vector<ItemSource*> all_empty_item_sources;
     for (ItemSource* source : _world.item_sources())
-        if(!source->item())
-            allEmptyItemSources.push_back(source);
-    Tools::shuffle(allEmptyItemSources, _rng);
-
-    for (Item* itemToPlace : _mandatoryItems)
     {
-        for (ItemSource* source : allEmptyItemSources)
+        if(!source->item())
+            all_empty_item_sources.push_back(source);
+    }
+    Tools::shuffle(all_empty_item_sources, _rng);
+
+    for (Item* item_to_place : _mandatoryItems)
+    {
+        for (ItemSource* source : all_empty_item_sources)
         {
-            if (!source->item() && source->is_item_compatible(itemToPlace))
+            if (!source->item() && source->is_item_compatible(item_to_place))
             {
-                source->item(itemToPlace);
-                _debugLogJson["steps"]["0"]["placedItems"][source->name()] = itemToPlace->name();
+                source->item(item_to_place);
+                _debug_log_json["steps"]["0"]["placedItems"][source->name()] = item_to_place->name();
                 break;
             }
         }
     }
 }
 
-void WorldRandomizer::placeFillerItemsPhase(Json& debugLogStepJson, size_t count, Item* lastResortFiller)
+void WorldRandomizer::place_filler_items_phase(Json& debug_step_json, size_t count, Item* last_resort_filler)
 {
     for (size_t i=0 ; i<count ; ++i)
     {
-        ItemSource* itemSource = _itemSourcesToFill[0];
+        ItemSource* source = _item_sources_to_fill[0];
         
-        for (size_t j=0 ; j < _fillerItems.size(); ++j)
+        for (size_t j=0 ; j < _filler_items.size(); ++j)
         {
-            Item* fillerItem = _fillerItems[j];
-            if (itemSource->is_item_compatible(fillerItem))
+            Item* fillerItem = _filler_items[j];
+            if (source->is_item_compatible(fillerItem))
             {
-                itemSource->item(fillerItem);
-                _fillerItems.erase(_fillerItems.begin() + j);
-                _itemSourcesToFill.erase(_itemSourcesToFill.begin());
+                source->item(fillerItem);
+                _filler_items.erase(_filler_items.begin() + j);
+                _item_sources_to_fill.erase(_item_sources_to_fill.begin());
                 break;
             }
         }
 
-        if(itemSource->item() == nullptr)
+        if(source->item() == nullptr)
         {
             // No valid item could be put inside the itemSource...
-            if(lastResortFiller)
+            if(last_resort_filler)
             {
                 // Fill with the "last resort filler" if provided
-                itemSource->item(lastResortFiller);
-                _itemSourcesToFill.erase(_itemSourcesToFill.begin());
+                source->item(last_resort_filler);
+                _item_sources_to_fill.erase(_item_sources_to_fill.begin());
             }
             else
             {
                 // No last resort provided, put this item source on the back of the list
-                _itemSourcesToFill.erase(_itemSourcesToFill.begin());
-                _itemSourcesToFill.push_back(itemSource);
+                _item_sources_to_fill.erase(_item_sources_to_fill.begin());
+                _item_sources_to_fill.push_back(source);
             }
         }
 
-        if(itemSource->item())
-            debugLogStepJson["filledSources"][itemSource->name()] = itemSource->item()->name();
+        if(source->item())
+            debug_step_json["filledSources"][source->name()] = source->item()->name();
     }
 }
 
-void WorldRandomizer::explorationPhase(Json& debugLogStepJson)
+void WorldRandomizer::exploration_phase(Json& debug_step_json)
 {
-    debugLogStepJson["exploredRegions"] = Json::array();
+    debug_step_json["exploredRegions"] = Json::array();
 
-    while (!_regionsToExplore.empty())
+    while (!_regions_to_explore.empty())
     {
         // Take and erase first region from regions to explore, add it to explored regions set.
-        WorldRegion* exploredRegion = *_regionsToExplore.begin();
-        _regionsToExplore.erase(exploredRegion);
-        _exploredRegions.insert(exploredRegion);
-        debugLogStepJson["exploredRegions"].push_back(exploredRegion->name());
+        WorldRegion* explored_region = *_regions_to_explore.begin();
+        _regions_to_explore.erase(explored_region);
+        _explored_regions.insert(explored_region);
+        debug_step_json["exploredRegions"].push_back(explored_region->name());
 
         // List item sources to fill from this region.
-        const std::vector<ItemSource*> itemSources = exploredRegion->item_sources();
-        for (ItemSource* itemSource : itemSources)
+        const std::vector<ItemSource*> item_sources = explored_region->item_sources();
+        for (ItemSource* source : item_sources)
         {
-            if(itemSource->item())
-                _playerInventory.push_back(itemSource->item());    // Non-empty item sources populate player inventory (useful for plandos)
+            if(source->item())
+                _inventory.push_back(source->item());    // Non-empty item sources populate player inventory (useful for plandos)
             else
-                _itemSourcesToFill.push_back(itemSource);
+                _item_sources_to_fill.push_back(source);
         }
 
         // List outgoing paths
-        for (WorldPath* outgoingPath : exploredRegion->outgoing_paths())
+        for (WorldPath* outgoing_path : explored_region->outgoing_paths())
         {
             // If destination is already pending exploration (through another path) or has already been explored, just ignore it
-            WorldRegion* destination = outgoingPath->destination();
-            if (_regionsToExplore.contains(destination) || _exploredRegions.contains(destination))
+            WorldRegion* destination = outgoing_path->destination();
+            if (_regions_to_explore.contains(destination) || _explored_regions.contains(destination))
                 continue;
 
-            if (outgoingPath->missing_items_to_cross(_playerInventory).empty())
+            if (outgoing_path->missing_items_to_cross(_inventory).empty())
             {
                 // For crossable paths, add destination to the list of regions to explore
-                _regionsToExplore.insert(destination);
+                _regions_to_explore.insert(destination);
             }
             else
             {
                 // For uncrossable blocked paths, add them to a pending list
-                _pendingPaths.push_back(outgoingPath);
+                _pending_paths.push_back(outgoing_path);
             }
         }
     }
 }
 
-void WorldRandomizer::placeKeyItemsPhase(Json& debugLogStepJson)
+void WorldRandomizer::place_key_items_phase(Json& debug_step_json)
 {
-    if (_pendingPaths.empty())
+    if (_pending_paths.empty())
         return;
 
     // List all unowned key items, and pick a random one among them
-    std::vector<WorldPath*> blockedPaths;
-    for (WorldPath* pendingPath : _pendingPaths)
+    std::vector<WorldPath*> blocked_paths;
+    for (WorldPath* pending_path : _pending_paths)
     {
-        if(!pendingPath->missing_items_to_cross(_playerInventory).empty())
+        if(!pending_path->missing_items_to_cross(_inventory).empty())
         {
-            // If items are missing to cross this path, add as many entries as the weight of the path to the blockedPaths array
-            for(int i=0 ; i<pendingPath->weight() ; ++i)
-                blockedPaths.push_back(pendingPath);
+            // If items are missing to cross this path, add as many entries as the weight of the path to the blocked_paths array
+            for(int i=0 ; i<pending_path->weight() ; ++i)
+                blocked_paths.push_back(pending_path);
         }
     }
 
-    Tools::shuffle(blockedPaths, _rng);
-    WorldPath* pathToOpen = blockedPaths[0];
-    std::vector<Item*> missingKeyItems = pathToOpen->missing_items_to_cross(_playerInventory);
-    for(Item* keyItemToPlace : missingKeyItems)
+    Tools::shuffle(blocked_paths, _rng);
+    WorldPath* pathToOpen = blocked_paths[0];
+    std::vector<Item*> missing_key_items = pathToOpen->missing_items_to_cross(_inventory);
+    for(Item* key_item_to_place : missing_key_items)
     {
         // Find a random item source capable of carrying the item
-        ItemSource* randomItemSource = nullptr;
-        for (uint32_t i = 0; i < _itemSourcesToFill.size(); ++i)
+        ItemSource* random_item_source = nullptr;
+        for (uint32_t i = 0; i < _item_sources_to_fill.size(); ++i)
         {
-            if (_itemSourcesToFill[i]->is_item_compatible(keyItemToPlace))
+            if (_item_sources_to_fill[i]->is_item_compatible(key_item_to_place))
             {
-                randomItemSource = _itemSourcesToFill[i];
-                _itemSourcesToFill.erase(_itemSourcesToFill.begin() + i);
+                random_item_source = _item_sources_to_fill[i];
+                _item_sources_to_fill.erase(_item_sources_to_fill.begin() + i);
                 break;
             }
         }
-        if (!randomItemSource)
+        if (!random_item_source)
             throw NoAppropriateItemSourceException();
 
         // Place the key item in the appropriate source, and also add it to player inventory
-        randomItemSource->item(keyItemToPlace);
-        _logicalPlaythrough.push_back(randomItemSource);
-        _playerInventory.push_back(keyItemToPlace);
+        random_item_source->item(key_item_to_place);
+        _logical_playthrough.push_back(random_item_source);
+        _inventory.push_back(key_item_to_place);
 
-        debugLogStepJson["placedKeyItems"][randomItemSource->name()] = keyItemToPlace->name();
+        debug_step_json["placedKeyItems"][random_item_source->name()] = key_item_to_place->name();
     }
 }
 
-void WorldRandomizer::unlockPhase()
+void WorldRandomizer::unlock_phase()
 {
     // Look for unlockable paths...
-    for (size_t i=0 ; i < _pendingPaths.size() ; ++i)
+    for (size_t i=0 ; i < _pending_paths.size() ; ++i)
     {
-        WorldPath* pendingPath = _pendingPaths[i];
+        WorldPath* pending_path = _pending_paths[i];
 
-        if (pendingPath->missing_items_to_cross(_playerInventory).empty())
+        if (pending_path->missing_items_to_cross(_inventory).empty())
         {
             // Path is now unlocked, add destination to regions to explore if it has not yet been explored
-            WorldRegion* destination = pendingPath->destination();
-            if (!_regionsToExplore.contains(destination) && !_exploredRegions.contains(destination))
-                _regionsToExplore.insert(destination);
+            WorldRegion* destination = pending_path->destination();
+            if (!_regions_to_explore.contains(destination) && !_explored_regions.contains(destination))
+                _regions_to_explore.insert(destination);
 
             // Remove path from pending paths
-            _pendingPaths.erase(_pendingPaths.begin()+i);
+            _pending_paths.erase(_pending_paths.begin()+i);
             --i;
         }
     }
@@ -459,30 +461,30 @@ void WorldRandomizer::randomize_hints()
 void WorldRandomizer::randomize_lithograph_hint()
 {
     std::stringstream lithograph_hint;
-    if(_options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    if(_options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         bool first = true;
-        std::vector<ItemSource*> allSourcesContainingJewels = _world.item_sources_with_item(_world.item(ITEM_RED_JEWEL));
-        for(ItemSource* source : allSourcesContainingJewels)
+        std::vector<ItemSource*> sources_containing_jewels = _world.item_sources_with_item(_world.item(ITEM_RED_JEWEL));
+        for(ItemSource* source : sources_containing_jewels)
         {
             if(first)
                 first = false;
             else
                 lithograph_hint << "\n";
-            lithograph_hint << "A jewel is " << this->getRandomHintForItemSource(source) << ".";
+            lithograph_hint << "A jewel is " << this->random_hint_for_item_source(source) << ".";
         }
     }
-    else if(_options.getJewelCount() >= 1)
+    else if(_options.jewel_count() >= 1)
     {
-        lithograph_hint << "Red Jewel is " << this->getRandomHintForItem(_world.item(ITEM_RED_JEWEL)) << ".";
-        if(_options.getJewelCount() >= 2)
-            lithograph_hint << "\nPurple Jewel is " << this->getRandomHintForItem(_world.item(ITEM_PURPLE_JEWEL)) << ".";
-        if(_options.getJewelCount() >= 3)
-            lithograph_hint << "\nGreen Jewel is " << this->getRandomHintForItem(_world.item(ITEM_GREEN_JEWEL)) << ".";
-        if(_options.getJewelCount() >= 4)
-            lithograph_hint << "\nBlue Jewel is " << this->getRandomHintForItem(_world.item(ITEM_BLUE_JEWEL)) << ".";
-        if(_options.getJewelCount() >= 5)
-            lithograph_hint << "\nYellow Jewel is " << this->getRandomHintForItem(_world.item(ITEM_YELLOW_JEWEL)) << ".";
+        lithograph_hint << "Red Jewel is " << this->random_hint_for_item(_world.item(ITEM_RED_JEWEL)) << ".";
+        if(_options.jewel_count() >= 2)
+            lithograph_hint << "\nPurple Jewel is " << this->random_hint_for_item(_world.item(ITEM_PURPLE_JEWEL)) << ".";
+        if(_options.jewel_count() >= 3)
+            lithograph_hint << "\nGreen Jewel is " << this->random_hint_for_item(_world.item(ITEM_GREEN_JEWEL)) << ".";
+        if(_options.jewel_count() >= 4)
+            lithograph_hint << "\nBlue Jewel is " << this->random_hint_for_item(_world.item(ITEM_BLUE_JEWEL)) << ".";
+        if(_options.jewel_count() >= 5)
+            lithograph_hint << "\nYellow Jewel is " << this->random_hint_for_item(_world.item(ITEM_YELLOW_JEWEL)) << ".";
     }
     else
         lithograph_hint << "This tablet seems of no use...";
@@ -494,7 +496,7 @@ void WorldRandomizer::randomize_where_is_lithograph_hint()
 {
     std::stringstream where_is_litho_hint;
     where_is_litho_hint << "The lithograph will help you finding the jewels. It is "
-                        << this->getRandomHintForItem(_world.item(ITEM_LITHOGRAPH))
+                        << this->random_hint_for_item(_world.item(ITEM_LITHOGRAPH))
                         << ".";
 
     _world.hint_sources().at("King Nole's Cave sign")->text(where_is_litho_hint.str());
@@ -502,49 +504,49 @@ void WorldRandomizer::randomize_where_is_lithograph_hint()
 
 Item* WorldRandomizer::randomize_fortune_teller_hint()
 {
-    std::vector<uint8_t> hintableItemsByFortuneTeller = { ITEM_GOLA_EYE, ITEM_GOLA_NAIL, ITEM_GOLA_FANG, ITEM_GOLA_HORN };
-    Tools::shuffle(hintableItemsByFortuneTeller, _rng);
+    std::vector<uint8_t> hintable_items = { ITEM_GOLA_EYE, ITEM_GOLA_NAIL, ITEM_GOLA_FANG, ITEM_GOLA_HORN };
+    Tools::shuffle(hintable_items, _rng);
     
-    Item* hinted_item = _world.item(*(hintableItemsByFortuneTeller.begin()));
+    Item* hinted_item = _world.item(*(hintable_items.begin()));
 
-    std::string fortuneItemName;
+    std::string item_fancy_name;
     if (hinted_item == _world.item(ITEM_GOLA_EYE))
-        fortuneItemName = "an eye";
+        item_fancy_name = "an eye";
     else if (hinted_item == _world.item(ITEM_GOLA_NAIL))
-        fortuneItemName = "a nail";
+        item_fancy_name = "a nail";
     else if (hinted_item == _world.item(ITEM_GOLA_FANG))
-        fortuneItemName = "a fang";
+        item_fancy_name = "a fang";
     else if (hinted_item == _world.item(ITEM_GOLA_HORN))
-        fortuneItemName = "a horn";
+        item_fancy_name = "a horn";
 
     std::stringstream fortune_teller_hint;
-    fortune_teller_hint << "\x1cI see... \x1aI see... \x1a\nI see " << fortuneItemName << " " << this->getRandomHintForItem(hinted_item) << ".";
+    fortune_teller_hint << "\x1cI see... \x1aI see... \x1a\nI see " << item_fancy_name << " " << this->random_hint_for_item(hinted_item) << ".";
     _world.hint_sources().at("Mercator fortune teller")->text(fortune_teller_hint.str());
 
     return hinted_item;
 }
 
-Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbiddenFortuneTellerItem)
+Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_item)
 {
-    UnsortedSet<Item*> forbiddenOracleStoneItems = {
-        forbiddenFortuneTellerItem, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
+    UnsortedSet<Item*> forbidden_items = {
+        forbidden_fortune_teller_item, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
         _world.item(ITEM_GREEN_JEWEL), _world.item(ITEM_BLUE_JEWEL), _world.item(ITEM_YELLOW_JEWEL)
     };
 
     // Also excluding items strictly needed to get to Oracle Stone's location
     std::vector<ItemSource*> sources = _world.item_sources_with_item(_world.item(ITEM_ORACLE_STONE));
-    WorldRegion* first_item_region = sources.at(0)->region();
-    if(first_item_region)
+    WorldRegion* first_source_region = sources.at(0)->region();
+    if(first_source_region)
     {
-        std::vector<Item*> min_items_to_reach = _world.find_smallest_inventory_to_reach(first_item_region);
+        std::vector<Item*> min_items_to_reach = _world.minimal_inventory_to_reach(first_source_region);
         for (Item* item : min_items_to_reach)
-            forbiddenOracleStoneItems.insert(item);
+            forbidden_items.insert(item);
     }
 
     std::vector<Item*> hintable_items;
-    for (Item* item : _minimalItemsToComplete)
+    for (Item* item : _minimal_items_to_complete)
     {
-        if(!forbiddenOracleStoneItems.contains(item))
+        if(!forbidden_items.contains(item))
             hintable_items.push_back(item);
     }
     
@@ -554,7 +556,7 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbiddenFortuneTellerI
         Item* hinted_item = hintable_items[0];
 
         std::stringstream oracle_stone_hint;
-        oracle_stone_hint << "You will need " << hinted_item->name() << ". It is " << this->getRandomHintForItem(hinted_item) << ".";
+        oracle_stone_hint << "You will need " << hinted_item->name() << ". It is " << this->random_hint_for_item(hinted_item) << ".";
         _world.hint_sources().at("Oracle Stone")->text(oracle_stone_hint.str());
 
         return hinted_item;
@@ -565,135 +567,142 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbiddenFortuneTellerI
 }
 
 
-void WorldRandomizer::randomize_sign_hints(Item* hintedFortuneItem, Item* hintedOracleStoneItem)
+void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hinted_oracle_stone_item)
 {
-    // A shuffled list of macro regions, useful for the "barren / useful region" hints
-    std::vector<WorldMacroRegion*> macroRegionsAvailableForHints;
-    for (WorldMacroRegion* macroRegion : _world.macro_regions())
-        macroRegionsAvailableForHints.push_back(macroRegion);
-    Tools::shuffle(macroRegionsAvailableForHints, _rng);
+    // A shuffled list of macro regions, used for the "barren / useful region" hints
+    UnsortedSet<WorldMacroRegion*> hintable_macro_regions = _world.macro_regions();
+    Tools::shuffle(hintable_macro_regions, _rng);
 
     // A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints
-    std::vector<uint8_t> hintableItemsNecessity = {
-        ITEM_BUYER_CARD, ITEM_EINSTEIN_WHISTLE, ITEM_ARMLET, ITEM_GARLIC, ITEM_IDOL_STONE, ITEM_CASINO_TICKET, ITEM_LOGS
+    UnsortedSet<uint8_t> hintable_item_requirements = {
+        ITEM_BUYER_CARD,   ITEM_EINSTEIN_WHISTLE,   ITEM_ARMLET,    ITEM_GARLIC, 
+        ITEM_IDOL_STONE,   ITEM_CASINO_TICKET,      ITEM_LOGS
     };
-    Tools::shuffle(hintableItemsNecessity, _rng);
+    Tools::shuffle(hintable_item_requirements, _rng);
 
     // A shuffled list of items which location is interesting, useful for the "item X is in Y" hints
-    std::vector<uint8_t> hintableItemLocations = {
-        ITEM_SPIKE_BOOTS,        ITEM_AXE_MAGIC,        ITEM_BUYER_CARD,    ITEM_GARLIC,
-        ITEM_EINSTEIN_WHISTLE,    ITEM_ARMLET,        ITEM_IDOL_STONE,
-        ITEM_THUNDER_SWORD,        ITEM_HEALING_BOOTS,    ITEM_VENUS_STONE,    ITEM_STATUE_JYPTA,
-        ITEM_SUN_STONE,            ITEM_KEY,            ITEM_SAFETY_PASS,    ITEM_LOGS,
-        ITEM_GOLA_EYE,            ITEM_GOLA_NAIL,        ITEM_GOLA_FANG,        ITEM_GOLA_HORN
+    UnsortedSet<uint8_t> hintable_item_locations = {
+        ITEM_SPIKE_BOOTS,       ITEM_AXE_MAGIC,      ITEM_BUYER_CARD,    ITEM_GARLIC,
+        ITEM_EINSTEIN_WHISTLE,  ITEM_ARMLET,         ITEM_IDOL_STONE,
+        ITEM_THUNDER_SWORD,     ITEM_HEALING_BOOTS,  ITEM_VENUS_STONE,   ITEM_STATUE_JYPTA,
+        ITEM_SUN_STONE,         ITEM_KEY,            ITEM_SAFETY_PASS,   ITEM_LOGS,
+        ITEM_GOLA_EYE,          ITEM_GOLA_NAIL,      ITEM_GOLA_FANG,     ITEM_GOLA_HORN
     };
-    
-    auto it = std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedFortuneItem->id());
-    if(it != hintableItemLocations.end())
-        hintableItemLocations.erase(it);
+    Tools::shuffle(hintable_item_locations, _rng);
 
-    it = std::find(hintableItemLocations.begin(), hintableItemLocations.end(), hintedOracleStoneItem->id());
-    if(it != hintableItemLocations.end())
-        hintableItemLocations.erase(it);
-
-    Tools::shuffle(hintableItemLocations, _rng);
+    // Remove items that have been already hinted by special hints
+    if(hinted_fortune_item)
+        hintable_item_locations.erase(hinted_fortune_item->id());
+    if(hinted_oracle_stone_item)
+        hintable_item_locations.erase(hinted_oracle_stone_item->id());
 
     for (auto& [k, hint_source] : _world.hint_sources())
     {
+        // Hint source is special (e.g. Oracle Stone, Lithograph...), don't handle it here
         if(hint_source->special())
             continue;
 
-        std::string hintText;
-        double randomNumber = (double) _rng() / (double) _rng.max();
         WorldRegion* region = hint_source->region();
-        std::vector<Item*> itemsAlreadyObtainedAtSign = _world.find_smallest_inventory_to_reach(region);
-        int nextEligibleHintableItemsNecessityPos = this->getNextEligibleHintableItemPos(hintableItemsNecessity, itemsAlreadyObtainedAtSign);
+        UnsortedSet<Item*> inventory_at_sign = _world.minimal_inventory_to_reach(region);
+        
+        double randomNumber = (double) _rng() / (double) _rng.max();
 
+        ////////////////////////////////////////////////////////////////
         // "Barren / pleasant surprise" (30%)
-        if (randomNumber < 0.3 && !macroRegionsAvailableForHints.empty())
+        if (randomNumber < 0.3 && !hintable_macro_regions.empty())
         {
-            WorldMacroRegion* macroRegion = *macroRegionsAvailableForHints.begin();
+            WorldMacroRegion* macroRegion = hintable_macro_regions[0];
+            hintable_macro_regions.erase(macroRegion);
+
             if (_world.is_macro_region_avoidable(macroRegion))
-                hintText = "What you are looking for is not in " + macroRegion->name() + ".";
+                hint_source->text("What you are looking for is not in " + macroRegion->name() + ".");
             else
-                hintText = "You might have a pleasant surprise wandering in " + macroRegion->name() + ".";
+                hint_source->text("You might have a pleasant surprise wandering in " + macroRegion->name() + ".");
 
-            macroRegionsAvailableForHints.erase(macroRegionsAvailableForHints.begin());
+            continue;
         }
+
+        ////////////////////////////////////////////////////////////////
         // "You will / won't need {item} to finish" (25%)
-        else if (randomNumber < 0.55 && nextEligibleHintableItemsNecessityPos >=0)
+        if (randomNumber < 0.55)
         {
-            Item* hintedItem = _world.item(hintableItemsNecessity.at(nextEligibleHintableItemsNecessityPos));
-            if (!_world.is_item_avoidable(hintedItem))
-                hintText = "You will need " + hintedItem->name() + " in your quest to King Nole's treasure.";
-            else
-                hintText = hintedItem->name() + " is not required in your quest to King Nole's treasure.";
-
-            hintableItemsNecessity.erase(hintableItemsNecessity.begin() + nextEligibleHintableItemsNecessityPos);
-        }
-        // "You shall find {item} in {place}" (45%)
-        else if (!hintableItemLocations.empty())
-        {
-            Item* hintedItem = nullptr;
-            for (uint32_t i = 0; i < hintableItemLocations.size(); ++i)
+            Item* hinted_item_requirement = nullptr;
+            for(uint8_t item_id : hintable_item_requirements)
             {
-                Item* testedItem = _world.item(hintableItemLocations[i]);
-                if (std::find(itemsAlreadyObtainedAtSign.begin(), itemsAlreadyObtainedAtSign.end(), testedItem) == itemsAlreadyObtainedAtSign.end())
+                Item* tested_item = _world.item(item_id);
+                if(!inventory_at_sign.contains(tested_item))
                 {
                     // If item was not already obtained at sign, we can hint it
-                    hintedItem = testedItem;
-                    hintableItemLocations.erase(hintableItemLocations.begin() + i);
+                    hinted_item_requirement = tested_item;
+                    hintable_item_requirements.erase(item_id);
                     break;
                 }
             }
 
-            if (hintedItem) {
-                hintText = "You shall find " + hintedItem->name() + " " + this->getRandomHintForItem(hintedItem) + ".";
-            } else {
-                hintText = "This sign has been damaged in a way that makes it unreadable.";
+            if(hinted_item_requirement)
+            {
+                if (!_world.is_item_avoidable(hinted_item_requirement))
+                    hint_source->text("You will need " + hinted_item_requirement->name() + " in your quest to King Nole's treasure.");
+                else
+                    hint_source->text(hinted_item_requirement->name() + " is not required in your quest to King Nole's treasure.");
+                continue;
             }
         }
 
-        hint_source->text(hintText);
+        ////////////////////////////////////////////////////////////////
+        // "You shall find {item} in {place}" (45%)
+        if (!hintable_item_locations.empty())
+        {
+            Item* hinted_item_location = nullptr;
+            for(uint8_t item_id : hintable_item_locations)
+            {
+                Item* tested_item = _world.item(item_id);
+                if(!inventory_at_sign.contains(tested_item))
+                {
+                    // If item was not already obtained at sign, we can hint it
+                    hinted_item_location = tested_item;
+                    hintable_item_locations.erase(item_id);
+                    break;
+                }
+            }
+
+            if (hinted_item_location)
+            {
+                hint_source->text("You shall find " + hinted_item_location->name() + " " + this->random_hint_for_item(hinted_item_location) + ".");
+                continue;
+            }
+        }
+
+        // Fallback if none matched
+        hint_source->text("This sign has been damaged in a way that makes it unreadable.");
     }
 }
 
-uint32_t WorldRandomizer::getNextEligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, const std::vector<Item*>& itemsAlreadyObtainedAtSign)
-{
-    for (uint32_t i = 0; i < hintableItemsNecessity.size(); ++i)
-    {
-        Item* testedItem = _world.item(hintableItemsNecessity[i]);
-        if (std::find(itemsAlreadyObtainedAtSign.begin(), itemsAlreadyObtainedAtSign.end(), testedItem) == itemsAlreadyObtainedAtSign.end())
-            return i;
-    }
-    return -1;
-}
-
-std::string WorldRandomizer::getRandomHintForItem(Item* item)
+std::string WorldRandomizer::random_hint_for_item(Item* item)
 {
     std::vector<ItemSource*> sources = _world.item_sources_with_item(item);
     if(sources.empty())
         return "in an unknown place";
 
     Tools::shuffle(sources, _rng);
-    ItemSource* randomSource = *sources.begin();
-    return this->getRandomHintForItemSource(randomSource);
+    ItemSource* randomSource = sources[0];
+    return this->random_hint_for_item_source(randomSource);
 }
 
-std::string WorldRandomizer::getRandomHintForItemSource(ItemSource* itemSource)
+std::string WorldRandomizer::random_hint_for_item_source(ItemSource* itemSource)
 {
-    const std::vector<std::string>& regionHints = itemSource->region()->hints();
-    const std::vector<std::string>& sourceHints = itemSource->hints();
-        
-    std::vector<std::string> allHints;
-    allHints.insert(allHints.end(), regionHints.begin(), regionHints.end());
-    allHints.insert(allHints.end(), sourceHints.begin(), sourceHints.end());
+    const std::vector<std::string>& region_hints = itemSource->region()->hints();
+    const std::vector<std::string>& source_hints = itemSource->hints();
     
-    if(allHints.empty())
+    std::vector<std::string> all_hints;
+    all_hints.insert(all_hints.end(), region_hints.begin(), region_hints.end());
+    all_hints.insert(all_hints.end(), source_hints.begin(), source_hints.end());
+    
+    if(all_hints.empty())
         return "in an unknown place";
 
-    Tools::shuffle(allHints, _rng);
-    return *allHints.begin();
+    Tools::shuffle(all_hints, _rng);
+    return all_hints[0];
 }
 
 
@@ -710,16 +719,16 @@ void WorldRandomizer::randomize_tibor_trees()
         trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
 }
 
-Json WorldRandomizer::getPlaythroughAsJson() const
+Json WorldRandomizer::playthrough_as_json() const
 {
     Json json;
 
     // Filter the logical playthrough to keep only strictly needed key items
-    for(ItemSource* source : _logicalPlaythrough)
+    for(ItemSource* source : _logical_playthrough)
     {
-        Item* keyItemInSource = source->item();
-        if(std::find(_minimalItemsToComplete.begin(), _minimalItemsToComplete.end(), keyItemInSource) != _minimalItemsToComplete.end())
-            json[source->name()] = keyItemInSource->name();
+        Item* key_item_in_source = source->item();
+        if(std::find(_minimal_items_to_complete.begin(), _minimal_items_to_complete.end(), key_item_in_source) != _minimal_items_to_complete.end())
+            json[source->name()] = key_item_in_source->name();
     }
 
     return json;

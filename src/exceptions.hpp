@@ -31,3 +31,6 @@ public:
     JsonParsingException(const std::string& message) : RandomizerException(message)
     {}   
 };
+
+class NoAppropriateItemSourceException : public std::exception 
+{};

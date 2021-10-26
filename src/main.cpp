@@ -72,9 +72,9 @@ Json randomize(World& world, RandomizerOptions& options, ArgumentDictionary& arg
 {
     Json spoilerJson;
 
-    std::string permalink = options.getPermalink();
+    std::string permalink = options.permalink();
     spoilerJson["permalink"] = permalink;
-    spoilerJson["hashSentence"] = options.getHashSentence();
+    spoilerJson["hashSentence"] = options.hash_sentence();
     spoilerJson.merge_patch(options.to_json());
 
     std::cout << "Permalink: " << permalink << "\n\n";
@@ -85,15 +85,15 @@ Json randomize(World& world, RandomizerOptions& options, ArgumentDictionary& arg
     WorldRandomizer randomizer(world, options);
     randomizer.randomize();
 
-    if (!options.getDebugLogPath().empty())
+    if (!options.debug_log_path().empty())
     {
-        std::ofstream debugLogFile(options.getDebugLogPath());
-        debugLogFile << randomizer.getDebugLogAsJson().dump(4);
+        std::ofstream debugLogFile(options.debug_log_path());
+        debugLogFile << randomizer.debug_log_as_json().dump(4);
         debugLogFile.close();
     }
 
     spoilerJson.merge_patch(world.to_json());
-    spoilerJson["playthrough"] = randomizer.getPlaythroughAsJson();
+    spoilerJson["playthrough"] = randomizer.playthrough_as_json();
 
     return spoilerJson;
 }
@@ -106,13 +106,13 @@ Json plandomize(World& world, RandomizerOptions& options, ArgumentDictionary& ar
     // In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
     // The software will act as a simple ROM patcher, without verifying the game is actually completable.
 
-    world.parse_json(options.getInputPlandoJSON());
+    world.parse_json(options.input_plando_json());
 
     spoilerJson.merge_patch(options.to_json());
     spoilerJson.merge_patch(world.to_json());
 
     // If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
-    if (argsDictionary.getBoolean("encodeplando") && options.isPlando())
+    if (argsDictionary.getBoolean("encodeplando") && options.is_plando())
     {
         std::ofstream encodedPlandoFile("./encoded_plando.json");
         Json fileJson;
@@ -130,9 +130,9 @@ Json plandomize(World& world, RandomizerOptions& options, ArgumentDictionary& ar
 void displayOptions(const RandomizerOptions& options)
 {
     Json optionsAsJSON = options.to_json();
-    if(!options.hasCustomMandatoryItems())
+    if(!options.has_custom_mandatory_items())
         optionsAsJSON["randomizerSettings"]["mandatoryItems"] = "default";
-    if(!options.hasCustomFillerItems())
+    if(!options.has_custom_filler_items())
         optionsAsJSON["randomizerSettings"]["fillerItems"] = "default";
     std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
 }
@@ -147,7 +147,6 @@ int main(int argc, char* argv[])
     {
         // Parse options from command-line args, preset file, plando file...
         RandomizerOptions options(argsDictionary);
-        displayOptions(options);
 
         // Output current preset
         if (argsDictionary.getBoolean("writepreset"))
@@ -164,14 +163,16 @@ int main(int argc, char* argv[])
         }
 
         // Load input ROM and tag known empty chunks of data to know where to inject code / data
-        md::ROM* rom = getInputROM(options.getInputROMPath());
+        md::ROM* rom = getInputROM(options.input_rom_path());
         rom->mark_empty_chunk(0x11F380, 0x120000);
         rom->mark_empty_chunk(0x1FFAC0, 0x200000);
 
         World world(*rom, options);
 
+        displayOptions(options);
+
         Json spoilerJson;
-        if(options.isPlando())
+        if(options.is_plando())
         {
             spoilerJson = plandomize(world, options, argsDictionary);
         }
@@ -187,25 +188,25 @@ int main(int argc, char* argv[])
         std::cout << "Applying game patches...\n\n";
         applyPatches(*rom, options, world);
 
-        rom->save_as(options.getOutputROMPath());
-        std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";
+        rom->save_as(options.output_rom_path());
+        std::cout << "Randomized rom outputted to \"" << options.output_rom_path() << "\".\n\n";
 
         // Write a spoiler log to help the player
-        if(!options.getSpoilerLogPath().empty())
+        if(!options.spoiler_log_path().empty())
         {
-            if(options.allowSpoilerLog())
+            if(options.allow_spoiler_log())
             {
-                std::ofstream spoilerFile(options.getSpoilerLogPath());
+                std::ofstream spoilerFile(options.spoiler_log_path());
                 if (spoilerFile)
                     spoilerFile << spoilerJson.dump(4);
                 spoilerFile.close();
-                std::cout << "Spoiler log written into \"" << options.getSpoilerLogPath() << "\".\n\n";
+                std::cout << "Spoiler log written into \"" << options.spoiler_log_path() << "\".\n\n";
             }
             else
                 std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n\n";
         }
 
-        if ( options.mustPause() )
+        if ( options.must_pause() )
         {
             std::cout << "Press any key to exit.";
             std::string dummy;

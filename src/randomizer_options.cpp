@@ -6,36 +6,36 @@
 #include "exceptions.hpp"
 
 RandomizerOptions::RandomizerOptions() :
-    _jewelCount              (2),
-    _armorUpgrades           (true),
-    _dungeonSignHints        (false),
-    _startingLife            (0),
-    _startingGold            (0),
-    _startingItems           ({{"Record Book",1}}),
-    _itemPrices              (),
-    _fixArmletSkip           (true),
-    _fixTreeCuttingGlitch    (true),
-    _itemMaxQuantities       (),
-    _consumableRecordBook    (false),
+    _jewel_count              (2),
+    _use_armor_upgrades       (true),
+    _dungeonSignHints         (false),
+    _startingLife             (0),
+    _startingGold             (0),
+    _starting_items           ({{"Record Book",1}}),
+    _itemPrices               (),
+    _fix_armlet_skip          (true),
+    _fix_tree_cutting_glitch  (true),
+    _item_max_quantities      (),
+    _consumable_record_book   (false),
 
-    _seed                    (0),
-    _allowSpoilerLog         (true),
-    _fillingRate             (DEFAULT_FILLING_RATE),
-    _shuffleTiborTrees       (false), 
-    _ghostJumpingInLogic     (false),
-    _mandatoryItems          (nullptr),
-    _fillerItems             (nullptr),
+    _seed                     (0),
+    _allow_spoiler_log        (true),
+    _fillingRate              (DEFAULT_FILLING_RATE),
+    _shuffle_tibor_trees      (false), 
+    _ghost_jumping_in_logic   (false),
+    _mandatory_items          (nullptr),
+    _filler_items             (nullptr),
 
-    _inputRomPath            ("./input.md"),
-    _outputRomPath           ("./"),
-    _spoilerLogPath          (""),
-    _debugLogPath            (""),
-    _pauseAfterGeneration    (true),
-    _addIngameItemTracker    (false),
-    _hudColor                ("default"),
+    _inputRomPath             ("./input.md"),
+    _output_rom_path          ("./"),
+    _spoiler_log_path         (""),
+    _debugLogPath             (""),
+    _pauseAfterGeneration     (true),
+    _add_ingame_item_tracker  (false),
+    _hud_color                 ("default"),
 
-    _plandoEnabled           (false),
-    _plandoJSON              ()
+    _plando_enabled           (false),
+    _plando_json              ()
 {}
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
@@ -43,24 +43,24 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
     std::string plandoPath = args.getString("plando");
     if(!plandoPath.empty())
     {
-        _plandoEnabled = true;
+        _plando_enabled = true;
 
         std::cout << "Reading plando file '" << plandoPath << "'...\n\n";
         std::ifstream plandoFile(plandoPath);
         if(!plandoFile)
             throw RandomizerException("Could not open plando file at given path '" + plandoPath + "'");
 
-        plandoFile >> _plandoJSON;
-        if(_plandoJSON.contains("plando_permalink"))
-            _plandoJSON = Json::from_msgpack(base64_decode(_plandoJSON.at("plando_permalink")));
+        plandoFile >> _plando_json;
+        if(_plando_json.contains("plando_permalink"))
+            _plando_json = Json::from_msgpack(base64_decode(_plando_json.at("plando_permalink")));
 
-        this->parseJSON(_plandoJSON);
+        this->parse_json(_plando_json);
     }
 
     std::string permalinkString = args.getString("permalink");
-    if(!permalinkString.empty() && !_plandoEnabled) 
+    if(!permalinkString.empty() && !_plando_enabled) 
     {
-        this->parsePermalink(permalinkString);
+        this->parse_permalink(permalinkString);
     }
     else
     {
@@ -73,7 +73,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         }
 
         std::string presetPath = args.getString("preset");
-        if(!presetPath.empty() && !_plandoEnabled)
+        if(!presetPath.empty() && !_plando_enabled)
         {
             std::ifstream presetFile(presetPath);
             if(!presetFile)
@@ -83,57 +83,57 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
 
             Json presetJson;
             presetFile >> presetJson;
-            this->parseJSON(presetJson);
+            this->parse_json(presetJson);
         }
 
-        this->parseSettingsArguments(args);
+        this->parse_arguments(args);
     }
 
-    this->parsePersonalArguments(args);
+    this->parse_personal_settings(args);
     this->validate();
 }
 
 RandomizerOptions::~RandomizerOptions()
 {
-    if(_mandatoryItems)
-        delete _mandatoryItems;
-    if(_fillerItems)
-        delete _fillerItems;
+    if(_mandatory_items)
+        delete _mandatory_items;
+    if(_filler_items)
+        delete _filler_items;
 }
 
-void RandomizerOptions::parseSettingsArguments(const ArgumentDictionary& args)
+void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
 {
     if(args.contains("spawnlocation"))
     {
         std::string spawnLocAsString = args.getString("spawnlocation");
         Tools::toLower(spawnLocAsString);
         if(spawnLocAsString == "random")
-            _possibleSpawnLocations = {};
+            _possible_spawn_locations = {};
         else
-            _possibleSpawnLocations = { spawnLocAsString };
+            _possible_spawn_locations = { spawnLocAsString };
     }
 
-    if(args.contains("jewelcount"))           _jewelCount = args.getInteger("jewelcount");
-    if(args.contains("armorupgrades"))        _armorUpgrades = args.getBoolean("armorupgrades");
-    if(args.contains("norecordbook"))         _startingItems["Record Book"] = 0;
+    if(args.contains("jewelcount"))           _jewel_count = args.getInteger("jewelcount");
+    if(args.contains("armorupgrades"))        _use_armor_upgrades = args.getBoolean("armorupgrades");
+    if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
     if(args.contains("dungeonsignhints"))     _dungeonSignHints = args.getBoolean("dungeonsignhints");
     if(args.contains("startinglife"))         _startingLife = args.getInteger("startinglife");
 
     if(args.contains("fillingrate"))          _fillingRate = args.getDouble("fillingrate");
-    if(args.contains("shuffletrees"))         _shuffleTiborTrees = args.getBoolean("shuffletrees");
-    if(args.contains("allowSpoilerLog"))      _allowSpoilerLog = args.getBoolean("allowSpoilerLog");
+    if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.getBoolean("shuffletrees");
+    if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.getBoolean("allowspoilerlog");
 }
 
-void RandomizerOptions::parsePersonalArguments(const ArgumentDictionary& args)
+void RandomizerOptions::parse_personal_settings(const ArgumentDictionary& args)
 {
     // Personal options (not included in permalink)
     if(args.contains("inputrom"))        _inputRomPath = args.getString("inputrom");
-    if(args.contains("outputrom"))       _outputRomPath = args.getString("outputrom");
-    if(args.contains("outputlog"))       _spoilerLogPath = args.getString("outputlog");
+    if(args.contains("outputrom"))       _output_rom_path = args.getString("outputrom");
+    if(args.contains("outputlog"))       _spoiler_log_path = args.getString("outputlog");
     if(args.contains("debuglog"))        _debugLogPath = args.getString("debuglog");
     if(args.contains("pause"))           _pauseAfterGeneration = args.getBoolean("pause");
-    if(args.contains("ingametracker"))   _addIngameItemTracker = args.getBoolean("ingametracker");    
-    if(args.contains("hudcolor"))        _hudColor = args.getString("hudcolor");
+    if(args.contains("ingametracker"))   _add_ingame_item_tracker = args.getBoolean("ingametracker");    
+    if(args.contains("hudcolor"))        _hud_color = args.getString("hudcolor");
 }
 
 Json RandomizerOptions::to_json() const
@@ -141,146 +141,146 @@ Json RandomizerOptions::to_json() const
     Json json;
 
     // Game settings 
-    json["gameSettings"]["jewelCount"] = _jewelCount;
-    json["gameSettings"]["armorUpgrades"] = _armorUpgrades;
+    json["gameSettings"]["jewelCount"] = _jewel_count;
+    json["gameSettings"]["armorUpgrades"] = _use_armor_upgrades;
     json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
     json["gameSettings"]["startingGold"] = _startingGold;
-    json["gameSettings"]["startingItems"] = _startingItems;
+    json["gameSettings"]["startingItems"] = _starting_items;
     json["gameSettings"]["itemPrices"] = _itemPrices;
-    json["gameSettings"]["fixArmletSkip"] = _fixArmletSkip;
-    json["gameSettings"]["fixTreeCuttingGlitch"] = _fixTreeCuttingGlitch;
-    json["gameSettings"]["itemMaxQuantities"] = _itemMaxQuantities;
-    json["gameSettings"]["consumableRecordBook"] = _consumableRecordBook;
+    json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
+    json["gameSettings"]["fixTreeCuttingGlitch"] = _fix_tree_cutting_glitch;
+    json["gameSettings"]["itemMaxQuantities"] = _item_max_quantities;
+    json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
     // Randomizer settings
-    json["randomizerSettings"]["allowSpoilerLog"] = _allowSpoilerLog;
+    json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
     json["randomizerSettings"]["fillingRate"] = _fillingRate;
-    json["randomizerSettings"]["spawnLocations"] = _possibleSpawnLocations;
-    json["randomizerSettings"]["shuffleTrees"] = _shuffleTiborTrees;
-    json["randomizerSettings"]["ghostJumpingInLogic"] = _ghostJumpingInLogic;
+    json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
+    json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
+    json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
 
-    if(_mandatoryItems)
-        json["randomizerSettings"]["mandatoryItems"] = *_mandatoryItems;
-    if(_fillerItems)
-        json["randomizerSettings"]["fillerItems"] = *_fillerItems;
+    if(_mandatory_items)
+        json["randomizerSettings"]["mandatoryItems"] = *_mandatory_items;
+    if(_filler_items)
+        json["randomizerSettings"]["fillerItems"] = *_filler_items;
 
     return json;
 }
 
-void RandomizerOptions::parseJSON(const Json& json)
+void RandomizerOptions::parse_json(const Json& json)
 {
     if(json.contains("gameSettings"))
     {
-        const Json& gameSettingsJson = json.at("gameSettings");
+        const Json& game_settings_json = json.at("gameSettings");
 
-        if(gameSettingsJson.contains("jewelCount"))            
-            _jewelCount = gameSettingsJson.at("jewelCount");
-        if(gameSettingsJson.contains("armorUpgrades"))
-            _armorUpgrades = gameSettingsJson.at("armorUpgrades");
-        if(gameSettingsJson.contains("dungeonSignHints"))
-            _dungeonSignHints = gameSettingsJson.at("dungeonSignHints");
-        if(gameSettingsJson.contains("startingLife"))
-            _startingLife = gameSettingsJson.at("startingLife");
-        if(gameSettingsJson.contains("startingGold"))
-            _startingGold = gameSettingsJson.at("startingGold");
-        if(gameSettingsJson.contains("startingItems"))
+        if(game_settings_json.contains("jewelCount"))            
+            _jewel_count = game_settings_json.at("jewelCount");
+        if(game_settings_json.contains("armorUpgrades"))
+            _use_armor_upgrades = game_settings_json.at("armorUpgrades");
+        if(game_settings_json.contains("dungeonSignHints"))
+            _dungeonSignHints = game_settings_json.at("dungeonSignHints");
+        if(game_settings_json.contains("startingLife"))
+            _startingLife = game_settings_json.at("startingLife");
+        if(game_settings_json.contains("startingGold"))
+            _startingGold = game_settings_json.at("startingGold");
+        if(game_settings_json.contains("startingItems"))
         {
-            std::map<std::string, uint8_t> startingItems = gameSettingsJson.at("startingItems");
+            std::map<std::string, uint8_t> startingItems = game_settings_json.at("startingItems");
             for(auto& [itemName, quantity] : startingItems)
-                _startingItems[itemName] = quantity;
+                _starting_items[itemName] = quantity;
         }
-        if(gameSettingsJson.contains("itemPrices"))
-            _itemPrices = gameSettingsJson.at("itemPrices");
-        if(gameSettingsJson.contains("fixArmletSkip"))
-            _fixArmletSkip = gameSettingsJson.at("fixArmletSkip");
-        if(gameSettingsJson.contains("fixTreeCuttingGlitch"))
-            _fixTreeCuttingGlitch = gameSettingsJson.at("fixTreeCuttingGlitch");
-        if(gameSettingsJson.contains("itemMaxQuantities"))
-            _itemMaxQuantities = gameSettingsJson.at("itemMaxQuantities");
-        if(gameSettingsJson.contains("consumableRecordBook"))
-            _consumableRecordBook = gameSettingsJson.at("consumableRecordBook");
+        if(game_settings_json.contains("itemPrices"))
+            _itemPrices = game_settings_json.at("itemPrices");
+        if(game_settings_json.contains("fixArmletSkip"))
+            _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
+        if(game_settings_json.contains("fixTreeCuttingGlitch"))
+            _fix_tree_cutting_glitch = game_settings_json.at("fixTreeCuttingGlitch");
+        if(game_settings_json.contains("itemMaxQuantities"))
+            _item_max_quantities = game_settings_json.at("itemMaxQuantities");
+        if(game_settings_json.contains("consumableRecordBook"))
+            _consumable_record_book = game_settings_json.at("consumableRecordBook");
     }
 
-    if(json.contains("randomizerSettings") && !_plandoEnabled)
+    if(json.contains("randomizerSettings") && !_plando_enabled)
     {
-        const Json& randomizerSettingsJson = json.at("randomizerSettings");
+        const Json& randomizer_settings_json = json.at("randomizerSettings");
 
-        if(randomizerSettingsJson.contains("allowSpoilerLog"))
-            _allowSpoilerLog = randomizerSettingsJson.at("allowSpoilerLog");
-        if(randomizerSettingsJson.contains("fillingRate"))
-            _fillingRate = randomizerSettingsJson.at("fillingRate");
+        if(randomizer_settings_json.contains("allowSpoilerLog"))
+            _allow_spoiler_log = randomizer_settings_json.at("allowSpoilerLog");
+        if(randomizer_settings_json.contains("fillingRate"))
+            _fillingRate = randomizer_settings_json.at("fillingRate");
 
-        if(randomizerSettingsJson.contains("spawnLocations"))
-            randomizerSettingsJson.at("spawnLocations").get_to(_possibleSpawnLocations);
-        else if(randomizerSettingsJson.contains("spawnLocation"))
-            _possibleSpawnLocations = { randomizerSettingsJson.at("spawnLocation") };
+        if(randomizer_settings_json.contains("spawnLocations"))
+            randomizer_settings_json.at("spawnLocations").get_to(_possible_spawn_locations);
+        else if(randomizer_settings_json.contains("spawnLocation"))
+            _possible_spawn_locations = { randomizer_settings_json.at("spawnLocation") };
 
-        if(randomizerSettingsJson.contains("shuffleTrees"))
-            _shuffleTiborTrees = randomizerSettingsJson.at("shuffleTrees");
-        if(randomizerSettingsJson.contains("ghostJumpingInLogic"))
-            _ghostJumpingInLogic = randomizerSettingsJson.at("ghostJumpingInLogic");
+        if(randomizer_settings_json.contains("shuffleTrees"))
+            _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
+        if(randomizer_settings_json.contains("ghostJumpingInLogic"))
+            _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
 
-        if(randomizerSettingsJson.contains("mandatoryItems"))
+        if(randomizer_settings_json.contains("mandatoryItems"))
         {
-            _mandatoryItems = new std::map<std::string, uint16_t>();
-            *(_mandatoryItems) = randomizerSettingsJson.at("mandatoryItems");
+            _mandatory_items = new std::map<std::string, uint16_t>();
+            *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
         }
 
-        if(randomizerSettingsJson.contains("fillerItems"))
+        if(randomizer_settings_json.contains("fillerItems"))
         {
-            _fillerItems = new std::map<std::string, uint16_t>();
-            *(_fillerItems) = randomizerSettingsJson.at("fillerItems");
+            _filler_items = new std::map<std::string, uint16_t>();
+            *(_filler_items) = randomizer_settings_json.at("fillerItems");
         }
     }
 
-    if(json.contains("seed") && !_plandoEnabled)
+    if(json.contains("seed") && !_plando_enabled)
         _seed = json.at("seed");
 }
 
-Json RandomizerOptions::getPersonalSettingsAsJSON() const
+Json RandomizerOptions::personal_settings_as_json() const
 {
     Json json;
 
     json["inputROMPath"] = _inputRomPath;
-    json["outputROMPath"] = _outputRomPath;
-    json["spoilerLogPath"] = _spoilerLogPath;
-    json["addIngameItemTracker"] = _addIngameItemTracker;
-    json["hudColor"] = _hudColor;
+    json["outputROMPath"] = _output_rom_path;
+    json["spoilerLogPath"] = _spoiler_log_path;
+    json["addIngameItemTracker"] = _add_ingame_item_tracker;
+    json["hudColor"] = _hud_color;
 
     return json;
 }
 
 void RandomizerOptions::validate()
 {
-    if(_jewelCount > 9)
+    if(_jewel_count > 9)
         throw RandomizerException("Jewel count must be between 0 and 9.");
 
     // Clean output ROM path and determine if it's a directory or a file
-    bool outputRomPathIsAFile = Tools::endsWith(_outputRomPath, ".md") || Tools::endsWith(_outputRomPath, ".bin");
-    if(!outputRomPathIsAFile && *_outputRomPath.rbegin() != '/')
-        _outputRomPath += "/";
+    bool output_path_is_file = Tools::endsWith(_output_rom_path, ".md") || Tools::endsWith(_output_rom_path, ".bin");
+    if(!output_path_is_file && *_output_rom_path.rbegin() != '/')
+        _output_rom_path += "/";
 
     // Clean output log path and if it wasn't specified, give it an appropriate default value
-    if(_spoilerLogPath.empty())
+    if(_spoiler_log_path.empty())
     {
-        if(outputRomPathIsAFile)
-            _spoilerLogPath = "./"; // outputRomPath points to a file, use cwd for the spoiler log
+        if(output_path_is_file)
+            _spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
         else
-            _spoilerLogPath = _outputRomPath; // outputRomPath points to a directory, use the same for the spoiler log
+            _spoiler_log_path = _output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
     }
-    if(!Tools::endsWith(_spoilerLogPath, ".json") && *_spoilerLogPath.rbegin() != '/')
-        _spoilerLogPath += "/";
+    if(!Tools::endsWith(_spoiler_log_path, ".json") && *_spoiler_log_path.rbegin() != '/')
+        _spoiler_log_path += "/";
 
     // Add the filename afterwards
-    if(*_outputRomPath.rbegin() == '/')
-        _outputRomPath += this->getHashSentence() + ".md";
-    if(*_spoilerLogPath.rbegin() == '/')
-        _spoilerLogPath += this->getHashSentence() + ".json";
+    if(*_output_rom_path.rbegin() == '/')
+        _output_rom_path += this->hash_sentence() + ".md";
+    if(*_spoiler_log_path.rbegin() == '/')
+        _spoiler_log_path += this->hash_sentence() + ".json";
 }
 
-std::vector<std::string> RandomizerOptions::getHashWords() const
+std::vector<std::string> RandomizerOptions::hash_words() const
 {
     std::vector<std::string> words = {
         "EkeEke", "Nail", "Horn", "Fang", "Magic", "Ice", "Thunder", "Gaia", "Fireproof", "Iron", "Spikes", "Healing", "Snow",
@@ -300,53 +300,53 @@ std::vector<std::string> RandomizerOptions::getHashWords() const
     return std::vector<std::string>(words.begin(), words.begin() + 4);
 }
 
-std::string RandomizerOptions::getPermalink() const
+std::string RandomizerOptions::permalink() const
 {
-    RandomizerOptions defaultOptions;
-    Json defaultJson = defaultOptions.to_json();
+    RandomizerOptions default_options;
+    Json defaultJson = default_options.to_json();
     
-    Json jsonPatch = Json::diff(defaultJson, this->to_json());
-    Json permalinkJson;
+    Json json_patch = Json::diff(defaultJson, this->to_json());
+    Json permalink_json;
 
     // Apply patch on an empty JSON
-    for (Json& patchPiece : jsonPatch)
+    for (Json& patch_piece : json_patch)
     {
-        Json* currentJson = &permalinkJson;
+        Json* current_json = &permalink_json;
 
-        const std::string& path = patchPiece["path"];
-        std::vector<std::string> pathParts = Tools::split(path, "/");
-        for (size_t i=1 ; i < pathParts.size(); ++i)
+        const std::string& path = patch_piece["path"];
+        std::vector<std::string> path_parts = Tools::split(path, "/");
+        for (size_t i=1 ; i < path_parts.size(); ++i)
         {
-            if (i < pathParts.size() - 1)
+            if (i < path_parts.size() - 1)
             {
-                if(!currentJson->contains(pathParts[i]))
-                    (*currentJson)[pathParts[i]] = Json();
-                currentJson = &(currentJson->at(pathParts[i]));
+                if(!current_json->contains(path_parts[i]))
+                    (*current_json)[path_parts[i]] = Json();
+                current_json = &(current_json->at(path_parts[i]));
             }
-            else if(pathParts[i] == "-")
-                (*currentJson).push_back(patchPiece["value"]);
+            else if(path_parts[i] == "-")
+                (*current_json).push_back(patch_piece["value"]);
             else
-                (*currentJson)[pathParts[i]] = patchPiece["value"];
+                (*current_json)[path_parts[i]] = patch_piece["value"];
         }
     }
 
-    permalinkJson["version"] = MAJOR_RELEASE;
-    permalinkJson["seed"] = _seed;
+    permalink_json["version"] = MAJOR_RELEASE;
+    permalink_json["seed"] = _seed;
 
-    return "L" + base64_encode(Json::to_msgpack(permalinkJson)) + "S";
+    return "L" + base64_encode(Json::to_msgpack(permalink_json)) + "S";
 }
 
-void RandomizerOptions::parsePermalink(const std::string& permalink)
+void RandomizerOptions::parse_permalink(const std::string& permalink)
 {
     try {
-        Json permalinkJson = Json::from_msgpack(base64_decode(permalink.substr(1, permalink.size()-2)));
+        Json permalink_json = Json::from_msgpack(base64_decode(permalink.substr(1, permalink.size()-2)));
 
-        std::string releaseVersion = permalinkJson.at("version");
+        std::string releaseVersion = permalink_json.at("version");
         if(releaseVersion != MAJOR_RELEASE) {
             throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + releaseVersion + ").");
         }
 
-        this->parseJSON(permalinkJson);
+        this->parse_json(permalink_json);
     }
     catch(std::exception&) {
         throw RandomizerException("Invalid permalink given.");

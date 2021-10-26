@@ -14,36 +14,52 @@
 #include "world.hpp"
 
 
-class NoAppropriateItemSourceException : public std::exception {};
-
 class WorldRandomizer
 {
+private:
+    World& _world;
+    const RandomizerOptions& _options;
+    Json _debug_log_json;
+    std::mt19937 _rng;
+
+    std::vector<Item*> _filler_items;
+    std::vector<Item*> _mandatoryItems;
+    uint8_t _gold_items_count;
+
+    UnsortedSet<WorldRegion*> _regions_to_explore;
+    UnsortedSet<WorldRegion*> _explored_regions;
+    std::vector<ItemSource*> _item_sources_to_fill;
+    std::vector<Item*> _inventory;
+    std::vector<WorldPath*> _pending_paths;
+    std::vector<Item*> _minimal_items_to_complete;
+    std::vector<ItemSource*> _logical_playthrough;
+
 public:
     WorldRandomizer(World& world, const RandomizerOptions& options);
 
     void randomize();
 
-    Json getPlaythroughAsJson() const;
-    const Json& getDebugLogAsJson() const { return _debugLogJson; }
+    Json playthrough_as_json() const;
+    const Json& debug_log_as_json() const { return _debug_log_json; }
 
 private:
-    void initFillerItems();
-    void initMandatoryItems();
-    void initInventoryWithStartingItems();
+    void init_filler_items();
+    void init_mandatory_items();
+    void init_inventory();
     
     // First pass randomizations (before items)
-    void randomizeSpawnLocation();
-    void randomizeGoldValues();
+    void randomize_spawn_location();
+    void randomize_gold_values();
     void randomize_dark_rooms();
 
     // Second pass randomizations (items)
-    void placeMandatoryItems();
-    void randomizeItems();
+    void place_mandatory_items();
+    void randomize_items();
 
-    void placeFillerItemsPhase(Json& debugLogStepJson, size_t count, Item* lastResortFiller = nullptr);
-    void explorationPhase(Json& debugLogStepJson);
-    void placeKeyItemsPhase(Json& debugLogStepJson);
-    void unlockPhase();
+    void place_filler_items_phase(Json& debugLogStepJson, size_t count, Item* lastResortFiller = nullptr);
+    void exploration_phase(Json& debugLogStepJson);
+    void place_key_items_phase(Json& debugLogStepJson);
+    void unlock_phase();
 
     // Third pass randomizations (after items)
     void randomize_hints();
@@ -53,31 +69,8 @@ private:
     Item* randomize_oracle_stone_hint(Item* forbiddenFortuneTellerItem);
     void randomize_sign_hints(Item* hintedFortuneItem, Item* hintedOracleStoneItem);
 
-    uint32_t getNextEligibleHintableItemPos(std::vector<uint8_t> hintableItemsNecessity, const std::vector<Item*>& itemsAlreadyObtainedAtSign);
-    
-    std::string getRandomHintForItem(Item* item);
-    std::string getRandomHintForItemSource(ItemSource* itemSource);
+    std::string random_hint_for_item(Item* item);
+    std::string random_hint_for_item_source(ItemSource* itemSource);
 
     void randomize_tibor_trees();
-
-private:
-    World& _world;
-    const RandomizerOptions& _options;
-
-    Json _debugLogJson;
-    std::mt19937 _rng;
-
-    std::vector<Item*> _fillerItems;
-    std::vector<Item*> _mandatoryItems;
-    uint8_t _goldItemsCount;
-
-    UnsortedSet<WorldRegion*> _regionsToExplore;
-    UnsortedSet<WorldRegion*> _exploredRegions;
-    std::vector<ItemSource*> _itemSourcesToFill;
-    std::vector<Item*> _playerInventory;
-    std::vector<WorldPath*> _pendingPaths;
-
-    std::vector<ItemSource*> _logicalPlaythrough;
-
-    std::vector<Item*> _minimalItemsToComplete;
 };

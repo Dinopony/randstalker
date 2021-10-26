@@ -20,94 +20,94 @@ public:
     RandomizerOptions(const ArgumentDictionary& args);
     ~RandomizerOptions();
     
-    void parsePermalink(const std::string& permalink);
-    void parseSettingsArguments(const ArgumentDictionary& args);
-    void parsePersonalArguments(const ArgumentDictionary& args);
+    void parse_permalink(const std::string& permalink);
+    void parse_arguments(const ArgumentDictionary& args);
+    void parse_personal_settings(const ArgumentDictionary& args);
     void validate();
 
     Json to_json() const;
-    void parseJSON(const Json& json);
-    Json getPersonalSettingsAsJSON() const;
+    void parse_json(const Json& json);
+    Json personal_settings_as_json() const;
     
     // Game patching options 
-    const std::vector<std::string>& getPossibleSpawnLocations() const { return _possibleSpawnLocations; }
-    uint8_t getJewelCount() const { return _jewelCount; }
-    bool useArmorUpgrades() const { return _armorUpgrades; }
-    bool fillDungeonSignsWithHints() const { return _dungeonSignHints; }
-    uint8_t getStartingLife() const { return _startingLife; }
-    uint16_t getStartingGold() const { return _startingGold; }
-    const std::map<std::string, uint8_t>& getStartingItems() const { return _startingItems; }
-    const std::map<std::string, uint16_t>& getItemPrices() const { return _itemPrices; }
-    bool fixArmletSkip() const { return _fixArmletSkip; }
-    bool fixTreeCuttingGlitch() const { return _fixTreeCuttingGlitch; }
-    const std::map<std::string, uint8_t>& getItemMaxQuantities() const { return _itemMaxQuantities; }
-    bool consumableRecordBook() const { return _consumableRecordBook; }
+    const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
+    uint8_t jewel_count() const { return _jewel_count; }
+    bool use_armor_upgrades() const { return _use_armor_upgrades; }
+    bool dungeon_sign_hints() const { return _dungeonSignHints; }
+    uint8_t starting_life() const { return _startingLife; }
+    uint16_t starting_gold() const { return _startingGold; }
+    const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
+    const std::map<std::string, uint16_t>& item_prices() const { return _itemPrices; }
+    bool fix_armlet_skip() const { return _fix_armlet_skip; }
+    bool fix_tree_cutting_glitch() const { return _fix_tree_cutting_glitch; }
+    const std::map<std::string, uint8_t>& item_max_quantities() const { return _item_max_quantities; }
+    bool consumable_record_book() const { return _consumable_record_book; }
 
     // Randomization options
-    uint32_t getSeed() const { return _seed; }
-    bool allowSpoilerLog() const { return _allowSpoilerLog; }
-    double getFillingRate() const { return _fillingRate; }
-    bool shuffleTiborTrees() const { return _shuffleTiborTrees; }
-    bool handleGhostJumpingInLogic() const { return _ghostJumpingInLogic; }
-    bool hasCustomMandatoryItems() const { return _mandatoryItems != nullptr; }
-    const std::map<std::string, uint16_t>& getMandatoryItems() const { return *_mandatoryItems; }
-    bool hasCustomFillerItems() const { return _fillerItems != nullptr; }
-    const std::map<std::string, uint16_t>& getFillerItems() const { return *_fillerItems; }
+    uint32_t seed() const { return _seed; }
+    bool allow_spoiler_log() const { return _allow_spoiler_log; }
+    double filling_rate() const { return _fillingRate; }
+    bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
+    bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
+    bool has_custom_mandatory_items() const { return _mandatory_items != nullptr; }
+    const std::map<std::string, uint16_t>& mandatory_items() const { return *_mandatory_items; }
+    bool has_custom_filler_items() const { return _filler_items != nullptr; }
+    const std::map<std::string, uint16_t>& filler_items() const { return *_filler_items; }
 
-    std::vector<std::string> getHashWords() const;
-    std::string getHashSentence() const { return Tools::join(this->getHashWords(), " "); }
-    std::string getPermalink() const;
+    std::vector<std::string> hash_words() const;
+    std::string hash_sentence() const { return Tools::join(this->hash_words(), " "); }
+    std::string permalink() const;
 
     // Personal options 
-    const std::string& getInputROMPath() const { return _inputRomPath; }
-    std::string getOutputROMPath() const { return _outputRomPath; }
-    std::string getSpoilerLogPath() const { return _spoilerLogPath; }
-    const std::string& getDebugLogPath() const { return _debugLogPath; }
-    bool mustPause() const { return _pauseAfterGeneration; }
-    bool addIngameItemTracker() const { return _addIngameItemTracker; }
-    const std::string getHUDColor() const { return _hudColor; }
+    const std::string& input_rom_path() const { return _inputRomPath; }
+    std::string output_rom_path() const { return _output_rom_path; }
+    std::string spoiler_log_path() const { return _spoiler_log_path; }
+    const std::string& debug_log_path() const { return _debugLogPath; }
+    bool must_pause() const { return _pauseAfterGeneration; }
+    bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
+    const std::string hud_color() const { return _hud_color; }
 
     // Plando-specific options
-    bool isPlando() const { return _plandoEnabled; }
-    const Json& getInputPlandoJSON() const { return _plandoJSON; }
+    bool is_plando() const { return _plando_enabled; }
+    const Json& input_plando_json() const { return _plando_json; }
 
 private:
     // ------------- Game patching settings -------------
     // (included in permalink, presets & plandos)
-    uint32_t _jewelCount;
-    bool _armorUpgrades;
+    uint32_t _jewel_count;
+    bool _use_armor_upgrades;
     bool _dungeonSignHints;
     uint8_t _startingLife;
     uint16_t _startingGold;
-    std::map<std::string, uint8_t> _startingItems;
+    std::map<std::string, uint8_t> _starting_items;
     std::map<std::string, uint16_t> _itemPrices;
-    bool _fixArmletSkip;
-    bool _fixTreeCuttingGlitch;
-    std::map<std::string, uint8_t> _itemMaxQuantities;
-    bool _consumableRecordBook;
+    bool _fix_armlet_skip;
+    bool _fix_tree_cutting_glitch;
+    std::map<std::string, uint8_t> _item_max_quantities;
+    bool _consumable_record_book;
     
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)
     uint32_t _seed;
-    bool _allowSpoilerLog;
+    bool _allow_spoiler_log;
     double _fillingRate;
-    std::vector<std::string> _possibleSpawnLocations;
-    bool _shuffleTiborTrees;
-    bool _ghostJumpingInLogic;
-    std::map<std::string, uint16_t>* _mandatoryItems;
-    std::map<std::string, uint16_t>* _fillerItems;
+    std::vector<std::string> _possible_spawn_locations;
+    bool _shuffle_tibor_trees;
+    bool _ghost_jumping_in_logic;
+    std::map<std::string, uint16_t>* _mandatory_items;
+    std::map<std::string, uint16_t>* _filler_items;
 
     // ------------- Personal settings -------------
     // (not included in permalink nor presets)
     std::string _inputRomPath;
-    std::string _outputRomPath;
-    std::string _spoilerLogPath;
+    std::string _output_rom_path;
+    std::string _spoiler_log_path;
     std::string _debugLogPath;
     bool _pauseAfterGeneration;
-    bool _addIngameItemTracker;
-    std::string _hudColor;
+    bool _add_ingame_item_tracker;
+    std::string _hud_color;
 
     // Plando-specific arguments
-    bool _plandoEnabled;
-    Json _plandoJSON;
+    bool _plando_enabled;
+    Json _plando_json;
 };

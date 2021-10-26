@@ -140,7 +140,7 @@ void World::init_items()
         this->add_item(Item::from_json(item_json));
     std::cout << _items.size() << " items loaded." << std::endl;
 
-    if (_options.useArmorUpgrades())
+    if (_options.use_armor_upgrades())
     {
         _items[ITEM_STEEL_BREAST]->gold_value(250);
         _items[ITEM_CHROME_BREAST]->gold_value(250);
@@ -148,7 +148,7 @@ void World::init_items()
         _items[ITEM_HYPER_BREAST]->gold_value(250);
     }
 
-    if (_options.consumableRecordBook())
+    if (_options.consumable_record_book())
     {
         _items[ITEM_RECORD_BOOK]->max_quantity(9);
         uint16_t currentPrice = _items[ITEM_RECORD_BOOK]->gold_value();
@@ -156,7 +156,7 @@ void World::init_items()
     }
 
     // Process custom starting quantities for items
-    const std::map<std::string, uint8_t>& starting_items = _options.getStartingItems();
+    const std::map<std::string, uint8_t>& starting_items = _options.starting_items();
     for(auto& [item_name, quantity] : starting_items)
     {
         Item* item = this->item(item_name);
@@ -171,7 +171,7 @@ void World::init_items()
     }
 
     // Process custom item prices
-    const std::map<std::string, uint16_t>& item_prices = _options.getItemPrices();
+    const std::map<std::string, uint16_t>& item_prices = _options.item_prices();
     for(auto& [item_name, price] : item_prices)
     {
         Item* item = this->item(item_name);
@@ -186,7 +186,7 @@ void World::init_items()
     }
 
     // Process custom item max quantities
-    const std::map<std::string, uint8_t>& item_max_quantities = _options.getItemMaxQuantities();
+    const std::map<std::string, uint8_t>& item_max_quantities = _options.item_max_quantities();
     for(auto& [item_name, max_quantity] : item_max_quantities)
     {
         Item* item = this->item(item_name);
@@ -200,11 +200,11 @@ void World::init_items()
         item->max_quantity(max_quantity);
     }
 
-    if(_options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    if(_options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         _items[ITEM_RED_JEWEL]->name("Kazalt Jewel");
         _items[ITEM_RED_JEWEL]->allowed_on_ground(false);
-        _items[ITEM_RED_JEWEL]->max_quantity(_options.getJewelCount());
+        _items[ITEM_RED_JEWEL]->max_quantity(_options.jewel_count());
     }
 }
 
@@ -251,26 +251,26 @@ void World::init_paths()
 
     // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
     WorldPath* path_to_kazalt = this->path("king_nole_cave", "kazalt");
-    if(_options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
+    if(_options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        for(int i=0; i<_options.getJewelCount() ; ++i)
+        for(int i=0; i<_options.jewel_count() ; ++i)
             path_to_kazalt->add_required_item(_items[ITEM_RED_JEWEL]);
     }
-    else if(_options.getJewelCount() >= 1)
+    else if(_options.jewel_count() >= 1)
     {
         path_to_kazalt->add_required_item(_items[ITEM_RED_JEWEL]);
-        if(_options.getJewelCount() >= 2)
+        if(_options.jewel_count() >= 2)
             path_to_kazalt->add_required_item(_items[ITEM_PURPLE_JEWEL]);
-        if(_options.getJewelCount() >= 3)
+        if(_options.jewel_count() >= 3)
             path_to_kazalt->add_required_item(_items[ITEM_GREEN_JEWEL]);
-        if(_options.getJewelCount() >= 4)
+        if(_options.jewel_count() >= 4)
             path_to_kazalt->add_required_item(_items[ITEM_BLUE_JEWEL]);
-        if(_options.getJewelCount() >= 5)
+        if(_options.jewel_count() >= 5)
             path_to_kazalt->add_required_item(_items[ITEM_YELLOW_JEWEL]);
     }
 
     // Handle paths related to speicfic tricks
-    if(_options.handleGhostJumpingInLogic())
+    if(_options.handle_ghost_jumping_in_logic())
     {
         WorldRegion* mountainous_area = _regions.at("mountainous_area");
         WorldRegion* route_lake_shrine = _regions.at("route_lake_shrine");
@@ -311,7 +311,7 @@ void World::init_tree_maps()
     for(const Json& tree_json : trees_json)
         _teleport_trees.push_back(WorldTeleportTree::from_json(tree_json));
 
-    std::cout << _hint_sources.size() << " teleport trees loaded." << std::endl;
+    std::cout << _teleport_trees.size() << " teleport trees loaded." << std::endl;
 }
 
 void World::init_game_strings(const md::ROM& rom)
@@ -335,7 +335,7 @@ void World::init_game_strings(const md::ROM& rom)
 
     // Kazalt rejection message
     _game_strings[0x022] = std::string("Only the bearers of the ") 
-        + std::to_string(_options.getJewelCount()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
+        + std::to_string(_options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
 void World::write_to_rom(md::ROM& rom)
@@ -522,7 +522,7 @@ Item* World::parse_item_from_name(const std::string& item_name)
     return nullptr;
 }
 
-std::vector<Item*> World::find_smallest_inventory_to_reach(WorldRegion* end_region) const
+std::vector<Item*> World::minimal_inventory_to_reach(WorldRegion* end_region) const
 {
     WorldRegion* spawn_region = _active_spawn_location->region();
     WorldSolver solver(spawn_region, end_region);
