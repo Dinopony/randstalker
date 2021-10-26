@@ -242,31 +242,15 @@ static uint32_t make_record_book_save_on_use(md::ROM& rom, const RandomizerOptio
     func_store_position.rts();
     uint32_t func_store_position_addr = rom.inject_code(func_store_position);
     
-    // Regular map transition injection
-    md::Code proc_regular_map_transition;
-    proc_regular_map_transition.movew(addr_(reg_A0, 0x4), addr_(0xFF5400));
-    proc_regular_map_transition.jsr(func_store_position_addr);
-    proc_regular_map_transition.nop();
-    rom.set_code(0xA0F6, proc_regular_map_transition);
-
-    // Falling map transition position storage injection
-//    md::Code funStoreMapEntrancePositionFall;
-//    funStoreMapEntrancePositionFall.movew(addr_(0xFF5400), addr_(mapEntrancePositionStorageMemoryAddress));
-//    funStoreMapEntrancePositionFall.tstw(addr_(0xFF5430));
-//    funStoreMapEntrancePositionFall.rts();
-//    uint32_t funcStoreMapEntrancePositionFallAddr = rom.inject_code(funStoreMapEntrancePositionFall);
-//    rom.set_code(0x6368, md::Code().jsr(funcStoreMapEntrancePositionFallAddr));
-
-    // Game load transition injection
-    md::Code func_load_game_and_store_pos;
-    func_load_game_and_store_pos.jsr(0x15C2); // "func_load_game"
-    func_load_game_and_store_pos.jsr(func_store_position_addr);
-    func_load_game_and_store_pos.rts();
-    uint32_t func_load_game_and_store_pos_addr = rom.inject_code(func_load_game_and_store_pos);
-    rom.set_code(0xEF46, md::Code().jsr(func_load_game_and_store_pos_addr));
+    // Inject this func_store_position on every map change by hooking it into the BellCheck function.
+    md::Code bell_check_injector;
+    bell_check_injector.jsr(func_store_position_addr); 
+    bell_check_injector.jsr(0x22ED0); // Call j_GetItemQtyAndMaxQty because we replaced it to hook this function
+    bell_check_injector.rts();
+    uint32_t bell_check_injector_addr = rom.inject_code(func_store_position);
+    rom.set_long(0x669E, bell_check_injector_addr);
 
     // -------- Function to save game using record book --------
-
     // On record book use, set stored position and map as current to fool the save_game function, then call it
     // to save the game with this map and position. Then, restore Nigel's position and map as if nothing happened.
     md::Code func_use_record_book;
