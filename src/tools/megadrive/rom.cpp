@@ -127,19 +127,19 @@ namespace md
         throw std::out_of_range("Not enough empty room inside the ROM to inject data");
     }
 
-    void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output)
+    void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output) const
     {
         for (uint32_t addr = begin; addr < end; ++addr)
             output.push_back(this->get_byte(addr));
     }
 
-    void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output)
+    void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output) const
     {
         for (uint32_t addr = begin; addr < end; addr += 0x2)
             output.push_back(this->get_word(addr));
     }
 
-    void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output)
+    void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output) const
     {
         for (uint32_t addr = begin; addr < end; addr += 0x4)
             output.push_back(this->get_long(addr));

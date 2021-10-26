@@ -2,9 +2,10 @@
 
 #include <cstdint>
 #include <algorithm>
+
+#include "../bitfield.hpp"
+#include "tree_node.hpp"
 #include "symbols.hpp"
-#include "../tools/bitfield.hpp"
-#include "huffman_tree_node.hpp"
 
 class HuffmanTree
 {
@@ -114,7 +115,7 @@ public:
         }
     }
 
-    uint8_t decode(const Bitfield& bits) const
+    const uint8_t* decode(const Bitfield& bits) const
     {
         HuffmanTreeNode* currentNode = _topNode;
         for (uint16_t i=0 ; i<bits.size() ; ++i)
@@ -126,9 +127,9 @@ public:
         }
         
         if(!currentNode->isLeaf())
-            throw std::out_of_range("Bit sequence not leading to leaf in HuffmanTree.");
+            return nullptr;
 
-        return currentNode->getSymbol();
+        return &currentNode->getSymbol();
     }
 
     const Bitfield& encode(uint8_t symbol) const

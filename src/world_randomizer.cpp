@@ -4,8 +4,8 @@
 #include <sstream>
 
 #include "tools/tools.hpp"
+#include "tools/game_text.hpp"
 
-#include "game_text.hpp"
 #include "exceptions.hpp"
 #include "world_solver.hpp"
 
@@ -518,7 +518,7 @@ Item* WorldRandomizer::randomize_fortune_teller_hint()
         fortuneItemName = "a horn";
 
     std::stringstream fortune_teller_hint;
-    fortune_teller_hint << "I see " << fortuneItemName << " " << this->getRandomHintForItem(hinted_item) << ".";
+    fortune_teller_hint << "\x1cI see... \x1aI see... \x1a\nI see " << fortuneItemName << " " << this->getRandomHintForItem(hinted_item) << ".";
     _world.hint_sources().at("Mercator fortune teller")->text(fortune_teller_hint.str());
 
     return hinted_item;

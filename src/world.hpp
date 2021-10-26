@@ -11,7 +11,6 @@
 #include "model/world_macro_region.hpp"
 #include "model/world_teleport_tree.hpp"
 
-#include "game_text.hpp"
 #include "randomizer_options.hpp"
 
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
@@ -27,6 +26,7 @@ private:
     std::map<std::string, HintSource*> _hint_sources;
     std::vector<WorldMacroRegion*> _macro_regions;
     std::vector<WorldTeleportTree*> _teleport_trees;
+    std::vector<std::string> _game_strings;
 
     SpawnLocation* _active_spawn_location;
     WorldRegion* _dark_region;
@@ -34,7 +34,7 @@ private:
     const RandomizerOptions& _options;
 
 public:
-    World(const RandomizerOptions& options);
+    World(const md::ROM& rom, const RandomizerOptions& options);
     ~World();
 
     const std::map<uint8_t, Item*> items() const { return _items; }
@@ -61,7 +61,8 @@ public:
     const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     const std::vector<WorldMacroRegion*> macro_regions() const { return _macro_regions; }
     const std::vector<WorldTeleportTree*>& teleport_trees() const { return _teleport_trees; }
-    
+    const std::vector<std::string>& game_strings() const { return _game_strings; }
+
     void active_spawn_location(SpawnLocation* spawn) { _active_spawn_location = spawn; }
     SpawnLocation* active_spawn_location() const { return _active_spawn_location; }
 
@@ -87,6 +88,7 @@ private:
     void init_paths();
     void init_macro_regions();
     void init_spawn_locations();
-    void init_hint_sources();
     void init_tree_maps();
+    void init_game_strings(const md::ROM& rom);
+    void init_hint_sources();
 };

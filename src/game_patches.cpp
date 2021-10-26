@@ -1,12 +1,11 @@
-#include "md_tools/rom.hpp"
-#include "md_tools/code.hpp"
+#include "tools/megadrive/rom.hpp"
+#include "tools/megadrive/code.hpp"
+#include "tools/game_text.hpp"
 
 #include "game_patches.hpp"
 #include "randomizer_options.hpp"
 #include "world.hpp"
-#include "game_text.hpp"
 #include "exceptions.hpp"
-#include "assets.hpp"
 
 #include <cstdint>
 #include <vector>

@@ -1,0 +1,178 @@
+{
+    "emptiedIndices": [
+        "19", 
+        "1d", "1e", "1f", "20", "21", 
+        "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f", 
+              "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", 
+              "3c", "3d", "3e", "3f", "40", "41", "42", "43", "44", "45", "46", "47", 
+              "48", "49", "4a", "4b", "4c", "4d", 
+        "101", "102", "103", "104", 
+        "134", 
+        "139", "13a", "140", "141", "142", "143", "144", 
+        "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "18a", "18b", 
+        "18c", "18d", 
+        "52e", "52f", "530", "531", "532", "533", "534", 
+        "572", "573", "574", "575", "576", "577", "578", "579", "57a", "57b", "57c", "57d", 
+               "57e", "57f", "580", "581", "582", "583", "584", "585", "586", "587", "588", 
+               "589", "58a", "58b", "58c", "58d", "58e", "58f", "590", "591", "592", 
+        "5a0", "5a1", "5a2", "5a3", "5a4", "5a5", "5a6", "5a7", "5a8", "5a9", 
+        "5b6", "5b7", "5b8", "5b9", "5ba", "5bb", "5bc", "5bd", "5be", "5bf", "5c0", "5c1", 
+               "5c2", "5c3", 
+        "5e1", "5e2", "5e3", "5e4", "5e5", "5e6", "5e7", "5e8", "5e9", "5ea", "5eb", "5ec", "5ed", 
+        "5f6", "5f7", "5f8", "5f9", "5fa", "5fb", "5fc", "5fd", "5fe", "5ff", "600", "601", "602", 
+               "603", "604", "605", "606", "607", "608", "609", "60a", "60b", "60c", "60d", "60e", 
+               "60f", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "61a", 
+               "61b", "61c", "61d", "61e", "61f", "620", "621", 
+        "631", "632", "633", "634", "635", "636", "637", "638", "639", "63a", "63b", "63c", "63d", 
+               "63e", "63f", "640", "641", "642", "643", "644", "645", "646", "647", "648", "649", 
+               "64a", "64b", "64c", "64d", "64e", "64f", "650", "651", "652", "653", "654", "655", 
+               "656", "657", "658", "659", "65a", 
+        "6a5", "6a6", "6a7", "6a8", "6a9", "6aa", "6ab", "6ac", "6ad", "6ae", "6af", "6b0", "6b1", 
+               "6b2", "6b3", "6b4", "6b5", "6b6", "6b7", "6b8", "6b9", "6ba", "6bb", 
+        "6cb", "6cc", "6cd", "6ce", "6cf", "6d0", "6d1", "6d2", "6d3", "6d4", "6d5", "6d6", "6d7", 
+        "6fe", "6ff", "700", "701", "702", "703", "704", "705", "706", "707", 
+        "770", "771", "772", "773", "774", "775", "776", "777", "778", 
+        "787", "788", "789", "78a", "78b", "78c", "78d", "78e", 
+        "790", "791", "792", "793", 
+        "7a3", "7a4", "7a5", "7a6", "7a7", "7a8", "7a9", "7aa", "7ab", "7ac", "7ad", "7ae", "7af", 
+               "7b0", "7b1", "7b2", "7b3", "7b4", "7b5", "7b6", "7b7", "7b8", "7b9", "7ba", "7bb", 
+               "7bc", "7bd", "7be", "7bf", "7c0", "7c1", "7c2", "7c3", "7c4", "7c5", "7c6", "7c7", 
+               "7c8", "7c9", "7ca", 
+        "7df", "7e0", "7e1", "7e2", "7e3", "7e4", "7e5", "7e6", "7e7", "7e8", "7e9", "7ea", "7eb", 
+               "7ec", "7ed", "7ee", "7ef", "7f0", "7f1", "7f2", "7f3", "7f4", "7f5", "7f6", "7f7", 
+               "7f8", "7f9", "7fa", "7fb", "7fc", "7fd", "7fe", "7ff", "800", "801", "802", "803", "804"
+    ],
+
+    "patches":
+    {
+    //    "19_old": "You have finished \u001b%\nof this island...\u001e\nspoke the Oracle Stone.\u001e",
+        "19": "",
+
+    //    "22_old": "MASSAN",
+        "22": "Only the bearers of the 5 jewels\n are worthy of entering\n King Nole's domain...\u001e",
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      VERLA SICK SHOPKEEPER DIALOGUE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "cc_old": "\u001c...ahh\u001a.\u001a.\u001a.\u001e",
+    //    "cd_old": "\u001c...AHH\u001a.\u001a.\u001a.\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "cc": "\u001c...ahh...\u001e",
+        "cd": "\u001c...AHH...\u001e",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      MERCATOR FORTUNE TELLER DIALOGUE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "28d_old": "\u001cPlease don't disturb\nme, or I will be forced to\nturn you into a dog!!\u001e",
+    //    "28e_old": "\u001cNow, where was I?.....\u0003",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "28d": "\u001cHello dear, let me look at\nwhat your future is made of...\u001e",
+        "28e": "\u001cI see...\u001aI see...\u001a",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      ARTHUR DIALOGUE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "495_old": "\u001cNice to see thee again.\nAs thou dost see, I'm\ncompletely healed now.\u001e",
+    //    "496_old": "\u001cI'll do my best to make\nMercator a good home for its\npeople.\u001e",
+    //    "497_old": "\u001cI've been thinking about\nthe relationship between\npolitics and the militia for\u001e",
+    //    "498_old": "\u001ca long time, now.  Julie\nand I have often discussed\nit, and I'm now convinced that\u001e",
+    //    "499_old": "\u001cI can make this town\nprosper without a\nmilitary force!\u001e",
+    //    "49a_old": "\u001cSo, I built a casino in\nthe town well to help lower\nthe taxes.\u001e",
+    //    "49b_old": "\u001cPlease drop by\nif thou dost have the time.\u001e",
+    //    "49c_old": "\u001cVisit me anytime!\nTake care of thyself!\u0003",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "495": "\u001cMy name is Arthur, ruler of Mercator.\u001e",
+        "496": "\u001cI'll do my best to make \nMercator a good home for its \npeople.\u001e",
+        "497": "\u001cI will make this town\nprosper without a military force!\u001e",
+        "498": "\u001cI built a casino in\nthe town well to help lower\nthe taxes.\u001e",
+        "499": "\u001cPlease drop by\nif thou dost have the time.\u001e",
+        "49a": "\u001cI don't know why, but I\nfeel like I have met you before.\u001e",
+        "49b": "\u001cPlease take this\n present from the city.\u001e",
+        "49c": "\u001cTake care of thyself!\u0003",
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      MIR INTRO CUTSCENE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "68a_old": "\u001cYou don't have to feel\nso ashamed.\nIt's not your fault.\u0003",
+    //    "68b_old": "\u001cYou've done well.\nNow, back to the dust.\nfrom whence you came!\u001e",
+    //    "68c_old": "\u001cTser ot...fle Siht tup!...\u0003",
+    //    "68d_old": "\u001cBrave young man,\nYou're the first person to\nreach the top of this tower.\u001e",
+    //    "68e_old": "\u001cWhat is your purpose?\nWhy did you come to see me?\nI'm...\u0003",
+    //    "68f_old": "\u001cShut up!  We came here\nto defeat you!\u001e",
+    //    "690_old": "\u001cThe people of Mercator\nwill no longer bow down\nto your wicked whims!\u001e",
+    //    "691_old": "\u001cNow, Nigel!  Get him!\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "68a": "\u001cAh. Finally, you've come.",
+        "68b": "\u001cTser ot...Fle siht tup!...\u001e",
+        "68c": " ",
+        "68d": "\u001cBrave young man.",
+        "68e": "\u001cYou're the first person to\nreach the top of this tower.\u001e",
+        "68f": "\u001cShut up! We came here\nto defeat you!",
+        "690": "\u001e",
+        "691": " ",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      MIR DEATH CUTSCENE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "693_old": "\u001cI give up!\u001e",
+    //    "694_old": "\u001cI..I...lost...!  How strong\nyou are!  You shall have\nwhatever you desire.\u001e",
+    //    "695_old": "\u001cGive me the jewel.  Also,\nstop extorting money from the\ngood people of Mercator!\u001e",
+    //    "696_old": "\u001cThe jewel is yours.\nBut it's not me making\nthe unbearable demands.\u001e",
+    //    "697_old": "\u001cIt's the duke.\u0003",
+    //    "699_old": "\u001cHe's my brother.\nEver since we were little,\nhis one ambition has been\u001e",
+    //    "69a_old": "\u001cto conquer the continent.\nHe'll commit any wrong\nto achieve his dream!\u001e",
+    //    "69b_old": "\u001cHe finally shut me\nup in this tower because I\nused to admonish him\u001e",
+    //    "69c_old": "\u001cfor his crimes...\u001e",
+    //    "69d_old": "\u001cGosh!\nThe duke is such a...\u001e",
+    //    "69e_old": "\u001cYes...it's really the\nduke who imposes this\nheavy tax on them.\u001e",
+    //    "69f_old": "\u001cI just live out my life here,\nday by day, quietly waiting\nfor a true champion\u001e",
+    //    "6a0_old": "\u001cto appear...\u001e",
+    //    "6a1_old": "\u001cDuke Mercator is only\npretending to be a gentleman!\nWhat a liar!!\u0003",
+    //    "6a2_old": "\u001cThe jewel is downstairs.\nOnce you've found it, I'll\nsend you back\u001e",
+    //    "6a3_old": "\u001cto the entrance to the tower.\u0003",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "693": "\u001cI..I...lost...! How strong\nyou are! You shall have\nwhatever you desire.\u001e",
+        "694": " ",
+        "695": " ",
+        "696": " ",
+        "697": " ",
+        "699": " ",
+        "69a": " ",
+        "69b": " ",
+        "69c": " ",
+        "69d": " ",
+        "69e": " ",
+        "69f": " ",
+        "6a0": " ",
+        "6a1": " ",
+        "6a2": "\u001cTake the chests downstairs.\u001e",
+        "6a3": "\u001cOnce done, place yourself\nbetween the three chests, and I'll\nsend you back to the entrance.\u0003",
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      KADO GIFT
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "739_old": "\u001cIt has a special power.\u001e",
+    //    "73a_old": "\u001cWhen the sword is fully\ncharged, a magic flame will\nburn any enemy it touches!\u001e",
+    //    "73b_old": "\u001cI think you can\nappreciate the value\nof the sword.\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "739": "\u001cI hope you'll make\ngood use of it.",
+        "73a": "\u001e",
+        "73b": " ",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      MIR GIFT AFTER LAKE SHRINE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "786_old": "\u001cYou can cut the sacred trees\nwith it.  One of them is in\nfront of this tower.\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "786": "\u001cGood luck on your quest.\u0003",
+        
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      ZAK DEATH CUTSCENE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "798_old": "\u001cUse it in front of the\nstatue of the goddess under\nthe bridge to follow the duke.\u001e",
+    //    "799_old": "\u001cI hope to challenge you\nagain, so...\u001acome back alive!\u0003",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "798": "\u001cI hope to challenge you\nagain, so...",
+        "799": "\u001cCome back alive!\u0003"
+    }
+}

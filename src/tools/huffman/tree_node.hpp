@@ -28,7 +28,7 @@ public:
     }
 
     void setSymbol(uint8_t symbol) { _symbol = symbol; }
-    uint8_t getSymbol() const { return _symbol; }
+    const uint8_t& getSymbol() const { return _symbol; }
 
     void setLeftChild(HuffmanTreeNode* node)
     { 

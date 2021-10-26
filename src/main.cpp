@@ -40,11 +40,10 @@
 
 #include "extlibs/base64.hpp"
 
-#include "md_tools/rom.hpp"
-
 #include "model/world_region.hpp"
 #include "model/item_source.hpp"
 
+#include "tools/megadrive/rom.hpp"
 #include "tools/argument_dictionary.hpp"
 #include "tools/tools.hpp"
 
@@ -169,7 +168,7 @@ int main(int argc, char* argv[])
         rom->mark_empty_chunk(0x11F380, 0x120000);
         rom->mark_empty_chunk(0x1FFAC0, 0x200000);
 
-        World world(options);
+        World world(*rom, options);
 
         Json spoilerJson;
         if(options.isPlando())

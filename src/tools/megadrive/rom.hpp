@@ -42,9 +42,9 @@ namespace md {
         void store_address(const std::string& name, uint32_t address) { _stored_addresses[name] = address; }
         uint32_t stored_address(const std::string& name) { return _stored_addresses.at(name); }
 
-        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output);
-        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output);
-        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output);
+        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output) const;
+        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output) const;
+        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output) const;
 
         void mark_empty_chunk(uint32_t begin, uint32_t end);
         uint32_t remaining_empty_bytes() const;

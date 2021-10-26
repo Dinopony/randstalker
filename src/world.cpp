@@ -3,11 +3,9 @@
 #include "model/item.hpp"
 #include "model/item_source.hpp"
 
-#include "huffman/symbols.hpp"
-#include "huffman/text_encoder.hpp"
+#include "tools/textbanks_decoder.hpp"
+#include "tools/textbanks_encoder.hpp"
 
-#include "assets.hpp"
-#include "game_text.hpp"
 #include "exceptions.hpp"
 #include "world_solver.hpp"
 
@@ -20,8 +18,9 @@
 #include "model/hint_source.json.hxx"
 #include "model/world_macro_region.json.hxx"
 #include "model/world_teleport_tree.json.hxx"
+#include "assets/game_strings.json.hxx"
 
-World::World(const RandomizerOptions& options) :
+World::World(const md::ROM& rom, const RandomizerOptions& options) :
     _options                (options),
     _active_spawn_location  (nullptr),
     _dark_region            (nullptr)
@@ -32,8 +31,10 @@ World::World(const RandomizerOptions& options) :
     this->init_paths();
     this->init_macro_regions();
     this->init_spawn_locations();
-    this->init_hint_sources();
     this->init_tree_maps();
+    
+    this->init_game_strings(rom);
+    this->init_hint_sources();
 }
 
 World::~World()
@@ -298,7 +299,7 @@ void World::init_hint_sources()
     Json hint_sources_json = Json::parse(HINT_SOURCES_JSON, nullptr, true, true);
     for(const Json& hint_source_json : hint_sources_json)
     {
-        HintSource* new_source = HintSource::from_json(hint_source_json, _regions);
+        HintSource* new_source = HintSource::from_json(hint_source_json, _regions, _game_strings);
         _hint_sources[new_source->description()] = new_source;
     }
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
@@ -311,6 +312,30 @@ void World::init_tree_maps()
         _teleport_trees.push_back(WorldTeleportTree::from_json(tree_json));
 
     std::cout << _hint_sources.size() << " teleport trees loaded." << std::endl;
+}
+
+void World::init_game_strings(const md::ROM& rom)
+{
+    TextbanksDecoder decoder(rom);
+    _game_strings = decoder.strings();
+
+    Json game_strings_json = Json::parse(GAME_STRINGS_JSON, nullptr, true, true);
+    std::vector<std::string> strings_to_empty = game_strings_json.at("emptiedIndices");
+    for(std::string string_hex_id : strings_to_empty)
+    {
+        uint16_t game_string_id = std::stoi(string_hex_id, 0, 16);
+        _game_strings[game_string_id] = "";
+    }
+
+    for (auto& [string_hex_id, string_value] : game_strings_json.at("patches").items())
+    {
+        uint16_t game_string_id = std::stoi(string_hex_id, 0, 16);
+        _game_strings[game_string_id] = string_value;
+    }
+
+    // Kazalt rejection message
+    _game_strings[0x022] = std::string("Only the bearers of the ") 
+        + std::to_string(_options.getJewelCount()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
 void World::write_to_rom(md::ROM& rom)
@@ -330,26 +355,8 @@ void World::write_to_rom(md::ROM& rom)
     for (ItemSource* source : _item_sources)
         source->write_to_rom(rom);
 
-    // Alter game text lines
-    std::vector<std::string> text_lines; 
-    loadGameStrings(text_lines);
-
-    // Kazalt rejection message
-    text_lines[0x022] = std::string("Only the bearers of the ") 
-        + std::to_string(_options.getJewelCount()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
-
-    // Hint sources
-    for (auto& [k, hint_source]: _hint_sources)
-    {
-        std::vector<uint16_t> text_ids = hint_source->text_ids();
-        uint8_t textbox_size = hint_source->small_textbox() ? 2 : 3;
-        text_lines[text_ids[0]] = GameText(hint_source->text(), textbox_size).getOutput();
-        for(auto it=text_ids.begin()+1 ; it != text_ids.end() ; ++it)
-            text_lines[*it] = " ";
-    }
-
     // Write all text lines into text banks
-    TextEncoder encoder(rom, text_lines);
+    TextbanksEncoder encoder(rom, _game_strings);
 
     // Inject dark rooms as a data block
     const std::vector<uint16_t>& dark_map_ids = _dark_region->dark_map_ids();
