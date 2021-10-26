@@ -96,10 +96,10 @@ namespace md
         {
             if (_offset > 0)
             {
-                std::vector<uint8_t> offsetBytes;
-                offsetBytes.push_back((_offset >> 8) & 0xFF);
-                offsetBytes.push_back(_offset & 0xFF);
-                return offsetBytes;
+                std::vector<uint8_t> offset_bytes;
+                offset_bytes.push_back((_offset >> 8) & 0xFF);
+                offset_bytes.push_back(_offset & 0xFF);
+                return offset_bytes;
             }
             else return {};
         }

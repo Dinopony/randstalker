@@ -318,9 +318,9 @@ void World::write_to_rom(md::ROM& rom)
     // Write a data block for gold values
     uint8_t highest_item_id = _items.rbegin()->first;
     uint8_t gold_items_count = (highest_item_id - ITEM_GOLDS_START) + 1;
-    uint32_t addr = rom.reserveDataBlock(gold_items_count, "data_gold_values");
+    uint32_t addr = rom.reserve_data_block(gold_items_count, "data_gold_values");
     for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
-        rom.setByte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
+        rom.set_byte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
 
     // Write item info
     for (auto& [key, item] : _items)
@@ -354,11 +354,11 @@ void World::write_to_rom(md::ROM& rom)
     // Inject dark rooms as a data block
     const std::vector<uint16_t>& dark_map_ids = _dark_region->dark_map_ids();
     uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
-    uint32_t dark_maps_address = rom.reserveDataBlock(dark_maps_byte_count, "data_dark_rooms");
+    uint32_t dark_maps_address = rom.reserve_data_block(dark_maps_byte_count, "data_dark_rooms");
     uint8_t i = 0;
     for (uint16_t map_id : dark_map_ids)
-        rom.setWord(dark_maps_address + (i++) * 0x2, map_id);
-    rom.setWord(dark_maps_address + i * 0x2, 0xFFFF);
+        rom.set_word(dark_maps_address + (i++) * 0x2, map_id);
+    rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
 
     // Write Tibor tree map connections
     for (WorldTeleportTree* teleport_tree : _teleport_trees)
@@ -519,8 +519,8 @@ std::vector<Item*> World::find_smallest_inventory_to_reach(WorldRegion* end_regi
 {
     WorldRegion* spawn_region = _active_spawn_location->region();
     WorldSolver solver(spawn_region, end_region);
-    solver.tryToSolve();
-    std::vector<Item*> inventory = solver.getInventory();
+    solver.try_to_solve();
+    std::vector<Item*> inventory = solver.inventory();
 
     std::vector<Item*> minimal_inventory;
 
@@ -532,8 +532,8 @@ std::vector<Item*> World::find_smallest_inventory_to_reach(WorldRegion* end_regi
         forbidden_items_plus_one.insert(item);
         
         WorldSolver solver2(spawn_region, end_region);
-        solver2.forbidItems(forbidden_items_plus_one);
-        if(solver2.tryToSolve())
+        solver2.forbid_items(forbidden_items_plus_one);
+        if(solver2.try_to_solve())
         {
             // Item can be freely removed: keep it removed for further solves
             forbidden_items = forbidden_items_plus_one;
@@ -553,9 +553,9 @@ bool World::is_macro_region_avoidable(WorldMacroRegion* macro_region) const
     WorldRegion* spawn_region = _active_spawn_location->region();
     WorldRegion* end_region = _regions.at("end");
     WorldSolver solver(spawn_region, end_region);
-    solver.forbidTakingItemsFromRegions(macro_region->regions());
+    solver.forbid_taking_items_from_regions(macro_region->regions());
     
-    return solver.tryToSolve();
+    return solver.try_to_solve();
 }
 
 bool World::is_item_avoidable(Item* item) const
@@ -563,7 +563,7 @@ bool World::is_item_avoidable(Item* item) const
     WorldRegion* spawn_region = _active_spawn_location->region();
     WorldRegion* end_region = _regions.at("end");
     WorldSolver solver(spawn_region, end_region);
-    solver.forbidItems({ item });
+    solver.forbid_items({ item });
 
-    return solver.tryToSolve();
+    return solver.try_to_solve();
 }

@@ -18,6 +18,21 @@ constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
 
 class World
 {
+private:
+    std::map<uint8_t, Item*> _items;
+    std::map<std::string, WorldRegion*> _regions;
+    std::map<std::pair<WorldRegion*, WorldRegion*>, WorldPath*> _paths;
+    std::vector<ItemSource*> _item_sources;
+    std::map<std::string, SpawnLocation*> _spawn_locations;
+    std::map<std::string, HintSource*> _hint_sources;
+    std::vector<WorldMacroRegion*> _macro_regions;
+    std::vector<WorldTeleportTree*> _teleport_trees;
+
+    SpawnLocation* _active_spawn_location;
+    WorldRegion* _dark_region;
+
+    const RandomizerOptions& _options;
+
 public:
     World(const RandomizerOptions& options);
     ~World();
@@ -74,19 +89,4 @@ private:
     void init_spawn_locations();
     void init_hint_sources();
     void init_tree_maps();
-
-private:
-    std::map<uint8_t, Item*> _items;
-    std::map<std::string, WorldRegion*> _regions;
-    std::map<std::pair<WorldRegion*, WorldRegion*>, WorldPath*> _paths;
-    std::vector<ItemSource*> _item_sources;
-    std::map<std::string, SpawnLocation*> _spawn_locations;
-    std::map<std::string, HintSource*> _hint_sources;
-    std::vector<WorldMacroRegion*> _macro_regions;
-    std::vector<WorldTeleportTree*> _teleport_trees;
-
-    SpawnLocation* _active_spawn_location;
-    WorldRegion* _dark_region;
-
-    const RandomizerOptions& _options;
 };

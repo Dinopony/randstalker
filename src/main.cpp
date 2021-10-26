@@ -56,7 +56,7 @@
 md::ROM* getInputROM(std::string inputRomPath)
 {
     md::ROM* rom = new md::ROM(inputRomPath);
-    while (!rom->isValid())
+    while (!rom->is_valid())
     {
         delete rom;
         if (!inputRomPath.empty())
@@ -166,8 +166,8 @@ int main(int argc, char* argv[])
 
         // Load input ROM and tag known empty chunks of data to know where to inject code / data
         md::ROM* rom = getInputROM(options.getInputROMPath());
-        rom->markChunkAsEmpty(0x11F380, 0x120000);
-        rom->markChunkAsEmpty(0x1FFAC0, 0x200000);
+        rom->mark_empty_chunk(0x11F380, 0x120000);
+        rom->mark_empty_chunk(0x1FFAC0, 0x200000);
 
         World world(options);
 
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
         std::cout << "Applying game patches...\n\n";
         applyPatches(*rom, options, world);
 
-        rom->saveAs(options.getOutputROMPath());
+        rom->save_as(options.getOutputROMPath());
         std::cout << "Randomized rom outputted to \"" << options.getOutputROMPath() << "\".\n\n";
 
         // Write a spoiler log to help the player

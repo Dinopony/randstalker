@@ -58,7 +58,7 @@ public:
 
     virtual void write_to_rom(md::ROM& rom) const
     {
-        rom.setByte(0x9EABE + _chest_id, this->item_id());
+        rom.set_byte(0x9EABE + _chest_id, this->item_id());
     }
 
     virtual Json to_json() const;
@@ -96,7 +96,7 @@ public:
     virtual void write_to_rom(md::ROM& rom) const
     {
         for (uint32_t address : _addresses_in_rom)
-            rom.setByte(address, this->item_id() + 0xC0);
+            rom.set_byte(address, this->item_id() + 0xC0);
     }
 
     virtual Json to_json() const;
@@ -146,7 +146,7 @@ public:
 
     virtual void write_to_rom(md::ROM& rom) const
     {
-        rom.setByte(_address_in_rom, this->item_id());
+        rom.set_byte(_address_in_rom, this->item_id());
     }
 
     virtual Json to_json() const;

@@ -192,11 +192,11 @@ public:
         uint32_t currentWritingAddress = 0x23D60;
         for (uint16_t treeOffset : treeOffsets)
         {
-            rom.setWord(currentWritingAddress, treeOffset);
+            rom.set_word(currentWritingAddress, treeOffset);
             currentWritingAddress += 0x2;
         }
 
-        rom.setBytes(0x23E38, globalTreeDataBlock);
+        rom.set_bytes(0x23E38, globalTreeDataBlock);
         if (globalTreeDataBlock.size() > 0x2469C - 0x23E38)
             std::cerr << "ERROR : NEW HUFFMAN TREE DATA SIZE IS " << (globalTreeDataBlock.size() - (0x2469C - 0x23E38)) << " BYTES BIGGER THAN OLD ONE\n";
 
@@ -205,22 +205,22 @@ public:
         uint32_t textbankOffsetWritingAddress = 0x38368;
         for (size_t i = 0; i < _textbanks.size(); i++)
         {
-            rom.setLong(textbankOffsetWritingAddress, writingAddress);
+            rom.set_long(textbankOffsetWritingAddress, writingAddress);
             textbankOffsetWritingAddress += 0x4;
 
-            rom.setBytes(writingAddress, _textbanks[i]);
+            rom.set_bytes(writingAddress, _textbanks[i]);
             writingAddress += (uint32_t)_textbanks[i].size();
         }
 
         //int sizeDiff = 0x38368 - writingAddress;
         //std::cout << "Saved " << sizeDiff << " bytes on textbanks.\n";
 
-        rom.markChunkAsEmpty(writingAddress, 0x38368);
+        rom.mark_empty_chunk(writingAddress, 0x38368);
 
 
         while (writingAddress < 0x38368)
         {
-            rom.setByte(writingAddress, 0xFF);
+            rom.set_byte(writingAddress, 0xFF);
             writingAddress++;
         }
     }

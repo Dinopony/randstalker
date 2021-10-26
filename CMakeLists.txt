@@ -71,6 +71,7 @@ set(SOURCES
     "src/world_randomizer.hpp"
     "src/world_randomizer.cpp"
     "src/world_solver.hpp"
+    "src/world_solver.cpp"
     
     "src/main.cpp"
 )

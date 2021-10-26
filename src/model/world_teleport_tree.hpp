@@ -20,8 +20,8 @@ public:
 
     void write_to_rom(md::ROM& rom) const
     {
-        rom.setWord(_left_entrance_address, _tree_map_id);
-        rom.setWord(_right_entrance_address, _tree_map_id);
+        rom.set_word(_left_entrance_address, _tree_map_id);
+        rom.set_word(_right_entrance_address, _tree_map_id);
     }
 
     Json to_json() const

@@ -26,18 +26,18 @@ public:
         ++_size;
     }
 
-    bool get(uint32_t bitID) const
+    bool get(uint32_t bit_id) const
     {
-        size_t byteID = bitID / 8;
+        size_t byteID = bit_id / 8;
         uint8_t byte = _values[byteID];
 
         if (byteID == _values.size()-1 && (_size % 8) != 0)
         {
             uint8_t lastByteSize = _size % 8;
-            return (byte >> ((lastByteSize - 1) - (bitID % 8))) & 0x1;
+            return (byte >> ((lastByteSize - 1) - (bit_id % 8))) & 0x1;
         }
 
-        return (byte >> (7 - (bitID % 8))) & 0x1;
+        return (byte >> (7 - (bit_id % 8))) & 0x1;
     }
 
     std::vector<uint8_t> toValues() const

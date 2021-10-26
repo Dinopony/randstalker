@@ -10,47 +10,47 @@ namespace md {
 
     class ROM
     {
+    private:
+        bool _was_open;
+        char* _byte_array;
+        std::map<std::string, uint32_t> _stored_addresses;
+        std::vector<std::pair<uint32_t, uint32_t>> _empty_chunks;
+
     public:
-        ROM(const std::string& inputPath);
-        ROM(const ROM& otherROM);
+        ROM(const std::string& input_path);
+        ROM(const ROM& other);
         ~ROM();
 
-        bool isValid() const { return _wasOpen; }
+        bool is_valid() const { return _was_open; }
 
-        uint8_t getByte(uint32_t address) const { return _byteArray[address]; }
-        uint16_t getWord(uint32_t address) const { return (this->getByte(address) << 8) + this->getByte(address+1); }
-        uint32_t getLong(uint32_t address) const { return (static_cast<uint32_t>(this->getWord(address)) << 16) + static_cast<uint32_t>(this->getWord(address+2)); }
+        uint8_t get_byte(uint32_t address) const { return _byte_array[address]; }
+        uint16_t get_word(uint32_t address) const { return (this->get_byte(address) << 8) + this->get_byte(address+1); }
+        uint32_t get_long(uint32_t address) const { return (static_cast<uint32_t>(this->get_word(address)) << 16) + static_cast<uint32_t>(this->get_word(address+2)); }
 
-        void setByte(uint32_t address, uint8_t byte);
-        void setWord(uint32_t address, uint16_t word);
-        void setLong(uint32_t address, uint32_t longWord);
-        void setBytes(uint32_t address, std::vector<uint8_t> bytes);
-        void setCode(uint32_t address, const Code& code);
+        void set_byte(uint32_t address, uint8_t byte);
+        void set_word(uint32_t address, uint16_t word);
+        void set_long(uint32_t address, uint32_t long_word);
+        void set_bytes(uint32_t address, std::vector<uint8_t> bytes);
+        void set_code(uint32_t address, const Code& code);
 
-        uint32_t injectBytes(const std::vector<uint8_t>& bytes, const std::string& label = "");
-        uint32_t injectCode(const Code& code, const std::string& label = "");
-        uint32_t reserveDataBlock(uint32_t byteCount, const std::string& label = "");
+        uint32_t inject_bytes(const std::vector<uint8_t>& bytes, const std::string& label = "");
+        uint32_t inject_code(const Code& code, const std::string& label = "");
+        uint32_t reserve_data_block(uint32_t byte_count, const std::string& label = "");
 
-        void storeAddress(const std::string& name, uint32_t address) { _storedAddresses[name] = address; }
-        uint32_t getStoredAddress(const std::string& name) { return _storedAddresses.at(name); }
+        void store_address(const std::string& name, uint32_t address) { _stored_addresses[name] = address; }
+        uint32_t stored_address(const std::string& name) { return _stored_addresses.at(name); }
 
-        void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output);
-        void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output);
-        void getDataChunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output);
+        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output);
+        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output);
+        void data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output);
 
-        void markChunkAsEmpty(uint32_t begin, uint32_t end);
-        uint32_t countEmptyBytes() const;
-
-        void saveAs(const std::string& outputPath);
+        void mark_empty_chunk(uint32_t begin, uint32_t end);
+        uint32_t remaining_empty_bytes() const;
+    
+        void save_as(const std::string& outputPath);
 
     private:
-        void updateChecksum();
-
-        bool _wasOpen;
-        char* _byteArray;
-        std::map<std::string, uint32_t> _storedAddresses;
-
-        std::vector<std::pair<uint32_t, uint32_t>> _emptyChunks;
+        void update_checksum();
     };
 
 }
