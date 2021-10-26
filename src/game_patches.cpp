@@ -1293,6 +1293,10 @@ void renameItems(md::ROM& rom, const RandomizerOptions& options)
     rom.set_bytes(0x29732, itemNameBytes);
 }
 
+#include "assets/blue_jewel.bin.hxx"
+#include "assets/green_jewel.bin.hxx"
+#include "assets/yellow_jewel.bin.hxx"
+
 void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
 {
     if(options.getJewelCount() > MAX_INDIVIDUAL_JEWELS)
@@ -1303,25 +1307,19 @@ void handleAdditionalJewels(md::ROM& rom, const RandomizerOptions& options)
     if(options.getJewelCount() >= 3)
     {
         // Add a sprite for green jewel and make the item use it
-        std::vector<uint8_t> greenJewelSprite;
-        loadGreenJewelSprite(greenJewelSprite);
-        uint32_t greenJewelSpriteAddr = rom.inject_bytes(greenJewelSprite);
+        uint32_t greenJewelSpriteAddr = rom.inject_bytes(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE);
         rom.set_long(itemSpritesTableBaseAddr + (ITEM_GREEN_JEWEL * 0x4), greenJewelSpriteAddr); // 0x121648
     }
     if(options.getJewelCount() >= 4)
     {
         // Add a sprite for blue jewel and make the item use it
-        std::vector<uint8_t> blueJewelSprite;
-        loadBlueJewelSprite(blueJewelSprite);
-        uint32_t blueJewelSpriteAddr = rom.inject_bytes(blueJewelSprite);
+        uint32_t blueJewelSpriteAddr = rom.inject_bytes(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE);
         rom.set_long(itemSpritesTableBaseAddr + (ITEM_BLUE_JEWEL * 0x4), blueJewelSpriteAddr);
     }
     if(options.getJewelCount() >= 5)
     {
         // Add a sprite for green jewel and make the item use it
-        std::vector<uint8_t> yellowJewelSprite;
-        loadYellowJewelSprite(yellowJewelSprite);
-        uint32_t yellowJewelSpriteAddr = rom.inject_bytes(yellowJewelSprite);
+        uint32_t yellowJewelSpriteAddr = rom.inject_bytes(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE);
         rom.set_long(itemSpritesTableBaseAddr + (ITEM_YELLOW_JEWEL * 0x4), yellowJewelSpriteAddr);
     }
 

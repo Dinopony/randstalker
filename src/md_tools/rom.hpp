@@ -31,9 +31,11 @@ namespace md {
         void set_word(uint32_t address, uint16_t word);
         void set_long(uint32_t address, uint32_t long_word);
         void set_bytes(uint32_t address, std::vector<uint8_t> bytes);
+        void set_bytes(uint32_t address, const unsigned char* bytes, size_t bytes_size);
         void set_code(uint32_t address, const Code& code);
 
         uint32_t inject_bytes(const std::vector<uint8_t>& bytes, const std::string& label = "");
+        uint32_t inject_bytes(const unsigned char* bytes, size_t size_to_inject, const std::string& label = "");
         uint32_t inject_code(const Code& code, const std::string& label = "");
         uint32_t reserve_data_block(uint32_t byte_count, const std::string& label = "");
 

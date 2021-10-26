@@ -70,6 +70,14 @@ namespace md
         }
     }
 
+     void ROM::set_bytes(uint32_t address, const unsigned char* bytes, size_t bytes_size)
+    {
+        for (uint32_t i = 0; i < bytes_size; ++i)
+        {
+            this->set_byte(address + i, bytes[i]);
+        }
+    }
+
     void ROM::set_code(uint32_t address, const Code& code)
     {
         this->set_bytes(address, code.get_bytes());
@@ -80,6 +88,13 @@ namespace md
         uint32_t size_to_inject = (uint32_t)bytes.size();
         uint32_t injection_addr = this->reserve_data_block(size_to_inject, label);
         this->set_bytes(injection_addr, bytes);
+        return injection_addr;
+    }
+
+    uint32_t ROM::inject_bytes(const unsigned char* bytes, size_t size_to_inject, const std::string& label)
+    {
+        uint32_t injection_addr = this->reserve_data_block(static_cast<uint32_t>(size_to_inject), label);
+        this->set_bytes(injection_addr, bytes, size_to_inject);
         return injection_addr;
     }
 

@@ -11,14 +11,20 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-wrap_json(SOURCE_FILE "src/model/item.json" VARIABLE_NAME "ITEMS_JSON")
-wrap_json(SOURCE_FILE "src/model/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON")
-wrap_json(SOURCE_FILE "src/model/world_path.json" VARIABLE_NAME "WORLD_PATHS_JSON")
-wrap_json(SOURCE_FILE "src/model/item_source.json" VARIABLE_NAME "ITEM_SOURCES_JSON")
-wrap_json(SOURCE_FILE "src/model/spawn_location.json" VARIABLE_NAME "SPAWN_LOCATIONS_JSON")
-wrap_json(SOURCE_FILE "src/model/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON")
-wrap_json(SOURCE_FILE "src/model/world_macro_region.json" VARIABLE_NAME "WORLD_MACRO_REGIONS_JSON")
-wrap_json(SOURCE_FILE "src/model/world_teleport_tree.json" VARIABLE_NAME "WORLD_TELEPORT_TREES_JSON")
+# Wrap JSON model files into automated .hxx headers
+wrap_file(SOURCE_FILE "src/model/item.json" VARIABLE_NAME "ITEMS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/world_path.json" VARIABLE_NAME "WORLD_PATHS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/item_source.json" VARIABLE_NAME "ITEM_SOURCES_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/spawn_location.json" VARIABLE_NAME "SPAWN_LOCATIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/world_macro_region.json" VARIABLE_NAME "WORLD_MACRO_REGIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/world_teleport_tree.json" VARIABLE_NAME "WORLD_TELEPORT_TREES_JSON" TEXT_FILE)
+
+# Wrap binary assets files into automated .hxx headers
+wrap_file(SOURCE_FILE "src/assets/blue_jewel.bin" VARIABLE_NAME "BLUE_JEWEL_SPRITE" SPRITE_FILE)
+wrap_file(SOURCE_FILE "src/assets/green_jewel.bin" VARIABLE_NAME "GREEN_JEWEL_SPRITE" SPRITE_FILE)
+wrap_file(SOURCE_FILE "src/assets/yellow_jewel.bin" VARIABLE_NAME "YELLOW_JEWEL_SPRITE" SPRITE_FILE)
 
 add_compile_definitions(RELEASE="${PROJECT_VERSION}")
 add_compile_definitions(MAJOR_RELEASE="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
