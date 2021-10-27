@@ -627,6 +627,19 @@ void make_massan_elder_reward_not_story_dependant(md::ROM& rom)
     rom.mark_empty_chunk(0x25FA0, 0x25FB1);
 }
 
+void make_gumi_boulder_push_not_story_dependant(md::ROM& rom)
+{
+    // Always remove Pockets from Gumi boulder map
+    rom.set_word(0x1FED6, 0x7F7F);
+
+    // Always show both bears in Gumi boulder map
+    rom.set_word(0x1A630, 0x8002);
+    rom.set_word(0x1A634, 0x8003);
+
+    // Try to show the last boulder on ground only if boulder was pushed to
+    // prevent softlocks when coming from behind
+    rom.set_word(0x1A62C, 0x82C6);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -883,7 +896,8 @@ void apply_other_patches(md::ROM& rom, const RandomizerOptions& options, const W
     makeRyumaMayorSaveable(rom);
 
     make_massan_elder_reward_not_story_dependant(rom);
-
+    make_gumi_boulder_push_not_story_dependant(rom);
+    
     // Map content changes
     replaceSickMerchantByChest(rom);
     removeMercatorCastleBackdoorGuard(rom);

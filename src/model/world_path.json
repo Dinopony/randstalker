@@ -11,11 +11,6 @@
     },
     {
         "fromId": "gumi",
-        "toId": "route_gumi_ryuma",
-        "twoWay": true
-    },
-    {
-        "fromId": "gumi",
         "toId": "route_massan_gumi",
         "twoWay": true
     },
@@ -249,6 +244,10 @@
     },
 
 
+    {
+        "fromId": "gumi",
+        "toId": "route_gumi_ryuma"
+    },
     {
         "fromId": "verla_shore",
         "toId": "mir_tower_sector"
