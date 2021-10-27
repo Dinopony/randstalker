@@ -88,6 +88,8 @@ public:
     {
         if(!item)
             return true;
+        if(item->id() >= ITEM_GOLDS_START)
+            return false;
         if(_cannot_be_taken_repeatedly)
             return true;
         return item->allowed_on_ground();
