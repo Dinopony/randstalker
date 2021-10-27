@@ -247,7 +247,7 @@ static uint32_t make_record_book_save_on_use(md::ROM& rom, const RandomizerOptio
     bell_check_injector.jsr(func_store_position_addr); 
     bell_check_injector.jsr(0x22ED0); // Call j_GetItemQtyAndMaxQty because we replaced it to hook this function
     bell_check_injector.rts();
-    uint32_t bell_check_injector_addr = rom.inject_code(func_store_position);
+    uint32_t bell_check_injector_addr = rom.inject_code(bell_check_injector);
     rom.set_long(0x669E, bell_check_injector_addr);
 
     // Game load transition injection
