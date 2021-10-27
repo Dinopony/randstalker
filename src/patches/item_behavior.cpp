@@ -229,6 +229,10 @@ static void handle_additional_jewels(md::ROM& rom, const RandomizerOptions& opti
     // Make the Awakening Book (the only one remaining in churches) heal all status conditions
     rom.set_code(0x24F6C, md::Code().nop(6));
     rom.set_code(0x24FB8, md::Code().moveb(0xFF, reg_D0));
+
+    // Change the behavior of AntiCurse and Detox books (now Yellow and Blue jewels) in shops
+    rom.set_byte(0x24C40, 0x40);
+    rom.set_byte(0x24C58, 0x40);
 }
 
 static uint32_t make_record_book_save_on_use(md::ROM& rom, const RandomizerOptions& options)
