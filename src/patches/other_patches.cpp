@@ -592,31 +592,39 @@ void replaceSickMerchantByChest(md::ROM& rom)
     rom.set_word(0x021D16, 0x5055);
 }
 
-void replaceFaraInElderHouseByChest(md::ROM& rom)
+void make_massan_elder_reward_not_story_dependant(md::ROM& rom)
 {
-    // Neutralize a map specific trigger which broke chests inside it
-    // 0x019C82:
-        // Before:	0x0251 (map ID)
-        // After:	0xFFFF 
-    rom.set_word(0x019C82, 0xFFFF);
+    // This item source writes its contents at this specific address, as specified
+    // by the model files
+    uint8_t reward_item_id = rom.get_byte(0x25F9E);
 
-    // Move the elder to his right position
-    rom.set_word(0x020FA2, 0x1113);
+    md::Code elder_dialogue;
+    elder_dialogue.btst(5, addr_(0xFF1002));
+    elder_dialogue.bne(3);
+        elder_dialogue.trap(0x01, { 0x00, 0x05 });
+        elder_dialogue.rts();
+        elder_dialogue.add_bytes({ 0xE0, 0xFD });
+    elder_dialogue.btst(2, addr_(0xFF1004));
+    elder_dialogue.bne(3);
+        elder_dialogue.trap(0x01, { 0x00, 0x05 });
+        elder_dialogue.rts();
+        elder_dialogue.add_bytes({ 0x14, 0x22, 
+                                   0x80, 0xFE, 
+                                   0x80, 0xFF, 
+                                   0x81, 0x00, 
+                                   0x00, reward_item_id, 
+                                   0x17, 0xE8, 
+                                   0x18, 0x00, 
+                                   0xE1, 0x01 });
+    elder_dialogue.trap(0x01, { 0x00, 0x05 });
+    elder_dialogue.rts();
+    elder_dialogue.add_bytes({ 0xE1, 0x01 });
 
-    // Replace Fara entity by a chest
-    rom.set_word(0x020FAA, 0x134F);
-    rom.set_word(0x020FAC, 0x0000);
-    rom.set_word(0x020FAE, 0x0012);
-    rom.set_word(0x020FB0, 0x0000);
+    uint32_t addr = rom.inject_code(elder_dialogue);
 
-    // Remove bed wakeup cutscene
-    rom.set_word(0x020FB2, 0x7F7F);
-    rom.set_word(0x020FB4, 0x0000);
-    rom.set_word(0x020FB6, 0x0000);
-    rom.set_word(0x020FB8, 0x0000);
+    rom.set_code(0x25F98, md::Code().jmp(addr).rts());
 
-    // Set map base chest index to 0x17
-    rom.set_byte(0x09E9DF, 0x17);
+    rom.mark_empty_chunk(0x25FA0, 0x25FB1);
 }
 
 
@@ -874,13 +882,14 @@ void apply_other_patches(md::ROM& rom, const RandomizerOptions& options, const W
     addJewelsCheckForTeleporterToKazalt(rom, options);
     makeRyumaMayorSaveable(rom);
 
+    make_massan_elder_reward_not_story_dependant(rom);
+
     // Map content changes
     replaceSickMerchantByChest(rom);
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
     addDoorForReverseSafetyPass(rom); 
     replaceLumberjackByChest(rom);
-    replaceFaraInElderHouseByChest(rom);
 
     // Fix original game glitches & bugs
     if(options.fix_armlet_skip())

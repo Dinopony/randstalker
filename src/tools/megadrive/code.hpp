@@ -22,7 +22,6 @@ namespace md
         void add_bytes(const std::vector<uint8_t>& bytes);
         void add_opcode(uint16_t opcode);
 
-        Code& bsr(uint8_t offset);
         Code& bsr(uint16_t offset);
         Code& jsr(uint32_t address);
         Code& jmp(const Param& target);

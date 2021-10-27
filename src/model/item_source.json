@@ -162,12 +162,6 @@
         "chestId": 22
     },
     {
-        "name": "Massan: chest in elder house after freeing Fara",
-        "type": "chest",
-        "regionId": "massan_after_swamp_shrine",
-        "chestId": 23
-    },
-    {
         "name": "King Nole's Cave: first gold chest in third room",
         "type": "chest",
         "regionId": "king_nole_cave",
@@ -1849,6 +1843,12 @@
         "type": "shop",
         "regionId": "kazalt",
         "address": 139509
+    },
+    {
+        "name": "Massan: elder reward after freeing Fara",
+        "type": "reward",
+        "regionId": "massan_after_swamp_shrine",
+        "address": 155550
     },
     {
         "name": "Mir reward after Lake Shrine (Axe Magic in OG)",

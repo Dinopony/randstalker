@@ -33,16 +33,15 @@ namespace md
         this->add_word(opcode);
     }
 
-    Code& Code::bsr(uint8_t offset)
-    {
-        this->add_opcode(0x6100 + offset);
-        return *this;
-    }
-
     Code& Code::bsr(uint16_t offset)
     {
-        this->add_opcode(0x6100);
-        this->add_word(offset);
+        if(offset > 0x00FF)
+        {
+            this->add_opcode(0x6100);
+            this->add_word(offset);  
+        }
+        else
+            this->add_opcode(0x6100 + offset);
         return *this;
     }
 
