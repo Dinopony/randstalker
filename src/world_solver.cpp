@@ -32,6 +32,10 @@ bool WorldSolver::try_to_solve()
         bool didnt_solve_any_path = true;
         for (WorldPath* blocked_path : _blocked_paths)
         {
+            // Don't consider this path for exploration if we didn't explore all of the required regions
+            if(!blocked_path->has_explored_required_regions(_explored_regions))
+                continue;
+
             std::vector<Item*> missing_items = blocked_path->missing_items_to_cross(_inventory, true);
             std::vector<ItemSource*> item_sources_to_pick;
             bool all_located = true;
@@ -71,23 +75,30 @@ void WorldSolver::expand_exploration_zone()
 {
     while (!_paths_to_process.empty())
     {
-        WorldPath* firstPath = *_paths_to_process.begin();
+        WorldPath* first_path = *_paths_to_process.begin();
         _paths_to_process.erase(_paths_to_process.begin());
 
+        // If we haven't explored all required regions yet, it means this path cannot be taken for now
+        if(!first_path->has_explored_required_regions(_explored_regions))
+        {
+            _blocked_paths.push_back(first_path);
+            continue;
+        }
+
         // Region at the end of this path has already been explored, it's useless to evaluate it
-        if (_explored_regions.contains(firstPath->destination()))
+        if (_explored_regions.contains(first_path->destination()))
             continue;
 
-        std::vector<Item*> missing_items = firstPath->missing_items_to_cross(_inventory, true);
+        std::vector<Item*> missing_items = first_path->missing_items_to_cross(_inventory, true);
         if (missing_items.empty())
         {
             // If we have already have the items to cross this path, explore it to expand our reach
-            this->explore_path(firstPath);
+            this->explore_path(first_path);
         }
         else
         {
             // Otherwise, add it to the list of blocked paths that will need to be processed later
-            _blocked_paths.insert(firstPath);
+            _blocked_paths.insert(first_path);
         }
     }
 }

@@ -362,7 +362,15 @@ void WorldRandomizer::exploration_phase(Json& debug_step_json)
             if (_regions_to_explore.contains(destination) || _explored_regions.contains(destination))
                 continue;
 
-            if (outgoing_path->missing_items_to_cross(_inventory).empty())
+            bool can_cross = true;
+            // Path cannot be taken if we don't have all off the required items
+            if(!outgoing_path->missing_items_to_cross(_inventory).empty())
+                can_cross = false;
+            // Path cannot be taken if we don't have already explored other required regions
+            if(!outgoing_path->has_explored_required_regions(_explored_regions))
+                can_cross = false;
+
+            if(can_cross)
             {
                 // For crossable paths, add destination to the list of regions to explore
                 _regions_to_explore.insert(destination);
@@ -385,6 +393,10 @@ void WorldRandomizer::place_key_items_phase(Json& debug_step_json)
     std::vector<WorldPath*> blocked_paths;
     for (WorldPath* pending_path : _pending_paths)
     {
+        // Don't consider this path for key item placement if unexplored regions are a blocking criteria
+        if(!pending_path->has_explored_required_regions(_explored_regions))
+            continue;
+
         if(!pending_path->missing_items_to_cross(_inventory).empty())
         {
             // If items are missing to cross this path, add as many entries as the weight of the path to the blocked_paths array
@@ -428,17 +440,21 @@ void WorldRandomizer::unlock_phase()
     {
         WorldPath* pending_path = _pending_paths[i];
 
-        if (pending_path->missing_items_to_cross(_inventory).empty())
-        {
-            // Path is now unlocked, add destination to regions to explore if it has not yet been explored
-            WorldRegion* destination = pending_path->destination();
-            if (!_regions_to_explore.contains(destination) && !_explored_regions.contains(destination))
-                _regions_to_explore.insert(destination);
+        // Path cannot be taken if we don't have already explored other required regions
+        if(!pending_path->has_explored_required_regions(_explored_regions))
+            continue;
+        // Path cannot be taken if we don't have all of the required items
+        if(!pending_path->missing_items_to_cross(_inventory).empty())
+            continue;
 
-            // Remove path from pending paths
-            _pending_paths.erase(_pending_paths.begin()+i);
-            --i;
-        }
+        // Unlock path, add destination to regions to explore if it has not yet been explored
+        WorldRegion* destination = pending_path->destination();
+        if (!_regions_to_explore.contains(destination) && !_explored_regions.contains(destination))
+            _regions_to_explore.insert(destination);
+
+        // Remove path from pending paths
+        _pending_paths.erase(_pending_paths.begin()+i);
+        --i;
     }
 }
 

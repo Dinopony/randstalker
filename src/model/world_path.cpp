@@ -2,12 +2,13 @@
 #include "world_region.hpp"
 #include "../exceptions.hpp"
 
-WorldPath::WorldPath(WorldRegion* from_region, WorldRegion* to_region, uint16_t weight, 
-                    std::vector<Item*> required_items, std::vector<Item*> items_placed_when_crossing) :
+WorldPath::WorldPath(WorldRegion* from_region, WorldRegion* to_region, uint16_t weight, const std::vector<Item*>& required_items, 
+                    const std::vector<WorldRegion*>& required_regions, const std::vector<Item*>& items_placed_when_crossing) :
     _from_region                 (from_region),
     _to_region                   (to_region),
     _weight                      (weight),
     _required_items              (required_items),
+    _required_regions            (required_regions),
     _items_placed_when_crossing  (items_placed_when_crossing)
 {
     _from_region->add_outgoing_path(this);
@@ -42,6 +43,14 @@ std::vector<Item*> WorldPath::missing_items_to_cross(std::vector<Item*> player_i
     return missing_items;
 }
 
+bool WorldPath::has_explored_required_regions(const UnsortedSet<WorldRegion*>& explored_regions) const
+{
+    for(WorldRegion* region : _required_regions)
+        if(!explored_regions.contains(region))
+            return false;
+    return true;
+}
+
 Json WorldPath::to_json(bool two_way) const
 {
     Json json;
@@ -58,6 +67,13 @@ Json WorldPath::to_json(bool two_way) const
         json["requiredItems"] = Json::array();
         for(Item* item : _required_items)
             json["requiredItems"].push_back(item->name());
+    }
+
+    if(!_required_regions.empty())
+    {
+        json["requiredRegions"] = Json::array();
+        for(WorldRegion* region : _required_regions)
+            json["requiredRegions"].push_back(region->id());
     }
 
     if(!_items_placed_when_crossing.empty())
@@ -95,10 +111,15 @@ WorldPath* WorldPath::from_json(const Json& json, const std::map<std::string, Wo
         for(const std::string& item_name : json.at("requiredItems"))
             required_items.push_back(find_item_from_name(items, item_name));
 
+    std::vector<WorldRegion*> required_regions;
+    if(json.contains("requiredRegions"))
+        for(const std::string& region_id : json.at("requiredRegions"))
+            required_regions.push_back(regions.at(region_id));
+
     std::vector<Item*> items_placed_when_crossing;
     if(json.contains("itemsPlacedWhenCrossing"))
         for(const std::string& item_name : json.at("itemsPlacedWhenCrossing"))
             items_placed_when_crossing.push_back(find_item_from_name(items, item_name));
         
-    return new WorldPath(from_region, to_region, weight, required_items, items_placed_when_crossing);
+    return new WorldPath(from_region, to_region, weight, required_items, required_regions, items_placed_when_crossing);
 }

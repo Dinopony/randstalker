@@ -30,6 +30,9 @@
         "twoWay": true,
         "requiredItems": [
             "Einstein Whistle"
+        ],
+        "requiredRegions": [
+            "massan"
         ]
     },
     {
@@ -304,10 +307,13 @@
         "toId": "route_massan_gumi"
     },
     {
-        "fromId": "ryuma_lighthouse_repaired",
+        "fromId": "mercator",
         "toId": "verla_shore",
         "requiredItems": [
             "Safety Pass"
+        ],
+        "requiredRegions": [
+            "ryuma_lighthouse_repaired"
         ]
     }
 ]
