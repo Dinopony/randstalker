@@ -13,18 +13,18 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 - Most cutscenes and scenario related checks / blockers are removed
 - You will need as many jewels as specified in the settings to use the teleporter to go to Kazalt
 - All other conditions from the original game stay as-is (Safety Pass to reach Mercator, Gola's Eye to reach King Nole's Cave, Axe Magic to cut trees, all three Gola pieces to reach King Nole's fight...)
-- All key doors are gone, except one (the Mercator castle backdoor), same goes for the keys. The key becomes a unique item to find which gives you access to Greenmaze sector.
-- The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked solely by having Buyer Card in your inventory
-- Some reward-giving NPCs (such as sick merchant in Mercator or lumberjack in Greenmaze) are replaced by chests for technical reasons:
-	* Massan elder's house after saving Fara (Red Jewel in OG) 
+- The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked by having Buyer Card in your inventory
+- The key is now a unique item and can open several doors without being consumed. All key doors are gone, except two : 
+	* the Mercator castle backdoor (giving access to Greenmaze sector) 
+	* Thieves Hideout middle door (cutting the level in half)
+- Some reward-giving NPCs are replaced by chests for technical reasons:
 	* Lumberjack in Greenmaze (Einstein Whistle in OG)
 	* Depressed shopkeeper in Mercator (Buyer's Card in OG)
-
 - Tibor trees connections can be optionally randomized
 
 ### Hints 
 
-- Road signs give hints instead of directions
+- Road signs which used to give directions now give hints instead
 - Using the Lithograph will give you hints where to find both jewels
 - Using the Oracle Stone will give you a hint on an important item
 - The Fortune Teller in Mercator will give you a hint leading to one of the Gola items
@@ -37,7 +37,7 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 ### New item features
 
 - You start with a Record Book in your inventory allowing you to save anywhere and pontentially save time by strategically save-scumming (this can be disabled as an option)
-- Spell Book teleports you to your spawn point when used
+- Spell Book warps you back to your spawn point when used
 - Statue of Jypta is reintroduced as a real item giving gold passively as you walk. Free riches!
 - Armors work by default as "armor upgrades", meaning you will always get them one tier after another (this can be disabled as an option)
 
@@ -45,11 +45,10 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 
 - The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
 - The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right before it. You can go straight to Kazalt without worrying about it.
-- You won't be able to fight Dex in Verla Mines for technical reasons. Feel free to fight Slasher and Marley though.
 
 ## Known issues / non-issues
 
-- There is no reward from Ryuma's mayor unlike in the original game. This is most likely going to stay this way as it's a complex problem to solve.
+- Dex won't be in his map in Verla Mines for technical reasons. This is not a problem by itself, but can be surprising at first.
 - Trees next to Sun Stone cannot be cut using Axe Magic, only by the lumberjack using Einstein Whistle. This is the intended behavior in original game, and it's pretty convenient for the rando logic.
 
 ## Usage
@@ -73,14 +72,14 @@ With the following options being available:
 
 It also provides a few randomization options:
 
-- **--fillingRate=VAL**: sets the randomizing algorithm step filling rate with VAL from 0.0 to 1.0 (default 0.20)
+- **--jewelCount=VAL**: sets the number of jewels that will be shuffled and required to pass Kazalt teleporter (from 0 to 9)
+- **--startingLife=VAL**: sets the character's health at game start
+- **--spawnLocation=LOC**: choose the starting location by replacing LOC with either `random`, `massan`, `gumi`, `ryuma`, `kado`, `waterfall`, `mercator`, `verla`, `destel` or `greenmaze`
 - **--shuffleTrees**: if set, Tibor trees connections are shuffled
 - **--noArmorUpgrades**: disable armor upgrades and replace them with random vanilla armors
 - **--noRecordBook**: disable the Record Book in inventory allowing to save anywhere
-- **--spawnLocation=LOC**: choose the starting location by replacing LOC with either `random`, `massan`, `gumi`, `ryuma`, `kado`, `waterfall` or `mercator`
-- **--jewelCount=VAL**: sets the number of jewels that will be shuffled and required to pass Kazalt teleporter (from 0 to 9)
-- **--startingLife=VAL**: sets the character's health at game start
 - **--dungeonSignHints**: adds extra hints on signs inside dungeons (e.g. Thieves Hideout, Mir Tower...)
+- **--fillingRate=VAL**: sets the randomizing algorithm step filling rate with VAL from 0.0 to 1.0 (default 0.20)
 
 ## Build instructions
 
