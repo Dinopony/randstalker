@@ -592,55 +592,6 @@ void replaceSickMerchantByChest(md::ROM& rom)
     rom.set_word(0x021D16, 0x5055);
 }
 
-void make_massan_elder_reward_not_story_dependant(md::ROM& rom)
-{
-    // This item source writes its contents at this specific address, as specified
-    // by the model files
-    uint8_t reward_item_id = rom.get_byte(0x25F9E);
-
-    md::Code elder_dialogue;
-    elder_dialogue.btst(5, addr_(0xFF1002));
-    elder_dialogue.bne(3);
-        elder_dialogue.trap(0x01, { 0x00, 0x05 });
-        elder_dialogue.rts();
-        elder_dialogue.add_bytes({ 0xE0, 0xFD });
-    elder_dialogue.btst(2, addr_(0xFF1004));
-    elder_dialogue.bne(3);
-        elder_dialogue.trap(0x01, { 0x00, 0x05 });
-        elder_dialogue.rts();
-        elder_dialogue.add_bytes({ 0x14, 0x22, 
-                                   0x80, 0xFE, 
-                                   0x80, 0xFF, 
-                                   0x81, 0x00, 
-                                   0x00, reward_item_id, 
-                                   0x17, 0xE8, 
-                                   0x18, 0x00, 
-                                   0xE1, 0x01 });
-    elder_dialogue.trap(0x01, { 0x00, 0x05 });
-    elder_dialogue.rts();
-    elder_dialogue.add_bytes({ 0xE1, 0x01 });
-
-    uint32_t addr = rom.inject_code(elder_dialogue);
-
-    rom.set_code(0x25F98, md::Code().jmp(addr).rts());
-
-    rom.mark_empty_chunk(0x25FA0, 0x25FB1);
-}
-
-void make_gumi_boulder_push_not_story_dependant(md::ROM& rom)
-{
-    // Always remove Pockets from Gumi boulder map
-    rom.set_word(0x1FED6, 0x7F7F);
-
-    // Always show both bears in Gumi boulder map
-    rom.set_word(0x1A630, 0x8002);
-    rom.set_word(0x1A634, 0x8003);
-
-    // Try to show the last boulder on ground only if boulder was pushed to
-    // prevent softlocks when coming from behind
-    rom.set_word(0x1A62C, 0x82C6);
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       Original game bugs & glitches fixes
@@ -895,9 +846,6 @@ void apply_other_patches(md::ROM& rom, const RandomizerOptions& options, const W
     addJewelsCheckForTeleporterToKazalt(rom, options);
     makeRyumaMayorSaveable(rom);
 
-    make_massan_elder_reward_not_story_dependant(rom);
-    make_gumi_boulder_push_not_story_dependant(rom);
-    
     // Map content changes
     replaceSickMerchantByChest(rom);
     removeMercatorCastleBackdoorGuard(rom);
