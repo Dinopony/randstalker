@@ -180,12 +180,6 @@
         "chestId": 26
     },
     {
-        "name": "Greenmaze: chest replacing lumberjack",
-        "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
-        "chestId": 27
-    },
-    {
         "name": "King Nole's Cave: gold chest in isolated room",
         "type": "chest",
         "regionId": "king_nole_cave",
@@ -1855,6 +1849,12 @@
         "type": "reward",
         "regionId": "lake_shrine",
         "address": 166463
+    },
+    {
+        "name": "Greenmaze: lumberjack reward for saving Einstein",
+        "type": "reward",
+        "regionId": "greenmaze_pre_whistle",
+        "address": 166021
     },
     {
         "name": "Zak reward after fighting (Gola's Eye in OG)",

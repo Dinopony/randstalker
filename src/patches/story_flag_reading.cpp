@@ -166,9 +166,23 @@ void make_gumi_boulder_push_not_story_dependant(md::ROM& rom)
 
 void make_lumberjack_reward_not_story_dependant(md::ROM& rom)
 {
+    rom.set_word(0x272C4, 0xEAFA); // Change from HandleProgressDependentDialogue to SetFlagBitOnTalking
+    rom.set_word(0x272C6, 0x0124); // bit 4 of 1024
+    rom.set_word(0x272C8, 0x0EF7); // Flag clear: Einstein whistle gift cutscene
+    rom.set_word(0x272CA, 0x15D3); // Flag set: Thanks
+    rom.set_word(0x272CC, 0x4E75); // rts
 
+    // Shorten the cutscene by removing all references to the whistle (which we most likely won't get here)
+    rom.set_word(0x28888, 0x0);
+    rom.set_word(0x2888A, 0x0);
+    rom.set_word(0x28890, 0x0);
+    rom.set_word(0x28890, 0x0);
+    rom.set_word(0x28892, 0x0);
+    rom.set_word(0x28894, 0x0);
+
+    // Remove Nigel turning around during the cutscene
+    rom.set_code(0x14102, md::Code().nop(12));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -185,4 +199,5 @@ void patch_story_flag_reading(md::ROM& rom, const RandomizerOptions& options, co
 
     make_massan_elder_reward_not_story_dependant(rom);
     make_gumi_boulder_push_not_story_dependant(rom);
+    make_lumberjack_reward_not_story_dependant(rom);
 }

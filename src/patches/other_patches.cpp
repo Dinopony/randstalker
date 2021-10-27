@@ -557,18 +557,7 @@ void fixFaraLifestockChest(md::ROM& rom)
     rom.set_word(0x01BF72, 0x0400);
 }
 
-void replaceLumberjackByChest(md::ROM& rom)
-{
-    // Set base index for chests in map to "1A" instead of "A8" to have room for a second chest in the map
-    for (uint32_t addr = 0x9E9BA; addr <= 0x9E9BE; ++addr)
-        rom.set_byte(addr, 0x1A);
 
-    // Transform the lumberjack into a chest
-    rom.set_word(0x020B9C, 0xD5B1);  // First word: position, orientation and palette (5571 => D5B1)
-    rom.set_word(0x020B9E, 0x0000);  // Second word: ??? (2200 => 0000)
-    rom.set_word(0x020BA0, 0x0012);  // Third word: type (0550 = Lumberjack NPC => 0012 = chest)
-    rom.set_word(0x020BA2, 0x8000);  // Fourth word: behavior (00C1 => 8000 works for some reason)
-}
 
 void replaceSickMerchantByChest(md::ROM& rom)
 {
@@ -850,8 +839,7 @@ void apply_other_patches(md::ROM& rom, const RandomizerOptions& options, const W
     replaceSickMerchantByChest(rom);
     removeMercatorCastleBackdoorGuard(rom);
     removeSailorInDarkPort(rom);
-    addDoorForReverseSafetyPass(rom); 
-    replaceLumberjackByChest(rom);
+    addDoorForReverseSafetyPass(rom);
 
     // Fix original game glitches & bugs
     if(options.fix_armlet_skip())
