@@ -250,6 +250,14 @@ static uint32_t make_record_book_save_on_use(md::ROM& rom, const RandomizerOptio
     uint32_t bell_check_injector_addr = rom.inject_code(func_store_position);
     rom.set_long(0x669E, bell_check_injector_addr);
 
+    // Game load transition injection
+    md::Code func_load_game_and_store_pos;
+    func_load_game_and_store_pos.jsr(0x15C2); // "func_load_game"
+    func_load_game_and_store_pos.jsr(func_store_position_addr);
+    func_load_game_and_store_pos.rts();
+    uint32_t func_load_game_and_store_pos_addr = rom.inject_code(func_load_game_and_store_pos);
+    rom.set_code(0xEF46, md::Code().jsr(func_load_game_and_store_pos_addr));
+
     // -------- Function to save game using record book --------
     // On record book use, set stored position and map as current to fool the save_game function, then call it
     // to save the game with this map and position. Then, restore Nigel's position and map as if nothing happened.
