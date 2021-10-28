@@ -1892,13 +1892,13 @@
     {
         "name": "Ryuma's mayor first reward (Safety Pass in OG)",
         "type": "reward",
-        "regionId": "thieves_hideout_post_key",
+        "regionId": "ryuma_after_thieves_hideout",
         "address": 164731
     },
     {
         "name": "Ryuma's mayor second reward (100g in OG)",
         "type": "reward",
-        "regionId": "thieves_hideout_post_key",
+        "regionId": "ryuma_after_thieves_hideout",
         "address": 164735
     }
 ]

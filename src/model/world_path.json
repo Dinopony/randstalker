@@ -1,23 +1,89 @@
 [
     {
-        "fromId": "massan_after_swamp_shrine",
-        "toId": "swamp_shrine",
+        "fromId": "massan",
+        "toId": "massan_cave",
+        "twoWay": true,
+        "requiredItems": [
+            "Axe Magic"
+        ]
+    },
+    {
+        "fromId": "massan",
+        "toId": "massan_after_swamp_shrine",
+        "requiredRegions": [
+            "swamp_shrine"
+        ]
+    },
+    {
+        "fromId": "massan",
+        "toId": "route_massan_gumi",
         "twoWay": true
     },
     {
-        "fromId": "gumi_after_swamp_shrine",
+        "fromId": "route_massan_gumi",
+        "toId": "waterfall_shrine",
+        "twoWay": true
+    },
+    {
+        "fromId": "route_massan_gumi",
         "toId": "swamp_shrine",
+        "twoWay": true,
+        "weight": 2,
+        "requiredItems": [
+            "Idol Stone"
+        ]
+    },
+    {
+        "fromId": "route_massan_gumi",
+        "toId": "gumi",
         "twoWay": true
     },
     {
         "fromId": "gumi",
-        "toId": "route_massan_gumi",
-        "twoWay": true
+        "toId": "gumi_after_swamp_shrine",
+        "requiredRegions": [
+            "swamp_shrine"
+        ]
+    },
+    {
+        "fromId": "gumi",
+        "toId": "route_gumi_ryuma"
     },
     {
         "fromId": "route_gumi_ryuma",
         "toId": "ryuma",
         "twoWay": true
+    },
+    {
+        "fromId": "ryuma",
+        "toId": "ryuma_after_thieves_hideout",
+        "requiredRegions": [
+            "thieves_hideout_post_key"
+        ]
+    },
+    {
+        "fromId": "ryuma",
+        "toId": "ryuma_lighthouse_repaired",
+        "twoWay": true,
+        "requiredItems": [
+            "Sun Stone"
+        ]
+    },
+    {
+        "fromId": "ryuma",
+        "toId": "thieves_hideout_pre_key",
+        "twoWay": true
+    },
+    {
+        "fromId": "thieves_hideout_pre_key",
+        "toId": "thieves_hideout_post_key",
+        "requiredItems": [
+            "Key"
+        ]
+    },
+    {
+        "fromId": "thieves_hideout_post_key",
+        "toId": "thieves_hideout_pre_key"
     },
     {
         "fromId": "route_gumi_ryuma",
@@ -45,90 +111,26 @@
         ]
     },
     {
-        "fromId": "massan_cave",
-        "toId": "massan",
-        "twoWay": true,
-        "requiredItems": [
-            "Axe Magic"
-        ]
-    },
-    {
-        "fromId": "massan",
-        "toId": "route_massan_gumi",
+        "fromId": "mercator",
+        "toId": "mercator_dungeon",
         "twoWay": true
     },
     {
-        "fromId": "swamp_shrine",
-        "toId": "route_massan_gumi",
-        "twoWay": true,
-        "weight": 2,
-        "requiredItems": [
-            "Idol Stone"
-        ]
-    },
-    {
-        "fromId": "route_massan_gumi",
-        "toId": "waterfall_shrine",
+        "fromId": "mercator",
+        "toId": "crypt",
         "twoWay": true
     },
     {
-        "fromId": "ryuma",
-        "toId": "ryuma_lighthouse_repaired",
-        "twoWay": true,
-        "requiredItems": [
-            "Sun Stone"
-        ]
-    },
-    {
-        "fromId": "ryuma",
-        "toId": "thieves_hideout_pre_key",
-        "twoWay": true
-    },
-    {
-        "fromId": "mercator_dungeon",
-        "toId": "mercator",
-        "twoWay": true
-    },
-    {
-        "fromId": "crypt",
-        "toId": "mercator",
-        "twoWay": true
-    },
-    {
-        "fromId": "thieves_hideout_post_key",
-        "toId": "thieves_hideout_pre_key",
-        "twoWay": true,
-        "requiredItems": [
-            "Key"
-        ]
-    },
-    {
-        "fromId": "greenmaze_pre_whistle",
-        "toId": "greenmaze_post_whistle",
-        "twoWay": true,
-        "requiredItems": [
-            "Einstein Whistle"
-        ]
-    },
-    {
-        "fromId": "greenmaze_pre_whistle",
-        "toId": "mountainous_area",
-        "twoWay": true,
-        "requiredItems": [
-            "Axe Magic"
-        ]
-    },
-    {
-        "fromId": "mercator_special_shop",
-        "toId": "mercator",
+        "fromId": "mercator",
+        "toId": "mercator_special_shop",
         "twoWay": true,
         "requiredItems": [
             "Buyer's Card"
         ]
     },
     {
-        "fromId": "mercator_casino",
-        "toId": "mercator",
+        "fromId": "mercator",
+        "toId": "mercator_casino",
         "twoWay": true,
         "requiredItems": [
             "Casino Ticket"
@@ -140,13 +142,9 @@
         "twoWay": true
     },
     {
-        "fromId": "mountainous_area",
-        "toId": "king_nole_cave",
-        "twoWay": true,
-        "weight": 2,
-        "requiredItems": [
-            "Gola's Eye"
-        ]
+        "fromId": "mir_tower_sector",
+        "toId": "twinkle_village",
+        "twoWay": true
     },
     {
         "fromId": "mir_tower_sector",
@@ -157,118 +155,33 @@
         ]
     },
     {
-        "fromId": "lake_shrine",
-        "toId": "route_lake_shrine",
-        "twoWay": true
-    },
-    {
-        "fromId": "mir_tower_sector",
-        "toId": "twinkle_village",
-        "twoWay": true
-    },
-    {
         "fromId": "mir_tower_sector",
         "toId": "mir_tower_pre_garlic",
-        "twoWay": true,
         "requiredItems": [
             "Armlet"
         ]
     },
     {
-        "fromId": "king_nole_labyrinth_pre_spikes",
-        "toId": "king_nole_labyrinth_post_spikes",
-        "twoWay": true,
+        "fromId": "mir_tower_pre_garlic",
+        "toId": "mir_tower_sector"
+    },
+    {
+        "fromId": "mir_tower_pre_garlic",
+        "toId": "mir_tower_post_garlic",
         "requiredItems": [
-            "Snow Spikes"
-        ]
-    },
-    {
-        "fromId": "king_nole_labyrinth_pre_spikes",
-        "toId": "kazalt",
-        "twoWay": true
-    },
-    {
-        "fromId": "king_nole_labyrinth_post_spikes",
-        "toId": "king_nole_labyrinth_raft",
-        "twoWay": true,
-        "requiredItems": [
-            "Logs",
-            "Logs"
-        ]
-    },
-    {
-        "fromId": "king_nole_labyrinth_post_spikes",
-        "toId": "king_nole_palace",
-        "twoWay": true
-    },
-    {
-        "fromId": "mir_tower_post_garlic",
-        "toId": "mir_tower_pre_garlic",
-        "twoWay": true,
-        "requiredItems": [
-            "Garlic",
+            "Garlic"
+        ],
+        "itemsPlacedWhenCrossing": [
             "Garlic"
         ]
     },
     {
-        "fromId": "route_after_destel",
-        "toId": "destel",
-        "twoWay": true
+        "fromId": "mir_tower_post_garlic",
+        "toId": "mir_tower_pre_garlic"
     },
     {
-        "fromId": "verla_shore",
-        "toId": "verla_mines",
-        "twoWay": true
-    },
-    {
-        "fromId": "verla_shore",
-        "toId": "verla",
-        "twoWay": true
-    },
-    {
-        "fromId": "verla_mines",
-        "toId": "route_verla_destel",
-        "twoWay": true
-    },
-    {
-        "fromId": "route_verla_destel",
-        "toId": "destel",
-        "twoWay": true
-    },
-    {
-        "fromId": "destel",
-        "toId": "destel_well",
-        "twoWay": true
-    },
-    {
-        "fromId": "destel_well",
-        "toId": "route_lake_shrine",
-        "twoWay": true
-    },
-
-
-    {
-        "fromId": "gumi",
-        "toId": "route_gumi_ryuma"
-    },
-    {
-        "fromId": "verla_shore",
+        "fromId": "mir_tower_post_garlic",
         "toId": "mir_tower_sector"
-    },
-    {
-        "fromId": "king_nole_cave",
-        "toId": "kazalt",
-        "itemsPlacedWhenCrossing": [
-            "Lithograph"
-        ]
-    },
-    {
-        "fromId": "kazalt",
-        "toId": "king_nole_cave"
-    },
-    {
-        "fromId": "king_nole_cave",
-        "toId": "mercator"
     },
     {
         "fromId": "mercator",
@@ -283,12 +196,78 @@
         "toId": "mercator"
     },
     {
-        "fromId": "king_nole_palace",
-        "toId": "end",
+        "fromId": "greenmaze_pre_whistle",
+        "toId": "greenmaze_post_whistle",
+        "twoWay": true,
         "requiredItems": [
-            "Gola's Fang",
-            "Gola's Horn",
-            "Gola's Nail"
+            "Einstein Whistle"
+        ]
+    },
+    {
+        "fromId": "greenmaze_post_whistle",
+        "toId": "route_massan_gumi"
+    },
+    {
+        "fromId": "mercator",
+        "toId": "verla_shore",
+        "requiredRegions": [
+            "ryuma_lighthouse_repaired"
+        ]
+    },
+    {
+        "fromId": "verla_shore",
+        "toId": "verla",
+        "twoWay": true
+    },
+    {
+        "fromId": "verla_shore",
+        "toId": "verla_mines",
+        "twoWay": true
+    },
+    {
+        "fromId": "verla_shore",
+        "toId": "mir_tower_sector"
+    },
+    {
+        "fromId": "verla_mines",
+        "toId": "route_verla_destel",
+        "twoWay": true
+    },
+    {
+        "fromId": "route_verla_destel",
+        "toId": "destel",
+        "twoWay": true
+    },
+    {
+        "fromId": "destel",
+        "toId": "route_after_destel",
+        "twoWay": true
+    },
+    {
+        "fromId": "destel",
+        "toId": "destel_well",
+        "twoWay": true
+    },
+    {
+        "fromId": "destel_well",
+        "toId": "route_lake_shrine",
+        "twoWay": true
+    },
+    {
+        "fromId": "route_lake_shrine",
+        "toId": "lake_shrine",
+        "twoWay": true
+    },
+    {
+        "fromId": "lake_shrine",
+        "toId": "mir_tower_sector"
+    },
+    {
+        "fromId": "greenmaze_pre_whistle",
+        "toId": "mountainous_area",
+        "twoWay": true,
+        "requiredItems": [
+            "Axe Magic"
         ]
     },
     {
@@ -299,21 +278,68 @@
         ]
     },
     {
-        "fromId": "lake_shrine",
-        "toId": "mir_tower_sector"
-    },
-    {
-        "fromId": "greenmaze_post_whistle",
-        "toId": "route_massan_gumi"
-    },
-    {
-        "fromId": "mercator",
-        "toId": "verla_shore",
+        "fromId": "mountainous_area",
+        "toId": "king_nole_cave",
+        "twoWay": true,
+        "weight": 2,
         "requiredItems": [
-            "Safety Pass"
+            "Gola's Eye"
+        ]
+    },
+    {
+        "fromId": "king_nole_cave",
+        "toId": "mercator"
+    },
+    {
+        "fromId": "king_nole_cave",
+        "toId": "kazalt",
+        "itemsPlacedWhenCrossing": [
+            "Lithograph"
+        ]
+    },
+    {
+        "fromId": "kazalt",
+        "toId": "king_nole_cave"
+    },
+    {
+        "fromId": "kazalt",
+        "toId": "king_nole_labyrinth_pre_spikes",
+        "twoWay": true
+    },
+    {
+        "fromId": "king_nole_labyrinth_pre_spikes",
+        "toId": "king_nole_labyrinth_post_spikes",
+        "twoWay": true,
+        "requiredItems": [
+            "Snow Spikes"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_post_spikes",
+        "toId": "king_nole_labyrinth_raft",
+        "requiredItems": [
+            "Logs"
         ],
-        "requiredRegions": [
-            "ryuma_lighthouse_repaired"
+        "itemsPlacedWhenCrossing": [
+            "Logs"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_raft",
+        "toId": "king_nole_labyrinth_post_spikes"
+    },
+    {
+        "fromId": "king_nole_labyrinth_post_spikes",
+        "toId": "king_nole_palace",
+        "twoWay": true
+    },
+    {
+        "fromId": "king_nole_palace",
+        "toId": "end",
+        "requiredItems": [
+            "Gola's Fang",
+            "Gola's Horn",
+            "Gola's Nail"
         ]
     }
 ]

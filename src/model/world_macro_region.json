@@ -41,6 +41,7 @@
         "name": "the town of Ryuma",
         "regionIds": [
             "ryuma",
+            "ryuma_after_thieves_hideout",
             "ryuma_lighthouse_repaired"
         ]
     },
