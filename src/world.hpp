@@ -81,6 +81,8 @@ public:
     bool is_macro_region_avoidable(WorldMacroRegion* macro_region) const;
     bool is_item_avoidable(Item* item) const;
 
+    void output_graphviz();
+
 private:
     void init_items();
     void init_item_sources();

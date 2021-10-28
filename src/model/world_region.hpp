@@ -30,7 +30,7 @@ public:
     const std::string& name() const { return _name; }
     WorldRegion& name(const std::string& name) { _name = name; return *this;}
 
-    std::vector<ItemSource*> item_sources() const { return _item_sources; }
+    const std::vector<ItemSource*>& item_sources() const { return _item_sources; }
     void add_item_source(ItemSource* source) {  _item_sources.push_back(source); }
 
     const std::vector<WorldPath*>& outgoing_paths() const { return _outgoing_paths; }
