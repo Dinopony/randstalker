@@ -51,6 +51,7 @@ private:
     void randomize_gold_values();
     void randomize_dark_rooms();
     void randomize_tibor_trees();
+    void randomize_fahl_enemies();
 
     // Item randomization
     void randomize_items();

@@ -56,21 +56,13 @@ void alterLifestockHandlingInShops(md::ROM& rom)
         rom.set_byte(addr, 0xFF);
 }
 
-
-
-
-
-
-void alterFahlChallenge(md::ROM& rom)
+void alter_fahl_challenge(md::ROM& rom, const World& world)
 {
     // Neutralize mid-challenge proposals for money
     rom.set_code(0x12D52, md::Code().nop(24));
-
-    // When beating an enemy, increment the "beaten" counter by 4 instead of 1
-    rom.set_byte(0x12D4C, 0x58);
     
-    // Set the end of the challenge at 0x30 instead of 0x32
-    rom.set_byte(0x12D87, 0x30);
+    // Set the end of the challenge at the number of fahl enemies in the world list
+    rom.set_byte(0x12D87, (uint8_t)world.fahl_enemies().size());
 }
 
 void handleArmorUpgrades(md::ROM& rom)
@@ -817,7 +809,7 @@ void apply_other_patches(md::ROM& rom, const RandomizerOptions& options, const W
     if (options.use_armor_upgrades())
         handleArmorUpgrades(rom);
     fixFaraLifestockChest(rom);
-    alterFahlChallenge(rom);
+    alter_fahl_challenge(rom, world);
 
     // Specific map check changes
     alterWaterfallShrineSecretStairsCheck(rom);

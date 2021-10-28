@@ -27,6 +27,7 @@ private:
     std::vector<WorldMacroRegion*> _macro_regions;
     std::vector<WorldTeleportTree*> _teleport_trees;
     std::vector<std::string> _game_strings;
+    std::vector<uint8_t> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
     WorldRegion* _dark_region;
@@ -68,6 +69,9 @@ public:
 
     WorldRegion* dark_region() { return _dark_region; }
     void dark_region(WorldRegion* region) { _dark_region = region; }
+
+    const std::vector<uint8_t>& fahl_enemies() const { return _fahl_enemies; }
+    void add_fahl_enemy(uint8_t enemy_id) { if(_fahl_enemies.size() < 0x50) _fahl_enemies.push_back(enemy_id); }
 
     void write_to_rom(md::ROM& rom);
 

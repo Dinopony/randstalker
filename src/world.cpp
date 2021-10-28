@@ -370,6 +370,10 @@ void World::write_to_rom(md::ROM& rom)
     // Write Tibor tree map connections
     for (WorldTeleportTree* teleport_tree : _teleport_trees)
         teleport_tree->write_to_rom(rom);
+
+    // Write Fahl enemies
+    for(uint8_t i=0 ; i<_fahl_enemies.size() && i<50 ; ++i)
+        rom.set_byte(0x12CE6 + i, _fahl_enemies[i]);
 }
 
 Json World::to_json() const
@@ -394,6 +398,9 @@ Json World::to_json() const
             json["itemSources"][region.name()][source->name()] = item->name();
         }
     }
+
+    // Fahl enemies
+    json["fahlEnemies"] = _fahl_enemies;
 
     return json;
 }
