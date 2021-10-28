@@ -522,39 +522,6 @@ Item* World::parse_item_from_name(const std::string& item_name)
     return nullptr;
 }
 
-std::vector<Item*> World::minimal_inventory_to_reach(WorldRegion* end_region) const
-{
-    WorldRegion* spawn_region = _active_spawn_location->region();
-    WorldSolver solver(spawn_region, end_region);
-    solver.try_to_solve();
-    std::vector<Item*> inventory = solver.inventory();
-
-    std::vector<Item*> minimal_inventory;
-
-    UnsortedSet<Item*> forbidden_items;
-
-    for(Item* item : inventory)
-    {  
-        UnsortedSet<Item*> forbidden_items_plus_one = forbidden_items;
-        forbidden_items_plus_one.insert(item);
-        
-        WorldSolver solver2(spawn_region, end_region);
-        solver2.forbid_items(forbidden_items_plus_one);
-        if(solver2.try_to_solve())
-        {
-            // Item can be freely removed: keep it removed for further solves
-            forbidden_items = forbidden_items_plus_one;
-        }
-        else
-        {
-            // Item cannot be removed: it means it's required
-            minimal_inventory.push_back(item);
-        }
-    }
- 
-    return minimal_inventory;
-}
-
 bool World::is_macro_region_avoidable(WorldMacroRegion* macro_region) const
 {
     WorldRegion* spawn_region = _active_spawn_location->region();

@@ -13,13 +13,9 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
     _world            (world),
     _options          (options),
     _rng              (),
-    _gold_items_count (0),
-    _debug_log_json   (options.to_json())
-{
-    this->init_filler_items();
-    this->init_mandatory_items();
-    this->init_inventory();
-}
+    _solver           (),
+    _gold_items_count (0)
+{}
 
 void WorldRandomizer::randomize()
 {
@@ -30,23 +26,16 @@ void WorldRandomizer::randomize()
     this->randomize_spawn_location();
     this->randomize_gold_values();
     this->randomize_dark_rooms();
+    if(_options.shuffle_tibor_trees())
+        this->randomize_tibor_trees();
 
     // 2nd pass: randomizing items
     _rng.seed(rngSeed);
     this->randomize_items();
 
-    // Analyse items required to complete the seed
-    _minimal_items_to_complete = _world.minimal_inventory_to_complete();
-    _debug_log_json["requiredItems"] = Json::array();
-    for (Item* item : _minimal_items_to_complete)
-        _debug_log_json["requiredItems"].push_back(item->name());
-
     // 3rd pass: randomizations happening AFTER randomizing items
     _rng.seed(rngSeed);
     this->randomize_hints();
-
-    if(_options.shuffle_tibor_trees())
-        this->randomize_tibor_trees();
 }
 
 void WorldRandomizer::init_filler_items()
@@ -85,6 +74,8 @@ void WorldRandomizer::init_filler_items()
         for(uint16_t i=0 ; i<quantity ; ++i)
             _filler_items.push_back(item);
     }
+
+    Tools::shuffle(_filler_items, _rng);
 }
 
 void WorldRandomizer::init_mandatory_items()
@@ -118,18 +109,9 @@ void WorldRandomizer::init_mandatory_items()
         for(uint16_t i=0 ; i<quantity ; ++i)
             _mandatoryItems.push_back(item);
     }
-}
 
-void WorldRandomizer::init_inventory()
-{
-    for(const auto& [id, item] : _world.items())
-    {
-        uint8_t quantity = item->starting_quantity();
-        for(uint8_t i=0 ; i<quantity ; ++i)
-            _inventory.push_back(item);
-    }
+    Tools::shuffle(_mandatoryItems, _rng);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///        FIRST PASS RANDOMIZATIONS (before items)
@@ -200,6 +182,19 @@ void WorldRandomizer::randomize_dark_rooms()
         path->add_required_item(_world.item(ITEM_LANTERN));
 }
 
+void WorldRandomizer::randomize_tibor_trees()
+{
+    const std::vector<WorldTeleportTree*>& trees = _world.teleport_trees();
+
+    std::vector<uint16_t> teleport_tree_map_ids;
+    for (WorldTeleportTree* tree : trees)
+        teleport_tree_map_ids.push_back(tree->tree_map_id());
+    
+    Tools::shuffle(teleport_tree_map_ids, _rng);
+    for (uint8_t i = 0; i < trees.size(); ++i)
+        trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -208,253 +203,156 @@ void WorldRandomizer::randomize_dark_rooms()
 
 void WorldRandomizer::randomize_items()
 {
-    _regions_to_explore = { _world.active_spawn_location()->region() };
-    _explored_regions.clear();        // Regions already processed by the exploration algorithm
-    _item_sources_to_fill.clear();        // Reachable empty item sources which must be filled with a random item
-    _inventory.clear();        // The current contents of player inventory at the given time in the exploration algorithm
-    _pending_paths.clear();            // Paths leading to potentially unexplored regions, locked behind a key item which is not yet owned by the player
+    this->init_filler_items();
 
-    Tools::shuffle(_filler_items, _rng);
-
+    _solver.setup(_world.active_spawn_location()->region(), _world.region("end"));
+    this->init_mandatory_items();
     this->place_mandatory_items();
 
-    uint32_t step_count = 1;
-    while (!_pending_paths.empty() || !_regions_to_explore.empty())
+    bool explored_new_regions = true;
+    while(explored_new_regions)
     {
-        Json& debug_step_json = _debug_log_json["steps"][std::to_string(step_count)];
+        // Run a solver step to reach a "blocked" state where something needs to be placed in order to continue
+        explored_new_regions = _solver.run_until_blocked();
+        
+        std::vector<ItemSource*> empty_sources = _solver.empty_reachable_item_sources();
+        Tools::shuffle(empty_sources, _rng);
 
-        // Explore not yet explored regions, listing all item sources and paths for further exploration and processing
-        this->exploration_phase(debug_step_json);
-
-        // Try unlocking paths and item sources with newly discovered items in pre-filled item sources (useful for half-plando)
-        this->unlock_phase();
-
-        Tools::shuffle(_item_sources_to_fill, _rng);
-
-        // Place one or several key items to unlock access to a path, opening new regions & item sources
-        this->place_key_items_phase(debug_step_json);
+        this->place_key_items(empty_sources);
 
         // Fill a fraction of already available sources with filler items
-        if (!_item_sources_to_fill.empty())
-        {
-            size_t sourcesToFillCount = (size_t)(_item_sources_to_fill.size() * _options.filling_rate());
-            this->place_filler_items_phase(debug_step_json, sourcesToFillCount);
-        }
+        size_t sources_to_fill_count = (size_t)(empty_sources.size() * _options.filling_rate());
+        this->place_filler_items(empty_sources, sources_to_fill_count);
 
-        // Try unlocking paths and item sources with the newly acquired key item
-        this->unlock_phase();
-        ++step_count;
+        // Item sources changed, force the solver to update its inventory
+        _solver.update_current_inventory();
     }
 
-    // Place the remaining filler items, and put Ekeeke in the last empty sources
-    Json& debug_step_json = _debug_log_json["steps"]["remainder"];
-    this->place_filler_items_phase(debug_step_json, _item_sources_to_fill.size(), _world.item(ITEM_EKEEKE));
+    // Place the remaining filler items
+    std::vector<ItemSource*> empty_sources = _solver.empty_reachable_item_sources();
+    this->place_filler_items(empty_sources);
 
-    if (!_filler_items.empty())
-    {
-        debug_step_json["unplacedItems"] = Json::array();
-        for (Item* item : _filler_items)
-            debug_step_json["unplacedItems"].push_back(item->name());
-    }
+    // Put the end state inside the debug log
+    Json& debug_log = _solver.debug_log();
+    debug_log["endState"]["unplacedItems"] = Json::array();
+    for (Item* item : _filler_items)
+        debug_log["endState"]["unplacedItems"].push_back(item->name());
+    debug_log["endState"]["remainingSourcesToFill"] = Json::array();
+    for(ItemSource* source : empty_sources)
+        debug_log["endState"]["remainingSourcesToFill"].push_back(source->name());
 
-    _debug_log_json["endState"]["remainingSourcesToFill"] = Json::array();
-    for(auto source : _item_sources_to_fill)
-        _debug_log_json["endState"]["remainingSourcesToFill"].push_back(source->name());
-    _debug_log_json["endState"]["pending_paths"] = _pending_paths.size();
+    // Analyse items required to complete the seed
+    _minimal_items_to_complete = _solver.find_minimal_inventory();
+    debug_log["requiredItems"] = Json::array();
+    for (Item* item : _minimal_items_to_complete)
+        debug_log["requiredItems"].push_back(item->name());
 }
+
+static ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item)
+{
+    for (uint32_t i = 0; i < sources.size(); ++i)
+    {
+        if (sources[i]->is_item_compatible(item))
+        {
+            ItemSource* source = sources[i];
+            sources.erase(sources.begin() + i);
+            return source;
+        }
+    }
+
+    return nullptr;
+} 
 
 void WorldRandomizer::place_mandatory_items()
 {
-    _debug_log_json["steps"]["0"]["comment"] = "Placing mandatory items";
+    Json& debug_log = _solver.debug_log();
+    debug_log["steps"]["0"]["comment"] = "Placing mandatory items";
 
     // Mandatory items are filler items which are always placed first in the randomization, no matter what
-    Tools::shuffle(_mandatoryItems, _rng);
-
     std::vector<ItemSource*> all_empty_item_sources;
     for (ItemSource* source : _world.item_sources())
-    {
         if(!source->item())
             all_empty_item_sources.push_back(source);
-    }
+
     Tools::shuffle(all_empty_item_sources, _rng);
 
-    for (Item* item_to_place : _mandatoryItems)
+    for (Item* item : _mandatoryItems)
     {
-        for (ItemSource* source : all_empty_item_sources)
+        ItemSource* source = pop_first_compatible_source(all_empty_item_sources, item);
+        if(source)
         {
-            if (!source->item() && source->is_item_compatible(item_to_place))
-            {
-                source->item(item_to_place);
-                _debug_log_json["steps"]["0"]["placedItems"][source->name()] = item_to_place->name();
-                break;
-            }
+            source->item(item);
+            debug_log["steps"]["0"]["placedItems"][source->name()] = item->name();
         }
+        else throw NoAppropriateItemSourceException();
     }
 }
 
-void WorldRandomizer::place_filler_items_phase(Json& debug_step_json, size_t count, Item* last_resort_filler)
+void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
 {
-    for (size_t i=0 ; i<count ; ++i)
+    // List all blocked paths, taking weights into account
+    Json& debug_log = _solver.debug_log_for_current_step();
+    debug_log["blockedPaths"] = Json::array();
+
+    const std::vector<WorldPath*>& blocked_paths = _solver.blocked_paths();
+    std::vector<WorldPath*> weighted_blocked_paths;
+    for (WorldPath* path : blocked_paths)
     {
-        ItemSource* source = _item_sources_to_fill[0];
-        
-        for (size_t j=0 ; j < _filler_items.size(); ++j)
-        {
-            Item* fillerItem = _filler_items[j];
-            if (source->is_item_compatible(fillerItem))
-            {
-                source->item(fillerItem);
-                _filler_items.erase(_filler_items.begin() + j);
-                _item_sources_to_fill.erase(_item_sources_to_fill.begin());
-                break;
-            }
-        }
+        // If items are not the (only) blocking point for taking this path, let it go
+        if(!_solver.missing_regions_to_take_path(path).empty())
+            continue;
 
-        if(source->item() == nullptr)
-        {
-            // No valid item could be put inside the itemSource...
-            if(last_resort_filler)
-            {
-                // Fill with the "last resort filler" if provided
-                source->item(last_resort_filler);
-                _item_sources_to_fill.erase(_item_sources_to_fill.begin());
-            }
-            else
-            {
-                // No last resort provided, put this item source on the back of the list
-                _item_sources_to_fill.erase(_item_sources_to_fill.begin());
-                _item_sources_to_fill.push_back(source);
-            }
-        }
-
-        if(source->item())
-            debug_step_json["filledSources"][source->name()] = source->item()->name();
+        debug_log["blockedPaths"].push_back(path->origin()->id() + " --> " + path->destination()->id());
+        for(int i=0 ; i<path->weight() ; ++i)
+            weighted_blocked_paths.push_back(path);
     }
-}
 
-void WorldRandomizer::exploration_phase(Json& debug_step_json)
-{
-    debug_step_json["exploredRegions"] = Json::array();
-
-    while (!_regions_to_explore.empty())
-    {
-        // Take and erase first region from regions to explore, add it to explored regions set.
-        WorldRegion* explored_region = *_regions_to_explore.begin();
-        _regions_to_explore.erase(explored_region);
-        _explored_regions.insert(explored_region);
-        debug_step_json["exploredRegions"].push_back(explored_region->name());
-
-        // List item sources to fill from this region.
-        const std::vector<ItemSource*> item_sources = explored_region->item_sources();
-        for (ItemSource* source : item_sources)
-        {
-            if(source->item())
-                _inventory.push_back(source->item());    // Non-empty item sources populate player inventory (useful for plandos)
-            else
-                _item_sources_to_fill.push_back(source);
-        }
-
-        // List outgoing paths
-        for (WorldPath* outgoing_path : explored_region->outgoing_paths())
-        {
-            // If destination is already pending exploration (through another path) or has already been explored, just ignore it
-            WorldRegion* destination = outgoing_path->destination();
-            if (_regions_to_explore.contains(destination) || _explored_regions.contains(destination))
-                continue;
-
-            bool can_cross = true;
-            // Path cannot be taken if we don't have all off the required items
-            if(!outgoing_path->missing_items_to_cross(_inventory).empty())
-                can_cross = false;
-            // Path cannot be taken if we don't have already explored other required regions
-            if(!outgoing_path->has_explored_required_regions(_explored_regions))
-                can_cross = false;
-
-            if(can_cross)
-            {
-                // For crossable paths, add destination to the list of regions to explore
-                _regions_to_explore.insert(destination);
-            }
-            else
-            {
-                // For uncrossable blocked paths, add them to a pending list
-                _pending_paths.push_back(outgoing_path);
-            }
-        }
-    }
-}
-
-void WorldRandomizer::place_key_items_phase(Json& debug_step_json)
-{
-    if (_pending_paths.empty())
+    if (weighted_blocked_paths.empty())
         return;
 
-    // List all unowned key items, and pick a random one among them
-    std::vector<WorldPath*> blocked_paths;
-    for (WorldPath* pending_path : _pending_paths)
-    {
-        // Don't consider this path for key item placement if unexplored regions are a blocking criteria
-        if(!pending_path->has_explored_required_regions(_explored_regions))
-            continue;
+    // Randomly choose one of those blocking paths
+    Tools::shuffle(weighted_blocked_paths, _rng);
+    WorldPath* path_to_open = weighted_blocked_paths[0];
+    debug_log["chosenPath"].push_back(path_to_open->origin()->id() + " --> " + path_to_open->destination()->id());
 
-        if(!pending_path->missing_items_to_cross(_inventory).empty())
-        {
-            // If items are missing to cross this path, add as many entries as the weight of the path to the blocked_paths array
-            for(int i=0 ; i<pending_path->weight() ; ++i)
-                blocked_paths.push_back(pending_path);
-        }
-    }
+    // Place all missing key items for this blocking path
+    std::vector<Item*> items_to_place = _solver.missing_items_to_take_path(path_to_open);
+    std::vector<Item*> extra_items = path_to_open->items_placed_when_crossing();
+    items_to_place.insert(items_to_place.end(), extra_items.begin(), extra_items.end());
 
-    Tools::shuffle(blocked_paths, _rng);
-    WorldPath* pathToOpen = blocked_paths[0];
-    std::vector<Item*> missing_key_items = pathToOpen->missing_items_to_cross(_inventory);
-    for(Item* key_item_to_place : missing_key_items)
+    for(Item* item : items_to_place)
     {
-        // Find a random item source capable of carrying the item
-        ItemSource* random_item_source = nullptr;
-        for (uint32_t i = 0; i < _item_sources_to_fill.size(); ++i)
-        {
-            if (_item_sources_to_fill[i]->is_item_compatible(key_item_to_place))
-            {
-                random_item_source = _item_sources_to_fill[i];
-                _item_sources_to_fill.erase(_item_sources_to_fill.begin() + i);
-                break;
-            }
-        }
-        if (!random_item_source)
+        // Place the key item in a compatible source
+        ItemSource* compatible_source = pop_first_compatible_source(empty_sources, item);
+        if (!compatible_source)
             throw NoAppropriateItemSourceException();
 
-        // Place the key item in the appropriate source, and also add it to player inventory
-        random_item_source->item(key_item_to_place);
-        _logical_playthrough.push_back(random_item_source);
-        _inventory.push_back(key_item_to_place);
-
-        debug_step_json["placedKeyItems"][random_item_source->name()] = key_item_to_place->name();
+        compatible_source->item(item);
+        _logical_playthrough.push_back(compatible_source);
+        debug_log["placedKeyItems"][compatible_source->name()] = item->name();
     }
 }
 
-void WorldRandomizer::unlock_phase()
+void WorldRandomizer::place_filler_items(std::vector<ItemSource*>& empty_sources, size_t count)
 {
-    // Look for unlockable paths...
-    for (size_t i=0 ; i < _pending_paths.size() ; ++i)
+    count = std::min(count, empty_sources.size());
+    count = std::min(count, _filler_items.size());
+
+    Json& debug_log = _solver.debug_log_for_current_step();
+
+    for (size_t i=0 ; i<count ; ++i)
     {
-        WorldPath* pending_path = _pending_paths[i];
+        Item* item = _filler_items[0];
+        _filler_items.erase(_filler_items.begin());
 
-        // Path cannot be taken if we don't have already explored other required regions
-        if(!pending_path->has_explored_required_regions(_explored_regions))
-            continue;
-        // Path cannot be taken if we don't have all of the required items
-        if(!pending_path->missing_items_to_cross(_inventory).empty())
-            continue;
-
-        // Unlock path, add destination to regions to explore if it has not yet been explored
-        WorldRegion* destination = pending_path->destination();
-        if (!_regions_to_explore.contains(destination) && !_explored_regions.contains(destination))
-            _regions_to_explore.insert(destination);
-
-        // Remove path from pending paths
-        _pending_paths.erase(_pending_paths.begin()+i);
-        --i;
+        ItemSource* source = pop_first_compatible_source(empty_sources, item);
+        if(source)
+        {
+            source->item(item);
+            debug_log["filledSources"][source->name()] = item->name();
+        }
+        else
+            _filler_items.push_back(item);
     }
 }
 
@@ -554,7 +452,8 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
     WorldRegion* first_source_region = sources.at(0)->region();
     if(first_source_region)
     {
-        std::vector<Item*> min_items_to_reach = _world.minimal_inventory_to_reach(first_source_region);
+        WorldSolver solver(_world.active_spawn_location()->region(), first_source_region);
+        std::vector<Item*> min_items_to_reach = solver.find_minimal_inventory();
         for (Item* item : min_items_to_reach)
             forbidden_items.insert(item);
     }
@@ -618,8 +517,8 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
         if(hint_source->special())
             continue;
 
-        WorldRegion* region = hint_source->region();
-        UnsortedSet<Item*> inventory_at_sign = _world.minimal_inventory_to_reach(region);
+        WorldSolver solver(_world.active_spawn_location()->region(), hint_source->region());
+        UnsortedSet<Item*> min_inventory_at_sign = solver.find_minimal_inventory();
         
         double randomNumber = (double) _rng() / (double) _rng.max();
 
@@ -646,7 +545,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
             for(uint8_t item_id : hintable_item_requirements)
             {
                 Item* tested_item = _world.item(item_id);
-                if(!inventory_at_sign.contains(tested_item))
+                if(!min_inventory_at_sign.contains(tested_item))
                 {
                     // If item was not already obtained at sign, we can hint it
                     hinted_item_requirement = tested_item;
@@ -673,7 +572,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
             for(uint8_t item_id : hintable_item_locations)
             {
                 Item* tested_item = _world.item(item_id);
-                if(!inventory_at_sign.contains(tested_item))
+                if(!min_inventory_at_sign.contains(tested_item))
                 {
                     // If item was not already obtained at sign, we can hint it
                     hinted_item_location = tested_item;
@@ -722,18 +621,7 @@ std::string WorldRandomizer::random_hint_for_item_source(ItemSource* itemSource)
 }
 
 
-void WorldRandomizer::randomize_tibor_trees()
-{
-    const std::vector<WorldTeleportTree*>& trees = _world.teleport_trees();
 
-    std::vector<uint16_t> teleport_tree_map_ids;
-    for (WorldTeleportTree* tree : trees)
-        teleport_tree_map_ids.push_back(tree->tree_map_id());
-    
-    Tools::shuffle(teleport_tree_map_ids, _rng);
-    for (uint8_t i = 0; i < trees.size(); ++i)
-        trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
-}
 
 Json WorldRandomizer::playthrough_as_json() const
 {
