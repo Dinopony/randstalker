@@ -29,6 +29,10 @@ static void setup_story_flags(const RandomizerOptions& options, const World& wor
     // Clear Verla soldiers if spawning in Verla
     if(world.active_spawn_location()->id() == "verla")
         out_flag_array[0x26] += 0x18;
+
+    // Mark the boulder as already removed at game start
+    if(options.remove_gumi_boulder())
+        out_flag_array[0x02] += 0x40;
 }
 
 static void setup_starting_items(const World& world, std::vector<uint8_t>& out_flag_array)

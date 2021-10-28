@@ -17,6 +17,7 @@ RandomizerOptions::RandomizerOptions() :
     _fix_tree_cutting_glitch  (true),
     _item_max_quantities      (),
     _consumable_record_book   (false),
+    _remove_gumi_boulder      (false),
 
     _seed                     (0),
     _allow_spoiler_log        (true),
@@ -141,6 +142,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["fixTreeCuttingGlitch"] = _fix_tree_cutting_glitch;
     json["gameSettings"]["itemMaxQuantities"] = _item_max_quantities;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
+    json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
@@ -191,6 +193,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _item_max_quantities = game_settings_json.at("itemMaxQuantities");
         if(game_settings_json.contains("consumableRecordBook"))
             _consumable_record_book = game_settings_json.at("consumableRecordBook");
+        if(game_settings_json.contains("removeGumiBoulder"))
+            _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
     }
 
     if(json.contains("randomizerSettings") && !_plando_enabled)

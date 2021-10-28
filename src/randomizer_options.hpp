@@ -40,6 +40,7 @@ public:
     bool fix_tree_cutting_glitch() const { return _fix_tree_cutting_glitch; }
     const std::map<std::string, uint8_t>& item_max_quantities() const { return _item_max_quantities; }
     bool consumable_record_book() const { return _consumable_record_book; }
+    bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
 
     // Randomization options
     uint32_t seed() const { return _seed; }
@@ -78,6 +79,7 @@ private:
     bool _fix_tree_cutting_glitch;
     std::map<std::string, uint8_t> _item_max_quantities;
     bool _consumable_record_book;
+    bool _remove_gumi_boulder;
     
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)

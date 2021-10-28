@@ -269,7 +269,12 @@ void World::init_paths()
             path_to_kazalt->add_required_item(_items[ITEM_YELLOW_JEWEL]);
     }
 
-    // Handle paths related to speicfic tricks
+    if(_options.remove_gumi_boulder())
+    {
+        this->add_path(new WorldPath(_regions.at("route_gumi_ryuma"), _regions.at("gumi")));
+    }
+
+    // Handle paths related to specific tricks
     if(_options.handle_ghost_jumping_in_logic())
     {
         WorldRegion* mountainous_area = _regions.at("mountainous_area");
