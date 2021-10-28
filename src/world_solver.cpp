@@ -1,5 +1,7 @@
 #include "world_solver.hpp"
 
+#include <fstream>
+
 #include "model/world_region.hpp"
 #include "model/item_source.hpp"
 
@@ -41,6 +43,7 @@ bool WorldSolver::run_until_blocked()
 {
     _step_count++;
     size_t explored_regions_count_at_start = _explored_regions.size();
+    size_t blocked_paths_count_at_start = _blocked_paths.size();
 
     bool unlocked_new_paths = true;
     while(unlocked_new_paths)
@@ -55,7 +58,9 @@ bool WorldSolver::run_until_blocked()
         unlocked_new_paths = this->try_unlocking_paths();
     }
 
-    return _explored_regions.size() > explored_regions_count_at_start;
+    bool new_regions_explored = _explored_regions.size() > explored_regions_count_at_start;
+    bool paths_unlocked = _blocked_paths.size() < blocked_paths_count_at_start;
+    return new_regions_explored || paths_unlocked;
 }
 
 bool WorldSolver::try_unlocking_paths()
@@ -63,8 +68,6 @@ bool WorldSolver::try_unlocking_paths()
     bool opened_at_least_one_path = false;
 
     Json& debug_log = this->debug_log_for_current_step();
-    if(!debug_log.contains("unlockedPaths"))
-        debug_log["unlockedPaths"] = Json::array();
 
     // Look for unlockable paths...
     for (size_t i=0 ; i < _blocked_paths.size() ; ++i)
@@ -84,7 +87,7 @@ bool WorldSolver::try_unlocking_paths()
         _blocked_paths.erase(path);
         --i;
 
-        debug_log["unlockedPaths"].push_back(path->origin()->id() + " --> " + path->destination()->id());
+        debug_log["exploration"].push_back("Unlocked path " + path->origin()->id() + " --> " + path->destination()->id());
     }
     
     return opened_at_least_one_path;
@@ -93,15 +96,15 @@ bool WorldSolver::try_unlocking_paths()
 void WorldSolver::expand_exploration_zone()
 {
     Json& debug_log = this->debug_log_for_current_step();
-    if(!debug_log.contains("exploredRegions"))
-        debug_log["exploredRegions"] = Json::array();
+    if(!debug_log.contains("exploration"))
+        debug_log["exploration"] = Json::array();
 
     while (!_regions_to_explore.empty())
     {
         WorldRegion* region = *_regions_to_explore.begin();
         _regions_to_explore.erase(region);
         _explored_regions.insert(region);
-        debug_log["exploredRegions"].push_back(region->id());
+        debug_log["exploration"].push_back("Explored " + region->id());
 
         // Process all outgoing paths
         for (WorldPath* path : region->outgoing_paths())
@@ -118,6 +121,8 @@ void WorldSolver::expand_exploration_zone()
             }
             else
             {
+                debug_log["exploration"].push_back("Found blocked path to " + path->destination()->id());
+
                 // For uncrossable blocked paths, add them to a pending list
                 _blocked_paths.push_back(path);
 
@@ -229,8 +234,13 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
 {
     if(!this->reached_end())
     {
-        if(!this->try_to_solve())
+        if (!this->try_to_solve())
+        {
+            std::ofstream dump_file("./crash_dump.json");
+            dump_file << _debug_log.dump(4);
+            dump_file.close();
             throw RandomizerException("Tried to find minimal inventory on an uncompletable WorldSolver");
+        }
     }
 
     std::vector<Item*> minimal_inventory;

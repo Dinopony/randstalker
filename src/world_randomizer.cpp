@@ -375,7 +375,7 @@ void WorldRandomizer::place_filler_items(std::vector<ItemSource*>& empty_sources
         if(source)
         {
             source->item(item);
-            debug_log["filledSources"][source->name()] = item->name();
+            debug_log["placedFillerItems"][source->name()] = item->name();
         }
         else
             _filler_items.push_back(item);
