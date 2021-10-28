@@ -26,11 +26,6 @@ RandomizerOptions::RandomizerOptions() :
     _mandatory_items          (nullptr),
     _filler_items             (nullptr),
 
-    _inputRomPath             ("./input.md"),
-    _output_rom_path          ("./"),
-    _spoiler_log_path         (""),
-    _debugLogPath             (""),
-    _pauseAfterGeneration     (true),
     _add_ingame_item_tracker  (false),
     _hud_color                ("default"),
 
@@ -40,7 +35,7 @@ RandomizerOptions::RandomizerOptions() :
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
-    std::string plando_path = args.getString("plando");
+    std::string plando_path = args.get_string("plando");
     if(!plando_path.empty())
     {
         _plando_enabled = true;
@@ -57,7 +52,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         this->parse_json(_plando_json);
     }
 
-    std::string permalink_string = args.getString("permalink");
+    std::string permalink_string = args.get_string("permalink");
     if(!permalink_string.empty() && !_plando_enabled) 
     {
         this->parse_permalink(permalink_string);
@@ -65,14 +60,14 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
     else
     {
         // Parse seed from args, or generate a random one if it's missing
-        std::string seed_string = args.getString("seed", "random");
+        std::string seed_string = args.get_string("seed", "random");
         try {
             _seed = (uint32_t) std::stoul(seed_string);
         } catch (std::invalid_argument&) {
             _seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
         }
 
-        std::string preset_path = args.getString("preset");
+        std::string preset_path = args.get_string("preset");
         if(!preset_path.empty() && !_plando_enabled)
         {
             std::ifstream preset_file(preset_path);
@@ -105,7 +100,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
 {
     if(args.contains("spawnlocation"))
     {
-        std::string spawn_name = args.getString("spawnlocation");
+        std::string spawn_name = args.get_string("spawnlocation");
         Tools::toLower(spawn_name);
         if(spawn_name == "random")
             _possible_spawn_locations = {};
@@ -113,27 +108,22 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
             _possible_spawn_locations = { spawn_name };
     }
 
-    if(args.contains("jewelcount"))           _jewel_count = args.getInteger("jewelcount");
-    if(args.contains("armorupgrades"))        _use_armor_upgrades = args.getBoolean("armorupgrades");
+    if(args.contains("jewelcount"))           _jewel_count = args.get_integer("jewelcount");
+    if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
-    if(args.contains("dungeonsignhints"))     _dungeonSignHints = args.getBoolean("dungeonsignhints");
-    if(args.contains("startinglife"))         _startingLife = args.getInteger("startinglife");
+    if(args.contains("dungeonsignhints"))     _dungeonSignHints = args.get_boolean("dungeonsignhints");
+    if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
 
-    if(args.contains("fillingrate"))          _fillingRate = args.getDouble("fillingrate");
-    if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.getBoolean("shuffletrees");
-    if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.getBoolean("allowspoilerlog");
+    if(args.contains("fillingrate"))          _fillingRate = args.get_double("fillingrate");
+    if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
+    if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
 
 void RandomizerOptions::parse_personal_settings(const ArgumentDictionary& args)
 {
     // Personal options (not included in permalink)
-    if(args.contains("inputrom"))        _inputRomPath = args.getString("inputrom");
-    if(args.contains("outputrom"))       _output_rom_path = args.getString("outputrom");
-    if(args.contains("outputlog"))       _spoiler_log_path = args.getString("outputlog");
-    if(args.contains("debuglog"))        _debugLogPath = args.getString("debuglog");
-    if(args.contains("pause"))           _pauseAfterGeneration = args.getBoolean("pause");
-    if(args.contains("ingametracker"))   _add_ingame_item_tracker = args.getBoolean("ingametracker");    
-    if(args.contains("hudcolor"))        _hud_color = args.getString("hudcolor");
+    if(args.contains("ingametracker"))   _add_ingame_item_tracker = args.get_boolean("ingametracker");    
+    if(args.contains("hudcolor"))        _hud_color = args.get_string("hudcolor");
 }
 
 Json RandomizerOptions::to_json() const
@@ -243,9 +233,6 @@ Json RandomizerOptions::personal_settings_as_json() const
 {
     Json json;
 
-    json["inputROMPath"] = _inputRomPath;
-    json["outputROMPath"] = _output_rom_path;
-    json["spoilerLogPath"] = _spoiler_log_path;
     json["addIngameItemTracker"] = _add_ingame_item_tracker;
     json["hudColor"] = _hud_color;
 
@@ -256,28 +243,6 @@ void RandomizerOptions::validate()
 {
     if(_jewel_count > 9)
         throw RandomizerException("Jewel count must be between 0 and 9.");
-
-    // Clean output ROM path and determine if it's a directory or a file
-    bool output_path_is_file = Tools::endsWith(_output_rom_path, ".md") || Tools::endsWith(_output_rom_path, ".bin");
-    if(!output_path_is_file && *_output_rom_path.rbegin() != '/')
-        _output_rom_path += "/";
-
-    // Clean output log path and if it wasn't specified, give it an appropriate default value
-    if(_spoiler_log_path.empty())
-    {
-        if(output_path_is_file)
-            _spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
-        else
-            _spoiler_log_path = _output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
-    }
-    if(!Tools::endsWith(_spoiler_log_path, ".json") && *_spoiler_log_path.rbegin() != '/')
-        _spoiler_log_path += "/";
-
-    // Add the filename afterwards
-    if(*_output_rom_path.rbegin() == '/')
-        _output_rom_path += this->hash_sentence() + ".md";
-    if(*_spoiler_log_path.rbegin() == '/')
-        _spoiler_log_path += this->hash_sentence() + ".json";
 }
 
 std::vector<std::string> RandomizerOptions::hash_words() const

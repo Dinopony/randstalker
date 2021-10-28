@@ -7,7 +7,7 @@
 
 class ArgumentDictionary {
 private:
-    std::map<std::string, std::string> _argsMap;
+    std::map<std::string, std::string> _args_map;
 
 public:
     ArgumentDictionary(int argc, char* argv[])
@@ -18,60 +18,60 @@ public:
             if (param[0] != '-' || param[1] != '-')
                 continue;
 
-            auto tokenIter = std::find(param.begin() + 2, param.end(), '=');
-            std::string paramName(param.begin() + 2, tokenIter);
-            Tools::toLower(paramName);
-            if (tokenIter != param.end())
-                _argsMap[paramName] = std::string(tokenIter + 1, param.end());
+            auto token_iter = std::find(param.begin() + 2, param.end(), '=');
+            std::string param_name(param.begin() + 2, token_iter);
+            Tools::toLower(param_name);
+            if (token_iter != param.end())
+                _args_map[param_name] = std::string(token_iter + 1, param.end());
             else
-                _argsMap[paramName] = "";
+                _args_map[param_name] = "";
         }
     }
 
     bool contains(const std::string& name) const {
-        return _argsMap.count(name) || _argsMap.count("no" + name);
+        return _args_map.count(name) || _args_map.count("no" + name);
     }
 
-    std::string getString(const std::string& name, const std::string& defaultValue = "") const
+    std::string get_string(const std::string& name, const std::string& default_value = "") const
     {
         try {
-            return _argsMap.at(name);
+            return _args_map.at(name);
         } catch (std::out_of_range&) {
-            return defaultValue;
+            return default_value;
         }
     }
 
-    int getInteger(const std::string& name, int defaultValue = 0) const
+    int get_integer(const std::string& name, int default_value = 0) const
     {
         try {
-            return std::stoi(_argsMap.at(name));
+            return std::stoi(_args_map.at(name));
         } 
         catch (std::out_of_range&) {}
         catch (std::invalid_argument&) {}
 
-        return defaultValue;
+        return default_value;
     }
 
-    double getDouble(const std::string& name, double defaultValue = 0.0) const
+    double get_double(const std::string& name, double default_value = 0.0) const
     {
         try {
-            return std::stod(_argsMap.at(name));
+            return std::stod(_args_map.at(name));
         } 
         catch (std::out_of_range&) {}
         catch (std::invalid_argument&) {}
 
-        return defaultValue;
+        return default_value;
     }
 
-    bool getBoolean(const std::string& name, bool defaultValue = false) const
+    bool get_boolean(const std::string& name, bool default_value = false) const
     {
         // "--noParam" <==> "--param=false"
-        std::string negationParam = "no" + name;
-        if (_argsMap.count(negationParam))
+        std::string negation_param = "no" + name;
+        if (_args_map.count(negation_param))
             return false;
 
         try {
-            std::string contents = _argsMap.at(name);
+            std::string contents = _args_map.at(name);
             Tools::toLower(contents);
 
             // "--param=false"
@@ -82,7 +82,7 @@ public:
             return true;
         } catch (std::out_of_range&) {
             // No trace of "--param" or "--noParam", return default value
-            return defaultValue;
+            return default_value;
         }
     }
 };

@@ -59,11 +59,6 @@ public:
     std::string permalink() const;
 
     // Personal options 
-    const std::string& input_rom_path() const { return _inputRomPath; }
-    std::string output_rom_path() const { return _output_rom_path; }
-    std::string spoiler_log_path() const { return _spoiler_log_path; }
-    const std::string& debug_log_path() const { return _debugLogPath; }
-    bool must_pause() const { return _pauseAfterGeneration; }
     bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
     const std::string hud_color() const { return _hud_color; }
 
@@ -99,11 +94,6 @@ private:
 
     // ------------- Personal settings -------------
     // (not included in permalink nor presets)
-    std::string _inputRomPath;
-    std::string _output_rom_path;
-    std::string _spoiler_log_path;
-    std::string _debugLogPath;
-    bool _pauseAfterGeneration;
     bool _add_ingame_item_tracker;
     std::string _hud_color;
 
