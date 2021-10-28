@@ -5,7 +5,7 @@
 
 #include "exceptions.hpp"
 
-void WorldSolver::forbid_items(const UnsortedSet<Item*>& forbidden_items)
+void WorldSolver::forbid_items(const std::vector<Item*>& forbidden_items)
 { 
     _forbidden_items = forbidden_items;
 }
@@ -139,6 +139,8 @@ void WorldSolver::update_current_inventory()
     _inventory.clear();
     _inventory.reserve(_reachable_item_sources.size());
 
+    std::vector<Item*> forbidden_items_copy = _forbidden_items;
+
     for(ItemSource* source : _reachable_item_sources)
     {
         // If item is located in forbidden region, don't take it
@@ -153,9 +155,16 @@ void WorldSolver::update_current_inventory()
         if(!_relevant_items.contains(item))
             continue;
 
-        // If item is a forbidden item, don't take it
-        if(!_forbidden_items.contains(item))
+        auto it = std::find(forbidden_items_copy.begin(), forbidden_items_copy.end(), item);
+        if(it != forbidden_items_copy.end())
+        {
+            // If item is a forbidden item, don't take it
+            forbidden_items_copy.erase(it);
+        }
+        else
+        {
             _inventory.push_back(item);
+        }
     }
 }
 
@@ -225,12 +234,12 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
     }
 
     std::vector<Item*> minimal_inventory;
-    UnsortedSet<Item*> forbidden_items;
+    std::vector<Item*> forbidden_items;
 
     for(Item* item : _inventory)
     {
-        UnsortedSet<Item*> forbidden_items_plus_one = forbidden_items;
-        forbidden_items_plus_one.insert(item);
+        std::vector<Item*> forbidden_items_plus_one = forbidden_items;
+        forbidden_items_plus_one.push_back(item);
         
         WorldSolver solver(_start_node, _end_node);
         solver.forbid_items(forbidden_items_plus_one);

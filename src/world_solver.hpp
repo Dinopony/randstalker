@@ -14,7 +14,7 @@ class WorldSolver
 private:
     WorldRegion* _start_node;
     WorldRegion* _end_node;
-    UnsortedSet<Item*> _forbidden_items;
+    std::vector<Item*> _forbidden_items;
     UnsortedSet<WorldRegion*> _forbidden_regions_to_pick_items;
 
     UnsortedSet<WorldRegion*> _explored_regions;
@@ -38,7 +38,7 @@ public:
         this->setup(start_node, end_node);
     }
 
-    void forbid_items(const UnsortedSet<Item*>& forbidden_items);
+    void forbid_items(const std::vector<Item*>& forbidden_items);
     void forbid_taking_items_from_regions(const UnsortedSet<WorldRegion*>& forbidden_regions);
 
     void setup(WorldRegion* start_node, WorldRegion* end_node);
