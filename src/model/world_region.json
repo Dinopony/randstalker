@@ -108,6 +108,14 @@
         ]
     },
     {
+        "id": "ryuma_after_thieves_hideout",
+        "name": "Ryuma (after Thieves Hideout)",
+        "hints": [
+            "in a town",
+            "in the town of Ryuma"
+        ]
+    },
+    {
         "id": "ryuma_lighthouse_repaired",
         "name": "Ryuma (repaired lighthouse)",
         "hints": [
