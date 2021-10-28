@@ -574,3 +574,52 @@ bool World::is_item_avoidable(Item* item) const
 
     return solver.try_to_solve();
 }
+
+void World::output_graphviz()
+{
+    std::vector<std::string> colors = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
+
+    std::ofstream graphviz("./json_data/model.dot");
+    graphviz << "digraph {\n";
+
+    graphviz << "\tgraph [pad=0.5, nodesep=0.4, ranksep=1];\n";
+    graphviz << "\tnode[shape=rect];\n\n";
+
+    Json paths_json = Json::parse(WORLD_PATHS_JSON);
+    uint32_t path_i = 0;
+    for(const Json& json : paths_json)
+    {
+        const std::string& current_color = colors[path_i % colors.size()];
+
+        WorldRegion* from = region(json["fromId"]);
+        WorldRegion* to = region(json["toId"]);
+        graphviz << "\t" << from->id() << " -> " << to->id() << " [";
+        if(json.contains("twoWay") && json.at("twoWay"))
+            graphviz << "dir=both ";
+
+        std::vector<std::string> required_names;
+        if(json.contains("requiredItems"))
+            for(const std::string& item_name : json.at("requiredItems"))
+                required_names.push_back(item_name);
+            
+        if(json.contains("requiredRegions"))
+            for(const std::string& region_id : json.at("requiredRegions"))
+                required_names.push_back("Access to " + region(region_id)->name());
+
+        if(!required_names.empty())
+        {
+            graphviz << "color=" << current_color << " ";
+            graphviz << "fontcolor=" << current_color << " ";
+            graphviz << "label=\"" << Tools::join(required_names, "\\n") << "\" ";
+        }
+
+        graphviz << "]\n";
+        path_i++;
+    }
+
+    graphviz << "\n";
+    for(auto& [id, region] : _regions)
+        graphviz << "\t" << id << " [label=\"" << region->name() << " [" << std::to_string(region->item_sources().size()) << "]\"]\n";
+
+    graphviz << "}\n"; 
+}
