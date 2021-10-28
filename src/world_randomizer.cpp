@@ -12,31 +12,79 @@
 WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options) :
     _world            (world),
     _options          (options),
-    _rng              (),
+    _rng              (_options.seed()),
     _solver           (),
     _gold_items_count (0)
 {}
 
 void WorldRandomizer::randomize()
 {
-    uint32_t rngSeed = _options.seed();
-
     // 1st pass: randomizations happening BEFORE randomizing items
-    _rng.seed(rngSeed);
     this->randomize_spawn_location();
-    this->randomize_gold_values();
     this->randomize_dark_rooms();
     if(_options.shuffle_tibor_trees())
         this->randomize_tibor_trees();
 
     // 2nd pass: randomizing items
-    _rng.seed(rngSeed);
+    this->init_mandatory_items();
+    this->init_filler_items();
     this->randomize_items();
 
     // 3rd pass: randomizations happening AFTER randomizing items
-    _rng.seed(rngSeed);
     this->randomize_hints();
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+///        FIRST PASS RANDOMIZATIONS (before items)
+///////////////////////////////////////////////////////////////////////////////////////
+
+void WorldRandomizer::randomize_spawn_location()
+{
+    std::vector<std::string> possible_spawn_locations = _options.possible_spawn_locations();
+    if(possible_spawn_locations.empty())
+    {
+        for(auto& [id, spawn] : _world.spawn_locations())
+            possible_spawn_locations.push_back(id);
+    }
+
+    Tools::shuffle(possible_spawn_locations, _rng);
+    SpawnLocation* spawn = _world.spawn_locations().at(possible_spawn_locations[0]);
+    _world.active_spawn_location(spawn);
+}
+
+void WorldRandomizer::randomize_dark_rooms()
+{
+    std::vector<WorldRegion*> possible_regions;
+    for (auto& [key, region] : _world.regions())
+        if (!region->dark_map_ids().empty())
+            possible_regions.push_back(region);
+
+    Tools::shuffle(possible_regions, _rng);
+    _world.dark_region(possible_regions[0]);
+
+    const std::vector<WorldPath*>& ingoing_paths = _world.dark_region()->ingoing_paths();
+    for (WorldPath* path : ingoing_paths)
+        path->add_required_item(_world.item(ITEM_LANTERN));
+}
+
+void WorldRandomizer::randomize_tibor_trees()
+{
+    const std::vector<WorldTeleportTree*>& trees = _world.teleport_trees();
+
+    std::vector<uint16_t> teleport_tree_map_ids;
+    for (WorldTeleportTree* tree : trees)
+        teleport_tree_map_ids.push_back(tree->tree_map_id());
+    
+    Tools::shuffle(teleport_tree_map_ids, _rng);
+    for (uint8_t i = 0; i < trees.size(); ++i)
+        trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+///        SECOND PASS RANDOMIZATIONS (items)
+///////////////////////////////////////////////////////////////////////////////////////
 
 void WorldRandomizer::init_filler_items()
 {
@@ -75,60 +123,9 @@ void WorldRandomizer::init_filler_items()
             _filler_items.push_back(item);
     }
 
+    this->randomize_gold_values();
+
     Tools::shuffle(_filler_items, _rng);
-}
-
-void WorldRandomizer::init_mandatory_items()
-{
-    std::map<std::string, uint16_t> mandatory_items_desc;
-    if(_options.has_custom_mandatory_items())
-    {
-        mandatory_items_desc = _options.mandatory_items();
-    }
-    else
-    {
-        mandatory_items_desc = {
-            {"Magic Sword", 1},      {"Thunder Sword", 1},     {"Sword of Ice", 1},     {"Sword of Gaia", 1},
-            {"Steel Breast", 1},     {"Chrome Breast", 1},     {"Shell Breast", 1},     {"Hyper Breast", 1},
-            {"Healing Boots", 1},    {"Iron Boots", 1},        {"Fireproof", 1},
-            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1},
-            {"Oracle Stone", 1},     {"Statue of Jypta", 1},   {"Spell Book", 1},
-        };
-    }
-
-    for (auto& [item_name, quantity] : mandatory_items_desc)
-    {
-        Item* item = _world.item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Unknown item '" << item_name << "' found in mandatory items.";
-            throw RandomizerException(msg.str());
-        }
-        
-        for(uint16_t i=0 ; i<quantity ; ++i)
-            _mandatoryItems.push_back(item);
-    }
-
-    Tools::shuffle(_mandatoryItems, _rng);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////
-///        FIRST PASS RANDOMIZATIONS (before items)
-///////////////////////////////////////////////////////////////////////////////////////
-
-void WorldRandomizer::randomize_spawn_location()
-{
-    std::vector<std::string> possible_spawn_locations = _options.possible_spawn_locations();
-    if(possible_spawn_locations.empty())
-    {
-        for(auto& [id, spawn] : _world.spawn_locations())
-            possible_spawn_locations.push_back(id);
-    }
-
-    Tools::shuffle(possible_spawn_locations, _rng);
-    SpawnLocation* spawn = _world.spawn_locations().at(possible_spawn_locations[0]);
-    _world.active_spawn_location(spawn);
 }
 
 void WorldRandomizer::randomize_gold_values()
@@ -167,46 +164,45 @@ void WorldRandomizer::randomize_gold_values()
     }
 }
 
-void WorldRandomizer::randomize_dark_rooms()
+void WorldRandomizer::init_mandatory_items()
 {
-    std::vector<WorldRegion*> possible_regions;
-    for (auto& [key, region] : _world.regions())
-        if (!region->dark_map_ids().empty())
-            possible_regions.push_back(region);
+    std::map<std::string, uint16_t> mandatory_items_desc;
+    if(_options.has_custom_mandatory_items())
+    {
+        mandatory_items_desc = _options.mandatory_items();
+    }
+    else
+    {
+        mandatory_items_desc = {
+            {"Magic Sword", 1},      {"Thunder Sword", 1},     {"Sword of Ice", 1},     {"Sword of Gaia", 1},
+            {"Steel Breast", 1},     {"Chrome Breast", 1},     {"Shell Breast", 1},     {"Hyper Breast", 1},
+            {"Healing Boots", 1},    {"Iron Boots", 1},        {"Fireproof", 1},
+            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1},
+            {"Oracle Stone", 1},     {"Statue of Jypta", 1},   {"Spell Book", 1},
+        };
+    }
 
-    Tools::shuffle(possible_regions, _rng);
-    _world.dark_region(possible_regions[0]);
+    for (auto& [item_name, quantity] : mandatory_items_desc)
+    {
+        Item* item = _world.item(item_name);
+        if(!item)
+        {
+            std::stringstream msg;
+            msg << "Unknown item '" << item_name << "' found in mandatory items.";
+            throw RandomizerException(msg.str());
+        }
+        
+        for(uint16_t i=0 ; i<quantity ; ++i)
+            _mandatoryItems.push_back(item);
+    }
 
-    const std::vector<WorldPath*>& ingoing_paths = _world.dark_region()->ingoing_paths();
-    for (WorldPath* path : ingoing_paths)
-        path->add_required_item(_world.item(ITEM_LANTERN));
+    Tools::shuffle(_mandatoryItems, _rng);
 }
-
-void WorldRandomizer::randomize_tibor_trees()
-{
-    const std::vector<WorldTeleportTree*>& trees = _world.teleport_trees();
-
-    std::vector<uint16_t> teleport_tree_map_ids;
-    for (WorldTeleportTree* tree : trees)
-        teleport_tree_map_ids.push_back(tree->tree_map_id());
-    
-    Tools::shuffle(teleport_tree_map_ids, _rng);
-    for (uint8_t i = 0; i < trees.size(); ++i)
-        trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-///        SECOND PASS RANDOMIZATIONS (items)
-///////////////////////////////////////////////////////////////////////////////////////
 
 void WorldRandomizer::randomize_items()
 {
-    this->init_filler_items();
-
     _solver.setup(_world.active_spawn_location()->region(), _world.region("end"));
-    this->init_mandatory_items();
+
     this->place_mandatory_items();
 
     bool explored_new_regions = true;
