@@ -20,7 +20,7 @@ RandomizerOptions::RandomizerOptions() :
 
     _seed                     (0),
     _allow_spoiler_log        (true),
-    _fillingRate              (DEFAULT_FILLING_RATE),
+    _fillingRate              (0.20),
     _shuffle_tibor_trees      (false), 
     _ghost_jumping_in_logic   (false),
     _mandatory_items          (nullptr),

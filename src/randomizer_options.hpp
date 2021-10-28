@@ -11,8 +11,6 @@
 #include "tools/tools.hpp"
 #include "tools/argument_dictionary.hpp"
 
-constexpr double DEFAULT_FILLING_RATE = 0.10;
-
 class RandomizerOptions 
 {
 public:
