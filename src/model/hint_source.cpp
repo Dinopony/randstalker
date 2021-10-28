@@ -1,5 +1,6 @@
 #include "hint_source.hpp"
 
+#include <algorithm>
 #include "../tools/game_text.hpp"
 
 HintSource::HintSource(const std::vector<uint16_t>& text_ids, const std::vector<std::string*>& string_ptrs, 
@@ -29,7 +30,7 @@ void HintSource::text(const std::string& text)
     // Strip the attribute contents from special chars, since it is meant for display
     _text.erase(remove(_text.begin(), _text.end(), '\x1C'), _text.end());
     _text.erase(remove(_text.begin(), _text.end(), '\x1A'), _text.end());
-    _text.erase(remove(_text.begin(), _text.end(), '\n'), _text.end());
+    std::replace(_text.begin(), _text.end(), '\n', ' ');
 }
 
 Json HintSource::to_json() const
