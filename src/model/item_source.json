@@ -177,7 +177,7 @@
         "name": "Greenmaze: chest on path to lumberjack",
         "type": "chest",
         "regionId": "greenmaze_pre_whistle",
-        "chestId": 26
+        "chestId": 168
     },
     {
         "name": "King Nole's Cave: gold chest in isolated room",
