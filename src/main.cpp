@@ -88,7 +88,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
     // Clean output log path and if it wasn't specified, give it an appropriate default value
     if(spoiler_log_path.empty())
     {
-        if(output_path_is_a_directory)
+        if(output_path_is_a_directory && !output_rom_path.empty())
             spoiler_log_path = output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
         else
             spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
