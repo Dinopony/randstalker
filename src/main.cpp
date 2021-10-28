@@ -191,9 +191,12 @@ int main(int argc, char* argv[])
         patch_story_flag_reading(*rom, options, world);
         patch_item_behavior(*rom, options, world);
         apply_other_patches(*rom, options, world);
-        
-        rom->save_as(options.output_rom_path());
-        std::cout << "Randomized rom outputted to \"" << options.output_rom_path() << "\".\n\n";
+
+        if(!options.output_rom_path().empty())
+        {
+            rom->save_as(options.output_rom_path());
+            std::cout << "Randomized rom outputted to \"" << options.output_rom_path() << "\".\n\n";
+        }
 
         // Write a spoiler log to help the player
         if(!options.spoiler_log_path().empty())
