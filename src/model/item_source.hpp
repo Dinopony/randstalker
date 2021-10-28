@@ -79,7 +79,10 @@ public:
         _addresses_in_rom           (addresses_in_rom),
         _cannot_be_taken_repeatedly (cannot_be_taken_repeatedly)
     {
-        this->add_hint("lying on the ground, waiting for someone to pick it up");
+        if(this->type_name() == "ground")
+        {
+            this->add_hint("lying on the ground, waiting for someone to pick it up");
+        }
     }
 
     virtual std::string type_name() const { return "ground"; }
