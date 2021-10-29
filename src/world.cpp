@@ -299,15 +299,12 @@ void World::init_spawn_locations()
 
     // Patch model if user specified a model patch
     const Json& model_patch = _options.spawn_locations_model_patch();
-    if(model_patch.contains("spawnLocations"))
+    for(auto& [id, patch_json] : model_patch.items())
     {
-        for(auto& [id, patch_json] : model_patch.at("spawnLocations").items())
-        {
-            if(!_spawn_locations.count(id))
-                this->add_spawn_location(SpawnLocation::from_json(id, patch_json, _regions));
-            else
-                _spawn_locations.at(id)->apply_json(patch_json, _regions);
-        }
+        if(!_spawn_locations.count(id))
+            this->add_spawn_location(SpawnLocation::from_json(id, patch_json, _regions));
+        else
+            _spawn_locations.at(id)->apply_json(patch_json, _regions);
     }
 }
 
