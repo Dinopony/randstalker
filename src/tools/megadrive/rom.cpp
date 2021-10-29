@@ -107,7 +107,10 @@ namespace md
     {
         for(auto& pair : _empty_chunks)
         {
-            size_t chunk_size = (pair.second - pair.first) + 1;
+            if(pair.first >= pair.second)
+                continue;
+
+            size_t chunk_size = (pair.second - pair.first);
             if(chunk_size < byte_count)
                 continue;
 
@@ -170,7 +173,7 @@ namespace md
     {
         uint32_t count = 0;
         for(auto& pair : _empty_chunks)
-            count += (pair.second - pair.first) + 1;
+            count += (pair.second - pair.first);
         return count;
     }
 
