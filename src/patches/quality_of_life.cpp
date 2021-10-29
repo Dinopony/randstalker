@@ -199,7 +199,7 @@ void shorten_arthur_dialogue(md::ROM& rom)
 
 void alter_prospero_dialogues(md::ROM& rom)
 {
-    // Change a big story-dependant dialogue branch into one dialogue (Dialogue script at 0x027B20)
+    // Change a big story-dependant dialogue branch into one dialogue
     rom.set_code(0x2617A, md::Code().trap(1));
     rom.set_word(0x2617C, 0x19A5);
     rom.set_code(0x2617E, md::Code().rts());
@@ -215,6 +215,17 @@ void alter_prospero_dialogues(md::ROM& rom)
     rom.mark_empty_chunk(0x27B24, 0x27B52);
 }
 
+void alter_destel_boatmaker_dialogues(md::ROM& rom)
+{
+    // Change the story-dependant dialogue branch into one dialogue
+    rom.set_code(0x2711E, md::Code().trap(1));
+    rom.set_word(0x27120, 0x1153);
+    rom.set_code(0x27122, md::Code().rts());
+
+    // Change which text line ends the dialogue
+    rom.set_byte(0x28274, 0x84);
+    rom.set_byte(0x28276, 0xE4);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -231,4 +242,5 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     shorten_mir_cutscene_after_lake_shrine(rom);
     shorten_arthur_dialogue(rom);
     alter_prospero_dialogues(rom);
+    alter_destel_boatmaker_dialogues(rom);
 }

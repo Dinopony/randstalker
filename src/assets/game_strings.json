@@ -98,6 +98,17 @@
         "49c": "\u001cTake care of thyself!\u0003",
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      DESTEL BOATMAKER DIALOGUE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "517_old": "\u001cDuke Mercator suddenly\nappeared and bought every\nlast raft I had!\u001e",
+    //    "518_old": "\u001cHe paid me a whole\n6 golds for them!  He said\nhe was going to the shrine.\u0003",
+    //    "519_old": "\u001cSorry!  All sold out...\nYou can still get to the\nshrine through the cave under\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "517": "\u001cI've found a scroll that looks\nlike a map to an ancient\ntreasure. It says:\u001e",
+        "518": "\u001cFollow the path of the dragon.\u0003",
+        "519": "\u001cQuite mysterious, don't you think?\u001e",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MIR INTRO CUTSCENE
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //    "68a_old": "\u001cYou don't have to feel\nso ashamed.\nIt's not your fault.\u0003",
