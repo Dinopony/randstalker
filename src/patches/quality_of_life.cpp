@@ -34,7 +34,6 @@ void alter_item_order_in_menu(md::ROM& rom)
         rom.set_byte(base_addr + i, itemOrder[i]);
 }
 
-
 void rename_items(md::ROM& rom, const RandomizerOptions& options)
 {
     std::vector<uint8_t> item_name_bytes;
@@ -121,19 +120,6 @@ void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
 //    rom.set_word(0x9020, color);
 }
 
-void shorten_mir_death_cutscene(md::ROM& rom)
-{
-    // Cut the cutscene script
-    rom.set_word(0x2872C, 0xE646);
-    rom.set_word(0x2873C, 0xE64B);
-}
-
-void shorten_mir_cutscene_after_lake_shrine(md::ROM& rom)
-{
-    // Cut the cutscene script
-    rom.set_word(0x28A44, 0xE739);
-}
-
 void alter_credits(md::ROM& rom)
 {
     constexpr uint32_t credits_text_base_addr = 0x9ED1A;
@@ -192,6 +178,24 @@ void alter_credits(md::ROM& rom)
         rom.set_byte(addr, 0x00);
 }
 
+void shorten_mir_death_cutscene(md::ROM& rom)
+{
+    // Cut the cutscene script
+    rom.set_word(0x2872C, 0xE646);
+    rom.set_word(0x2873C, 0xE64B);
+}
+
+void shorten_mir_cutscene_after_lake_shrine(md::ROM& rom)
+{
+    // Cut the cutscene script
+    rom.set_word(0x28A44, 0xE739);
+}
+
+void shorten_arthur_dialogue(md::ROM& rom)
+{
+    for(uint32_t addr=0x28154 ; addr <= 0x2815D ; addr += 0x2)
+        rom.set_word(addr, 0x0000);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,4 +210,5 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     // Other QoL changes
     shorten_mir_death_cutscene(rom);
     shorten_mir_cutscene_after_lake_shrine(rom);
+    shorten_arthur_dialogue(rom);
 }

@@ -15,6 +15,8 @@
         "14f", "150",
         "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "18a", "18b", 
         "18c", "18d", 
+        // Arthur gift cutscene
+        "497", "498", "499", "49a", "49b",
         "52e", "52f", "530", "531", "532", "533", "534", 
         "572", "573", "574", "575", "576", "577", "578", "579", "57a", "57b", "57c", "57d", 
                "57e", "57f", "580", "581", "582", "583", "584", "585", "586", "587", "588", 
@@ -77,20 +79,10 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //    "495_old": "\u001cNice to see thee again.\nAs thou dost see, I'm\ncompletely healed now.\u001e",
     //    "496_old": "\u001cI'll do my best to make\nMercator a good home for its\npeople.\u001e",
-    //    "497_old": "\u001cI've been thinking about\nthe relationship between\npolitics and the militia for\u001e",
-    //    "498_old": "\u001ca long time, now.  Julie\nand I have often discussed\nit, and I'm now convinced that\u001e",
-    //    "499_old": "\u001cI can make this town\nprosper without a\nmilitary force!\u001e",
-    //    "49a_old": "\u001cSo, I built a casino in\nthe town well to help lower\nthe taxes.\u001e",
-    //    "49b_old": "\u001cPlease drop by\nif thou dost have the time.\u001e",
     //    "49c_old": "\u001cVisit me anytime!\nTake care of thyself!\u0003",
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         "495": "\u001cMy name is Arthur, ruler of Mercator.\u001e",
-        "496": "\u001cI'll do my best to make \nMercator a good home for its \npeople.\u001e",
-        "497": "\u001cI will make this town\nprosper without a military force!\u001e",
-        "498": "\u001cI built a casino in\nthe town well to help lower\nthe taxes.\u001e",
-        "499": "\u001cPlease drop by\nif thou dost have the time.\u001e",
-        "49a": "\u001cI don't know why, but I\nfeel like I have met you before.\u001e",
-        "49b": "\u001cPlease take this\n present from the city.\u001e",
+        "496": "\u001cPlease take this\n present from the city.\u001e",
         "49c": "\u001cTake care of thyself!\u0003",
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
