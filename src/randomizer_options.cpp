@@ -12,10 +12,8 @@ RandomizerOptions::RandomizerOptions() :
     _startingLife             (0),
     _startingGold             (0),
     _starting_items           ({{"Record Book",1}}),
-    _itemPrices               (),
     _fix_armlet_skip          (true),
     _fix_tree_cutting_glitch  (true),
-    _item_max_quantities      (),
     _consumable_record_book   (false),
     _remove_gumi_boulder      (false),
 
@@ -137,10 +135,8 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
     json["gameSettings"]["startingGold"] = _startingGold;
     json["gameSettings"]["startingItems"] = _starting_items;
-    json["gameSettings"]["itemPrices"] = _itemPrices;
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
     json["gameSettings"]["fixTreeCuttingGlitch"] = _fix_tree_cutting_glitch;
-    json["gameSettings"]["itemMaxQuantities"] = _item_max_quantities;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     if(_startingLife > 0)
@@ -157,6 +153,11 @@ Json RandomizerOptions::to_json() const
         json["randomizerSettings"]["mandatoryItems"] = *_mandatory_items;
     if(_filler_items)
         json["randomizerSettings"]["fillerItems"] = *_filler_items;
+
+    if(!_model_patch_items.empty())
+        json["modelPatch"]["items"] = _model_patch_items;
+    if(!_model_patch_spawns.empty())
+        json["modelPatch"]["spawnLocations"] = _model_patch_spawns;
 
     return json;
 }
@@ -177,24 +178,21 @@ void RandomizerOptions::parse_json(const Json& json)
             _startingLife = game_settings_json.at("startingLife");
         if(game_settings_json.contains("startingGold"))
             _startingGold = game_settings_json.at("startingGold");
+        if(game_settings_json.contains("fixArmletSkip"))
+            _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
+        if(game_settings_json.contains("fixTreeCuttingGlitch"))
+            _fix_tree_cutting_glitch = game_settings_json.at("fixTreeCuttingGlitch");
+        if(game_settings_json.contains("consumableRecordBook"))
+            _consumable_record_book = game_settings_json.at("consumableRecordBook");
+        if(game_settings_json.contains("removeGumiBoulder"))
+            _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
+        
         if(game_settings_json.contains("startingItems"))
         {
             std::map<std::string, uint8_t> startingItems = game_settings_json.at("startingItems");
             for(auto& [itemName, quantity] : startingItems)
                 _starting_items[itemName] = quantity;
         }
-        if(game_settings_json.contains("itemPrices"))
-            _itemPrices = game_settings_json.at("itemPrices");
-        if(game_settings_json.contains("fixArmletSkip"))
-            _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
-        if(game_settings_json.contains("fixTreeCuttingGlitch"))
-            _fix_tree_cutting_glitch = game_settings_json.at("fixTreeCuttingGlitch");
-        if(game_settings_json.contains("itemMaxQuantities"))
-            _item_max_quantities = game_settings_json.at("itemMaxQuantities");
-        if(game_settings_json.contains("consumableRecordBook"))
-            _consumable_record_book = game_settings_json.at("consumableRecordBook");
-        if(game_settings_json.contains("removeGumiBoulder"))
-            _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
     }
 
     if(json.contains("randomizerSettings") && !_plando_enabled)
@@ -227,6 +225,16 @@ void RandomizerOptions::parse_json(const Json& json)
             _filler_items = new std::map<std::string, uint16_t>();
             *(_filler_items) = randomizer_settings_json.at("fillerItems");
         }
+    }
+
+    if(json.contains("modelPatch"))
+    {
+        const Json& model_patch_json = json.at("modelPatch");
+
+        if(model_patch_json.contains("items"))
+            _model_patch_items = model_patch_json.at("items");
+        if(model_patch_json.contains("spawnLocations"))
+            _model_patch_spawns = model_patch_json.at("spawnLocations");
     }
 
     if(json.contains("seed") && !_plando_enabled)

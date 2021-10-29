@@ -18,7 +18,6 @@ void Item::write_to_rom(md::ROM& rom) const
 Json Item::to_json() const
 {
     Json json;
-    json["id"] = _id;
     json["name"] = _name;
     json["maxQuantity"] = _max_quantity;
     json["startingQuantity"] = _starting_quantity;
@@ -27,9 +26,8 @@ Json Item::to_json() const
     return json;
 }
 
-Item* Item::from_json(const Json& json)
+Item* Item::from_json(uint8_t id, const Json& json)
 {
-    uint8_t id = json.at("id");
     const std::string& name = json.at("name");
     uint8_t max_quantity = json.value("maxQuantity", 1);
     uint8_t starting_quantity = json.value("startingQuantity", 0);
@@ -37,4 +35,18 @@ Item* Item::from_json(const Json& json)
     bool allowed_on_ground = json.value("allowedOnGround", true);
 
     return new Item(id, name, max_quantity, gold_value, allowed_on_ground);
+}
+
+void Item::apply_json(const Json& json)
+{
+    if(json.contains("name"))
+        _name = json.at("name");
+    if(json.contains("maxQuantity"))
+        _max_quantity = json.at("maxQuantity");
+    if(json.contains("startingQuantity"))
+        _starting_quantity = json.at("startingQuantity");
+    if(json.contains("goldValue"))
+        _gold_value = json.at("goldValue");
+    if(json.contains("allowedOnGround"))
+        _allowed_on_ground = json.at("allowedOnGround");
 }

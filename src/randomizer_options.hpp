@@ -35,10 +35,8 @@ public:
     uint8_t starting_life() const { return _startingLife; }
     uint16_t starting_gold() const { return _startingGold; }
     const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
-    const std::map<std::string, uint16_t>& item_prices() const { return _itemPrices; }
     bool fix_armlet_skip() const { return _fix_armlet_skip; }
     bool fix_tree_cutting_glitch() const { return _fix_tree_cutting_glitch; }
-    const std::map<std::string, uint8_t>& item_max_quantities() const { return _item_max_quantities; }
     bool consumable_record_book() const { return _consumable_record_book; }
     bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
 
@@ -53,6 +51,9 @@ public:
     bool has_custom_filler_items() const { return _filler_items != nullptr; }
     const std::map<std::string, uint16_t>& filler_items() const { return *_filler_items; }
 
+    // Model patch
+    const Json& items_model_patch() const { return _model_patch_items; }
+    const Json& spawn_locations_model_patch() const { return _model_patch_spawns; }
 
     // Personal options 
     bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
@@ -76,10 +77,8 @@ private:
     uint8_t _startingLife;
     uint16_t _startingGold;
     std::map<std::string, uint8_t> _starting_items;
-    std::map<std::string, uint16_t> _itemPrices;
     bool _fix_armlet_skip;
     bool _fix_tree_cutting_glitch;
-    std::map<std::string, uint8_t> _item_max_quantities;
     bool _consumable_record_book;
     bool _remove_gumi_boulder;
     
@@ -93,6 +92,10 @@ private:
     bool _ghost_jumping_in_logic;
     std::map<std::string, uint16_t>* _mandatory_items;
     std::map<std::string, uint16_t>* _filler_items;
+
+    // ------------- Model patch -------------
+    Json _model_patch_items;
+    Json _model_patch_spawns;
 
     // ------------- Personal settings -------------
     // (not included in permalink nor presets)

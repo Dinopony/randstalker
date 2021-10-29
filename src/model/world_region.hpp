@@ -56,7 +56,6 @@ public:
     Json to_json() const
     {
         Json json;
-        json["id"] = _id;
         json["name"] = _name;
         if(!_hints.empty())
             json["hints"] = _hints;
@@ -65,9 +64,8 @@ public:
         return json;
     }
 
-    static WorldRegion* from_json(const Json& json)
+    static WorldRegion* from_json(const std::string& id, const Json& json)
     {
-        const std::string& id = json.at("id");
         const std::string& name = json.at("name");
 
         std::vector<std::string> hints;

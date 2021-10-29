@@ -135,11 +135,16 @@ std::vector<ItemSource*> World::item_sources_with_item(Item* item)
 
 void World::init_items()
 {
+    // Load base model
     Json items_json = Json::parse(ITEMS_JSON);
-    for(const Json& item_json : items_json)
-        this->add_item(Item::from_json(item_json));
+    for(auto& [id_string, item_json] : items_json.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        this->add_item(Item::from_json(id, item_json));
+    }
     std::cout << _items.size() << " items loaded." << std::endl;
 
+    // Alter a few things depending on settings
     if (_options.use_armor_upgrades())
     {
         _items[ITEM_STEEL_BREAST]->gold_value(250);
@@ -155,6 +160,24 @@ void World::init_items()
         _items[ITEM_RECORD_BOOK]->gold_value(currentPrice / 5);
     }
 
+    if(_options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
+    {
+        _items[ITEM_RED_JEWEL]->name("Kazalt Jewel");
+        _items[ITEM_RED_JEWEL]->allowed_on_ground(false);
+        _items[ITEM_RED_JEWEL]->max_quantity(_options.jewel_count());
+    }
+
+    // Patch model if user specified a model patch
+    const Json& model_patch = _options.items_model_patch();
+    for(auto& [id_string, patch_json] : model_patch.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        if(_items.count(id))
+            _items.at(id)->apply_json(patch_json);
+        else
+            this->add_item(Item::from_json(id, patch_json));
+    }
+
     // Process custom starting quantities for items
     const std::map<std::string, uint8_t>& starting_items = _options.starting_items();
     for(auto& [item_name, quantity] : starting_items)
@@ -168,43 +191,6 @@ void World::init_items()
         }
 
         item->starting_quantity(std::min<uint8_t>(quantity, 9));
-    }
-
-    // Process custom item prices
-    const std::map<std::string, uint16_t>& item_prices = _options.item_prices();
-    for(auto& [item_name, price] : item_prices)
-    {
-        Item* item = this->item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Cannot set starting price of unknown item '" << item_name << "'";
-            throw RandomizerException(msg.str());
-        }
-
-        item->gold_value(price);
-    }
-
-    // Process custom item max quantities
-    const std::map<std::string, uint8_t>& item_max_quantities = _options.item_max_quantities();
-    for(auto& [item_name, max_quantity] : item_max_quantities)
-    {
-        Item* item = this->item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Cannot set max quantity of unknown item '" << item_name << "'";
-            throw RandomizerException(msg.str());
-        }
-
-        item->max_quantity(max_quantity);
-    }
-
-    if(_options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-    {
-        _items[ITEM_RED_JEWEL]->name("Kazalt Jewel");
-        _items[ITEM_RED_JEWEL]->allowed_on_ground(false);
-        _items[ITEM_RED_JEWEL]->max_quantity(_options.jewel_count());
     }
 }
 
@@ -224,10 +210,10 @@ void World::init_item_sources()
 void World::init_regions()
 {
     Json regions_json = Json::parse(WORLD_REGIONS_JSON);
-    for(const Json& region_json : regions_json)
+    for(auto& [region_id, region_json] : regions_json.items())
     {
-        WorldRegion* new_region = WorldRegion::from_json(region_json);
-        _regions[new_region->id()] = new_region;
+        WorldRegion* new_region = WorldRegion::from_json(region_id, region_json);
+        _regions[region_id] = new_region;
     }
     std::cout << _regions.size() << " regions loaded." << std::endl;
 }
@@ -293,10 +279,24 @@ void World::init_macro_regions()
 
 void World::init_spawn_locations()
 {
+    // Load base model
     Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
-    for(const Json& spawn_json : spawns_json)
-        this->add_spawn_location(SpawnLocation::from_json(spawn_json, _regions));
+    for(auto& [id, spawn_json] : spawns_json.items())
+        this->add_spawn_location(SpawnLocation::from_json(id, spawn_json, _regions));
     std::cout << _spawn_locations.size() << " spawn locations loaded." << std::endl;
+
+    // Patch model if user specified a model patch
+    const Json& model_patch = _options.spawn_locations_model_patch();
+    if(model_patch.contains("spawnLocations"))
+    {
+        for(auto& [id, patch_json] : model_patch.at("spawnLocations").items())
+        {
+            if(!_spawn_locations.count(id))
+                this->add_spawn_location(SpawnLocation::from_json(id, patch_json, _regions));
+            else
+                _spawn_locations.at(id)->apply_json(patch_json, _regions);
+        }
+    }
 }
 
 void World::init_hint_sources()
@@ -552,6 +552,78 @@ bool World::is_item_avoidable(Item* item) const
     solver.forbid_items({ item });
 
     return solver.try_to_solve();
+}
+
+void World::output_model()
+{
+    Json hints_json = Json::array();
+    for(auto& [id, hint_source] : _hint_sources)
+        hints_json.push_back(hint_source->to_json());
+    tools::dump_json_to_file(hints_json, "./json_data/hint_source.json");
+
+    Json item_sources_json = Json::array();
+    for(ItemSource* source : _item_sources)
+        item_sources_json.push_back(source->to_json());
+    tools::dump_json_to_file(item_sources_json, "./json_data/item_source.json");
+
+    Json items_json;
+    for(auto& [id, item] : _items)
+        items_json[std::to_string(id)] = item->to_json();
+    tools::dump_json_to_file(items_json, "./json_data/item.json");
+
+    Json macros_json = Json::array();
+    for(WorldMacroRegion* macro : _macro_regions)
+        macros_json.push_back(macro->to_json());
+    tools::dump_json_to_file(macros_json, "./json_data/world_macro_region.json");
+
+    Json spawns_json;
+    for(auto& [id, spawn] : _spawn_locations)
+        spawns_json[id] = spawn->to_json();
+    tools::dump_json_to_file(spawns_json, "./json_data/world_macro_region.json");
+
+    Json regions_json;
+    for(auto& [id, region] : _regions)
+        regions_json[id] = region->to_json();
+    tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
+
+    Json trees_json = Json::array();
+    for(WorldTeleportTree* tree : _teleport_trees)
+        trees_json.push_back(tree->to_json());
+    tools::dump_json_to_file(trees_json, "./json_data/world_teleport_tree.json");
+
+    Json strings_json;
+    for(uint32_t i=0 ; i<_game_strings.size() ; ++i)
+    {
+        std::stringstream hex_id;
+        hex_id << "0x" << std::hex << i;
+        strings_json[hex_id.str()] = _game_strings[i];
+    }
+    tools::dump_json_to_file(strings_json, "./json_data/game_strings.json");
+
+    auto paths_copy = _paths;
+    Json paths_json = Json::array();
+    while(!paths_copy.empty())
+    {
+        auto it = paths_copy.begin();
+        std::pair<WorldRegion*, WorldRegion*> region_pair = it->first;
+        WorldPath* path = it->second;
+        paths_copy.erase(it);
+
+        bool two_way = false;
+        std::pair<WorldRegion*, WorldRegion*> reverse_pair = std::make_pair(region_pair.second, region_pair.first);
+        if(paths_copy.count(reverse_pair))
+        {
+            WorldPath* reverse_path = paths_copy.at(reverse_pair);
+            if(path->is_perfect_opposite_of(reverse_path))
+            {
+                two_way = true;
+                paths_copy.erase(reverse_pair);
+            }
+        }
+        
+        paths_json.push_back(path->to_json(two_way));
+    }
+    tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
 }
 
 void World::output_graphviz()

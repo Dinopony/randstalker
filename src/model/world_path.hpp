@@ -40,6 +40,8 @@ public:
 
     std::vector<Item*> missing_items_to_cross(std::vector<Item*> playerInventoryCopy, bool only_strictly_required_items = false);
 
+    bool is_perfect_opposite_of(WorldPath* other) const;
+
     Json to_json(bool two_way) const;
     static WorldPath* from_json(const Json& json, const std::map<std::string, WorldRegion*>& regions, const std::map<uint8_t, Item*>& items);  
 };

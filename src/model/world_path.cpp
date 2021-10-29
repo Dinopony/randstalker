@@ -51,6 +51,24 @@ bool WorldPath::has_explored_required_regions(const UnsortedSet<WorldRegion*>& e
     return true;
 }
 
+bool WorldPath::is_perfect_opposite_of(WorldPath* other) const
+{
+    if(_from_region != other->_to_region)
+        return false;
+    if(_to_region != other->_from_region)
+        return false;
+    if(_weight != other->_weight)
+        return false;
+    if(_required_items != other->_required_items)
+        return false;
+    if(_required_regions != other->_required_regions)
+        return false;
+    if(_items_placed_when_crossing != other->_items_placed_when_crossing)
+        return false;
+
+    return true;
+}
+
 Json WorldPath::to_json(bool two_way) const
 {
     Json json;

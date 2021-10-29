@@ -1,514 +1,450 @@
-[
-    {
-        "id": 0,
+{
+    "0": {
         "name": "EkeEke",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 20,
         "allowedOnGround": true
     },
-    {
-        "id": 1,
+    "1": {
         "name": "Magic Sword",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 2,
+    "2": {
         "name": "Sword of Ice",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 3,
+    "3": {
         "name": "Thunder Sword",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 500,
         "allowedOnGround": true
     },
-    {
-        "id": 4,
+    "4": {
         "name": "Sword of Gaia",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 5,
+    "5": {
         "name": "Fireproof",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 6,
+    "6": {
         "name": "Iron Boots",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 7,
+    "7": {
         "name": "Healing Boots",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 8,
+    "8": {
         "name": "Snow Spikes",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 400,
         "allowedOnGround": true
     },
-    {
-        "id": 9,
+    "9": {
         "name": "Steel Breast",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 10,
+    "10": {
         "name": "Chrome Breast",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 11,
+    "11": {
         "name": "Shell Breast",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 12,
+    "12": {
         "name": "Hyper Breast",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 13,
+    "13": {
         "name": "Mars Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 14,
+    "14": {
         "name": "Moon Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 15,
+    "15": {
         "name": "Saturn Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 16,
+    "16": {
         "name": "Venus Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 17,
+    "17": {
         "name": "Awakening Book",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 15,
         "allowedOnGround": true
     },
-    {
-        "id": 18,
+    "18": {
         "name": "Detox Grass",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 20,
         "allowedOnGround": true
     },
-    {
-        "id": 19,
+    "19": {
         "name": "Statue of Gaia",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 100,
         "allowedOnGround": true
     },
-    {
-        "id": 20,
+    "20": {
         "name": "Golden Statue",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": false
     },
-    {
-        "id": 21,
+    "21": {
         "name": "Mind Repair",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 20,
         "allowedOnGround": true
     },
-    {
-        "id": 22,
+    "22": {
         "name": "Casino Ticket",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 50,
         "allowedOnGround": true
     },
-    {
-        "id": 23,
+    "23": {
         "name": "Axe Magic",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 400,
         "allowedOnGround": true
     },
-    {
-        "id": 24,
+    "24": {
         "name": "Blue Ribbon",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 50,
         "allowedOnGround": true
     },
-    {
-        "id": 25,
+    "25": {
         "name": "Buyer's Card",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 26,
+    "26": {
         "name": "Lantern",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 100,
         "allowedOnGround": true
     },
-    {
-        "id": 27,
+    "27": {
         "name": "Garlic",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 28,
+    "28": {
         "name": "Anti Paralyze",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 20,
         "allowedOnGround": true
     },
-    {
-        "id": 29,
+    "29": {
         "name": "Statue of Jypta",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 30,
+    "30": {
         "name": "Sun Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 31,
+    "31": {
         "name": "Armlet",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 32,
+    "32": {
         "name": "Einstein Whistle",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 33,
+    "33": {
         "name": "Blue Jewel",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 500,
         "allowedOnGround": true
     },
-    {
-        "id": 34,
+    "34": {
         "name": "Yellow Jewel",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 500,
         "allowedOnGround": true
     },
-    {
-        "id": 35,
+    "35": {
         "name": "Record Book",
         "maxQuantity": 1,
         "startingQuantity": 1,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 36,
+    "36": {
         "name": "Spell Book",
         "maxQuantity": 1,
         "startingQuantity": 1,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 37,
+    "37": {
         "name": "Hotel Register",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 15,
         "allowedOnGround": true
     },
-    {
-        "id": 38,
+    "38": {
         "name": "Island Map",
         "maxQuantity": 0,
         "startingQuantity": 0,
         "goldValue": 0,
         "allowedOnGround": true
     },
-    {
-        "id": 39,
+    "39": {
         "name": "Lithograph",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 40,
+    "40": {
         "name": "Red Jewel",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 500,
         "allowedOnGround": true
     },
-    {
-        "id": 41,
+    "41": {
         "name": "Pawn Ticket",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 100,
         "allowedOnGround": false
     },
-    {
-        "id": 42,
+    "42": {
         "name": "Purple Jewel",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 500,
         "allowedOnGround": true
     },
-    {
-        "id": 43,
+    "43": {
         "name": "Gola's Eye",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 400,
         "allowedOnGround": true
     },
-    {
-        "id": 44,
+    "44": {
         "name": "Death Statue",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 45,
+    "45": {
         "name": "Dahl",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 100,
         "allowedOnGround": false
     },
-    {
-        "id": 46,
+    "46": {
         "name": "Restoration",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 40,
         "allowedOnGround": true
     },
-    {
-        "id": 47,
+    "47": {
         "name": "Logs",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 48,
+    "48": {
         "name": "Oracle Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": true
     },
-    {
-        "id": 49,
+    "49": {
         "name": "Idol Stone",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 50,
+    "50": {
         "name": "Key",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": true
     },
-    {
-        "id": 51,
+    "51": {
         "name": "Safety Pass",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 300,
         "allowedOnGround": true
     },
-    {
-        "id": 52,
+    "52": {
         "name": "Green Jewel",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 500,
         "allowedOnGround": true
     },
-    {
-        "id": 53,
+    "53": {
         "name": "Bell",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 200,
         "allowedOnGround": true
     },
-    {
-        "id": 54,
+    "54": {
         "name": "Short Cake",
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 150,
         "allowedOnGround": false
     },
-    {
-        "id": 55,
+    "55": {
         "name": "Gola's Nail",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 800,
         "allowedOnGround": true
     },
-    {
-        "id": 56,
+    "56": {
         "name": "Gola's Horn",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 800,
         "allowedOnGround": true
     },
-    {
-        "id": 57,
+    "57": {
         "name": "Gola's Fang",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 800,
         "allowedOnGround": true
     },
-    {
-        "id": 58,
+    "58": {
         "name": "Broad Sword",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 0,
         "allowedOnGround": true
     },
-    {
-        "id": 59,
+    "59": {
         "name": "Leather Breast",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 0,
         "allowedOnGround": true
     },
-    {
-        "id": 60,
+    "60": {
         "name": "Leather Boots",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 0,
         "allowedOnGround": true
     },
-    {
-        "id": 61,
+    "61": {
         "name": "No Ring",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 0,
         "allowedOnGround": true
     },
-    {
-        "id": 62,
+    "62": {
         "name": "Life Stock",
         "maxQuantity": 1,
         "startingQuantity": 0,
         "goldValue": 250,
         "allowedOnGround": false
     },
-    {
-        "id": 63,
+    "63": {
         "name": "No Item",
         "maxQuantity": 0,
         "startingQuantity": 0,
         "goldValue": 0,
         "allowedOnGround": true
     }
-]
+}

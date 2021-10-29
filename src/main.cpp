@@ -215,6 +215,15 @@ void generate(const ArgumentDictionary& args)
         spoiler_json = randomize(world, options, args);
     }
 
+    // Output current world model
+    if (args.get_boolean("dumpmodel") && options.allow_spoiler_log())
+    {
+        world.output_model();
+        std::cout << "Model dumped to './json_data/'" << std::endl;
+    }
+    else
+        std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
+    
     std::cout << "Writing world to ROM...\n";
     world.write_to_rom(*rom);
 

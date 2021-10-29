@@ -32,7 +32,7 @@ public:
     const std::string& name() const { return _name; }
     Item& name(const std::string& name) { _name = name; return *this; }
 
-    uint8_t starting_quantity() const { return _starting_quantity; }
+    uint8_t starting_quantity() const { return std::min(_starting_quantity, _max_quantity); }
     Item& starting_quantity(uint8_t quantity) { _starting_quantity = quantity; return *this; }
     
     uint8_t max_quantity() const { return _max_quantity; }
@@ -47,7 +47,8 @@ public:
     virtual void write_to_rom(md::ROM& rom) const;
 
     Json to_json() const;
-    static Item* from_json(const Json& json);  
+    static Item* from_json(uint8_t id, const Json& json);
+    void apply_json(const Json& json);
 };
 
 ////////////////////////////////////////////////////////////////
