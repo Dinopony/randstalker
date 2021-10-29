@@ -55,10 +55,20 @@ void WorldRandomizer::randomize_spawn_location()
 
 void WorldRandomizer::randomize_dark_rooms()
 {
+    std::vector<Item*> starting_inventory = _world.starting_inventory();
+    Item* item_lantern = _world.item(ITEM_LANTERN);
+    bool lantern_as_starting_item = std::find(starting_inventory.begin(), starting_inventory.end(), item_lantern) != starting_inventory.end();
+
     std::vector<WorldRegion*> possible_regions;
     for (auto& [key, region] : _world.regions())
+    {
+        // Don't allow spawning inside a dark region, unless we have lantern as starting item
+        if(!lantern_as_starting_item && region == _world.spawn_region())
+            continue;
+
         if (!region->dark_map_ids().empty())
             possible_regions.push_back(region);
+    }
 
     tools::shuffle(possible_regions, _rng);
     _world.dark_region(possible_regions[0]);
