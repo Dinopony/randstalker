@@ -14,8 +14,7 @@ WorldRandomizer::WorldRandomizer(World& world, const RandomizerOptions& options)
     _world            (world),
     _options          (options),
     _rng              (_options.seed()),
-    _solver           (),
-    _gold_items_count (0)
+    _solver           ()
 {}
 
 void WorldRandomizer::randomize()
@@ -49,7 +48,7 @@ void WorldRandomizer::randomize_spawn_location()
             possible_spawn_locations.push_back(id);
     }
 
-    Tools::shuffle(possible_spawn_locations, _rng);
+    tools::shuffle(possible_spawn_locations, _rng);
     SpawnLocation* spawn = _world.spawn_locations().at(possible_spawn_locations[0]);
     _world.active_spawn_location(spawn);
 }
@@ -61,7 +60,7 @@ void WorldRandomizer::randomize_dark_rooms()
         if (!region->dark_map_ids().empty())
             possible_regions.push_back(region);
 
-    Tools::shuffle(possible_regions, _rng);
+    tools::shuffle(possible_regions, _rng);
     _world.dark_region(possible_regions[0]);
 
     const std::vector<WorldPath*>& ingoing_paths = _world.dark_region()->ingoing_paths();
@@ -77,7 +76,7 @@ void WorldRandomizer::randomize_tibor_trees()
     for (WorldTeleportTree* tree : trees)
         teleport_tree_map_ids.push_back(tree->tree_map_id());
     
-    Tools::shuffle(teleport_tree_map_ids, _rng);
+    tools::shuffle(teleport_tree_map_ids, _rng);
     for (uint8_t i = 0; i < trees.size(); ++i)
         trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
 }
@@ -100,9 +99,9 @@ void WorldRandomizer::randomize_fahl_enemies()
         ENEMY_LIZARD_3,     ENEMY_WORM_3
     };
 
-    Tools::shuffle(easy_enemies, _rng);
-    Tools::shuffle(medium_enemies, _rng);
-    Tools::shuffle(hard_enemies, _rng);
+    tools::shuffle(easy_enemies, _rng);
+    tools::shuffle(medium_enemies, _rng);
+    tools::shuffle(hard_enemies, _rng);
 
     _world.add_fahl_enemy(easy_enemies[0]);
     _world.add_fahl_enemy(easy_enemies[1]);
@@ -133,11 +132,12 @@ void WorldRandomizer::init_filler_items()
         };
     }
 
+    uint8_t gold_items_count = 0;
     for (auto& [item_name, quantity] : filler_items_desc)
     {
         if(item_name == "Golds")
         {
-            _gold_items_count += quantity;
+            gold_items_count += quantity;
             continue;
         }
 
@@ -153,23 +153,23 @@ void WorldRandomizer::init_filler_items()
             _filler_items.push_back(item);
     }
 
-    this->randomize_gold_values();
+    this->randomize_gold_values(gold_items_count);
 
-    Tools::shuffle(_filler_items, _rng);
+    tools::shuffle(_filler_items, _rng);
 }
 
-void WorldRandomizer::randomize_gold_values()
+void WorldRandomizer::randomize_gold_values(uint8_t gold_items_count)
 {
     constexpr uint16_t AVERAGE_GOLD_PER_CHEST = 35;
     constexpr double MAX_FACTOR_OF_TOTAL_GOLD = 0.16;
 
-    uint16_t total_gold = AVERAGE_GOLD_PER_CHEST * _gold_items_count;
+    uint16_t total_gold = AVERAGE_GOLD_PER_CHEST * gold_items_count;
 
-    for (uint8_t i = 0; i < _gold_items_count ; ++i)
+    for (uint8_t i = 0; i < gold_items_count ; ++i)
     {
         uint16_t gold_value;
 
-        if (i < _gold_items_count - 1)
+        if (i < gold_items_count - 1)
         {
             double proportion = (double) _rng() / (double) _rng.max();
             double factor = (proportion * MAX_FACTOR_OF_TOTAL_GOLD);
@@ -223,10 +223,10 @@ void WorldRandomizer::init_mandatory_items()
         }
         
         for(uint16_t i=0 ; i<quantity ; ++i)
-            _mandatoryItems.push_back(item);
+            _mandatory_items.push_back(item);
     }
 
-    Tools::shuffle(_mandatoryItems, _rng);
+    tools::shuffle(_mandatory_items, _rng);
 }
 
 void WorldRandomizer::randomize_items()
@@ -242,7 +242,7 @@ void WorldRandomizer::randomize_items()
         explored_new_regions = _solver.run_until_blocked();
         
         std::vector<ItemSource*> empty_sources = _solver.empty_reachable_item_sources();
-        Tools::shuffle(empty_sources, _rng);
+        tools::shuffle(empty_sources, _rng);
 
         this->place_key_items(empty_sources);
 
@@ -300,9 +300,9 @@ void WorldRandomizer::place_mandatory_items()
         if(!source->item())
             all_empty_item_sources.push_back(source);
 
-    Tools::shuffle(all_empty_item_sources, _rng);
+    tools::shuffle(all_empty_item_sources, _rng);
 
-    for (Item* item : _mandatoryItems)
+    for (Item* item : _mandatory_items)
     {
         ItemSource* source = pop_first_compatible_source(all_empty_item_sources, item);
         if(source)
@@ -337,7 +337,7 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
         return;
 
     // Randomly choose one of those blocking paths
-    Tools::shuffle(weighted_blocked_paths, _rng);
+    tools::shuffle(weighted_blocked_paths, _rng);
     WorldPath* path_to_open = weighted_blocked_paths[0];
     debug_log["chosenPath"].push_back(path_to_open->origin()->id() + " --> " + path_to_open->destination()->id());
 
@@ -445,7 +445,7 @@ void WorldRandomizer::randomize_where_is_lithograph_hint()
 Item* WorldRandomizer::randomize_fortune_teller_hint()
 {
     std::vector<uint8_t> hintable_items = { ITEM_GOLA_EYE, ITEM_GOLA_NAIL, ITEM_GOLA_FANG, ITEM_GOLA_HORN };
-    Tools::shuffle(hintable_items, _rng);
+    tools::shuffle(hintable_items, _rng);
     
     Item* hinted_item = _world.item(*(hintable_items.begin()));
 
@@ -493,7 +493,7 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
     
     if (!hintable_items.empty())
     {
-        Tools::shuffle(hintable_items, _rng);
+        tools::shuffle(hintable_items, _rng);
         Item* hinted_item = hintable_items[0];
 
         std::stringstream oracle_stone_hint;
@@ -512,14 +512,14 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
 {
     // A shuffled list of macro regions, used for the "barren / useful region" hints
     UnsortedSet<WorldMacroRegion*> hintable_macro_regions = _world.macro_regions();
-    Tools::shuffle(hintable_macro_regions, _rng);
+    tools::shuffle(hintable_macro_regions, _rng);
 
     // A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints
     UnsortedSet<uint8_t> hintable_item_requirements = {
         ITEM_BUYER_CARD,   ITEM_EINSTEIN_WHISTLE,   ITEM_ARMLET,    ITEM_GARLIC, 
         ITEM_IDOL_STONE,   ITEM_CASINO_TICKET,      ITEM_LOGS
     };
-    Tools::shuffle(hintable_item_requirements, _rng);
+    tools::shuffle(hintable_item_requirements, _rng);
 
     // A shuffled list of items which location is interesting, useful for the "item X is in Y" hints
     UnsortedSet<uint8_t> hintable_item_locations = {
@@ -529,7 +529,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
         ITEM_SUN_STONE,         ITEM_KEY,            ITEM_SAFETY_PASS,   ITEM_LOGS,
         ITEM_GOLA_EYE,          ITEM_GOLA_NAIL,      ITEM_GOLA_FANG,     ITEM_GOLA_HORN
     };
-    Tools::shuffle(hintable_item_locations, _rng);
+    tools::shuffle(hintable_item_locations, _rng);
 
     // Remove items that have been already hinted by special hints
     if(hinted_fortune_item)
@@ -625,7 +625,7 @@ std::string WorldRandomizer::random_hint_for_item(Item* item)
     if(sources.empty())
         return "in an unknown place";
 
-    Tools::shuffle(sources, _rng);
+    tools::shuffle(sources, _rng);
     ItemSource* randomSource = sources[0];
     return this->random_hint_for_item_source(randomSource);
 }
@@ -642,7 +642,7 @@ std::string WorldRandomizer::random_hint_for_item_source(ItemSource* itemSource)
     if(all_hints.empty())
         return "in an unknown place";
 
-    Tools::shuffle(all_hints, _rng);
+    tools::shuffle(all_hints, _rng);
     return all_hints[0];
 }
 

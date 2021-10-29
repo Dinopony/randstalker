@@ -20,7 +20,7 @@ public:
 
             auto token_iter = std::find(param.begin() + 2, param.end(), '=');
             std::string param_name(param.begin() + 2, token_iter);
-            Tools::toLower(param_name);
+            tools::to_lower(param_name);
             if (token_iter != param.end())
                 _args_map[param_name] = std::string(token_iter + 1, param.end());
             else
@@ -72,7 +72,7 @@ public:
 
         try {
             std::string contents = _args_map.at(name);
-            Tools::toLower(contents);
+            tools::to_lower(contents);
 
             // "--param=false"
             if (contents == "false")

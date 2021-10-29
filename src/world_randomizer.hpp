@@ -23,14 +23,8 @@ private:
     WorldSolver _solver;
 
     std::vector<Item*> _filler_items;
-    std::vector<Item*> _mandatoryItems;
-    uint8_t _gold_items_count;
+    std::vector<Item*> _mandatory_items;
 
-//    UnsortedSet<WorldRegion*> _regions_to_explore;
-//    UnsortedSet<WorldRegion*> _explored_regions;
-//    std::vector<ItemSource*> _item_sources_to_fill;
-//    std::vector<Item*> _inventory;
-//    std::vector<WorldPath*> _pending_paths;
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
 
@@ -48,7 +42,7 @@ private:
     
     // First pass randomizations (before items)
     void randomize_spawn_location();
-    void randomize_gold_values();
+    void randomize_gold_values(uint8_t gold_items_count);
     void randomize_dark_rooms();
     void randomize_tibor_trees();
     void randomize_fahl_enemies();
@@ -69,6 +63,4 @@ private:
 
     std::string random_hint_for_item(Item* item);
     std::string random_hint_for_item_source(ItemSource* source);
-
-
 };

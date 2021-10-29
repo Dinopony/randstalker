@@ -80,7 +80,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
     bool output_path_is_a_directory = true;
     if(!output_rom_path.empty())
     {
-        output_path_is_a_directory = !Tools::endsWith(output_rom_path, ".md") && !Tools::endsWith(output_rom_path, ".bin");
+        output_path_is_a_directory = !tools::ends_with(output_rom_path, ".md") && !tools::ends_with(output_rom_path, ".bin");
         if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
             output_rom_path += "/";
     }
@@ -93,7 +93,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
         else
             spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
     }
-    if(!Tools::endsWith(spoiler_log_path, ".json") && *spoiler_log_path.rbegin() != '/')
+    if(!tools::ends_with(spoiler_log_path, ".json") && *spoiler_log_path.rbegin() != '/')
         spoiler_log_path += "/";
 
     // Add the filename afterwards

@@ -624,7 +624,7 @@ void changeHUDColor(md::ROM& rom, const RandomizerOptions& options)
     uint16_t color = 0x0824;
 
     std::string hudColor = options.hud_color();
-    Tools::toLower(hudColor);
+    tools::to_lower(hudColor);
 
     if (hudColor == "red")              color = 0x228;
     else if (hudColor == "darkred")     color = 0x226;

@@ -6,14 +6,16 @@
 #include <random>
 #include <algorithm>
 #include <sstream>
+#include <fstream>
+#include "../extlibs/json.hpp"
 
-namespace Tools 
+namespace tools 
 {
-    inline uint32_t getUniformInteger(uint32_t number, uint32_t rangeLow, uint32_t rangeHigh)
+    inline uint32_t get_uniform_integer(uint32_t number, uint32_t range_low, uint32_t range_high)
     {
         double proportion = static_cast<double>(number) / (1.0 + UINT32_MAX);
-        uint32_t range = rangeHigh - rangeLow + 1;
-        return static_cast<uint32_t>(proportion * range) + rangeLow;
+        uint32_t range = range_high - range_low + 1;
+        return static_cast<uint32_t>(proportion * range) + range_low;
     }
 
     template<typename T>
@@ -26,9 +28,9 @@ namespace Tools
 
         while (vector.size() > 1)
         {
-            uint32_t randomPosition = getUniformInteger(rng(), 0, static_cast<uint32_t>(vector.size()-1));
-            elems.push_back(vector[randomPosition]);
-            vector.erase(vector.begin() + randomPosition);
+            uint32_t random_pos = get_uniform_integer(rng(), 0, static_cast<uint32_t>(vector.size()-1));
+            elems.push_back(vector[random_pos]);
+            vector.erase(vector.begin() + random_pos);
         }
           
         elems.push_back(*vector.begin());
@@ -87,14 +89,14 @@ namespace Tools
     inline void ltrim(std::string& s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
             return !std::isspace(ch);
-            }));
+        }));
     }
 
     // trim from end (in place)
     inline void rtrim(std::string& s) {
         s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
             return !std::isspace(ch);
-            }).base(), s.end());
+        }).base(), s.end());
     }
 
     // trim from both ends (in place)
@@ -103,14 +105,25 @@ namespace Tools
         rtrim(s);
     }
 
-    inline void toLower(std::string& s) {
+    inline void to_lower(std::string& s) {
         std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
     }
 
-    inline bool endsWith(const std::string& haystack, const std::string& needle)
+    inline bool ends_with(const std::string& haystack, const std::string& needle)
     {
         if (needle.size() > haystack.size())
             return false;
         return std::equal(needle.rbegin(), needle.rend(), haystack.rbegin());
+    }
+
+    inline bool dump_json_to_file(const Json& json, const std::string& file_path)
+    {
+        std::ofstream file(file_path);
+        if(!file)
+            return false;
+
+        file << json.dump(4);
+        file.close();
+        return true;
     }
 }

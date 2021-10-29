@@ -467,7 +467,7 @@ void World::parse_json(const Json& json)
                 std::vector<std::string> hint_lines;
                 for(const std::string& line : hints_json.at(description))
                     hint_lines.push_back(line);
-                std::string hint = Tools::join(hint_lines, "\n");
+                std::string hint = tools::join(hint_lines, "\n");
                 source->text(hint);
             }
             else
@@ -516,7 +516,7 @@ Item* World::parse_item_from_name(const std::string& item_name)
         return item;
 
     // If item is formatted as "X golds", parse X value and create the matching gold stack item
-    if(Tools::endsWith(item_name, "golds"))
+    if(tools::ends_with(item_name, "golds"))
     {
         size_t space_index = item_name.find_first_of(' ');
         if(space_index == std::string::npos)
@@ -589,7 +589,7 @@ void World::output_graphviz()
         {
             graphviz << "color=" << current_color << " ";
             graphviz << "fontcolor=" << current_color << " ";
-            graphviz << "label=\"" << Tools::join(required_names, "\\n") << "\" ";
+            graphviz << "label=\"" << tools::join(required_names, "\\n") << "\" ";
         }
 
         graphviz << "]\n";

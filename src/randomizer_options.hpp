@@ -53,13 +53,15 @@ public:
     bool has_custom_filler_items() const { return _filler_items != nullptr; }
     const std::map<std::string, uint16_t>& filler_items() const { return *_filler_items; }
 
-    std::vector<std::string> hash_words() const;
-    std::string hash_sentence() const { return Tools::join(this->hash_words(), " "); }
-    std::string permalink() const;
 
     // Personal options 
     bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
     const std::string hud_color() const { return _hud_color; }
+
+    std::vector<std::string> hash_words() const;
+    std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
+    std::string permalink() const;
+
 
     // Plando-specific options
     bool is_plando() const { return _plando_enabled; }

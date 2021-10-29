@@ -25,7 +25,7 @@ const SpawnLocation& getSpawnLocationFromName(const std::string& name)
 {
     try {
         std::string lowercaseName = name;
-        Tools::toLower(lowercaseName);
+        tools::to_lower(lowercaseName);
         return getAllSpawnLocations().at(lowercaseName);
     } 
     catch(std::out_of_range&)

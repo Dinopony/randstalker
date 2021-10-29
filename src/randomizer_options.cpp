@@ -102,7 +102,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("spawnlocation"))
     {
         std::string spawn_name = args.get_string("spawnlocation");
-        Tools::toLower(spawn_name);
+        tools::to_lower(spawn_name);
         if(spawn_name == "random")
             _possible_spawn_locations = {};
         else
@@ -265,7 +265,7 @@ std::vector<std::string> RandomizerOptions::hash_words() const
     };
 
     std::mt19937 rng(_seed);
-    Tools::shuffle(words, rng);
+    tools::shuffle(words, rng);
     return std::vector<std::string>(words.begin(), words.begin() + 4);
 }
 
@@ -283,7 +283,7 @@ std::string RandomizerOptions::permalink() const
         Json* current_json = &permalink_json;
 
         const std::string& path = patch_piece["path"];
-        std::vector<std::string> path_parts = Tools::split(path, "/");
+        std::vector<std::string> path_parts = tools::split(path, "/");
         for (size_t i=1 ; i < path_parts.size(); ++i)
         {
             if (i < path_parts.size() - 1)
