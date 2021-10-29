@@ -121,6 +121,13 @@ void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
 //    rom.set_word(0x9020, color);
 }
 
+void shorten_mir_death_cutscene(md::ROM& rom)
+{
+    // Cut the cutscene script
+    rom.set_word(0x2872C, 0xE646);
+    rom.set_word(0x2873C, 0xE64B);
+}
+
 void shorten_mir_cutscene_after_lake_shrine(md::ROM& rom)
 {
     // Cut the cutscene script
@@ -197,5 +204,6 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     alter_credits(rom);
 
     // Other QoL changes
+    shorten_mir_death_cutscene(rom);
     shorten_mir_cutscene_after_lake_shrine(rom);
 }
