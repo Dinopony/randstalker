@@ -14,7 +14,10 @@
         // Unreachable Fara dialogues
         "14f", "150",
         "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "18a", "18b", 
-        "18c", "18d", 
+        "18c", "18d",
+        // Unreachable Prospero dialogues
+        "1c6", "1c7", "1c8", "1c9", "1ca", "1cb", "1cc", "1cd", "1ce", "1cf", "1d0", "1d1",
+               "1d2", "1d3", "1d4", "1d5", "1d6", "1d7", "1d8", "1d9",
         // Arthur gift cutscene
         "497", "498", "499", "49a", "49b",
         "52e", "52f", "530", "531", "532", "533", "534", 
@@ -64,6 +67,15 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         "cc": "\u001c...ahh...\u001e",
         "cd": "\u001c...AHH...\u001e",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      PROSPERO IN WATERFALL SHRINE DIALOGUE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "1c4_old": "\u001cIs it true that Fara\nhas been kidnapped?\nUnbelievable...\u001e",
+    //    "1c5_old": "\u001cI think the Gumi tribe is\ncontrolled by the Orcs!\nFara must be in danger...\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////      
+        "0x1c4": "\u001cI've studied the books here\nfor quite some time, and\nit brought me to one conclusion:\u001e",
+        "0x1c5": "\u001cNole made his treasure\nextremely hard to find...\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MERCATOR FORTUNE TELLER DIALOGUE

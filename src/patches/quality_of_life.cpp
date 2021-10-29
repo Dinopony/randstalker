@@ -197,6 +197,25 @@ void shorten_arthur_dialogue(md::ROM& rom)
         rom.set_word(addr, 0x0000);
 }
 
+void alter_prospero_dialogues(md::ROM& rom)
+{
+    // Change a big story-dependant dialogue branch into one dialogue (Dialogue script at 0x027B20)
+    rom.set_code(0x2617A, md::Code().trap(1));
+    rom.set_word(0x2617C, 0x19A5);
+    rom.set_code(0x2617E, md::Code().rts());
+    rom.mark_empty_chunk(0x26180, 0x261A8);
+
+    // Change the unique dialogue script
+    rom.set_word(0x27B20, 0x8177); // Message 0x1C4
+    rom.set_word(0x27B22, 0xE178); // Message 0x1C5
+
+    // Empty unused cutscene scripts
+    rom.mark_empty_chunk(0x282D4, 0x282FE);
+    // Empty unused dialogue scripts
+    rom.mark_empty_chunk(0x27B24, 0x27B52);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -211,4 +230,5 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     shorten_mir_death_cutscene(rom);
     shorten_mir_cutscene_after_lake_shrine(rom);
     shorten_arthur_dialogue(rom);
+    alter_prospero_dialogues(rom);
 }
