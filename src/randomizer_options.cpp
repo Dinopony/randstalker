@@ -6,30 +6,31 @@
 #include "exceptions.hpp"
 
 RandomizerOptions::RandomizerOptions() :
-    _jewel_count              (2),
-    _use_armor_upgrades       (true),
-    _dungeonSignHints         (false),
-    _startingLife             (0),
-    _startingGold             (0),
-    _starting_items           ({{"Record Book",1}}),
-    _fix_armlet_skip          (true),
-    _fix_tree_cutting_glitch  (true),
-    _consumable_record_book   (false),
-    _remove_gumi_boulder      (false),
+    _jewel_count                    (2),
+    _use_armor_upgrades             (true),
+    _dungeonSignHints               (false),
+    _startingLife                   (0),
+    _startingGold                   (0),
+    _starting_items                 ({{"Record Book",1}}),
+    _fix_armlet_skip                (true),
+    _fix_tree_cutting_glitch        (true),
+    _consumable_record_book         (false),
+    _remove_gumi_boulder            (false),
+    _remove_tibor_requirement       (false),
 
-    _seed                     (0),
-    _allow_spoiler_log        (true),
-    _fillingRate              (0.20),
-    _shuffle_tibor_trees      (false), 
-    _ghost_jumping_in_logic   (false),
-    _mandatory_items          (nullptr),
-    _filler_items             (nullptr),
+    _seed                           (0),
+    _allow_spoiler_log              (true),
+    _fillingRate                    (0.20),
+    _shuffle_tibor_trees            (false), 
+    _ghost_jumping_in_logic         (false),
+    _mandatory_items                (nullptr),
+    _filler_items                   (nullptr),
 
-    _add_ingame_item_tracker  (false),
-    _hud_color                ("default"),
+    _add_ingame_item_tracker        (false),
+    _hud_color                      ("default"),
 
-    _plando_enabled           (false),
-    _plando_json              ()
+    _plando_enabled                 (false),
+    _plando_json                    ()
 {}
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
@@ -139,6 +140,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["fixTreeCuttingGlitch"] = _fix_tree_cutting_glitch;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
+    json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
@@ -186,6 +188,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _consumable_record_book = game_settings_json.at("consumableRecordBook");
         if(game_settings_json.contains("removeGumiBoulder"))
             _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
+        if(game_settings_json.contains("removeTiborRequirement"))
+            _remove_gumi_boulder = game_settings_json.at("removeTiborRequirement");
         
         if(game_settings_json.contains("startingItems"))
         {

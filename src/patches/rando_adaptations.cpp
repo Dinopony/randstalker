@@ -164,6 +164,16 @@ void replace_sick_merchant_by_chest(md::ROM& rom)
     rom.set_word(0x021D16, 0x5055);
 }
 
+/**
+ * In the original game, you need to save Tibor to make teleport trees usable.
+ * This removes this requirement.
+ */
+void remove_tibor_requirement_to_use_trees(md::ROM& rom)
+{
+    // Remove the check of the "completed Tibor sidequest" flag to make trees usable
+    rom.set_code(0x4E4A, md::Code().nop(5));
+}
+
 void handle_armor_upgrades(md::ROM& rom)
 {
     // --------------- Alter item in D0 register function ---------------
@@ -475,6 +485,8 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
     make_ryuma_mayor_saveable(rom);
     replace_sick_merchant_by_chest(rom);
+    if (options.remove_tibor_requirement())
+        remove_tibor_requirement_to_use_trees(rom);
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
 
