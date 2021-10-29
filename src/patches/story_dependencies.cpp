@@ -4,7 +4,6 @@
 #include "../world.hpp"
 
 
-
 /**
  * Usually, when trying to cut trees, the game checks if you have seen the
  * cutscene where Mir gives you the Axe Magic.
@@ -184,9 +183,69 @@ void make_lumberjack_reward_not_story_dependant(md::ROM& rom)
     rom.set_code(0x14102, md::Code().nop(12));
 }
 
+/**
+ * The "falling ribbon" item source in Mercator castle court is pretty dependant on story flags. In the original game,
+ * the timeframe in the story where we can get it is tight. We get rid of any condition here, apart from checking
+ * if item has already been obtained.
+ */
+void make_falling_ribbon_not_story_dependant(md::ROM& rom)
+{
+    // 0x00A466:
+        // Before:  20 05 (bit 5 of flag 1020)
+        // After:   3F 07 (bit 7 of flag 103F - never true)
+    rom.set_word(0x00A466, 0x3F07);
+
+    // 0x01A724:
+        // Before:	16 22 (bit 1 of flag 1016)
+        // After:	3F E2 (bit 7 of flag 103F - never true)
+    rom.set_word(0x1A724, 0x3FE2);
+
+    // Change falling item position from 1F to 20 to ensure it is taken by Nigel whatever its original position is
+    rom.set_byte(0x09C59E, 0x20);
+
+    // Remove the servant guarding the door, setting her position to 00 00
+    rom.set_word(0x01BFCA, 0x0000);
+}
+
+void make_mercator_docks_shop_always_open(md::ROM& rom)
+{
+    // 0x01AA26:
+        // Before:	0284 2A A2 (in map 284, check bit 5 of flag 102A)
+        // After:	0000 5F E2 (in map 0, check bit 7 of flag 105F - never true)
+    rom.set_word(0x01AA26, 0x0000);
+    rom.set_word(0x01AA28, 0x5FE2);
+}
+
+void make_ryuma_shop_always_open(md::ROM& rom)
+{
+    // Make Ryuma's shop open without saving the mayor
+    rom.set_byte(0x1A64D, 0x00);
+}
+
+void make_tibor_always_open(md::ROM& rom)
+{
+    // Make Tibor open without saving the mayor
+    rom.set_byte(0x501D, 0x10);
+}
+
+void make_arthur_always_in_throne_room(md::ROM& rom)
+{
+    // Change the Arthur check giving casino tickets for him to be always here, instead of only after Lake Shrine
+    // 0x01A904: 
+        // Before:  AAA0 (bit 5 of flag 2A, affecting entity 0) 
+        // After:   8000 (bit 0 of flag 00, affecting entity 0)
+    rom.set_word(0x01A904, 0x8000);
+
+    // 0x01A908:
+        // Before:	AAA1 (bit 5 of flag 2A, affecting entity 1) 
+        // After:	8001 (bit 0 of flag 00, affecting entity 1)
+    rom.set_word(0x01A908, 0x8001);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void patch_story_flag_reading(md::ROM& rom, const RandomizerOptions& options, const World& world)
+void patch_story_dependencies(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     // Flag-reading changes (from story flag reading to inventory reading)
     fix_axe_magic_check(rom);
@@ -200,4 +259,9 @@ void patch_story_flag_reading(md::ROM& rom, const RandomizerOptions& options, co
     make_massan_elder_reward_not_story_dependant(rom);
     make_gumi_boulder_push_not_story_dependant(rom);
     make_lumberjack_reward_not_story_dependant(rom);
+    make_falling_ribbon_not_story_dependant(rom);
+    make_mercator_docks_shop_always_open(rom);
+    make_ryuma_shop_always_open(rom);
+    make_tibor_always_open(rom);
+    make_arthur_always_in_throne_room(rom);
 }

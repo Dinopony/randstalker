@@ -229,10 +229,7 @@ void generate(const ArgumentDictionary& args)
 
     // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
     std::cout << "Applying game patches...\n\n";
-    patch_game_init(*rom, options, world);
-    patch_story_flag_reading(*rom, options, world);
-    patch_item_behavior(*rom, options, world);
-    apply_other_patches(*rom, options, world);
+    apply_game_patches(*rom, options, world);
 
     if(!output_rom_path.empty())
     {

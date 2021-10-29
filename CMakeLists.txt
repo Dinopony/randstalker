@@ -72,8 +72,10 @@ set(SOURCES
     "src/patches/patches.hpp"
     "src/patches/game_init.cpp"
     "src/patches/item_behavior.cpp"
-    "src/patches/story_flag_reading.cpp"
-    "src/patches/other_patches.cpp"
+    "src/patches/quality_of_life.cpp"
+    "src/patches/rando_adaptations.cpp"
+    "src/patches/softlocks.cpp"
+    "src/patches/story_dependencies.cpp"
 
     "src/exceptions.hpp"
     "src/randomizer_options.hpp"

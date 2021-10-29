@@ -132,6 +132,12 @@ static void remove_cutscene_flag_on_game_start(md::ROM& rom)
     rom.set_code(0x281A, md::Code().nop(4));
 }
 
+void disable_region_check(md::ROM& rom)
+{
+    // Before : jsr $A0A0C | After : nop nop nop
+    rom.set_code(0x506, md::Code().nop(3));
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_game_init(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -155,4 +161,7 @@ void patch_game_init(md::ROM& rom, const RandomizerOptions& options, const World
 
     // Remove a blocking cutscene flag to be allowed to play
     remove_cutscene_flag_on_game_start(rom);
+
+    // Remove region check on game boot
+    disable_region_check(rom);
 }
