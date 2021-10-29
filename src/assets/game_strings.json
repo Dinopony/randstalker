@@ -25,6 +25,7 @@
                "57e", "57f", "580", "581", "582", "583", "584", "585", "586", "587", "588", 
                "589", "58a", "58b", "58c", "58d", "58e", "58f", "590", "591", "592", 
         "5a0", "5a1", "5a2", "5a3", "5a4", "5a5", "5a6", "5a7", "5a8", "5a9", 
+        "51a",
         "5b6", "5b7", "5b8", "5b9", "5ba", "5bb", "5bc", "5bd", "5be", "5bf", "5c0", "5c1", 
                "5c2", "5c3", 
         "5e1", "5e2", "5e3", "5e4", "5e5", "5e6", "5e7", "5e8", "5e9", "5ea", "5eb", "5ec", "5ed", 
@@ -67,6 +68,29 @@
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         "cc": "\u001c...ahh...\u001e",
         "cd": "\u001c...AHH...\u001e",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      ROAD SIGNS DEFAULT MESSAGES
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////    
+        "101": "This sign is severely damaged\nand cannot be read.\u0003",
+        "102": "This sign is severely damaged\nand cannot be read.\u0003",
+        "103": "This sign is severely damaged\nand cannot be read.\u0003",
+        "104": "This sign is severely damaged\nand cannot be read.\u0003",
+        "134": "This sign is severely damaged\nand cannot be read.\u0003",
+        "139": "This sign is severely damaged\nand cannot be read.\u0003",
+        "13a": "This sign is severely damaged\nand cannot be read.\u0003",
+        "140": "This sign is severely damaged\nand cannot be read.\u0003",
+        "141": "This sign is severely damaged\nand cannot be read.\u0003",
+        "142": "This sign is severely damaged\nand cannot be read.\u0003",
+        "143": "This sign is severely damaged\nand cannot be read.\u0003",
+        "144": "This sign is severely damaged\nand cannot be read.\u0003",
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      MASSAN ELDER REWARD DIALOGUE
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "14d_old": "\u001cThe people of Massan\nare extremely thankful.\nPlease take this jewel, Nigel!\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////     
+        "14d": "\u001cThe people of Massan\nare extremely thankful.\nPlease take this present, Nigel!\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      PROSPERO IN WATERFALL SHRINE DIALOGUE
