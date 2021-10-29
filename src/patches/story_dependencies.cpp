@@ -240,6 +240,9 @@ void make_arthur_always_in_throne_room(md::ROM& rom)
         // Before:	AAA1 (bit 5 of flag 2A, affecting entity 1) 
         // After:	8001 (bit 0 of flag 00, affecting entity 1)
     rom.set_word(0x01A908, 0x8001);
+
+    // Remove Arthur from the armory
+    rom.set_word(0x1A8A4, 0x0000);
 }
 
 
