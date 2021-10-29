@@ -3,6 +3,7 @@
 #include <vector>
 #include "tools/unsorted_set.hpp"
 #include "extlibs/json.hpp"
+#include "world.hpp"
 
 class WorldRegion;
 class ItemSource;
@@ -24,6 +25,8 @@ private:
     std::vector<ItemSource*> _reachable_item_sources;
 
     UnsortedSet<Item*> _relevant_items;
+    
+    std::vector<Item*> _starting_inventory;
     std::vector<Item*> _inventory;
 
     uint32_t _step_count;
@@ -33,18 +36,30 @@ public:
     WorldSolver()
     {}
 
-    WorldSolver(WorldRegion* start_node, WorldRegion* end_node)
+    WorldSolver(WorldRegion* start_node, WorldRegion* end_node, const std::vector<Item*>& starting_inventory = {})
     {
-        this->setup(start_node, end_node);
+        this->setup(start_node, end_node, starting_inventory);
+    }
+
+    WorldSolver(const World& world)
+    {
+        this->setup(world);
+    }
+
+    void setup(WorldRegion* start_node, WorldRegion* end_node, const std::vector<Item*>& starting_inventory = {});
+    void setup(const World& world)
+    { 
+        this->setup(world.spawn_region(), world.end_region(), world.starting_inventory());
     }
 
     void forbid_items(const std::vector<Item*>& forbidden_items);
     void forbid_taking_items_from_regions(const UnsortedSet<WorldRegion*>& forbidden_regions);
 
-    void setup(WorldRegion* start_node, WorldRegion* end_node);
     bool try_to_solve();
     bool run_until_blocked();
 
+    const std::vector<Item*>& starting_inventory() const { return _starting_inventory; }
+    void starting_inventory(const std::vector<Item*>& starting_inventory) { _starting_inventory = starting_inventory; }
     void update_current_inventory();
 
     const UnsortedSet<WorldPath*>& blocked_paths() const { return _blocked_paths; }

@@ -17,11 +17,14 @@ void WorldSolver::forbid_taking_items_from_regions(const UnsortedSet<WorldRegion
     _forbidden_regions_to_pick_items = forbidden_regions;
 }
 
-void WorldSolver::setup(WorldRegion* start_node, WorldRegion* end_node)
+void WorldSolver::setup(WorldRegion* start_node, WorldRegion* end_node, const std::vector<Item*>& starting_inventory)
 {
     _start_node = start_node;
     _end_node = end_node;
     _regions_to_explore = { start_node };
+
+    if(!starting_inventory.empty())
+        _starting_inventory = starting_inventory;
 
     _explored_regions.clear(); 
     _blocked_paths.clear();
@@ -141,9 +144,9 @@ void WorldSolver::expand_exploration_zone()
 
 void WorldSolver::update_current_inventory()
 {
-    _inventory.clear();
+    _inventory = _starting_inventory;
     _inventory.reserve(_reachable_item_sources.size());
-
+    
     std::vector<Item*> forbidden_items_copy = _forbidden_items;
 
     for(ItemSource* source : _reachable_item_sources)
@@ -248,6 +251,10 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
 
     for(Item* item : _inventory)
     {
+        // Item is not a relevant item (e.g. an EkeEke in starting inventory), just ignore it
+        if(!_relevant_items.contains(item))
+            continue;
+
         std::vector<Item*> forbidden_items_plus_one = forbidden_items;
         forbidden_items_plus_one.push_back(item);
         

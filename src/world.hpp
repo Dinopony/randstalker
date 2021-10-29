@@ -43,6 +43,7 @@ public:
     Item* item(const std::string& name) const;
     Item* add_item(Item* item) { _items[item->id()] = item; return item; }
     Item* add_gold_item(uint8_t worth);
+    std::vector<Item*> starting_inventory() const;
 
     const std::map<std::string, WorldRegion*>& regions() const { return _regions; }
     WorldRegion* region(const std::string& id) const { return _regions.at(id); }
@@ -66,6 +67,8 @@ public:
 
     void active_spawn_location(SpawnLocation* spawn) { _active_spawn_location = spawn; }
     SpawnLocation* active_spawn_location() const { return _active_spawn_location; }
+    WorldRegion* spawn_region() const { return (_active_spawn_location) ? _active_spawn_location->region() : nullptr; } 
+    WorldRegion* end_region() const { return _regions.at("end"); } 
 
     WorldRegion* dark_region() { return _dark_region; }
     void dark_region(WorldRegion* region) { _dark_region = region; }

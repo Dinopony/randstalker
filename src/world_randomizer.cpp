@@ -231,7 +231,7 @@ void WorldRandomizer::init_mandatory_items()
 
 void WorldRandomizer::randomize_items()
 {
-    _solver.setup(_world.active_spawn_location()->region(), _world.region("end"));
+    _solver.setup(_world);
 
     this->place_mandatory_items();
 
@@ -478,7 +478,7 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
     WorldRegion* first_source_region = sources.at(0)->region();
     if(first_source_region)
     {
-        WorldSolver solver(_world.active_spawn_location()->region(), first_source_region);
+        WorldSolver solver(_world.spawn_region(), first_source_region, _world.starting_inventory());
         std::vector<Item*> min_items_to_reach = solver.find_minimal_inventory();
         for (Item* item : min_items_to_reach)
             forbidden_items.insert(item);
@@ -543,7 +543,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
         if(hint_source->special())
             continue;
 
-        WorldSolver solver(_world.active_spawn_location()->region(), hint_source->region());
+        WorldSolver solver(_world.spawn_region(), hint_source->region(), _world.starting_inventory());
         UnsortedSet<Item*> min_inventory_at_sign = solver.find_minimal_inventory();
         
         double randomNumber = (double) _rng() / (double) _rng.max();

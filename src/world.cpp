@@ -85,6 +85,18 @@ Item* World::add_gold_item(uint8_t worth)
     return this->add_item(new ItemGolds(highest_item_id+1, worth));
 }
 
+std::vector<Item*> World::starting_inventory() const
+{
+    std::vector<Item*> starting_inventory;
+    for(auto& [id, item] : _items)
+    {
+        uint8_t item_starting_quantity = item->starting_quantity();
+        for(uint8_t i=0 ; i<item_starting_quantity ; ++i)
+            starting_inventory.push_back(item);
+    }
+    return starting_inventory;
+}
+
 WorldRegion* World::first_region_with_item(Item* item)
 {
     for (auto& [key, region] : _regions)
@@ -536,21 +548,15 @@ Item* World::parse_item_from_name(const std::string& item_name)
 
 bool World::is_macro_region_avoidable(WorldMacroRegion* macro_region) const
 {
-    WorldRegion* spawn_region = _active_spawn_location->region();
-    WorldRegion* end_region = _regions.at("end");
-    WorldSolver solver(spawn_region, end_region);
+    WorldSolver solver(*this);
     solver.forbid_taking_items_from_regions(macro_region->regions());
-    
     return solver.try_to_solve();
 }
 
 bool World::is_item_avoidable(Item* item) const
 {
-    WorldRegion* spawn_region = _active_spawn_location->region();
-    WorldRegion* end_region = _regions.at("end");
-    WorldSolver solver(spawn_region, end_region);
+    WorldSolver solver(*this);
     solver.forbid_items({ item });
-
     return solver.try_to_solve();
 }
 
