@@ -40,6 +40,7 @@ public:
     bool consumable_record_book() const { return _consumable_record_book; }
     bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
     bool remove_tibor_requirement() const { return _remove_tibor_requirement; }
+    bool all_trees_visited_at_start() const { return _all_trees_visited_at_start; }
 
     // Randomization options
     uint32_t seed() const { return _seed; }
@@ -83,6 +84,7 @@ private:
     bool _consumable_record_book;
     bool _remove_gumi_boulder;
     bool _remove_tibor_requirement;
+    bool _all_trees_visited_at_start;
     
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)

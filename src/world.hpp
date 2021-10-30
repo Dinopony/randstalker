@@ -62,6 +62,8 @@ public:
     
     const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
+    void add_tree_logic_paths();
+
     const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     const std::vector<WorldMacroRegion*> macro_regions() const { return _macro_regions; }
     const std::vector<std::string>& game_strings() const { return _game_strings; }

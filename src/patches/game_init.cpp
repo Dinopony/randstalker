@@ -26,6 +26,13 @@ static void setup_story_flags(const RandomizerOptions& options, const World& wor
     out_flag_array[0x2A] = 0x81;
     out_flag_array[0x2B] = 0x82;
 
+    // If trees are considered visited at start, set all flags related to entering teleport trees
+    if(options.all_trees_visited_at_start())
+    {
+        out_flag_array[0x23] = 0xFF;
+        out_flag_array[0x25] |= 0x03;
+    }
+
     // Clear Verla soldiers if spawning in Verla
     if(world.active_spawn_location()->id() == "verla")
         out_flag_array[0x26] += 0x18;

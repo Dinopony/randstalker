@@ -17,6 +17,7 @@ RandomizerOptions::RandomizerOptions() :
     _consumable_record_book         (false),
     _remove_gumi_boulder            (false),
     _remove_tibor_requirement       (false),
+    _all_trees_visited_at_start     (false),
 
     _seed                           (0),
     _allow_spoiler_log              (true),
@@ -141,6 +142,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
+    json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
@@ -190,6 +192,9 @@ void RandomizerOptions::parse_json(const Json& json)
             _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
         if(game_settings_json.contains("removeTiborRequirement"))
             _remove_tibor_requirement = game_settings_json.at("removeTiborRequirement");
+        if(game_settings_json.contains("allTreesVisitedAtStart"))
+            _all_trees_visited_at_start = game_settings_json.at("allTreesVisitedAtStart");
+
         if(game_settings_json.contains("startingItems"))
         {
             std::map<std::string, uint8_t> startingItems = game_settings_json.at("startingItems");

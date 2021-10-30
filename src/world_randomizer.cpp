@@ -22,8 +22,12 @@ void WorldRandomizer::randomize()
     // 1st pass: randomizations happening BEFORE randomizing items
     this->randomize_spawn_location();
     this->randomize_dark_rooms();
+    
     if(_options.shuffle_tibor_trees())
         this->randomize_tibor_trees();
+    if(_options.all_trees_visited_at_start())
+        _world.add_tree_logic_paths();
+
     this->randomize_fahl_enemies();
 
     // 2nd pass: randomizing items

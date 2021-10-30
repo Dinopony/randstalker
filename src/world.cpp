@@ -359,6 +359,22 @@ void World::init_game_strings(const md::ROM& rom)
         + std::to_string(_options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
+void World::add_tree_logic_paths()
+{
+    if(_options.all_trees_visited_at_start())
+    {
+        std::vector<WorldRegion*> required_regions;
+        if(!_options.remove_tibor_requirement())
+            required_regions = { _regions["tibor"] };
+
+        for(auto& pair : _teleport_tree_pairs)
+        {
+            this->add_path(new WorldPath(pair.first->region(), pair.second->region(), 1, {}, required_regions));
+            this->add_path(new WorldPath(pair.second->region(), pair.first->region(), 1, {}, required_regions));
+        }
+    }
+}
+
 void World::write_to_rom(md::ROM& rom)
 {
     // Write a data block for gold values
