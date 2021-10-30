@@ -450,12 +450,6 @@ void World::write_to_rom(md::ROM& rom)
     for (ItemSource* source : _item_sources)
         source->write_to_rom(rom);
 
-    // Write enemies
-    for (auto& [id, enemy] : _enemies)
-    {
-        enemy->write_to_rom(rom);
-    }
-
     // Write all text lines into text banks
     TextbanksEncoder encoder(rom, _game_strings);
 
