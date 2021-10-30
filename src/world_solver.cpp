@@ -121,6 +121,7 @@ void WorldSolver::expand_exploration_zone()
             {
                 // For crossable paths, add destination to the list of regions to explore
                 _regions_to_explore.insert(destination);
+                debug_log["exploration"].push_back("Added " + destination->id() + " to accessible regions");
             }
             else
             {

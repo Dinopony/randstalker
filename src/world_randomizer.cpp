@@ -80,15 +80,29 @@ void WorldRandomizer::randomize_dark_rooms()
 
 void WorldRandomizer::randomize_tibor_trees()
 {
-    const std::vector<WorldTeleportTree*>& trees = _world.teleport_trees();
-
-    std::vector<uint16_t> teleport_tree_map_ids;
-    for (WorldTeleportTree* tree : trees)
-        teleport_tree_map_ids.push_back(tree->tree_map_id());
+    const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& tree_pairs = _world.teleport_tree_pairs();
     
-    tools::shuffle(teleport_tree_map_ids, _rng);
-    for (uint8_t i = 0; i < trees.size(); ++i)
-        trees.at(i)->tree_map_id(teleport_tree_map_ids[i]);
+    std::vector<std::pair<uint16_t, uint16_t>> map_id_pairs;
+    std::vector<WorldTeleportTree*> trees;
+    for(auto& pair : tree_pairs)
+    {
+        map_id_pairs.push_back(std::make_pair(pair.first->tree_map_id(), pair.second->tree_map_id()));
+        trees.push_back(pair.first);
+        trees.push_back(pair.second);
+    }
+
+    tools::shuffle(trees, _rng);
+
+    std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> new_pairs;
+    for(size_t i=0 ; i<trees.size() ; i+=2)
+    {
+        new_pairs.push_back(std::make_pair(trees[i], trees[i+1]));
+        const std::pair<uint16_t, uint16_t>& map_id_pair = map_id_pairs[i/2];
+        trees[i]->tree_map_id(map_id_pair.first);
+        trees[i+1]->tree_map_id(map_id_pair.second);
+    }
+
+    _world.teleport_tree_pairs(new_pairs);
 }
 
 void WorldRandomizer::randomize_fahl_enemies()

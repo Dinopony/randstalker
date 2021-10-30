@@ -53,8 +53,11 @@ World::~World()
         delete hint_source;
     for (WorldMacroRegion* macro : _macro_regions)
         delete macro;
-    for (WorldTeleportTree* teleport_tree : _teleport_trees)
-        delete teleport_tree;
+    for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
+    {
+        delete tree_1;
+        delete tree_2;
+    }
 }
 
 Item* World::item(const std::string& name) const
@@ -322,10 +325,14 @@ void World::init_hint_sources()
 void World::init_tree_maps()
 {
     Json trees_json = Json::parse(WORLD_TELEPORT_TREES_JSON);
-    for(const Json& tree_json : trees_json)
-        _teleport_trees.push_back(WorldTeleportTree::from_json(tree_json));
+    for(const Json& tree_pair_json : trees_json)
+    {
+        WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0], _regions);
+        WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1], _regions);
+        _teleport_tree_pairs.push_back(std::make_pair(tree_1, tree_2));
+    }
 
-    std::cout << _teleport_trees.size() << " teleport trees loaded." << std::endl;
+    std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
 }
 
 void World::init_game_strings(const md::ROM& rom)
@@ -382,8 +389,11 @@ void World::write_to_rom(md::ROM& rom)
     rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
 
     // Write Tibor tree map connections
-    for (WorldTeleportTree* teleport_tree : _teleport_trees)
-        teleport_tree->write_to_rom(rom);
+    for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
+    {
+        tree_1->write_to_rom(rom);
+        tree_2->write_to_rom(rom);
+    }
 
     // Write Fahl enemies
     for(uint8_t i=0 ; i<_fahl_enemies.size() && i<50 ; ++i)
@@ -401,6 +411,13 @@ Json World::to_json() const
     // Export hints
     for(auto& [description, source] : _hint_sources)
         json["hints"][description] = source->text();
+
+    if(_options.shuffle_tibor_trees())
+    {
+        json["tiborTrees"] = Json::array();
+        for(auto& pair : _teleport_tree_pairs)
+            json["tiborTrees"].push_back(pair.first->name() + " <--> " + pair.second->name());
+    }
 
     // Export item sources
     for(auto& it : _regions)
@@ -590,8 +607,13 @@ void World::output_model()
     tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
 
     Json trees_json = Json::array();
-    for(WorldTeleportTree* tree : _teleport_trees)
-        trees_json.push_back(tree->to_json());
+    for(auto& [tree_1, tree_2] : _teleport_tree_pairs)
+    {
+        Json pair_json = Json::array();
+        pair_json.push_back(tree_1->to_json());
+        pair_json.push_back(tree_2->to_json());
+        trees_json.push_back(pair_json);
+    }
     tools::dump_json_to_file(trees_json, "./json_data/world_teleport_tree.json");
 
     Json strings_json;

@@ -25,7 +25,7 @@ private:
     std::map<std::string, SpawnLocation*> _spawn_locations;
     std::map<std::string, HintSource*> _hint_sources;
     std::vector<WorldMacroRegion*> _macro_regions;
-    std::vector<WorldTeleportTree*> _teleport_trees;
+    std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
     std::vector<uint8_t> _fahl_enemies;
 
@@ -60,9 +60,10 @@ public:
     const std::map<std::string, SpawnLocation*>& spawn_locations() const { return _spawn_locations; }
     void add_spawn_location(SpawnLocation* spawn) { _spawn_locations[spawn->id()] = spawn; }
     
+    const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
+    void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
     const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     const std::vector<WorldMacroRegion*> macro_regions() const { return _macro_regions; }
-    const std::vector<WorldTeleportTree*>& teleport_trees() const { return _teleport_trees; }
     const std::vector<std::string>& game_strings() const { return _game_strings; }
 
     void active_spawn_location(SpawnLocation* spawn) { _active_spawn_location = spawn; }

@@ -189,8 +189,7 @@ void RandomizerOptions::parse_json(const Json& json)
         if(game_settings_json.contains("removeGumiBoulder"))
             _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
         if(game_settings_json.contains("removeTiborRequirement"))
-            _remove_gumi_boulder = game_settings_json.at("removeTiborRequirement");
-        
+            _remove_tibor_requirement = game_settings_json.at("removeTiborRequirement");
         if(game_settings_json.contains("startingItems"))
         {
             std::map<std::string, uint8_t> startingItems = game_settings_json.at("startingItems");
