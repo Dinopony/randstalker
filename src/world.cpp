@@ -18,6 +18,7 @@
 #include "model/hint_source.json.hxx"
 #include "model/world_macro_region.json.hxx"
 #include "model/world_teleport_tree.json.hxx"
+#include "model/enemy.json.hxx"
 #include "assets/game_strings.json.hxx"
 
 World::World(const md::ROM& rom, const RandomizerOptions& options) :
@@ -31,10 +32,10 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_paths();
     this->init_macro_regions();
     this->init_spawn_locations();
-    this->init_tree_maps();
-    
+    this->init_teleport_trees();
     this->init_game_strings(rom);
     this->init_hint_sources();
+    this->init_enemies(rom);
 }
 
 World::~World()
@@ -58,6 +59,8 @@ World::~World()
         delete tree_1;
         delete tree_2;
     }
+    for (auto& [id, enemy] : _enemies)
+        delete enemy;
 }
 
 Item* World::item(const std::string& name) const
@@ -322,7 +325,7 @@ void World::init_hint_sources()
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 }
 
-void World::init_tree_maps()
+void World::init_teleport_trees()
 {
     Json trees_json = Json::parse(WORLD_TELEPORT_TREES_JSON);
     for(const Json& tree_pair_json : trees_json)
@@ -359,6 +362,61 @@ void World::init_game_strings(const md::ROM& rom)
         + std::to_string(_options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
+void World::init_enemies(const md::ROM& rom)
+{
+    // Read item drop probabilities from a table in the ROM
+    std::vector<uint16_t> probability_table;
+    constexpr uint32_t PROBABILITY_TABLE_ADDR = 0x199D6;
+    constexpr uint32_t PROBABILITY_TABLE_LAST_BYTE = 0x199E5;
+    for(uint32_t addr = PROBABILITY_TABLE_ADDR ; addr < PROBABILITY_TABLE_LAST_BYTE ; addr += 0x2)
+    {
+        probability_table.push_back(rom.get_word(addr));
+    }
+
+    // Read enemy info from a table in the ROM
+    constexpr uint32_t ENEMIES_TABLE_BASE_ADDR = 0x1B6F0;
+    for(uint32_t addr = ENEMIES_TABLE_BASE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
+    {
+        uint8_t id = rom.get_byte(addr);
+        uint8_t health = rom.get_byte(addr+1);
+        uint8_t defence = rom.get_byte(addr+2);
+        uint8_t dropped_golds = rom.get_byte(addr+3);
+        uint8_t attack = rom.get_byte(addr+4) & 0x7F;
+        Item* dropped_item = _items.at(rom.get_byte(addr+5) & 0x3F);
+        
+        // Use previously built probability table to know the real drop chances
+        uint8_t probability_id = ((rom.get_byte(addr+4) & 0x80) >> 5) | (rom.get_byte(addr+5) >> 6);
+        uint16_t drop_probability = probability_table.at(probability_id);
+
+        _enemies[id] = new Enemy(id, std::to_string(id), health, attack, defence, dropped_golds, dropped_item, drop_probability);
+    }
+
+    Json enemies_json = Json::parse(ENEMIES_JSON);
+    for(auto& [id_string, enemy_json] : enemies_json.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        if(_enemies.count(id))
+        {
+            Enemy* enemy = _enemies.at(id);
+            enemy->apply_json(enemy_json, *this);
+        }
+        else
+        {
+            _enemies[id] = Enemy::from_json(id, enemy_json, *this);
+        }
+    }
+
+    std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
+}
+
+Enemy* World::enemy(const std::string& name) const
+{
+    for(auto& [id, enemy] : _enemies)
+        if(enemy->name() == name)
+            return enemy;
+    return nullptr;
+}
+
 void World::add_tree_logic_paths()
 {
     if(_options.all_trees_visited_at_start())
@@ -392,6 +450,12 @@ void World::write_to_rom(md::ROM& rom)
     for (ItemSource* source : _item_sources)
         source->write_to_rom(rom);
 
+    // Write enemies
+    for (auto& [id, enemy] : _enemies)
+    {
+        enemy->write_to_rom(rom);
+    }
+
     // Write all text lines into text banks
     TextbanksEncoder encoder(rom, _game_strings);
 
@@ -412,8 +476,10 @@ void World::write_to_rom(md::ROM& rom)
     }
 
     // Write Fahl enemies
-    for(uint8_t i=0 ; i<_fahl_enemies.size() && i<50 ; ++i)
-        rom.set_byte(0x12CE6 + i, _fahl_enemies[i]);
+    if(_fahl_enemies.size() > 50)
+        throw RandomizerException("Cannot put more than 50 enemies for Fahl challenge");
+    for(uint8_t i=0 ; i<_fahl_enemies.size() ; ++i)
+        rom.set_byte(0x12CE6 + i, _fahl_enemies[i]->id());
 }
 
 Json World::to_json() const
@@ -447,7 +513,9 @@ Json World::to_json() const
     }
 
     // Fahl enemies
-    json["fahlEnemies"] = _fahl_enemies;
+    json["fahlEnemies"] = Json::array();
+    for(Enemy* enemy : _fahl_enemies)
+        json["fahlEnemies"].push_back(enemy->name());
 
     return json;
 }
@@ -537,6 +605,7 @@ void World::parse_json(const Json& json)
         }
     }
 
+    // Parse dark region
     if(json.contains("darkRegion"))
     {
         std::string dark_region_name = json.at("darkRegion");
@@ -549,6 +618,22 @@ void World::parse_json(const Json& json)
         }
     }
     else throw JsonParsingException("Darkened region is missing from plando JSON.");
+
+    // Parse Fahl enemies
+    if(json.contains("fahlEnemies"))
+    {
+        for(std::string enemy_name : json.at("fahlEnemies"))
+        {
+            Enemy* enemy = this->enemy(enemy_name);
+            if(!enemy)
+            {
+                std::stringstream msg;
+                msg << "Fahl enemy name '" << enemy_name << "' is invalid in plando JSON.";
+                throw JsonParsingException(msg.str());
+            }
+            _fahl_enemies.push_back(enemy);
+        }            
+    }
 }
 
 Item* World::parse_item_from_name(const std::string& item_name)
@@ -665,6 +750,11 @@ void World::output_model()
         paths_json.push_back(path->to_json(two_way));
     }
     tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
+
+    Json enemies_json = Json::object();
+    for(auto& [id, enemy] : _enemies)
+        enemies_json[std::to_string(id)] = enemy->to_json();
+    tools::dump_json_to_file(enemies_json, "./json_data/enemy.json");
 }
 
 void World::output_graphviz()

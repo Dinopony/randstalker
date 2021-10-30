@@ -12,6 +12,7 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
 endif()
 
 # Wrap JSON model files into automated .hxx headers
+wrap_file(SOURCE_FILE "src/model/enemy.json" VARIABLE_NAME "ENEMIES_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/item.json" VARIABLE_NAME "ITEMS_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/world_path.json" VARIABLE_NAME "WORLD_PATHS_JSON" TEXT_FILE)
@@ -56,6 +57,8 @@ set(SOURCES
         "src/tools/megadrive/rom.cpp"
         "src/tools/megadrive/types.hpp"
 
+    "src/model/enemy.hpp"
+    "src/model/enemy.cpp"
     "src/model/hint_source.hpp"
     "src/model/hint_source.cpp"
     "src/model/item_source.hpp"

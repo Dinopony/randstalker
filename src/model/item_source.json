@@ -1,60 +1,60 @@
 [
     {
-        "name": "Swamp Shrine (0F): ekeeke chest in room to the right, close to door",
+        "name": "Swamp Shrine (0F): chest in room to the right",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 0
     },
     {
-        "name": "Swamp Shrine (0F): key chest in carpet room",
+        "name": "Swamp Shrine (0F): chest in carpet room",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 1
     },
     {
-        "name": "Swamp Shrine (0F): lifestock chest in room to the left, accessible by falling from upstairs",
+        "name": "Swamp Shrine (0F): chest in left hallway (accessed by falling from upstairs)",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 2
     },
     {
-        "name": "Swamp Shrine (0F): ekeeke chest falling from the ceiling when beating the orc",
+        "name": "Swamp Shrine (0F): falling chest after beating orc",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 3
     },
     {
-        "name": "Swamp Shrine (0F): ekeeke chest in room connected to second entrance (without idol stone)",
+        "name": "Swamp Shrine (0F): ekeeke chest in room connected to second entrance (without Idol Stone)",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 4
     },
     {
-        "name": "Swamp Shrine (1F): lower key chest in wooden bridges room",
+        "name": "Swamp Shrine (1F): lower chest in wooden bridges room",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 5
     },
     {
-        "name": "Swamp Shrine (2F): upper key chest in wooden bridges room",
+        "name": "Swamp Shrine (2F): upper chest in wooden bridges room",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 6
     },
     {
-        "name": "Swamp Shrine (2F): key chest in spike room",
+        "name": "Swamp Shrine (2F): chest on spiked floor room balcony",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 7
     },
     {
-        "name": "Swamp Shrine (3F): lifestock chest in Fara's room",
+        "name": "Swamp Shrine (3F): chest in boss arena",
         "type": "chest",
         "regionId": "swamp_shrine",
         "chestId": 8
     },
     {
-        "name": "Mercator Dungeon (-1F): lifestock chest after key door",
+        "name": "Mercator Dungeon (-1F): chest on elevated pathway",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -63,7 +63,7 @@
         "chestId": 9
     },
     {
-        "name": "Mercator Dungeon (-1F): key chest in Moralis's cell",
+        "name": "Mercator Dungeon (-1F): chest in Moralis's cell",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -72,7 +72,7 @@
         "chestId": 10
     },
     {
-        "name": "Mercator Dungeon (-1F): left ekeeke chest in double chest room",
+        "name": "Mercator Dungeon (-1F): left chest in undeground double chest room",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -81,7 +81,7 @@
         "chestId": 11
     },
     {
-        "name": "Mercator Dungeon (-1F): right ekeeke chest in double chest room",
+        "name": "Mercator Dungeon (-1F): right chest in undeground double chest room",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -96,13 +96,13 @@
         "chestId": 13
     },
     {
-        "name": "Mercator: chest replacing sick merchant in secondary shop backroom",
+        "name": "Mercator: chest in special shop backroom",
         "type": "chest",
         "regionId": "mercator",
         "chestId": 14
     },
     {
-        "name": "Mercator Dungeon (1F): left ekeeke chest in double chest room",
+        "name": "Mercator Dungeon (1F): left chest in tower double chest room",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -111,7 +111,7 @@
         "chestId": 15
     },
     {
-        "name": "Mercator Dungeon (1F): right ekeeke chest in double chest room",
+        "name": "Mercator Dungeon (1F): right chest in tower double chest room",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -120,7 +120,7 @@
         "chestId": 16
     },
     {
-        "name": "Mercator: Arthur key chest in castle tower",
+        "name": "Mercator: chest in castle tower (ladder revealed by slashing armor)",
         "type": "chest",
         "regionId": "mercator",
         "hints": [
@@ -129,7 +129,7 @@
         "chestId": 17
     },
     {
-        "name": "Mercator Dungeon (4F): chest on top of tower",
+        "name": "Mercator Dungeon (4F): chest in topmost tower room",
         "type": "chest",
         "regionId": "mercator_dungeon",
         "hints": [
@@ -138,103 +138,97 @@
         "chestId": 18
     },
     {
-        "name": "King Nole's Palace: entrance lifestock chest",
+        "name": "King Nole's Palace: chest at entrance",
         "type": "chest",
         "regionId": "king_nole_palace",
         "chestId": 19
     },
     {
-        "name": "King Nole's Palace: ekeeke chest in topmost pit room",
+        "name": "King Nole's Palace: chest along central pit",
         "type": "chest",
         "regionId": "king_nole_palace",
         "chestId": 20
     },
     {
-        "name": "King Nole's Palace: dahl chest in floating button room",
+        "name": "King Nole's Palace: chest in floating button room",
         "type": "chest",
         "regionId": "king_nole_palace",
         "chestId": 21
     },
     {
-        "name": "King Nole's Cave: first lifestock chest",
+        "name": "King Nole's Cave: chest in second room",
         "type": "chest",
         "regionId": "king_nole_cave",
         "chestId": 22
     },
     {
-        "name": "King Nole's Cave: first gold chest in third room",
+        "name": "King Nole's Cave: first chest in third room",
         "type": "chest",
         "regionId": "king_nole_cave",
         "chestId": 24
     },
     {
-        "name": "King Nole's Cave: second gold chest in third room",
+        "name": "King Nole's Cave: second chest in third room",
         "type": "chest",
         "regionId": "king_nole_cave",
         "chestId": 25
     },
     {
-        "name": "Greenmaze: chest on path to lumberjack",
-        "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
-        "chestId": 168
-    },
-    {
-        "name": "King Nole's Cave: gold chest in isolated room",
+        "name": "King Nole's Cave: chest in isolated room",
         "type": "chest",
         "regionId": "king_nole_cave",
         "chestId": 28
     },
     {
-        "name": "King Nole's Cave: lifestock chest in crate room",
+        "name": "King Nole's Cave: chest in crate room",
         "type": "chest",
         "regionId": "king_nole_cave",
         "chestId": 29
     },
     {
-        "name": "King Nole's Cave: boulder chase corridor chest",
+        "name": "King Nole's Cave: boulder chase hallway chest",
         "type": "chest",
         "regionId": "king_nole_cave",
         "chestId": 31
     },
     {
-        "name": "Waterfall Shrine: lifestock chest under entrance (accessible after talking with Prospero)",
+        "name": "Waterfall Shrine: chest under entrance hallway (open after reaching Prospero)",
         "type": "chest",
         "regionId": "waterfall_shrine",
         "chestId": 33
     },
     {
-        "name": "Waterfall Shrine: lifestock chest near Prospero",
+        "name": "Waterfall Shrine: chest near Prospero",
         "type": "chest",
         "regionId": "waterfall_shrine",
         "chestId": 34
     },
     {
-        "name": "Waterfall Shrine: chest in button room",
+        "name": "Waterfall Shrine: chest on right branch of biggest room",
         "type": "chest",
         "regionId": "waterfall_shrine",
         "chestId": 35
     },
     {
-        "name": "Waterfall Shrine: upstairs key chest",
+        "name": "Waterfall Shrine: upstairs chest",
         "type": "chest",
         "regionId": "waterfall_shrine",
         "chestId": 36
     },
     {
-        "name": "Thieves Hideout: chest in entrance room when water is removed",
+        "name": "Thieves Hideout: chest under water in entrance room",
         "type": "chest",
         "regionId": "thieves_hideout_pre_key",
         "chestId": 38
     },
     {
-        "name": "Thieves Hideout: right chest in room accessible by falling from miniboss room",
+        "name": "Thieves Hideout (back): right chest in room under teal knight room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 41
     },
     {
-        "name": "Thieves Hideout: left chest in room accessible by falling from miniboss room",
+        "name": "Thieves Hideout (back): left chest in room under teal knight room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 42
@@ -252,109 +246,109 @@
         "chestId": 44
     },
     {
-        "name": "Thieves Hideout: right chest in room after quick climb trial",
+        "name": "Thieves Hideout (back): right chest in upper hallway after quick climb trial",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 45
     },
     {
-        "name": "Thieves Hideout: left chest in room after quick climb trial",
+        "name": "Thieves Hideout (back): left chest in upper hallway after quick climb trial",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 46
     },
     {
-        "name": "Thieves Hideout: chest in first platform room",
+        "name": "Thieves Hideout (back): chest in moving platforms room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 47
     },
     {
-        "name": "Thieves Hideout: chest in second platform room",
+        "name": "Thieves Hideout (back): chest in falling platforms room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 48
     },
     {
-        "name": "Thieves Hideout: reward chest after moving balls room",
+        "name": "Thieves Hideout (back): reward chest after moving balls room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 49
     },
     {
-        "name": "Thieves Hideout: chest near rolling boulder",
+        "name": "Thieves Hideout: chest near entrance with rolling boulder",
         "type": "chest",
         "regionId": "thieves_hideout_pre_key",
         "chestId": 50
     },
     {
-        "name": "Thieves Hideout: left chest in double ekeeke chest room",
+        "name": "Thieves Hideout: left chest in double chest room after spiral climbing",
         "type": "chest",
         "regionId": "thieves_hideout_pre_key",
         "chestId": 52
     },
     {
-        "name": "Thieves Hideout: right chest in double ekeeke chest room",
+        "name": "Thieves Hideout: right chest in double chest room after spiral climbing",
         "type": "chest",
         "regionId": "thieves_hideout_pre_key",
         "chestId": 53
     },
     {
-        "name": "Thieves Hideout: left chest in room before boss",
+        "name": "Thieves Hideout (back): left chest in room before boss",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 54
     },
     {
-        "name": "Thieves Hideout: right chest in room before boss",
+        "name": "Thieves Hideout (back): right chest in room before boss",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 55
     },
     {
-        "name": "Thieves Hideout: lithograph chest in boss reward room",
+        "name": "Thieves Hideout (back): chest #1 in boss reward room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 56
     },
     {
-        "name": "Thieves Hideout: 5 golds chest in boss reward room",
+        "name": "Thieves Hideout (back): chest #2 in boss reward room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 57
     },
     {
-        "name": "Thieves Hideout: 50 golds chest in boss reward room",
+        "name": "Thieves Hideout (back): chest #3 in boss reward room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 58
     },
     {
-        "name": "Thieves Hideout: lifestock chest in boss reward room",
+        "name": "Thieves Hideout (back): chest #4 in boss reward room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 59
     },
     {
-        "name": "Thieves Hideout: ekeeke chest in boss reward room",
+        "name": "Thieves Hideout (back): chest #5 in boss reward room",
         "type": "chest",
         "regionId": "thieves_hideout_post_key",
         "chestId": 60
     },
     {
-        "name": "Verla Mines: right chest in 'crate on spike' room near entrance",
+        "name": "Verla Mines: right chest in double chest room near entrance",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 66
     },
     {
-        "name": "Verla Mines: left chest in 'crate on spike' room near entrance",
+        "name": "Verla Mines: left chest in double chest room near entrance",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 67
     },
     {
-        "name": "Verla Mines: chest on isolated cliff in 'jar staircase' room",
+        "name": "Verla Mines: chest on jar staircase room balcony",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 68
@@ -375,19 +369,19 @@
         "chestId": 70
     },
     {
-        "name": "Verla Mines: left chest in 3 chests room",
+        "name": "Verla Mines: left chest in triple chests room near Slasher",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 71
     },
     {
-        "name": "Verla Mines: middle chest in 3 chests room",
+        "name": "Verla Mines: middle chest in triple chests room near Slasher",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 72
     },
     {
-        "name": "Verla Mines: right chest in 3 chests room",
+        "name": "Verla Mines: right chest in triple chests room near Slasher",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 73
@@ -405,43 +399,43 @@
         "chestId": 75
     },
     {
-        "name": "Verla Mines: chest in hidden room accessible by lava-walking",
+        "name": "Verla Mines: chest in hidden room accessed by walking on lava",
         "type": "chest",
         "regionId": "verla_mines",
         "chestId": 76
     },
     {
-        "name": "Destel Well (0F): 'crates and holes' room key chest",
+        "name": "Destel Well (0F): 4 crates puzzle room chest",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 77
     },
     {
-        "name": "Destel Well (1F): ekeeke chest on small stairs",
+        "name": "Destel Well (1F): chest on small stairs",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 78
     },
     {
-        "name": "Destel Well (1F): lifestock chest on narrow ground",
+        "name": "Destel Well (1F): chest on narrow floating ground",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 79
     },
     {
-        "name": "Destel Well (1F): lifestock chest in spike room",
+        "name": "Destel Well (1F): chest in spiky hallway",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 80
     },
     {
-        "name": "Destel Well (2F): lifestock chest",
+        "name": "Destel Well (2F): chest in ghosts room",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 81
     },
     {
-        "name": "Destel Well (2F): dahl chest",
+        "name": "Destel Well (2F): chest in falling platforms room",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 82
@@ -459,121 +453,121 @@
         "chestId": 84
     },
     {
-        "name": "Destel Well (3F): key chest in first trigger room",
+        "name": "Destel Well (3F): chest in first trapped arena",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 85
     },
     {
-        "name": "Destel Well (3F): key chest in giants room",
+        "name": "Destel Well (3F): chest in trapped giants room",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 86
     },
     {
-        "name": "Destel Well (3F): key chest in second trigger room",
+        "name": "Destel Well (3F): chest in second trapped arena",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 87
     },
     {
-        "name": "Destel Well (4F): top chest in room before Quake",
+        "name": "Destel Well (4F): top chest in room before boss",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 88
     },
     {
-        "name": "Destel Well (4F): left chest in room before Quake",
+        "name": "Destel Well (4F): left chest in room before boss",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 89
     },
     {
-        "name": "Destel Well (4F): down chest in room before Quake",
+        "name": "Destel Well (4F): bottom chest in room before boss",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 90
     },
     {
-        "name": "Destel Well (4F): right chest in room before Quake",
+        "name": "Destel Well (4F): right chest in room before boss",
         "type": "chest",
         "regionId": "destel_well",
         "chestId": 91
     },
     {
-        "name": "Lake Shrine (-1F): green golem spinner key chest",
+        "name": "Lake Shrine (-1F): chest in blinking platform room near green golem spinner",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 92
     },
     {
-        "name": "Lake Shrine (-1F): golden statue chest in corridor",
+        "name": "Lake Shrine (-1F): chest in hallway after golem hopping room",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 93
     },
     {
-        "name": "Lake Shrine (-1F): green golem spinner lifestock chest",
+        "name": "Lake Shrine (-1F): chest in spikeballs hallway near green golem spinner",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 94
     },
     {
-        "name": "Lake Shrine (-1F): golem hopping lifestock chest",
+        "name": "Lake Shrine (-1F): reward chest for golem hopping puzzle",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 95
     },
     {
-        "name": "Lake Shrine (-2F): middle life stock",
+        "name": "Lake Shrine (-2F): chest on room corner accessed by falling from above",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 96
     },
     {
-        "name": "Lake Shrine (-2F): 'throne room' lifestock chest",
+        "name": "Lake Shrine (-2F): front chest in throne room",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 97
     },
     {
-        "name": "Lake Shrine (-2F): 'throne room' key chest",
+        "name": "Lake Shrine (-2F): back chest in throne room",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 98
     },
     {
-        "name": "Lake Shrine (-3F): white golems room",
+        "name": "Lake Shrine (-3F): chest on floating platform in white golems room",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 99
     },
     {
-        "name": "Lake Shrine (-3F): key chest near sword of ice",
+        "name": "Lake Shrine (-3F): chest near Sword of Ice",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 100
     },
     {
-        "name": "Lake Shrine (-3F): chest in snake caging room",
+        "name": "Lake Shrine (-3F): chest in snake trapping puzzle room",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 101
     },
     {
-        "name": "Lake Shrine (-3F): lifestock chest on central block, obtained by falling from above",
+        "name": "Lake Shrine (-3F): chest on cube accessed by falling from upstairs",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 102
     },
     {
-        "name": "Lake Shrine (-3F): chest before reaching the duke",
+        "name": "Lake Shrine (-3F): chest in watery archway room",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 103
     },
     {
-        "name": "Lake Shrine (-3F): reward chest (left) after beating the duke",
+        "name": "Lake Shrine (-3F): left reward chest in boss room",
         "type": "chest",
         "regionId": "lake_shrine",
         "hints": [
@@ -582,7 +576,7 @@
         "chestId": 104
     },
     {
-        "name": "Lake Shrine (-3F): reward chest (middle) after beating the duke",
+        "name": "Lake Shrine (-3F): middle reward chest in boss room",
         "type": "chest",
         "regionId": "lake_shrine",
         "hints": [
@@ -591,7 +585,7 @@
         "chestId": 105
     },
     {
-        "name": "Lake Shrine (-3F): reward chest (right) after beating the duke",
+        "name": "Lake Shrine (-3F): right reward chest in boss room",
         "type": "chest",
         "regionId": "lake_shrine",
         "hints": [
@@ -600,7 +594,7 @@
         "chestId": 106
     },
     {
-        "name": "Lake Shrine (-3F): key chest near golden golem spinner",
+        "name": "Lake Shrine (-3F): chest near golden golems spinner",
         "type": "chest",
         "regionId": "lake_shrine",
         "chestId": 107
@@ -1006,6 +1000,12 @@
             "in a cave in the mountains"
         ],
         "chestId": 167
+    },
+    {
+        "name": "Greenmaze: chest on path to lumberjack",
+        "type": "chest",
+        "regionId": "greenmaze_pre_whistle",
+        "chestId": 168
     },
     {
         "name": "Greenmaze: chest on promontory appearing after pressing a button in other section",

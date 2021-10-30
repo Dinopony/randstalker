@@ -2,6 +2,7 @@
 
 #include "extlibs/json.hpp"
 
+#include "model/enemy.hpp"
 #include "model/item.hpp"
 #include "model/item_source.hpp"
 #include "model/world_region.hpp"
@@ -27,7 +28,8 @@ private:
     std::vector<WorldMacroRegion*> _macro_regions;
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
-    std::vector<uint8_t> _fahl_enemies;
+    std::map<uint8_t, Enemy*> _enemies;
+    std::vector<Enemy*> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
     WorldRegion* _dark_region;
@@ -76,8 +78,12 @@ public:
     WorldRegion* dark_region() { return _dark_region; }
     void dark_region(WorldRegion* region) { _dark_region = region; }
 
-    const std::vector<uint8_t>& fahl_enemies() const { return _fahl_enemies; }
-    void add_fahl_enemy(uint8_t enemy_id) { if(_fahl_enemies.size() < 0x50) _fahl_enemies.push_back(enemy_id); }
+    const std::map<uint8_t, Enemy*>& enemies() const { return _enemies; }
+    Enemy* enemy(uint8_t id) const { return _enemies.at(id); }
+    Enemy* enemy(const std::string& name) const;
+
+    const std::vector<Enemy*>& fahl_enemies() const { return _fahl_enemies; }
+    void add_fahl_enemy(Enemy* enemy) { _fahl_enemies.push_back(enemy); }
 
     void write_to_rom(md::ROM& rom);
 
@@ -98,7 +104,8 @@ private:
     void init_paths();
     void init_macro_regions();
     void init_spawn_locations();
-    void init_tree_maps();
-    void init_game_strings(const md::ROM& rom);
     void init_hint_sources();
+    void init_teleport_trees();
+    void init_game_strings(const md::ROM& rom);
+    void init_enemies(const md::ROM& rom);
 };

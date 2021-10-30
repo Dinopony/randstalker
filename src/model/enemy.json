@@ -1,0 +1,290 @@
+{
+    "0": {
+        "name": "nigel"
+    },
+    "4": {
+        "name": "orc_1"
+    },
+    "5": {
+        "name": "orc_2"
+    },
+    "6": {
+        "name": "orc_3"
+    },
+    "7": {
+        "name": "worm_1"
+    },
+    "8": {
+        "name": "worm_2"
+    },
+    "9": {
+        "name": "worm_3"
+    },
+    "19": {
+        "name": "small_grey_ball"
+    },
+    "20": {
+        "name": "large_grey_ball"
+    },
+    "23": {
+        "name": "ninja_1"
+    },
+    "24": {
+        "name": "ninja_2"
+    },
+    "25": {
+        "name": "ninja_3"
+    },
+    "26": {
+        "name": "lizard_1"
+    },
+    "27": {
+        "name": "lizard_2"
+    },
+    "28": {
+        "name": "lizard_3"
+    },
+    "29": {
+        "name": "knight_teal"
+    },
+    "30": {
+        "name": "knight_white"
+    },
+    "31": {
+        "name": "knight_gold"
+    },
+    "32": {
+        "name": "ghost_1"
+    },
+    "33": {
+        "name": "ghost_2"
+    },
+    "34": {
+        "name": "ghost_3"
+    },
+    "35": {
+        "name": "mummy_1"
+    },
+    "36": {
+        "name": "mummy_2"
+    },
+    "37": {
+        "name": "mummy_3"
+    },
+    "38": {
+        "name": "unicorn_1"
+    },
+    "39": {
+        "name": "unicorn_2"
+    },
+    "40": {
+        "name": "unicorn_3"
+    },
+    "41": {
+        "name": "skeleton_1"
+    },
+    "42": {
+        "name": "skeleton_2"
+    },
+    "43": {
+        "name": "skeleton_3"
+    },
+    "44": {
+        "name": "mimic_1"
+    },
+    "45": {
+        "name": "mimic_2"
+    },
+    "46": {
+        "name": "mimic_3"
+    },
+    "54": {
+        "name": "mushroom_green"
+    },
+    "55": {
+        "name": "mushroom_red"
+    },
+    "56": {
+        "name": "mushroom_black"
+    },
+    "57": {
+        "name": "giant_1"
+    },
+    "58": {
+        "name": "giant_2"
+    },
+    "59": {
+        "name": "giant_3"
+    },
+    "60": {
+        "name": "slime_1"
+    },
+    "61": {
+        "name": "slime_2"
+    },
+    "62": {
+        "name": "slime_3"
+    },
+    "73": {
+        "name": "small_gray_spikeball"
+    },
+    "74": {
+        "name": "large_gray_spikeball"
+    },
+    "75": {
+        "name": "sacred_tree"
+    },
+    "83": {
+        "name": "large_concrete_block"
+    },
+    "84": {
+        "name": "square_switch"
+    },
+    "85": {
+        "name": "round_switch"
+    },
+    "101": {
+        "name": "two_way_signpost"
+    },
+    "102": {
+        "name": "three_way_signpost"
+    },
+    "103": {
+        "name": "gate_south"
+    },
+    "108": {
+        "name": "locked_door"
+    },
+    "110": {
+        "name": "arthur"
+    },
+    "112": {
+        "name": "duke"
+    },
+    "119": {
+        "name": "golem_statue_1"
+    },
+    "120": {
+        "name": "mir_barrier"
+    },
+    "124": {
+        "name": "mir"
+    },
+    "125": {
+        "name": "unused_bird_1"
+    },
+    "126": {
+        "name": "unused_bird_2"
+    },
+    "127": {
+        "name": "unused_bird_3"
+    },
+    "129": {
+        "name": "slime_4"
+    },
+    "130": {
+        "name": "slime_5"
+    },
+    "131": {
+        "name": "slime_6"
+    },
+    "133": {
+        "name": "zak"
+    },
+    "135": {
+        "name": "small_fireball"
+    },
+    "136": {
+        "name": "reaper_1"
+    },
+    "137": {
+        "name": "reaper_2"
+    },
+    "138": {
+        "name": "unused_reaper_3"
+    },
+    "139": {
+        "name": "golem_statue_2"
+    },
+    "141": {
+        "name": "small_green_spikeball"
+    },
+    "142": {
+        "name": "large_grey_spikeball"
+    },
+    "143": {
+        "name": "ghost_spawner_1"
+    },
+    "144": {
+        "name": "ghost_spawner_2"
+    },
+    "145": {
+        "name": "ghost_spawner_3"
+    },
+    "146": {
+        "name": "golem_1"
+    },
+    "147": {
+        "name": "golem_2"
+    },
+    "148": {
+        "name": "golem_3"
+    },
+    "149": {
+        "name": "spectre_1"
+    },
+    "150": {
+        "name": "spectre_2"
+    },
+    "151": {
+        "name": "spectre_3"
+    },
+    "152": {
+        "name": "unused_small_blue_ball"
+    },
+    "153": {
+        "name": "small_red_ball"
+    },
+    "154": {
+        "name": "unused_large_blue_ball"
+    },
+    "155": {
+        "name": "large_red_ball"
+    },
+    "157": {
+        "name": "spinner_white"
+    },
+    "159": {
+        "name": "miro"
+    },
+    "160": {
+        "name": "firedemon"
+    },
+    "161": {
+        "name": "firedemon_projectile"
+    },
+    "162": {
+        "name": "gola"
+    },
+    "165": {
+        "name": "nole"
+    },
+    "166": {
+        "name": "nole_projectile"
+    },
+    "167": {
+        "name": "quake_grey"
+    },
+    "168": {
+        "name": "zak_projectile"
+    },
+    "170": {
+        "name": "spinner_red"
+    },
+    "171": {
+        "name": "quake_gold"
+    },
+    "172": {
+        "name": "gola_fireball"
+    }
+}
