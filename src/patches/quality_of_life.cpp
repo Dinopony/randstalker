@@ -4,6 +4,12 @@
 #include "../world.hpp"
 #include "../exceptions.hpp"
 
+#include "../assets/fixed_hud_tilemap.bin.hxx"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//      UI CHANGES
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void alter_item_order_in_menu(md::ROM& rom)
 {
     std::vector<uint8_t> itemOrder = {
@@ -178,6 +184,21 @@ void alter_credits(md::ROM& rom)
         rom.set_byte(addr, 0x00);
 }
 
+/**
+ * In the original game, the HUD tilemap has a problem on the zero character, which is the only one not having a shadow.
+ * This is fixed in this edited version of the HUD tilemap.
+ */
+void fix_hud_tilemap(md::ROM& rom)
+{
+    constexpr uint32_t HUD_TILEMAP_ADDR = 0x9242;
+    for(uint32_t i=0 ; i<FIXED_HUD_TILEMAP_SIZE ; ++i)
+        rom.set_byte(HUD_TILEMAP_ADDR+i, FIXED_HUD_TILEMAP[i]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//      OTHER QOL CHANGES
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void shorten_mir_death_cutscene(md::ROM& rom)
 {
     // Cut the cutscene script
@@ -236,6 +257,7 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     rename_items(rom, options);
     change_hud_color(rom, options);
     alter_credits(rom);
+    fix_hud_tilemap(rom);
 
     // Other QoL changes
     shorten_mir_death_cutscene(rom);

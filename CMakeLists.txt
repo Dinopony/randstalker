@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1.0)
 
 include("CMakeFunctions.txt")
 
-project(randstalker VERSION 1.3.1 LANGUAGES CXX)
+project(randstalker VERSION 1.5.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,6 +23,7 @@ wrap_file(SOURCE_FILE "src/model/world_macro_region.json" VARIABLE_NAME "WORLD_M
 wrap_file(SOURCE_FILE "src/model/world_teleport_tree.json" VARIABLE_NAME "WORLD_TELEPORT_TREES_JSON" TEXT_FILE)
 
 # Wrap assets files into automated .hxx headers
+wrap_file(SOURCE_FILE "src/assets/fixed_hud_tilemap.bin" VARIABLE_NAME "FIXED_HUD_TILEMAP")
 wrap_file(SOURCE_FILE "src/assets/blue_jewel.bin" VARIABLE_NAME "BLUE_JEWEL_SPRITE" SPRITE_FILE)
 wrap_file(SOURCE_FILE "src/assets/green_jewel.bin" VARIABLE_NAME "GREEN_JEWEL_SPRITE" SPRITE_FILE)
 wrap_file(SOURCE_FILE "src/assets/yellow_jewel.bin" VARIABLE_NAME "YELLOW_JEWEL_SPRITE" SPRITE_FILE)
