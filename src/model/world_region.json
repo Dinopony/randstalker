@@ -209,7 +209,8 @@
     {
         "name": "Route to Lake Shrine",
         "nodeIds": [
-            "route_lake_shrine"
+            "route_lake_shrine",
+            "route_lake_shrine_cliff"
         ]
     },
     {

@@ -283,9 +283,7 @@ void World::init_paths()
     // Handle paths related to specific tricks
     if(_options.handle_ghost_jumping_in_logic())
     {
-        WorldNode* mountainous_area = _nodes.at("mountainous_area");
-        WorldNode* route_lake_shrine = _nodes.at("route_lake_shrine");
-        this->add_path(new WorldPath(route_lake_shrine, mountainous_area, 1, { _items[ITEM_AXE_MAGIC] }));
+        this->add_path(new WorldPath(_nodes.at("route_lake_shrine"), _nodes.at("route_lake_shrine_cliff")));
     }
 }
 

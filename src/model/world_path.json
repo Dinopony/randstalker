@@ -272,10 +272,15 @@
     },
     {
         "fromId": "mountainous_area",
-        "toId": "route_lake_shrine",
+        "toId": "route_lake_shrine_cliff",
+        "twoWay": true,
         "requiredItems": [
             "Axe Magic"
         ]
+    },
+    {
+        "fromId": "route_lake_shrine_cliff",
+        "toId": "route_lake_shrine"
     },
     {
         "fromId": "mountainous_area",

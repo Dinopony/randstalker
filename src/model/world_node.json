@@ -255,6 +255,14 @@
             "on the mountainous path to Lake Shrine"
         ]
     },
+    "route_lake_shrine_cliff": {
+        "name": "Route to Lake Shrine cliff",
+        "hints": [
+            "on a route",
+            "near a lake",
+            "on the mountainous path to Lake Shrine"
+        ]
+    },
     "lake_shrine": {
         "name": "Lake Shrine",
         "hints": [

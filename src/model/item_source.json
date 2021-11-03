@@ -959,7 +959,7 @@
     {
         "name": "Route to Lake Shrine: 'hard' chest on crossroads with mountainous area",
         "type": "chest",
-        "nodeId": "mountainous_area",
+        "nodeId": "route_lake_shrine_cliff",
         "chestId": 162
     },
     {
