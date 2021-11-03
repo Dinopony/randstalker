@@ -203,15 +203,16 @@ void generate(const ArgumentDictionary& args)
     else
         std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     
-    std::cout << "Writing world to ROM...\n";
-    world.write_to_rom(*rom);
-
-    // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-    std::cout << "Applying game patches...\n\n";
-    apply_game_patches(*rom, options, world);
-
+    // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
     {
+        std::cout << "Writing world to ROM...\n";
+        world.write_to_rom(*rom);
+
+        // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
+        std::cout << "Applying game patches...\n\n";
+        apply_game_patches(*rom, options, world);
+
         rom->save_as(output_rom_path);
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
     }
