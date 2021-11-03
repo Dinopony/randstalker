@@ -6,7 +6,7 @@
 
 #include "model/item.hpp"
 #include "model/item_source.hpp"
-#include "model/world_region.hpp"
+#include "model/world_node.hpp"
 
 #include "tools/unsorted_set.hpp"
 

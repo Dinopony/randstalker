@@ -5,11 +5,11 @@
 #include "model/enemy.hpp"
 #include "model/item.hpp"
 #include "model/item_source.hpp"
-#include "model/world_region.hpp"
+#include "model/world_node.hpp"
 #include "model/world_path.hpp"
 #include "model/spawn_location.hpp"
 #include "model/hint_source.hpp"
-#include "model/world_macro_region.hpp"
+#include "model/world_region.hpp"
 #include "model/world_teleport_tree.hpp"
 
 #include "randomizer_options.hpp"
@@ -20,12 +20,12 @@ class World
 {
 private:
     std::map<uint8_t, Item*> _items;
-    std::map<std::string, WorldRegion*> _regions;
-    std::map<std::pair<WorldRegion*, WorldRegion*>, WorldPath*> _paths;
+    std::map<std::string, WorldNode*> _nodes;
+    std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*> _paths;
     std::vector<ItemSource*> _item_sources;
     std::map<std::string, SpawnLocation*> _spawn_locations;
     std::map<std::string, HintSource*> _hint_sources;
-    std::vector<WorldMacroRegion*> _macro_regions;
+    std::vector<WorldRegion*> _regions;
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
     std::map<uint8_t, Enemy*> _enemies;
@@ -47,12 +47,12 @@ public:
     Item* add_gold_item(uint8_t worth);
     std::vector<Item*> starting_inventory() const;
 
-    const std::map<std::string, WorldRegion*>& regions() const { return _regions; }
-    WorldRegion* region(const std::string& id) const { return _regions.at(id); }
-    WorldRegion* first_region_with_item(Item* item);
+    const std::map<std::string, WorldNode*>& nodes() const { return _nodes; }
+    WorldNode* node(const std::string& id) const { return _nodes.at(id); }
+    WorldNode* first_node_with_item(Item* item);
 
-    const std::map<std::pair<WorldRegion*, WorldRegion*>, WorldPath*>& paths() const { return _paths; }
-    WorldPath* path(WorldRegion* origin, WorldRegion* destination);
+    const std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*>& paths() const { return _paths; }
+    WorldPath* path(WorldNode* origin, WorldNode* destination);
     WorldPath* path(const std::string& origin_name, const std::string& destination_name);
     void add_path(WorldPath* path);
 
@@ -66,16 +66,18 @@ public:
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
     void add_tree_logic_paths();
 
+    const std::vector<WorldRegion*> regions() const { return _regions; }
+    WorldRegion* region(const std::string& name) const;
+
     const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
-    const std::vector<WorldMacroRegion*> macro_regions() const { return _macro_regions; }
     const std::vector<std::string>& game_strings() const { return _game_strings; }
 
     void active_spawn_location(SpawnLocation* spawn) { _active_spawn_location = spawn; }
     SpawnLocation* active_spawn_location() const { return _active_spawn_location; }
-    WorldRegion* spawn_region() const { return (_active_spawn_location) ? _active_spawn_location->region() : nullptr; } 
-    WorldRegion* end_region() const { return _regions.at("end"); } 
+    WorldNode* spawn_node() const { return (_active_spawn_location) ? _active_spawn_location->node() : nullptr; } 
+    WorldNode* end_node() const { return _nodes.at("end"); } 
 
-    WorldRegion* dark_region() { return _dark_region; }
+    WorldRegion* dark_region() const { return _dark_region; }
     void dark_region(WorldRegion* region) { _dark_region = region; }
 
     const std::map<uint8_t, Enemy*>& enemies() const { return _enemies; }
@@ -91,7 +93,7 @@ public:
     void parse_json(const Json& json);
     Item* parse_item_from_name(const std::string& itemName);
 
-    bool is_macro_region_avoidable(WorldMacroRegion* macro_region) const;
+    bool is_region_avoidable(WorldRegion* region) const;
     bool is_item_avoidable(Item* item) const;
 
     void output_model();
@@ -100,9 +102,9 @@ public:
 private:
     void init_items();
     void init_item_sources();
-    void init_regions();
+    void init_nodes();
     void init_paths();
-    void init_macro_regions();
+    void init_regions();
     void init_spawn_locations();
     void init_hint_sources();
     void init_teleport_trees();

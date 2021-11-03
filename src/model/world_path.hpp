@@ -3,34 +3,34 @@
 #include "item.hpp"
 #include "../tools/unsorted_set.hpp"
 
-class WorldRegion;
+class WorldNode;
 
 class WorldPath
 {
 private:
-    WorldRegion* _from_region;
-    WorldRegion* _to_region;
+    WorldNode* _from_node;
+    WorldNode* _to_node;
     uint16_t _weight;
     std::vector<Item*> _required_items;
-    std::vector<WorldRegion*> _required_regions;
+    std::vector<WorldNode*> _required_nodes;
     std::vector<Item*> _items_placed_when_crossing;
     
 public:
-    WorldPath(WorldRegion* from_region, 
-                WorldRegion* to_region, 
+    WorldPath(WorldNode* from_node, 
+                WorldNode* to_node, 
                 uint16_t weight = 1, 
                 const std::vector<Item*>& required_items = {}, 
-                const std::vector<WorldRegion*>& required_regions = {}, 
+                const std::vector<WorldNode*>& required_nodes = {}, 
                 const std::vector<Item*>& items_placed_when_crossing = {} );
 
     const std::vector<Item*>& required_items() const { return _required_items; }
     void add_required_item(Item* item) { _required_items.push_back(item); }
 
-    WorldRegion* origin() const { return _from_region; }
-    WorldRegion* destination() const { return _to_region; }
+    WorldNode* origin() const { return _from_node; }
+    WorldNode* destination() const { return _to_node; }
 
-    const std::vector<WorldRegion*>& required_regions() const { return _required_regions; }
-    bool has_explored_required_regions(const UnsortedSet<WorldRegion*>& explored_regions) const;
+    const std::vector<WorldNode*>& required_nodes() const { return _required_nodes; }
+    bool has_explored_required_nodes(const UnsortedSet<WorldNode*>& explored_nodes) const;
 
     const std::vector<Item*>& items_placed_when_crossing() const { return _items_placed_when_crossing; }
     void add_item_placed_when_crossing(Item* item) { _items_placed_when_crossing.push_back(item); }
@@ -43,5 +43,5 @@ public:
     bool is_perfect_opposite_of(WorldPath* other) const;
 
     Json to_json(bool two_way) const;
-    static WorldPath* from_json(const Json& json, const std::map<std::string, WorldRegion*>& regions, const std::map<uint8_t, Item*>& items);  
+    static WorldPath* from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes, const std::map<uint8_t, Item*>& items);  
 };

@@ -5,21 +5,30 @@
 #include "extlibs/json.hpp"
 #include "world.hpp"
 
-class WorldRegion;
+class WorldNode;
 class ItemSource;
 class Item;
 class WorldPath;
 
+/**
+ * WorldSolver is a class used for checking a world solvability, or to explore a world
+ * until the next blocking state to be able to fill it iteratively and make it solvable
+ * in the end.
+ * 
+ * It works by setting a starting point and an end point, and optional constraints
+ * (forbidding to take item X, to take items in node Y...) than can be used in some
+ * circumstances to determine minimal requirements to solve the seed.
+ */
 class WorldSolver
 {
 private:
-    WorldRegion* _start_node;
-    WorldRegion* _end_node;
+    WorldNode* _start_node;
+    WorldNode* _end_node;
     std::vector<Item*> _forbidden_items;
-    UnsortedSet<WorldRegion*> _forbidden_regions_to_pick_items;
+    UnsortedSet<WorldNode*> _forbidden_nodes_to_pick_items;
 
-    UnsortedSet<WorldRegion*> _explored_regions;
-    UnsortedSet<WorldRegion*> _regions_to_explore;
+    UnsortedSet<WorldNode*> _explored_nodes;
+    UnsortedSet<WorldNode*> _nodes_to_explore;
     
     UnsortedSet<WorldPath*> _blocked_paths;
     std::vector<ItemSource*> _reachable_item_sources;
@@ -36,7 +45,7 @@ public:
     WorldSolver()
     {}
 
-    WorldSolver(WorldRegion* start_node, WorldRegion* end_node, const std::vector<Item*>& starting_inventory = {})
+    WorldSolver(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory = {})
     {
         this->setup(start_node, end_node, starting_inventory);
     }
@@ -46,14 +55,14 @@ public:
         this->setup(world);
     }
 
-    void setup(WorldRegion* start_node, WorldRegion* end_node, const std::vector<Item*>& starting_inventory = {});
+    void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory = {});
     void setup(const World& world)
     { 
-        this->setup(world.spawn_region(), world.end_region(), world.starting_inventory());
+        this->setup(world.spawn_node(), world.end_node(), world.starting_inventory());
     }
 
     void forbid_items(const std::vector<Item*>& forbidden_items);
-    void forbid_taking_items_from_regions(const UnsortedSet<WorldRegion*>& forbidden_regions);
+    void forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes);
 
     bool try_to_solve();
     bool run_until_blocked();
@@ -68,10 +77,10 @@ public:
     const std::vector<Item*>& inventory() const { return _inventory; }
 
     bool can_take_path(WorldPath* path) const;
-    std::vector<WorldRegion*> missing_regions_to_take_path(WorldPath* path) const;
+    std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
     std::vector<Item*> missing_items_to_take_path(WorldPath* path) const;
 
-    bool reached_end() const { return _explored_regions.contains(_end_node); }
+    bool reached_end() const { return _explored_nodes.contains(_end_node); }
     std::vector<Item*> find_minimal_inventory();
 
     Json& debug_log() { return _debug_log; }

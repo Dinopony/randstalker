@@ -3,7 +3,7 @@
 #include <string>
 #include "item.hpp"
 
-class WorldRegion;
+class WorldNode;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -12,11 +12,11 @@ class ItemSource
 private:
     std::string _name;
     Item* _item;
-    WorldRegion* _region;
+    WorldNode* _node;
     std::vector<std::string> _hints;
 
 public:
-    ItemSource(const std::string& name, WorldRegion* region, const std::vector<std::string>& hints);
+    ItemSource(const std::string& name, WorldNode* node, const std::vector<std::string>& hints);
 
     virtual std::string type_name() const = 0;
 
@@ -28,8 +28,8 @@ public:
 
     uint8_t item_id() const { return (_item) ? _item->id() : ITEM_NONE; }
 
-    WorldRegion* region() const { return _region; }
-    ItemSource& region(WorldRegion* region) { _region = region; return *this; }
+    WorldNode* node() const { return _node; }
+    ItemSource& node(WorldNode* node) { _node = node; return *this; }
 
     const std::vector<std::string>& hints() const { return _hints; }
     void add_hint(const std::string& hint) { _hints.push_back(hint); }
@@ -38,7 +38,7 @@ public:
     virtual void write_to_rom(md::ROM& rom) const = 0;
 
     virtual Json to_json() const;
-    static ItemSource* from_json(const Json& json, const std::map<std::string, WorldRegion*>& regions);  
+    static ItemSource* from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes);  
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,8 +48,8 @@ class ItemSourceChest : public ItemSource
 private:
     uint8_t _chest_id;
 public:
-    ItemSourceChest(uint8_t chest_id, const std::string& name, WorldRegion* region = nullptr, const std::vector<std::string>& hints = {}) :
-        ItemSource (name, region, hints),
+    ItemSourceChest(uint8_t chest_id, const std::string& name, WorldNode* node = nullptr, const std::vector<std::string>& hints = {}) :
+        ItemSource (name, node, hints),
         _chest_id  (chest_id)
     {}
 
@@ -73,9 +73,9 @@ private:
     bool _cannot_be_taken_repeatedly;
 
 public:
-    ItemSourceOnGround(std::vector<uint32_t> addresses_in_rom, const std::string& name, WorldRegion* region, 
+    ItemSourceOnGround(std::vector<uint32_t> addresses_in_rom, const std::string& name, WorldNode* node, 
                         const std::vector<std::string>& hints, bool cannot_be_taken_repeatedly) :
-        ItemSource                  (name, region, hints), 
+        ItemSource                  (name, node, hints), 
         _addresses_in_rom           (addresses_in_rom),
         _cannot_be_taken_repeatedly (cannot_be_taken_repeatedly)
     {
@@ -112,14 +112,14 @@ public:
 class ItemSourceShop : public ItemSourceOnGround
 {
 public:
-    ItemSourceShop(std::vector<uint32_t> addresses_in_rom, const std::string& name, WorldRegion* region, const std::vector<std::string>& hints) :
-        ItemSourceOnGround (addresses_in_rom, name, region, hints, true)
+    ItemSourceShop(std::vector<uint32_t> addresses_in_rom, const std::string& name, WorldNode* node, const std::vector<std::string>& hints) :
+        ItemSourceOnGround (addresses_in_rom, name, node, hints, true)
     {
         this->add_hint("owned by someone trying to make profit out of it");
     }
 
-    ItemSourceShop(uint32_t addressInROM, const std::string& name, WorldRegion* region = nullptr, const std::vector<std::string>& hints = {}) :
-        ItemSourceShop(std::vector<uint32_t>({ addressInROM }), name, region, hints)
+    ItemSourceShop(uint32_t addressInROM, const std::string& name, WorldNode* node = nullptr, const std::vector<std::string>& hints = {}) :
+        ItemSourceShop(std::vector<uint32_t>({ addressInROM }), name, node, hints)
     {}
 
     virtual std::string type_name() const { return "shop"; }
@@ -135,8 +135,8 @@ private:
     uint32_t _address_in_rom;
 
 public:
-    ItemSourceReward(uint32_t address_in_rom, const std::string& name, WorldRegion* region, const std::vector<std::string>& hints) :
-        ItemSource      (name, region, hints), 
+    ItemSourceReward(uint32_t address_in_rom, const std::string& name, WorldNode* node, const std::vector<std::string>& hints) :
+        ItemSource      (name, node, hints), 
         _address_in_rom (address_in_rom)
     {
         this->add_hint("owned by someone willing to give it to the brave");

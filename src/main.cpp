@@ -4,34 +4,13 @@
 //
 // ---------------------------------------------------------------------------------------
 //
-//        Developed by:    Dinopony (@DinoponyRuns)
-//        Version:        v1.01
+//     Developed by: Dinopony (@DinoponyRuns)
 //
 // ---------------------------------------------------------------------------------------
 //
 //  Thanks to the whole Landstalker speedrunning community for being supportive during the whole process of developing this
 //  Special mention to Wizardwhosaysni for being extra helpful with his deep knowledge of Megadrive reverse-engineering
 // 
-//
-//  Command line syntax:
-//        randstalker [args]
-//
-//    Common parameters:
-//        --permalink="value"        ===> Permalink from a previous generation, allowing you to build the exact same seed
-//        --inputRom="value"        ===> Path to the game ROM used as input for the randomization (this file will only be read, not modified).
-//        --outputRom="value"        ===> Path where the randomized ROM will be put, defaults to 'output.md' in current working directory.
-//        --seed="value"            ===> Random seed (integer value or "random") used to alter the game. Using the same seed twice will produce the same result.
-//        --outputLog="value"        ===> Path where the seed log will be put, defaults to 'randstalker.log' in current working directory.
-//        --noPause                ===> Don't ask to press a key at the end of generation (useful for automated generation systems)
-//
-//    Randomization options:
-//        --fillingRate            ===> Set the randomizing algorithm step filling rate from 0.0 to 1.0 (default 0.20)
-//        --shuffleTrees            ===> Randomize Tibor trees
-//        --noArmorUpgrades        ===> Don't use armor upgrades, just place vanilla armors randomly
-//        --spawnLocation            ===> Spawn point between Massan, Gumi and Ryuma
-//        --noRecordBook            ===> Record Book not available in inventory
-//        --dungeonSignHints        ===> Whether to add extra hints on signs inside dungeons (e.g. Thieves Hideout, Mir Tower...)
-//
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include <cstdint>
@@ -40,7 +19,7 @@
 
 #include "extlibs/base64.hpp"
 
-#include "model/world_region.hpp"
+#include "model/world_node.hpp"
 #include "model/item_source.hpp"
 
 #include "patches/patches.hpp"
@@ -53,17 +32,17 @@
 #include "world.hpp"
 #include "world_randomizer.hpp"
 
-md::ROM* getInputROM(std::string inputRomPath)
+md::ROM* get_input_rom(std::string input_rom_path)
 {
-    md::ROM* rom = new md::ROM(inputRomPath);
+    md::ROM* rom = new md::ROM(input_rom_path);
     while (!rom->is_valid())
     {
         delete rom;
-        if (!inputRomPath.empty())
-            std::cout << "[ERROR] ROM input path \"" << inputRomPath << "\" is wrong, and no ROM could be opened this way.\n\n";
+        if (!input_rom_path.empty())
+            std::cout << "[ERROR] ROM input path \"" << input_rom_path << "\" is wrong, and no ROM could be opened this way.\n\n";
         std::cout << "Please specify input ROM path (or drag ROM on Randstalker.exe icon before launching): ";
-        std::getline(std::cin, inputRomPath);
-        rom = new md::ROM(inputRomPath);
+        std::getline(std::cin, input_rom_path);
+        rom = new md::ROM(input_rom_path);
     }
 
     return rom;
@@ -163,14 +142,14 @@ Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictiona
     return spoiler_json;
 }
 
-void displayOptions(const RandomizerOptions& options)
+void display_options(const RandomizerOptions& options)
 {
-    Json optionsAsJSON = options.to_json();
+    Json options_as_json = options.to_json();
     if(!options.has_custom_mandatory_items())
-        optionsAsJSON["randomizerSettings"]["mandatoryItems"] = "default";
+        options_as_json["randomizerSettings"]["mandatoryItems"] = "default";
     if(!options.has_custom_filler_items())
-        optionsAsJSON["randomizerSettings"]["fillerItems"] = "default";
-    std::cout << "Settings: " << optionsAsJSON.dump(2) << "\n\n";
+        options_as_json["randomizerSettings"]["fillerItems"] = "default";
+    std::cout << "Settings: " << options_as_json.dump(2) << "\n\n";
 }
 
 void generate(const ArgumentDictionary& args)
@@ -197,13 +176,13 @@ void generate(const ArgumentDictionary& args)
     }
 
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
-    md::ROM* rom = getInputROM(input_rom_path);
+    md::ROM* rom = get_input_rom(input_rom_path);
     rom->mark_empty_chunk(0x11F380, 0x120000);
     rom->mark_empty_chunk(0x1FFAC0, 0x200000);
 
     World world(*rom, options);
 
-    displayOptions(options);
+    display_options(options);
 
     Json spoiler_json;
     if(options.is_plando())

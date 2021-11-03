@@ -4,7 +4,7 @@
         "posX": 31,
         "posY": 25,
         "orientation": 136,
-        "regionId": "massan",
+        "nodeId": "massan",
         "startingLife": 4
     },
 
@@ -13,7 +13,7 @@
         "posX": 16,
         "posY": 15,
         "orientation": 136,
-        "regionId": "gumi",
+        "nodeId": "gumi",
         "startingLife": 4
     },
 
@@ -22,7 +22,7 @@
         "posX": 17,
         "posY": 20,
         "orientation": 72,
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "startingLife": 4
     },
 
@@ -31,7 +31,7 @@
         "posX": 56,
         "posY": 26,
         "orientation": 72,
-        "regionId": "route_massan_gumi",
+        "nodeId": "route_massan_gumi",
         "startingLife": 4
     },
 
@@ -40,7 +40,7 @@
         "posX": 22,
         "posY": 18,
         "orientation": 200,
-        "regionId": "route_gumi_ryuma",
+        "nodeId": "route_gumi_ryuma",
         "startingLife": 4
     },
 
@@ -49,7 +49,7 @@
         "posX": 16,
         "posY": 15,
         "orientation": 136,
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "startingLife": 10
     },
 
@@ -58,7 +58,7 @@
         "posX": 29,
         "posY": 33,
         "orientation": 8,
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "startingLife": 10
     },
 
@@ -67,7 +67,7 @@
         "posX": 22,
         "posY": 22,
         "orientation": 136,
-        "regionId": "verla",
+        "nodeId": "verla",
         "startingLife": 16
     },
     
@@ -76,7 +76,7 @@
         "posX": 17,
         "posY": 18,
         "orientation": 136,
-        "regionId": "destel",
+        "nodeId": "destel",
         "startingLife": 20
     }
 }

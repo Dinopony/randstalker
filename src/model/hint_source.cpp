@@ -4,11 +4,11 @@
 #include "../tools/game_text.hpp"
 
 HintSource::HintSource(const std::vector<uint16_t>& text_ids, const std::vector<std::string*>& string_ptrs, 
-    const std::string& description, WorldRegion* region, bool special, bool small_textbox) :
+    const std::string& description, WorldNode* node, bool special, bool small_textbox) :
     _text_ids       (text_ids),
     _string_ptrs    (string_ptrs),
     _description    (description),
-    _region         (region),
+    _node         (node),
     _special        (special),
     _small_textbox  (small_textbox),
     _text           ()
@@ -42,7 +42,7 @@ Json HintSource::to_json() const
     if(_special)
         json["special"] = true;
     else
-        json["regionId"] = _region->id();
+        json["nodeId"] = _node->id();
     
     if(_small_textbox)
         json["smallTextbox"] = _small_textbox;
@@ -50,7 +50,7 @@ Json HintSource::to_json() const
     return json;
 }
 
-HintSource* HintSource::from_json(const Json& json, const std::map<std::string, WorldRegion*>& regions, std::vector<std::string>& game_strings)
+HintSource* HintSource::from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes, std::vector<std::string>& game_strings)
 {
     std::string description = json.at("description");
     
@@ -62,10 +62,10 @@ HintSource* HintSource::from_json(const Json& json, const std::map<std::string, 
     bool special = json.value("special", false);
     bool small_textbox = json.value("smallTextbox", false);
 
-    WorldRegion* region = nullptr;
-    std::string region_id = json.value("regionId", "");
-    if(!region_id.empty())
-        region = regions.at(region_id);
+    WorldNode* node = nullptr;
+    std::string node_id = json.value("nodeId", "");
+    if(!node_id.empty())
+        node = nodes.at(node_id);
 
-    return new HintSource(text_ids, string_ptrs, description, region, special, small_textbox);
+    return new HintSource(text_ids, string_ptrs, description, node, special, small_textbox);
 }

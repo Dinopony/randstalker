@@ -2,61 +2,61 @@
     {
         "name": "Swamp Shrine (0F): chest in room to the right",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 0
     },
     {
         "name": "Swamp Shrine (0F): chest in carpet room",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 1
     },
     {
         "name": "Swamp Shrine (0F): chest in left hallway (accessed by falling from upstairs)",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 2
     },
     {
         "name": "Swamp Shrine (0F): falling chest after beating orc",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 3
     },
     {
         "name": "Swamp Shrine (0F): ekeeke chest in room connected to second entrance (without Idol Stone)",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 4
     },
     {
         "name": "Swamp Shrine (1F): lower chest in wooden bridges room",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 5
     },
     {
         "name": "Swamp Shrine (2F): upper chest in wooden bridges room",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 6
     },
     {
         "name": "Swamp Shrine (2F): chest on spiked floor room balcony",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 7
     },
     {
         "name": "Swamp Shrine (3F): chest in boss arena",
         "type": "chest",
-        "regionId": "swamp_shrine",
+        "nodeId": "swamp_shrine",
         "chestId": 8
     },
     {
         "name": "Mercator Dungeon (-1F): chest on elevated pathway",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "hidden in the depths of Mercator"
         ],
@@ -65,7 +65,7 @@
     {
         "name": "Mercator Dungeon (-1F): chest in Moralis's cell",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "hidden in the depths of Mercator"
         ],
@@ -74,7 +74,7 @@
     {
         "name": "Mercator Dungeon (-1F): left chest in undeground double chest room",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "hidden in the depths of Mercator"
         ],
@@ -83,7 +83,7 @@
     {
         "name": "Mercator Dungeon (-1F): right chest in undeground double chest room",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "hidden in the depths of Mercator"
         ],
@@ -92,19 +92,19 @@
     {
         "name": "Mercator: castle kitchen chest",
         "type": "chest",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "chestId": 13
     },
     {
         "name": "Mercator: chest in special shop backroom",
         "type": "chest",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "chestId": 14
     },
     {
         "name": "Mercator Dungeon (1F): left chest in tower double chest room",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "inside a tower"
         ],
@@ -113,7 +113,7 @@
     {
         "name": "Mercator Dungeon (1F): right chest in tower double chest room",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "inside a tower"
         ],
@@ -122,7 +122,7 @@
     {
         "name": "Mercator: chest in castle tower (ladder revealed by slashing armor)",
         "type": "chest",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "hints": [
             "inside a tower"
         ],
@@ -131,7 +131,7 @@
     {
         "name": "Mercator Dungeon (4F): chest in topmost tower room",
         "type": "chest",
-        "regionId": "mercator_dungeon",
+        "nodeId": "mercator_dungeon",
         "hints": [
             "inside a tower"
         ],
@@ -140,229 +140,229 @@
     {
         "name": "King Nole's Palace: chest at entrance",
         "type": "chest",
-        "regionId": "king_nole_palace",
+        "nodeId": "king_nole_palace",
         "chestId": 19
     },
     {
         "name": "King Nole's Palace: chest along central pit",
         "type": "chest",
-        "regionId": "king_nole_palace",
+        "nodeId": "king_nole_palace",
         "chestId": 20
     },
     {
         "name": "King Nole's Palace: chest in floating button room",
         "type": "chest",
-        "regionId": "king_nole_palace",
+        "nodeId": "king_nole_palace",
         "chestId": 21
     },
     {
         "name": "King Nole's Cave: chest in second room",
         "type": "chest",
-        "regionId": "king_nole_cave",
+        "nodeId": "king_nole_cave",
         "chestId": 22
     },
     {
         "name": "King Nole's Cave: first chest in third room",
         "type": "chest",
-        "regionId": "king_nole_cave",
+        "nodeId": "king_nole_cave",
         "chestId": 24
     },
     {
         "name": "King Nole's Cave: second chest in third room",
         "type": "chest",
-        "regionId": "king_nole_cave",
+        "nodeId": "king_nole_cave",
         "chestId": 25
     },
     {
         "name": "King Nole's Cave: chest in isolated room",
         "type": "chest",
-        "regionId": "king_nole_cave",
+        "nodeId": "king_nole_cave",
         "chestId": 28
     },
     {
         "name": "King Nole's Cave: chest in crate room",
         "type": "chest",
-        "regionId": "king_nole_cave",
+        "nodeId": "king_nole_cave",
         "chestId": 29
     },
     {
         "name": "King Nole's Cave: boulder chase hallway chest",
         "type": "chest",
-        "regionId": "king_nole_cave",
+        "nodeId": "king_nole_cave",
         "chestId": 31
     },
     {
         "name": "Waterfall Shrine: chest under entrance hallway (open after reaching Prospero)",
         "type": "chest",
-        "regionId": "waterfall_shrine",
+        "nodeId": "waterfall_shrine",
         "chestId": 33
     },
     {
         "name": "Waterfall Shrine: chest near Prospero",
         "type": "chest",
-        "regionId": "waterfall_shrine",
+        "nodeId": "waterfall_shrine",
         "chestId": 34
     },
     {
         "name": "Waterfall Shrine: chest on right branch of biggest room",
         "type": "chest",
-        "regionId": "waterfall_shrine",
+        "nodeId": "waterfall_shrine",
         "chestId": 35
     },
     {
         "name": "Waterfall Shrine: upstairs chest",
         "type": "chest",
-        "regionId": "waterfall_shrine",
+        "nodeId": "waterfall_shrine",
         "chestId": 36
     },
     {
         "name": "Thieves Hideout: chest under water in entrance room",
         "type": "chest",
-        "regionId": "thieves_hideout_pre_key",
+        "nodeId": "thieves_hideout_pre_key",
         "chestId": 38
     },
     {
         "name": "Thieves Hideout (back): right chest in room under teal knight room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 41
     },
     {
         "name": "Thieves Hideout (back): left chest in room under teal knight room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 42
     },
     {
         "name": "Thieves Hideout: left chest in Pockets cell",
         "type": "chest",
-        "regionId": "thieves_hideout_pre_key",
+        "nodeId": "thieves_hideout_pre_key",
         "chestId": 43
     },
     {
         "name": "Thieves Hideout: right chest in Pockets cell",
         "type": "chest",
-        "regionId": "thieves_hideout_pre_key",
+        "nodeId": "thieves_hideout_pre_key",
         "chestId": 44
     },
     {
         "name": "Thieves Hideout (back): right chest in upper hallway after quick climb trial",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 45
     },
     {
         "name": "Thieves Hideout (back): left chest in upper hallway after quick climb trial",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 46
     },
     {
         "name": "Thieves Hideout (back): chest in moving platforms room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 47
     },
     {
         "name": "Thieves Hideout (back): chest in falling platforms room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 48
     },
     {
         "name": "Thieves Hideout (back): reward chest after moving balls room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 49
     },
     {
         "name": "Thieves Hideout: chest near entrance with rolling boulder",
         "type": "chest",
-        "regionId": "thieves_hideout_pre_key",
+        "nodeId": "thieves_hideout_pre_key",
         "chestId": 50
     },
     {
         "name": "Thieves Hideout: left chest in double chest room after spiral climbing",
         "type": "chest",
-        "regionId": "thieves_hideout_pre_key",
+        "nodeId": "thieves_hideout_pre_key",
         "chestId": 52
     },
     {
         "name": "Thieves Hideout: right chest in double chest room after spiral climbing",
         "type": "chest",
-        "regionId": "thieves_hideout_pre_key",
+        "nodeId": "thieves_hideout_pre_key",
         "chestId": 53
     },
     {
         "name": "Thieves Hideout (back): left chest in room before boss",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 54
     },
     {
         "name": "Thieves Hideout (back): right chest in room before boss",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 55
     },
     {
         "name": "Thieves Hideout (back): chest #1 in boss reward room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 56
     },
     {
         "name": "Thieves Hideout (back): chest #2 in boss reward room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 57
     },
     {
         "name": "Thieves Hideout (back): chest #3 in boss reward room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 58
     },
     {
         "name": "Thieves Hideout (back): chest #4 in boss reward room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 59
     },
     {
         "name": "Thieves Hideout (back): chest #5 in boss reward room",
         "type": "chest",
-        "regionId": "thieves_hideout_post_key",
+        "nodeId": "thieves_hideout_post_key",
         "chestId": 60
     },
     {
         "name": "Verla Mines: right chest in double chest room near entrance",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 66
     },
     {
         "name": "Verla Mines: left chest in double chest room near entrance",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 67
     },
     {
         "name": "Verla Mines: chest on jar staircase room balcony",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 68
     },
     {
         "name": "Verla Mines: Dex reward chest",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 69
     },
     {
         "name": "Verla Mines: Slasher reward chest",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -371,205 +371,205 @@
     {
         "name": "Verla Mines: left chest in triple chests room near Slasher",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 71
     },
     {
         "name": "Verla Mines: middle chest in triple chests room near Slasher",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 72
     },
     {
         "name": "Verla Mines: right chest in triple chests room near Slasher",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 73
     },
     {
         "name": "Verla Mines: right chest in button room near elevator shaft leading to Marley",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 74
     },
     {
         "name": "Verla Mines: left chest in button room near elevator shaft leading to Marley",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 75
     },
     {
         "name": "Verla Mines: chest in hidden room accessed by walking on lava",
         "type": "chest",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "chestId": 76
     },
     {
         "name": "Destel Well (0F): 4 crates puzzle room chest",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 77
     },
     {
         "name": "Destel Well (1F): chest on small stairs",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 78
     },
     {
         "name": "Destel Well (1F): chest on narrow floating ground",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 79
     },
     {
         "name": "Destel Well (1F): chest in spiky hallway",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 80
     },
     {
         "name": "Destel Well (2F): chest in ghosts room",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 81
     },
     {
         "name": "Destel Well (2F): chest in falling platforms room",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 82
     },
     {
         "name": "Destel Well (2F): right chest in Pockets room",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 83
     },
     {
         "name": "Destel Well (2F): left chest in Pockets room",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 84
     },
     {
         "name": "Destel Well (3F): chest in first trapped arena",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 85
     },
     {
         "name": "Destel Well (3F): chest in trapped giants room",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 86
     },
     {
         "name": "Destel Well (3F): chest in second trapped arena",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 87
     },
     {
         "name": "Destel Well (4F): top chest in room before boss",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 88
     },
     {
         "name": "Destel Well (4F): left chest in room before boss",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 89
     },
     {
         "name": "Destel Well (4F): bottom chest in room before boss",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 90
     },
     {
         "name": "Destel Well (4F): right chest in room before boss",
         "type": "chest",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "chestId": 91
     },
     {
         "name": "Lake Shrine (-1F): chest in blinking platform room near green golem spinner",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 92
     },
     {
         "name": "Lake Shrine (-1F): chest in hallway after golem hopping room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 93
     },
     {
         "name": "Lake Shrine (-1F): chest in spikeballs hallway near green golem spinner",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 94
     },
     {
         "name": "Lake Shrine (-1F): reward chest for golem hopping puzzle",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 95
     },
     {
         "name": "Lake Shrine (-2F): chest on room corner accessed by falling from above",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 96
     },
     {
         "name": "Lake Shrine (-2F): front chest in throne room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 97
     },
     {
         "name": "Lake Shrine (-2F): back chest in throne room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 98
     },
     {
         "name": "Lake Shrine (-3F): chest on floating platform in white golems room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 99
     },
     {
         "name": "Lake Shrine (-3F): chest near Sword of Ice",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 100
     },
     {
         "name": "Lake Shrine (-3F): chest in snake trapping puzzle room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 101
     },
     {
         "name": "Lake Shrine (-3F): chest on cube accessed by falling from upstairs",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 102
     },
     {
         "name": "Lake Shrine (-3F): chest in watery archway room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 103
     },
     {
         "name": "Lake Shrine (-3F): left reward chest in boss room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -578,7 +578,7 @@
     {
         "name": "Lake Shrine (-3F): middle reward chest in boss room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -587,7 +587,7 @@
     {
         "name": "Lake Shrine (-3F): right reward chest in boss room",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -596,109 +596,109 @@
     {
         "name": "Lake Shrine (-3F): chest near golden golems spinner",
         "type": "chest",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "chestId": 107
     },
     {
         "name": "King Nole's Labyrinth (0F): key chest in \"outside room\"",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 108
     },
     {
         "name": "King Nole's Labyrinth (0F): ekeeke chest in room after key door",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 109
     },
     {
         "name": "King Nole's Labyrinth (0F): lifestock chest in room after key door",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 110
     },
     {
         "name": "King Nole's Labyrinth (-1F): lifestock chest in \"small maze\" room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 111
     },
     {
         "name": "King Nole's Labyrinth (0F): chest in spike balls room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 112
     },
     {
         "name": "King Nole's Labyrinth (-1F): ekeeke chest in triple chest dark room (left side)",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 113
     },
     {
         "name": "King Nole's Labyrinth (-1F): ekeeke chest in triple chest dark room (right side)",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 114
     },
     {
         "name": "King Nole's Labyrinth (-1F): restoration chest in triple chest dark room (left side)",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 115
     },
     {
         "name": "King Nole's Labyrinth (-1F): lifestock chest in \"big maze\" room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 116
     },
     {
         "name": "King Nole's Labyrinth (-1F): ekeeke chest in lantern room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 117
     },
     {
         "name": "King Nole's Labyrinth (-1F): lantern chest",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 118
     },
     {
         "name": "King Nole's Labyrinth (-1F): key chest in ice shortcut room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 119
     },
     {
         "name": "King Nole's Labyrinth (-2F): ekeeke chest in skeleton priest room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 120
     },
     {
         "name": "King Nole's Labyrinth (-1F): key chest in \"button and crates\" room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 121
     },
     {
         "name": "King Nole's Labyrinth (-3F): ekeeke chest before Firedemon",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 122
     },
     {
         "name": "King Nole's Labyrinth (-3F): dahl chest before Firedemon",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 123
     },
     {
         "name": "King Nole's Labyrinth (-3F): reward for beating Firedemon",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -707,31 +707,31 @@
     {
         "name": "King Nole's Labyrinth (-2F): lifestock chest in four buttons room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 125
     },
     {
         "name": "King Nole's Labyrinth (-3F): first ekeeke chest before Spinner",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_raft",
+        "nodeId": "king_nole_labyrinth_raft",
         "chestId": 126
     },
     {
         "name": "King Nole's Labyrinth (-3F): second ekeeke chest before Spinner",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_raft",
+        "nodeId": "king_nole_labyrinth_raft",
         "chestId": 127
     },
     {
         "name": "King Nole's Labyrinth (-3F): statue of gaia chest before Spinner",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_raft",
+        "nodeId": "king_nole_labyrinth_raft",
         "chestId": 128
     },
     {
         "name": "King Nole's Labyrinth (-3F): reward for beating Spinner",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_raft",
+        "nodeId": "king_nole_labyrinth_raft",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -740,7 +740,7 @@
     {
         "name": "King Nole's Labyrinth (-3F): key chest in Hyper Breast room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_raft",
+        "nodeId": "king_nole_labyrinth_raft",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -749,13 +749,13 @@
     {
         "name": "King Nole's Labyrinth (-3F): chest before Miro",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_post_spikes",
+        "nodeId": "king_nole_labyrinth_post_spikes",
         "chestId": 131
     },
     {
         "name": "King Nole's Labyrinth (-3F): reward for beating Miro",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_post_spikes",
+        "nodeId": "king_nole_labyrinth_post_spikes",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -764,19 +764,19 @@
     {
         "name": "King Nole's Labyrinth (-3F): chest in hands room",
         "type": "chest",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "chestId": 133
     },
     {
         "name": "Route between Gumi and Ryuma: chest on the way to Swordsman Kado",
         "type": "chest",
-        "regionId": "route_gumi_ryuma",
+        "nodeId": "route_gumi_ryuma",
         "chestId": 134
     },
     {
         "name": "Route between Massan and Gumi: chest on promontory",
         "type": "chest",
-        "regionId": "route_massan_gumi",
+        "nodeId": "route_massan_gumi",
         "hints": [
             "near a swamp"
         ],
@@ -785,49 +785,49 @@
     {
         "name": "Route between Mercator and Verla: golden statue chest on promontory",
         "type": "chest",
-        "regionId": "mir_tower_sector",
+        "nodeId": "mir_tower_sector",
         "chestId": 136
     },
     {
         "name": "Route between Mercator and Verla: restoration chest on promontory",
         "type": "chest",
-        "regionId": "mir_tower_sector",
+        "nodeId": "mir_tower_sector",
         "chestId": 137
     },
     {
         "name": "Route between Mercator and Verla: chest near Friday's village",
         "type": "chest",
-        "regionId": "mir_tower_sector",
+        "nodeId": "mir_tower_sector",
         "chestId": 138
     },
     {
         "name": "Verla Shore: chest on angle promontory after Verla tunnel",
         "type": "chest",
-        "regionId": "verla_shore",
+        "nodeId": "verla_shore",
         "chestId": 139
     },
     {
         "name": "Verla Shore: chest on highest promontory after Verla tunnel (accessible through Verla mines)",
         "type": "chest",
-        "regionId": "verla_shore",
+        "nodeId": "verla_shore",
         "chestId": 140
     },
     {
         "name": "Route to Mir Tower: chest on promontory accessed by pressing hidden switch",
         "type": "chest",
-        "regionId": "mir_tower_sector",
+        "nodeId": "mir_tower_sector",
         "chestId": 141
     },
     {
         "name": "Route to Mir Tower: dahl chest behind sacred tree",
         "type": "chest",
-        "regionId": "mir_tower_sector_trees",
+        "nodeId": "mir_tower_sector_trees",
         "chestId": 142
     },
     {
         "name": "Verla Shore: chest behind cabin",
         "type": "chest",
-        "regionId": "verla_shore",
+        "nodeId": "verla_shore",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -836,25 +836,25 @@
     {
         "name": "Route to Destel: chest in map right after Verla mines exit",
         "type": "chest",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "chestId": 144
     },
     {
         "name": "Route to Destel: chest in 'elevator' map",
         "type": "chest",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "chestId": 145
     },
     {
         "name": "Route to Mir Tower: lifestock chest behind sacred tree",
         "type": "chest",
-        "regionId": "mir_tower_sector_trees",
+        "nodeId": "mir_tower_sector_trees",
         "chestId": 146
     },
     {
         "name": "Route to Destel: hidden chest in map right before Destel",
         "type": "chest",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -863,19 +863,19 @@
     {
         "name": "Mountainous Area: chest near teleport tree",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 148
     },
     {
         "name": "Mountainous Area: chest on right side of the map right before the bridge",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 149
     },
     {
         "name": "Mountainous Area: hidden chest in narrow path",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -884,7 +884,7 @@
     {
         "name": "Mountainous Area: hidden Statue of Gaia chest",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -893,43 +893,43 @@
     {
         "name": "Mountainous Area: isolated life stock in bridge map",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 152
     },
     {
         "name": "Mountainous Area: left chest on wall in bridge map",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 153
     },
     {
         "name": "Mountainous Area: right chest on wall in bridge map",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 154
     },
     {
         "name": "Mountainous Area: restoration chest in map before Zak arena",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 155
     },
     {
         "name": "Mountainous Area: ekeeke chest in map before Zak arena",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 156
     },
     {
         "name": "Route after Destel: chest on cliff angle",
         "type": "chest",
-        "regionId": "route_after_destel",
+        "nodeId": "route_after_destel",
         "chestId": 157
     },
     {
         "name": "Route after Destel: lifestock chest in map after seeing Duke raft",
         "type": "chest",
-        "regionId": "route_after_destel",
+        "nodeId": "route_after_destel",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -938,13 +938,13 @@
     {
         "name": "Route after Destel: dahl chest in map after seeing Duke raft",
         "type": "chest",
-        "regionId": "route_after_destel",
+        "nodeId": "route_after_destel",
         "chestId": 159
     },
     {
         "name": "Mountainous Area: chest hidden under rocky arch",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -953,37 +953,37 @@
     {
         "name": "Route to Lake Shrine: 'easy' chest on crossroads with mountainous area",
         "type": "chest",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "chestId": 161
     },
     {
         "name": "Route to Lake Shrine: 'hard' chest on crossroads with mountainous area",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 162
     },
     {
         "name": "Mountainous Area: chest in map in front of the statue under the bridge",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "chestId": 163
     },
     {
         "name": "Route to Lake Shrine: right chest in volcano",
         "type": "chest",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "chestId": 164
     },
     {
         "name": "Route to Lake Shrine: left chest in volcano",
         "type": "chest",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "chestId": 165
     },
     {
         "name": "Mountainous Area Cave: chest in small hidden room",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "in a small cave",
             "in a well-hidden chest",
@@ -994,7 +994,7 @@
     {
         "name": "Mountainous Area Cave: chest in small visible room",
         "type": "chest",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "in a small cave",
             "in a cave in the mountains"
@@ -1004,43 +1004,43 @@
     {
         "name": "Greenmaze: chest on path to lumberjack",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "chestId": 168
     },
     {
         "name": "Greenmaze: chest on promontory appearing after pressing a button in other section",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "chestId": 169
     },
     {
         "name": "Greenmaze: chest between Sunstone and Massan shortcut",
         "type": "chest",
-        "regionId": "greenmaze_post_whistle",
+        "nodeId": "greenmaze_post_whistle",
         "chestId": 170
     },
     {
         "name": "Greenmaze: chest in mages room",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "chestId": 171
     },
     {
         "name": "Greenmaze: left chest in elbow cave",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "chestId": 172
     },
     {
         "name": "Greenmaze: right chest in elbow cave",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "chestId": 173
     },
     {
         "name": "Greenmaze: chest in waterfall cave",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "hints": [
             "close to a waterfall"
         ],
@@ -1049,7 +1049,7 @@
     {
         "name": "Greenmaze: left chest in hidden room behind waterfall",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "hints": [
             "close to a waterfall"
         ],
@@ -1058,7 +1058,7 @@
     {
         "name": "Greenmaze: right chest in hidden room behind waterfall",
         "type": "chest",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "hints": [
             "close to a waterfall"
         ],
@@ -1067,7 +1067,7 @@
     {
         "name": "Massan: chest triggered by dog statue",
         "type": "chest",
-        "regionId": "massan",
+        "nodeId": "massan",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -1076,61 +1076,61 @@
     {
         "name": "Massan: chest in house nearest to elder house",
         "type": "chest",
-        "regionId": "massan",
+        "nodeId": "massan",
         "chestId": 178
     },
     {
         "name": "Massan: lifestock chest in house",
         "type": "chest",
-        "regionId": "massan",
+        "nodeId": "massan",
         "chestId": 179
     },
     {
         "name": "Massan: chest in house farthest from elder house",
         "type": "chest",
-        "regionId": "massan",
+        "nodeId": "massan",
         "chestId": 180
     },
     {
         "name": "Gumi: chest on top of bed in house",
         "type": "chest",
-        "regionId": "gumi",
+        "nodeId": "gumi",
         "chestId": 181
     },
     {
         "name": "Gumi: chest in elder house after saving Fara",
         "type": "chest",
-        "regionId": "gumi_after_swamp_shrine",
+        "nodeId": "gumi_after_swamp_shrine",
         "chestId": 182
     },
     {
         "name": "Ryuma: chest in mayor's house",
         "type": "chest",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "chestId": 183
     },
     {
         "name": "Ryuma: chest in repaired lighthouse",
         "type": "chest",
-        "regionId": "ryuma_lighthouse_repaired",
+        "nodeId": "ryuma_lighthouse_repaired",
         "chestId": 184
     },
     {
         "name": "Crypt: chest in main room",
         "type": "chest",
-        "regionId": "crypt",
+        "nodeId": "crypt",
         "chestId": 185
     },
     {
         "name": "Crypt: reward chest",
         "type": "chest",
-        "regionId": "crypt",
+        "nodeId": "crypt",
         "chestId": 186
     },
     {
         "name": "Mercator: hidden casino chest",
         "type": "chest",
-        "regionId": "mercator_casino",
+        "nodeId": "mercator_casino",
         "hints": [
             "hidden in the depths of Mercator",
             "in a well-hidden chest"
@@ -1140,19 +1140,19 @@
     {
         "name": "Mercator: chest in Greenpea's house",
         "type": "chest",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "chestId": 192
     },
     {
         "name": "Mercator: chest in grandma's house (pot shelving trial)",
         "type": "chest",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "chestId": 193
     },
     {
         "name": "Verla: chest in well after beating Marley",
         "type": "chest",
-        "regionId": "verla",
+        "nodeId": "verla",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -1161,67 +1161,67 @@
     {
         "name": "Destel: chest in shop requiring to wait for the shopkeeper to move",
         "type": "chest",
-        "regionId": "destel",
+        "nodeId": "destel",
         "chestId": 196
     },
     {
         "name": "Mir Tower: garlic chest",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 197
     },
     {
         "name": "Mir Tower: chest after mimic room",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 198
     },
     {
         "name": "Mir Tower: mimic room empty chest 1",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 199
     },
     {
         "name": "Mir Tower: mimic room empty chest 2",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 200
     },
     {
         "name": "Mir Tower: mimic room empty chest 3",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 201
     },
     {
         "name": "Mir Tower: mimic room empty chest 4",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 202
     },
     {
         "name": "Mir Tower: chest in mushroom pit room",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 203
     },
     {
         "name": "Mir Tower: chest in room next to mummy switch room",
         "type": "chest",
-        "regionId": "mir_tower_pre_garlic",
+        "nodeId": "mir_tower_pre_garlic",
         "chestId": 204
     },
     {
         "name": "Mir Tower: chest in library accessible from teleporter maze",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "chestId": 205
     },
     {
         "name": "Mir Tower: hidden chest in room before library",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "hints": [
             "in a well-hidden chest"
         ],
@@ -1230,31 +1230,31 @@
     {
         "name": "Mir Tower: chest in falling spikeballs room",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "chestId": 207
     },
     {
         "name": "Mir Tower: chest in timed challenge room",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "chestId": 208
     },
     {
         "name": "Mir Tower: chest in room where Miro closes the door",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "chestId": 209
     },
     {
         "name": "Mir Tower: chest after room where Miro closes the door",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "chestId": 210
     },
     {
         "name": "Mir Tower: reward chest",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1263,7 +1263,7 @@
     {
         "name": "Mir Tower: right chest in reward room",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1272,7 +1272,7 @@
     {
         "name": "Mir Tower: left chest in reward room",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1281,7 +1281,7 @@
     {
         "name": "Mir Tower: chest behind wall accessible after beating Mir",
         "type": "chest",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1290,73 +1290,73 @@
     {
         "name": "Witch Helga's Hut: lifestock chest",
         "type": "chest",
-        "regionId": "helga_hut",
+        "nodeId": "helga_hut",
         "chestId": 215
     },
     {
         "name": "Massan Cave: lifestock chest",
         "type": "chest",
-        "regionId": "massan_cave",
+        "nodeId": "massan_cave",
         "chestId": 216
     },
     {
         "name": "Massan Cave: dahl chest",
         "type": "chest",
-        "regionId": "massan_cave",
+        "nodeId": "massan_cave",
         "chestId": 217
     },
     {
         "name": "Tibor: reward chest after boss",
         "type": "chest",
-        "regionId": "tibor",
+        "nodeId": "tibor",
         "chestId": 218
     },
     {
         "name": "Tibor: chest in spike balls room",
         "type": "chest",
-        "regionId": "tibor",
+        "nodeId": "tibor",
         "chestId": 219
     },
     {
         "name": "Tibor: left chest on 2 chest group",
         "type": "chest",
-        "regionId": "tibor",
+        "nodeId": "tibor",
         "chestId": 220
     },
     {
         "name": "Tibor: right chest on 2 chest group",
         "type": "chest",
-        "regionId": "tibor",
+        "nodeId": "tibor",
         "chestId": 221
     },
     {
         "name": "Gumi: Idol Stone on ground",
         "type": "ground",
-        "regionId": "gumi",
+        "nodeId": "gumi",
         "address": 135527
     },
     {
         "name": "Greenmaze: Sun Stone on ground",
         "type": "ground",
-        "regionId": "greenmaze_post_whistle",
+        "nodeId": "greenmaze_post_whistle",
         "address": 134177
     },
     {
         "name": "Verla Mines: Chrome Breast on ground",
         "type": "ground",
-        "regionId": "verla_mines",
+        "nodeId": "verla_mines",
         "address": 122295
     },
     {
         "name": "Lake Shrine (-3F): Shell Breast on ground",
         "type": "ground",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": 126105
     },
     {
         "name": "King Nole's Labyrinth (-3F): Hyper Breast on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_raft",
+        "nodeId": "king_nole_labyrinth_raft",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1365,7 +1365,7 @@
     {
         "name": "Destel Well: Healing Boots on ground",
         "type": "ground",
-        "regionId": "destel_well",
+        "nodeId": "destel_well",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1374,25 +1374,25 @@
     {
         "name": "King Nole's Labyrinth (-1F): Iron Boots on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 127855
     },
     {
         "name": "Massan Cave: Fireproof Boots on ground",
         "type": "ground",
-        "regionId": "massan_cave",
+        "nodeId": "massan_cave",
         "address": 142371
     },
     {
         "name": "King Nole's Labyrinth (-3F): Snow Spikes on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 129729
     },
     {
         "name": "Lake Shrine (-3F): Sword of Ice on ground",
         "type": "ground",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": [
             126519,
             126529
@@ -1401,19 +1401,19 @@
     {
         "name": "King Nole's Labyrinth (-2F): Sword of Gaia on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 127363
     },
     {
         "name": "Route after Destel: Mars Stone on ground",
         "type": "ground",
-        "regionId": "route_after_destel",
+        "nodeId": "route_after_destel",
         "address": 132121
     },
     {
         "name": "Mountainous Area cave: Moon Stone on ground",
         "type": "ground",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "in a small cave",
             "in a cave in the mountains"
@@ -1423,86 +1423,86 @@
     {
         "name": "Witch Helga's Hut: Saturn Stone on ground",
         "type": "ground",
-        "regionId": "helga_hut",
+        "nodeId": "helga_hut",
         "address": 132011
     },
     {
         "name": "King Nole's Labyrinth (-3F): Venus Stone on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 129239
     },
     {
         "name": "Mercator: falling ribbon in castle court",
         "type": "ground",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "cannotBeTakenRepeatedly": true,
         "address": 114655
     },
     {
         "name": "Lake Shrine (-2F): north EkeEke on ground",
         "type": "ground",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": 125043
     },
     {
         "name": "Lake Shrine (-2F): south EkeEke on ground",
         "type": "ground",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": 125051
     },
     {
         "name": "Lake Shrine (-2F): west EkeEke on ground",
         "type": "ground",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": 125059
     },
     {
         "name": "Lake Shrine (-2F): east EkeEke on ground",
         "type": "ground",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": 125067
     },
     {
         "name": "Twinkle Village: first EkeEke on ground",
         "type": "ground",
-        "regionId": "twinkle_village",
+        "nodeId": "twinkle_village",
         "address": 131357
     },
     {
         "name": "Twinkle Village: second EkeEke on ground",
         "type": "ground",
-        "regionId": "twinkle_village",
+        "nodeId": "twinkle_village",
         "address": 131349
     },
     {
         "name": "Twinkle Village: third EkeEke on ground",
         "type": "ground",
-        "regionId": "twinkle_village",
+        "nodeId": "twinkle_village",
         "address": 131341
     },
     {
         "name": "Mir Tower: EkeEke on ground in priest room",
         "type": "ground",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "address": 140963
     },
     {
         "name": "Mir Tower: Detox Grass on ground in priest room",
         "type": "ground",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "address": 140955
     },
     {
         "name": "Mir Tower: Record Book on ground in priest room",
         "type": "ground",
-        "regionId": "mir_tower_post_garlic",
+        "nodeId": "mir_tower_post_garlic",
         "address": 140915
     },
     {
         "name": "King Nole's Labyrinth (-2F): left Logs on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_post_spikes",
+        "nodeId": "king_nole_labyrinth_post_spikes",
         "hints": [
             "among the trees"
         ],
@@ -1511,7 +1511,7 @@
     {
         "name": "King Nole's Labyrinth (-2F): right Logs on ground",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_post_spikes",
+        "nodeId": "king_nole_labyrinth_post_spikes",
         "hints": [
             "among the trees"
         ],
@@ -1520,139 +1520,139 @@
     {
         "name": "King Nole's Labyrinth (-3F): EkeEke on ground before Firedemon",
         "type": "ground",
-        "regionId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 129249
     },
     {
         "name": "Massan shop: Life Stock slot",
         "type": "shop",
-        "regionId": "massan",
+        "nodeId": "massan",
         "address": 135197
     },
     {
         "name": "Massan shop: first EkeEke slot",
         "type": "shop",
-        "regionId": "massan",
+        "nodeId": "massan",
         "address": 135189
     },
     {
         "name": "Massan shop: second EkeEke slot",
         "type": "shop",
-        "regionId": "massan",
+        "nodeId": "massan",
         "address": 135181
     },
     {
         "name": "Gumi shop: Life Stock slot",
         "type": "shop",
-        "regionId": "gumi",
+        "nodeId": "gumi",
         "address": 135653
     },
     {
         "name": "Gumi shop: EkeEke slot",
         "type": "shop",
-        "regionId": "gumi",
+        "nodeId": "gumi",
         "address": 135637
     },
     {
         "name": "Ryuma shop: Life Stock slot",
         "type": "shop",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "address": 135897
     },
     {
         "name": "Ryuma shop: Statue of Gaia slot",
         "type": "shop",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "address": 135881
     },
     {
         "name": "Ryuma shop: Golden Statue slot",
         "type": "shop",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "address": 135865
     },
     {
         "name": "Ryuma shop: EkeEke slot",
         "type": "shop",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "address": 135889
     },
     {
         "name": "Ryuma shop: Detox Grass slot",
         "type": "shop",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "address": 135873
     },
     {
         "name": "Ryuma inn: EkeEke slot",
         "type": "shop",
-        "regionId": "ryuma",
+        "nodeId": "ryuma",
         "address": 136095
     },
     {
         "name": "Mercator shop: Steel Breast slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 138107
     },
     {
         "name": "Mercator shop: Bell slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 138115
     },
     {
         "name": "Mercator shop: EkeEke slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 138099
     },
     {
         "name": "Mercator shop: Detox Grass slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 138091
     },
     {
         "name": "Mercator shop: Statue of Gaia slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 138083
     },
     {
         "name": "Mercator shop: Golden Statue slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 138075
     },
     {
         "name": "Mercator special shop: Mind Repair slot",
         "type": "shop",
-        "regionId": "mercator_special_shop",
+        "nodeId": "mercator_special_shop",
         "address": 138463
     },
     {
         "name": "Mercator special shop: Anti Paralyze slot",
         "type": "shop",
-        "regionId": "mercator_special_shop",
+        "nodeId": "mercator_special_shop",
         "address": 138455
     },
     {
         "name": "Mercator special shop: Dahl slot",
         "type": "shop",
-        "regionId": "mercator_special_shop",
+        "nodeId": "mercator_special_shop",
         "address": 138447
     },
     {
         "name": "Mercator special shop: Restoration slot",
         "type": "shop",
-        "regionId": "mercator_special_shop",
+        "nodeId": "mercator_special_shop",
         "address": 138439
     },
     {
         "name": "Mercator docks shop: left EkeEke slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": [
             136893,
             136843
@@ -1661,7 +1661,7 @@
     {
         "name": "Mercator docks shop: middle EkeEke slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": [
             136901,
             136851
@@ -1670,7 +1670,7 @@
     {
         "name": "Mercator docks shop: right EkeEke slot",
         "type": "shop",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": [
             136909,
             136859
@@ -1679,13 +1679,13 @@
     {
         "name": "Verla shop: Life Stock slot",
         "type": "shop",
-        "regionId": "verla",
+        "nodeId": "verla",
         "address": 139095
     },
     {
         "name": "Verla shop: EkeEke slot",
         "type": "shop",
-        "regionId": "verla",
+        "nodeId": "verla",
         "address": [
             139013,
             139063
@@ -1694,7 +1694,7 @@
     {
         "name": "Verla shop: Detox Grass slot",
         "type": "shop",
-        "regionId": "verla",
+        "nodeId": "verla",
         "address": [
             139021,
             139071
@@ -1703,7 +1703,7 @@
     {
         "name": "Verla shop: Dahl slot",
         "type": "shop",
-        "regionId": "verla",
+        "nodeId": "verla",
         "address": [
             139029,
             139079
@@ -1712,7 +1712,7 @@
     {
         "name": "Verla shop: Map slot",
         "type": "shop",
-        "regionId": "verla",
+        "nodeId": "verla",
         "address": [
             139045,
             139087
@@ -1721,145 +1721,145 @@
     {
         "name": "Kelketo Waterfalls shop: Life Stock slot",
         "type": "shop",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "address": 133217
     },
     {
         "name": "Kelketo Waterfalls shop: EkeEke slot",
         "type": "shop",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "address": 133225
     },
     {
         "name": "Kelketo Waterfalls shop: Detox Grass slot",
         "type": "shop",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "address": 133233
     },
     {
         "name": "Kelketo Waterfalls shop: Dahl slot",
         "type": "shop",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "address": 133241
     },
     {
         "name": "Kelketo Waterfalls shop: Restoration slot",
         "type": "shop",
-        "regionId": "route_verla_destel",
+        "nodeId": "route_verla_destel",
         "address": 133249
     },
     {
         "name": "Destel inn: EkeEke slot",
         "type": "shop",
-        "regionId": "destel",
+        "nodeId": "destel",
         "address": 139287
     },
     {
         "name": "Destel shop: EkeEke slot",
         "type": "shop",
-        "regionId": "destel",
+        "nodeId": "destel",
         "address": 139349
     },
     {
         "name": "Destel shop: Detox Grass slot",
         "type": "shop",
-        "regionId": "destel",
+        "nodeId": "destel",
         "address": 139373
     },
     {
         "name": "Destel shop: Restoration slot",
         "type": "shop",
-        "regionId": "destel",
+        "nodeId": "destel",
         "address": 139365
     },
     {
         "name": "Destel shop: Dahl slot",
         "type": "shop",
-        "regionId": "destel",
+        "nodeId": "destel",
         "address": 139357
     },
     {
         "name": "Destel shop: Life Stock slot",
         "type": "shop",
-        "regionId": "destel",
+        "nodeId": "destel",
         "address": 139381
     },
     {
         "name": "Greedly's shop: Statue of Gaia slot",
         "type": "shop",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "address": 133575
     },
     {
         "name": "Greedly's shop: Golden Statue slot",
         "type": "shop",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "address": 133567
     },
     {
         "name": "Greedly's shop: Dahl slot",
         "type": "shop",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "address": 133583
     },
     {
         "name": "Greedly's shop: Life Stock slot",
         "type": "shop",
-        "regionId": "route_lake_shrine",
+        "nodeId": "route_lake_shrine",
         "address": 133551
     },
     {
         "name": "Kazalt shop: EkeEke slot",
         "type": "shop",
-        "regionId": "kazalt",
+        "nodeId": "kazalt",
         "address": 139541
     },
     {
         "name": "Kazalt shop: Dahl slot",
         "type": "shop",
-        "regionId": "kazalt",
+        "nodeId": "kazalt",
         "address": 139525
     },
     {
         "name": "Kazalt shop: Golden Statue slot",
         "type": "shop",
-        "regionId": "kazalt",
+        "nodeId": "kazalt",
         "address": 139549
     },
     {
         "name": "Kazalt shop: Restoration slot",
         "type": "shop",
-        "regionId": "kazalt",
+        "nodeId": "kazalt",
         "address": 139533
     },
     {
         "name": "Kazalt shop: Life Stock slot",
         "type": "shop",
-        "regionId": "kazalt",
+        "nodeId": "kazalt",
         "address": 139509
     },
     {
         "name": "Massan: elder reward after freeing Fara",
         "type": "reward",
-        "regionId": "massan_after_swamp_shrine",
+        "nodeId": "massan_after_swamp_shrine",
         "address": 155550
     },
     {
         "name": "Mir reward after Lake Shrine (Axe Magic in OG)",
         "type": "reward",
-        "regionId": "lake_shrine",
+        "nodeId": "lake_shrine",
         "address": 166463
     },
     {
         "name": "Greenmaze: lumberjack reward for saving Einstein",
         "type": "reward",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "address": 166021
     },
     {
         "name": "Zak reward after fighting (Gola's Eye in OG)",
         "type": "reward",
-        "regionId": "mountainous_area",
+        "nodeId": "mountainous_area",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -1868,37 +1868,37 @@
     {
         "name": "Swordman Kado reward (Magic Sword in OG)",
         "type": "reward",
-        "regionId": "route_gumi_ryuma",
+        "nodeId": "route_gumi_ryuma",
         "address": 166219
     },
     {
         "name": "Greenmaze hidden dwarf (Restoration in OG)",
         "type": "reward",
-        "regionId": "greenmaze_pre_whistle",
+        "nodeId": "greenmaze_pre_whistle",
         "address": 166111
     },
     {
         "name": "Arthur reward (Casino Ticket in OG)",
         "type": "reward",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 164191
     },
     {
         "name": "Fahl's dojo challenge reward (Pawn Ticket in OG)",
         "type": "reward",
-        "regionId": "mercator",
+        "nodeId": "mercator",
         "address": 165029
     },
     {
         "name": "Ryuma's mayor first reward (Safety Pass in OG)",
         "type": "reward",
-        "regionId": "ryuma_after_thieves_hideout",
+        "nodeId": "ryuma_after_thieves_hideout",
         "address": 164731
     },
     {
         "name": "Ryuma's mayor second reward (100g in OG)",
         "type": "reward",
-        "regionId": "ryuma_after_thieves_hideout",
+        "nodeId": "ryuma_after_thieves_hideout",
         "address": 164735
     }
 ]

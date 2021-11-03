@@ -169,6 +169,6 @@ void patch_game_init(md::ROM& rom, const RandomizerOptions& options, const World
     // Remove a blocking cutscene flag to be allowed to play
     remove_cutscene_flag_on_game_start(rom);
 
-    // Remove region check on game boot
+    // Remove node check on game boot
     disable_region_check(rom);
 }

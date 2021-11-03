@@ -14,12 +14,12 @@ endif()
 # Wrap JSON model files into automated .hxx headers
 wrap_file(SOURCE_FILE "src/model/enemy.json" VARIABLE_NAME "ENEMIES_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/item.json" VARIABLE_NAME "ITEMS_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/world_node.json" VARIABLE_NAME "WORLD_NODES_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/world_path.json" VARIABLE_NAME "WORLD_PATHS_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/item_source.json" VARIABLE_NAME "ITEM_SOURCES_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/spawn_location.json" VARIABLE_NAME "SPAWN_LOCATIONS_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/world_macro_region.json" VARIABLE_NAME "WORLD_MACRO_REGIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/model/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/model/world_teleport_tree.json" VARIABLE_NAME "WORLD_TELEPORT_TREES_JSON" TEXT_FILE)
 
 # Wrap assets files into automated .hxx headers
@@ -67,10 +67,11 @@ set(SOURCES
     "src/model/item.hpp"
     "src/model/item.cpp"
     "src/model/spawn_location.hpp"
-    "src/model/world_macro_region.hpp"
+    "src/model/world_node.hpp"
     "src/model/world_path.hpp"
     "src/model/world_path.cpp"
     "src/model/world_region.hpp"
+    "src/model/world_region.cpp"
     "src/model/world_teleport_tree.hpp"
 
     "src/patches/patches.hpp"

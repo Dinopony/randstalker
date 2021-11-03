@@ -10,7 +10,7 @@
     {
         "fromId": "massan",
         "toId": "massan_after_swamp_shrine",
-        "requiredRegions": [
+        "requiredNodes": [
             "swamp_shrine"
         ]
     },
@@ -41,7 +41,7 @@
     {
         "fromId": "gumi",
         "toId": "gumi_after_swamp_shrine",
-        "requiredRegions": [
+        "requiredNodes": [
             "swamp_shrine"
         ]
     },
@@ -57,7 +57,7 @@
     {
         "fromId": "ryuma",
         "toId": "ryuma_after_thieves_hideout",
-        "requiredRegions": [
+        "requiredNodes": [
             "thieves_hideout_post_key"
         ]
     },
@@ -97,7 +97,7 @@
         "requiredItems": [
             "Einstein Whistle"
         ],
-        "requiredRegions": [
+        "requiredNodes": [
             "massan"
         ]
     },
@@ -210,7 +210,7 @@
     {
         "fromId": "mercator",
         "toId": "verla_shore",
-        "requiredRegions": [
+        "requiredNodes": [
             "ryuma_lighthouse_repaired"
         ]
     },

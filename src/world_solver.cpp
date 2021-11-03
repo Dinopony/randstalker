@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include "model/world_region.hpp"
+#include "model/world_node.hpp"
 #include "model/item_source.hpp"
 
 #include "exceptions.hpp"
@@ -12,21 +12,21 @@ void WorldSolver::forbid_items(const std::vector<Item*>& forbidden_items)
     _forbidden_items = forbidden_items;
 }
 
-void WorldSolver::forbid_taking_items_from_regions(const UnsortedSet<WorldRegion*>& forbidden_regions)
+void WorldSolver::forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes)
 { 
-    _forbidden_regions_to_pick_items = forbidden_regions;
+    _forbidden_nodes_to_pick_items = forbidden_nodes;
 }
 
-void WorldSolver::setup(WorldRegion* start_node, WorldRegion* end_node, const std::vector<Item*>& starting_inventory)
+void WorldSolver::setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory)
 {
     _start_node = start_node;
     _end_node = end_node;
-    _regions_to_explore = { start_node };
+    _nodes_to_explore = { start_node };
 
     if(!starting_inventory.empty())
         _starting_inventory = starting_inventory;
 
-    _explored_regions.clear(); 
+    _explored_nodes.clear(); 
     _blocked_paths.clear();
     _reachable_item_sources.clear();
     _relevant_items.clear();
@@ -45,7 +45,7 @@ bool WorldSolver::try_to_solve()
 bool WorldSolver::run_until_blocked()
 {
     _step_count++;
-    size_t explored_regions_count_at_start = _explored_regions.size();
+    size_t explored_nodes_count_at_start = _explored_nodes.size();
     size_t blocked_paths_count_at_start = _blocked_paths.size();
 
     bool unlocked_new_paths = true;
@@ -61,9 +61,9 @@ bool WorldSolver::run_until_blocked()
         unlocked_new_paths = this->try_unlocking_paths();
     }
 
-    bool new_regions_explored = _explored_regions.size() > explored_regions_count_at_start;
+    bool new_nodes_explored = _explored_nodes.size() > explored_nodes_count_at_start;
     bool paths_unlocked = _blocked_paths.size() < blocked_paths_count_at_start;
-    return new_regions_explored || paths_unlocked;
+    return new_nodes_explored || paths_unlocked;
 }
 
 bool WorldSolver::try_unlocking_paths()
@@ -80,10 +80,10 @@ bool WorldSolver::try_unlocking_paths()
         if(!this->can_take_path(path))
             continue;
 
-        // Unlock path by adding destination to regions to explore (if it has not been explored yet)
-        WorldRegion* destination = path->destination();
-        if (!_regions_to_explore.contains(destination) && !_explored_regions.contains(destination))
-            _regions_to_explore.insert(destination);
+        // Unlock path by adding destination to nodes to explore (if it has not been explored yet)
+        WorldNode* destination = path->destination();
+        if (!_nodes_to_explore.contains(destination) && !_explored_nodes.contains(destination))
+            _nodes_to_explore.insert(destination);
 
         // Remove path from blocked paths
         opened_at_least_one_path = true;
@@ -102,26 +102,26 @@ void WorldSolver::expand_exploration_zone()
     if(!debug_log.contains("exploration"))
         debug_log["exploration"] = Json::array();
 
-    while (!_regions_to_explore.empty())
+    while (!_nodes_to_explore.empty())
     {
-        WorldRegion* region = *_regions_to_explore.begin();
-        _regions_to_explore.erase(region);
-        _explored_regions.insert(region);
-        debug_log["exploration"].push_back("Explored " + region->id());
+        WorldNode* node = *_nodes_to_explore.begin();
+        _nodes_to_explore.erase(node);
+        _explored_nodes.insert(node);
+        debug_log["exploration"].push_back("Explored " + node->id());
 
         // Process all outgoing paths
-        for (WorldPath* path : region->outgoing_paths())
+        for (WorldPath* path : node->outgoing_paths())
         {
             // If destination as already been explored or is already pending exploration, ignore it
-            WorldRegion* destination = path->destination();
-            if (_explored_regions.contains(destination) || _regions_to_explore.contains(destination))
+            WorldNode* destination = path->destination();
+            if (_explored_nodes.contains(destination) || _nodes_to_explore.contains(destination))
                 continue;
 
             if(this->can_take_path(path))
             {
-                // For crossable paths, add destination to the list of regions to explore
-                _regions_to_explore.insert(destination);
-                debug_log["exploration"].push_back("Added " + destination->id() + " to accessible regions");
+                // For crossable paths, add destination to the list of nodes to explore
+                _nodes_to_explore.insert(destination);
+                debug_log["exploration"].push_back("Added " + destination->id() + " to accessible nodes");
             }
             else
             {
@@ -137,8 +137,8 @@ void WorldSolver::expand_exploration_zone()
             }
         }
 
-        // Add all item sources in this region to the reachable item sources list
-        const std::vector<ItemSource*>& item_sources = region->item_sources();
+        // Add all item sources in this node to the reachable item sources list
+        const std::vector<ItemSource*>& item_sources = node->item_sources();
         _reachable_item_sources.insert(_reachable_item_sources.end(), item_sources.begin(), item_sources.end());
     }
 }
@@ -152,8 +152,8 @@ void WorldSolver::update_current_inventory()
 
     for(ItemSource* source : _reachable_item_sources)
     {
-        // If item is located in forbidden region, don't take it
-        if(_forbidden_regions_to_pick_items.contains(source->region()))
+        // If item is located in forbidden node, don't take it
+        if(_forbidden_nodes_to_pick_items.contains(source->node()))
             continue;
 
         Item* item = source->item();
@@ -191,21 +191,21 @@ std::vector<ItemSource*> WorldSolver::empty_reachable_item_sources() const
 
 bool WorldSolver::can_take_path(WorldPath* path) const
 {
-    return this->missing_items_to_take_path(path).empty() && this->missing_regions_to_take_path(path).empty();
+    return this->missing_items_to_take_path(path).empty() && this->missing_nodes_to_take_path(path).empty();
 }
 
-std::vector<WorldRegion*> WorldSolver::missing_regions_to_take_path(WorldPath* path) const
+std::vector<WorldNode*> WorldSolver::missing_nodes_to_take_path(WorldPath* path) const
 {
-    std::vector<WorldRegion*> missing_regions;
-    const UnsortedSet<WorldRegion*>& required_regions = path->required_regions();
-    for(WorldRegion* region : required_regions)
+    std::vector<WorldNode*> missing_nodes;
+    const UnsortedSet<WorldNode*>& required_nodes = path->required_nodes();
+    for(WorldNode* node : required_nodes)
     {
-        // A required region was not explored yet, path cannot be taken
-        if(!_explored_regions.contains(region))
-            missing_regions.push_back(region);
+        // A required node was not explored yet, path cannot be taken
+        if(!_explored_nodes.contains(node))
+            missing_nodes.push_back(node);
     }
 
-    return missing_regions;
+    return missing_nodes;
 }
 
 std::vector<Item*> WorldSolver::missing_items_to_take_path(WorldPath* path) const
