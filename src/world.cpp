@@ -1,17 +1,27 @@
 #include "world.hpp"
 
-#include "model/item.hpp"
-#include "model/item_source.hpp"
+#include <iostream>
 
 #include "tools/textbanks_decoder.hpp"
 #include "tools/textbanks_encoder.hpp"
 
+#include "model/entity.hpp"
+#include "model/entity_on_map.hpp"
+#include "model/item.hpp"
+#include "model/item_source.hpp"
+#include "model/world_node.hpp"
+#include "model/world_path.hpp"
+#include "model/spawn_location.hpp"
+#include "model/hint_source.hpp"
+#include "model/world_region.hpp"
+#include "model/world_teleport_tree.hpp"
+
 #include "exceptions.hpp"
 #include "world_solver.hpp"
-
-#include <iostream>
+#include "randomizer_options.hpp"
 
 // Include headers automatically generated from model json files
+#include "model/entity.json.hxx"
 #include "model/item.json.hxx"
 #include "model/world_node.json.hxx"
 #include "model/world_path.json.hxx"
@@ -20,7 +30,6 @@
 #include "model/hint_source.json.hxx"
 #include "model/world_region.json.hxx"
 #include "model/world_teleport_tree.json.hxx"
-#include "model/enemy.json.hxx"
 #include "assets/game_strings.json.hxx"
 
 World::World(const md::ROM& rom, const RandomizerOptions& options) :
@@ -37,7 +46,8 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_teleport_trees();
     this->init_game_strings(rom);
     this->init_hint_sources();
-    this->init_enemies(rom);
+    this->init_entities(rom);
+    this->init_entities_on_maps(rom);
 }
 
 World::~World()
@@ -61,8 +71,8 @@ World::~World()
         delete tree_1;
         delete tree_2;
     }
-    for (auto& [id, enemy] : _enemies)
-        delete enemy;
+    for (auto& [id, entity] : _entities)
+        delete entity;
 }
 
 Item* World::item(const std::string& name) const
@@ -75,6 +85,12 @@ Item* World::item(const std::string& name) const
             return item;
 
     return nullptr;
+}
+
+Item* World::add_item(Item* item)
+{ 
+    _items[item->id()] = item;
+    return item;
 }
 
 Item* World::add_gold_item(uint8_t worth)
@@ -152,6 +168,10 @@ std::vector<ItemSource*> World::item_sources_with_item(Item* item)
     return sources_with_item;
 }
 
+void World::add_spawn_location(SpawnLocation* spawn)
+{
+    _spawn_locations[spawn->id()] = spawn;
+}
 
 void World::init_items()
 {
@@ -367,8 +387,15 @@ void World::init_game_strings(const md::ROM& rom)
         + std::to_string(_options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
-void World::init_enemies(const md::ROM& rom)
+void World::init_entities(const md::ROM& rom)
 {
+    Json entities_json = Json::parse(ENTITIES_JSON);
+    for(auto& [id_string, entity_json] : entities_json.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        _entities[id] = Entity::from_json(id, entity_json, *this);
+    }
+
     // Read item drop probabilities from a table in the ROM
     std::vector<uint16_t> probability_table;
     constexpr uint32_t PROBABILITY_TABLE_ADDR = 0x199D6;
@@ -383,43 +410,74 @@ void World::init_enemies(const md::ROM& rom)
     for(uint32_t addr = ENEMIES_TABLE_BASE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
     {
         uint8_t id = rom.get_byte(addr);
-        uint8_t health = rom.get_byte(addr+1);
-        uint8_t defence = rom.get_byte(addr+2);
-        uint8_t dropped_golds = rom.get_byte(addr+3);
-        uint8_t attack = rom.get_byte(addr+4) & 0x7F;
-        Item* dropped_item = _items.at(rom.get_byte(addr+5) & 0x3F);
-        
+
+        Entity* entity_at_id = _entities.at(id);
+        if(entity_at_id->type_name() != "enemy")
+            throw RandomizerException("Entity of ID #" + std::to_string(id) + " is not an enemy but has enemy stats");
+        EntityEnemy* enemy_at_id = reinterpret_cast<EntityEnemy*>(entity_at_id);
+
+        enemy_at_id->health(rom.get_byte(addr+1));
+        enemy_at_id->defence(rom.get_byte(addr+2));
+        enemy_at_id->dropped_golds(rom.get_byte(addr+3));
+        enemy_at_id->attack(rom.get_byte(addr+4) & 0x7F);
+        enemy_at_id->dropped_item(_items.at(rom.get_byte(addr+5) & 0x3F));
+
         // Use previously built probability table to know the real drop chances
         uint8_t probability_id = ((rom.get_byte(addr+4) & 0x80) >> 5) | (rom.get_byte(addr+5) >> 6);
-        uint16_t drop_probability = probability_table.at(probability_id);
-
-        _enemies[id] = new Enemy(id, std::to_string(id), health, attack, defence, dropped_golds, dropped_item, drop_probability);
+        enemy_at_id->drop_probability(probability_table.at(probability_id));
     }
 
-    Json enemies_json = Json::parse(ENEMIES_JSON);
-    for(auto& [id_string, enemy_json] : enemies_json.items())
+    for(auto& [item_id, item] : _items)
     {
-        uint8_t id = std::stoi(id_string);
-        if(_enemies.count(id))
-        {
-            Enemy* enemy = _enemies.at(id);
-            enemy->apply_json(enemy_json, *this);
-        }
-        else
-        {
-            _enemies[id] = Enemy::from_json(id, enemy_json, *this);
-        }
+        if(item_id > 0x3F)
+            continue;
+        uint8_t entity_id = item_id + 0xC0;
+        _entities[entity_id] = new EntityItemOnGround(entity_id, "ground_item (" + item->name() + ")", item);
     }
 
-    std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
+    std::cout << _entities.size()  << " entities loaded." << std::endl;
 }
 
-Enemy* World::enemy(const std::string& name) const
+WorldNode* World::spawn_node() const 
+{ 
+    return (_active_spawn_location) ? _active_spawn_location->node() : nullptr;
+}
+
+WorldNode* World::end_node() const 
+{ 
+    return _nodes.at("end");
+} 
+
+Entity* World::entity(const std::string& name) const
 {
-    for(auto& [id, enemy] : _enemies)
+    for(auto& [id, enemy] : _entities)
         if(enemy->name() == name)
             return enemy;
     return nullptr;
+}
+
+void World::init_entities_on_maps(const md::ROM& rom)
+{
+    constexpr uint16_t MAP_COUNT = 816;
+    constexpr uint32_t MAP_ENTITIES_OFFSETS_TABLE_ADDR = 0x1B090;
+
+    std::map<uint16_t, uint16_t> map_offsets;
+    for(uint16_t map_id  = 0 ; map_id < MAP_COUNT ; map_id++)
+    {
+        uint32_t addr = MAP_ENTITIES_OFFSETS_TABLE_ADDR + (map_id * 2);
+        // Maps with offset 0000 have no entities
+        if(rom.get_word(addr) > 0)
+            map_offsets[map_id] = rom.get_word(addr) - 1;
+    }
+    
+    constexpr uint32_t MAP_ENTITIES_TABLE_ADDR = 0x1B932;
+
+    for(auto& [map_id, offset] : map_offsets)
+    {
+        uint32_t current_map_starting_addr = MAP_ENTITIES_TABLE_ADDR + offset;
+        for(uint32_t addr = current_map_starting_addr ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
+            _entities_on_maps[map_id].push_back(EntityOnMap::from_rom(rom, addr, *this));
+    }
 }
 
 void World::add_tree_logic_paths()
@@ -523,7 +581,7 @@ Json World::to_json() const
 
     // Fahl enemies
     json["fahlEnemies"] = Json::array();
-    for(Enemy* enemy : _fahl_enemies)
+    for(Entity* enemy : _fahl_enemies)
         json["fahlEnemies"].push_back(enemy->name());
 
     return json;
@@ -633,7 +691,7 @@ void World::parse_json(const Json& json)
     {
         for(std::string enemy_name : json.at("fahlEnemies"))
         {
-            Enemy* enemy = this->enemy(enemy_name);
+            Entity* enemy = this->entity(enemy_name);
             if(!enemy)
             {
                 std::stringstream msg;
@@ -760,10 +818,19 @@ void World::output_model()
     }
     tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
 
-    Json enemies_json = Json::object();
-    for(auto& [id, enemy] : _enemies)
-        enemies_json[std::to_string(id)] = enemy->to_json();
-    tools::dump_json_to_file(enemies_json, "./json_data/enemy.json");
+    Json entities_json = Json::object();
+    for(auto& [id, entity] : _entities)
+        entities_json[std::to_string(id)] = entity->to_json();
+    tools::dump_json_to_file(entities_json, "./json_data/entity.json");
+
+    Json entities_on_maps_json = Json::object();
+    for(auto& [map_id, entities_on_map] : _entities_on_maps)
+    {
+        entities_on_maps_json[std::to_string(map_id)] = Json::array();
+        for(EntityOnMap* entity_on_map : entities_on_map)
+            entities_on_maps_json[std::to_string(map_id)].push_back(entity_on_map->to_json());
+    }
+    tools::dump_json_to_file(entities_on_maps_json, "./json_data/entity_on_map.json");
 }
 
 void World::output_graphviz()

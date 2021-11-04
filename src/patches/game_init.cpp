@@ -2,6 +2,7 @@
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
+#include "../model/spawn_location.hpp"
 
 static void setup_story_flags(const RandomizerOptions& options, const World& world, std::vector<uint8_t>& out_flag_array)
 {

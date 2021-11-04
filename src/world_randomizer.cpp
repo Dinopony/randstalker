@@ -5,7 +5,10 @@
 
 #include "tools/tools.hpp"
 #include "tools/game_text.hpp"
-#include "model/enemy.hpp"
+#include "model/entity.hpp"
+#include "model/world_region.hpp"
+#include "model/hint_source.hpp"
+#include "model/world_teleport_tree.hpp"
 
 #include "exceptions.hpp"
 #include "world_solver.hpp"
@@ -136,11 +139,11 @@ void WorldRandomizer::randomize_fahl_enemies()
     tools::shuffle(medium_enemies, _rng);
     tools::shuffle(hard_enemies, _rng);
 
-    _world.add_fahl_enemy(_world.enemy(easy_enemies[0]));
-    _world.add_fahl_enemy(_world.enemy(easy_enemies[1]));
-    _world.add_fahl_enemy(_world.enemy(medium_enemies[0]));
-    _world.add_fahl_enemy(_world.enemy(medium_enemies[1]));
-    _world.add_fahl_enemy(_world.enemy(hard_enemies[0]));
+    _world.add_fahl_enemy(_world.entity(easy_enemies[0]));
+    _world.add_fahl_enemy(_world.entity(easy_enemies[1]));
+    _world.add_fahl_enemy(_world.entity(medium_enemies[0]));
+    _world.add_fahl_enemy(_world.entity(medium_enemies[1]));
+    _world.add_fahl_enemy(_world.entity(hard_enemies[0]));
 }
 
 

@@ -1,20 +1,23 @@
 #pragma once
 
 #include "extlibs/json.hpp"
-
-#include "model/enemy.hpp"
-#include "model/item.hpp"
-#include "model/item_source.hpp"
-#include "model/world_node.hpp"
-#include "model/world_path.hpp"
-#include "model/spawn_location.hpp"
-#include "model/hint_source.hpp"
-#include "model/world_region.hpp"
-#include "model/world_teleport_tree.hpp"
-
-#include "randomizer_options.hpp"
+#include "tools/megadrive/rom.hpp"
+#include <map>
+#include <vector>
 
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
+
+class RandomizerOptions;
+class WorldNode;
+class WorldPath;
+class WorldRegion;
+class SpawnLocation;
+class HintSource;
+class ItemSource;
+class Item;
+class WorldTeleportTree;
+class Entity;
+class EntityOnMap;
 
 class World
 {
@@ -28,8 +31,9 @@ private:
     std::vector<WorldRegion*> _regions;
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
-    std::map<uint8_t, Enemy*> _enemies;
-    std::vector<Enemy*> _fahl_enemies;
+    std::map<uint8_t, Entity*> _entities;
+    std::map<uint16_t, std::vector<EntityOnMap*>> _entities_on_maps;
+    std::vector<Entity*> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
     WorldRegion* _dark_region;
@@ -43,7 +47,7 @@ public:
     const std::map<uint8_t, Item*> items() const { return _items; }
     Item* item(uint8_t id) const { return _items.at(id); }
     Item* item(const std::string& name) const;
-    Item* add_item(Item* item) { _items[item->id()] = item; return item; }
+    Item* add_item(Item* item);
     Item* add_gold_item(uint8_t worth);
     std::vector<Item*> starting_inventory() const;
 
@@ -60,7 +64,7 @@ public:
     std::vector<ItemSource*> item_sources_with_item(Item* item);
 
     const std::map<std::string, SpawnLocation*>& spawn_locations() const { return _spawn_locations; }
-    void add_spawn_location(SpawnLocation* spawn) { _spawn_locations[spawn->id()] = spawn; }
+    void add_spawn_location(SpawnLocation* spawn);
     
     const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
@@ -74,18 +78,18 @@ public:
 
     void active_spawn_location(SpawnLocation* spawn) { _active_spawn_location = spawn; }
     SpawnLocation* active_spawn_location() const { return _active_spawn_location; }
-    WorldNode* spawn_node() const { return (_active_spawn_location) ? _active_spawn_location->node() : nullptr; } 
-    WorldNode* end_node() const { return _nodes.at("end"); } 
+    WorldNode* spawn_node() const;
+    WorldNode* end_node() const;
 
     WorldRegion* dark_region() const { return _dark_region; }
     void dark_region(WorldRegion* region) { _dark_region = region; }
 
-    const std::map<uint8_t, Enemy*>& enemies() const { return _enemies; }
-    Enemy* enemy(uint8_t id) const { return _enemies.at(id); }
-    Enemy* enemy(const std::string& name) const;
+    const std::map<uint8_t, Entity*>& entities() const { return _entities; }
+    Entity* entity(uint8_t id) const { return _entities.at(id); }
+    Entity* entity(const std::string& name) const;
 
-    const std::vector<Enemy*>& fahl_enemies() const { return _fahl_enemies; }
-    void add_fahl_enemy(Enemy* enemy) { _fahl_enemies.push_back(enemy); }
+    const std::vector<Entity*>& fahl_enemies() const { return _fahl_enemies; }
+    void add_fahl_enemy(Entity* enemy) { _fahl_enemies.push_back(enemy); }
 
     void write_to_rom(md::ROM& rom);
 
@@ -109,5 +113,6 @@ private:
     void init_hint_sources();
     void init_teleport_trees();
     void init_game_strings(const md::ROM& rom);
-    void init_enemies(const md::ROM& rom);
+    void init_entities(const md::ROM& rom);
+    void init_entities_on_maps(const md::ROM& rom);
 };

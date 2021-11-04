@@ -7,6 +7,8 @@
 #include "../assets/green_jewel.bin.hxx"
 #include "../assets/yellow_jewel.bin.hxx"
 
+#include "../model/item.hpp"
+
 /**
  * The effect of Pawn Ticket fits very well one of a consumable item, but didn't
  * work this way in the original game. Instead, a story flag was set that prevented

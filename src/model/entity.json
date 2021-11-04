@@ -1,0 +1,694 @@
+{
+    "0": {
+        "name": "nigel",
+        "type": "enemy"
+    },
+    "1": {
+        "name": "old_man",
+        "type": "entity"
+    },
+    "2": {
+        "name": "massan_bear_male",
+        "type": "entity"
+    },
+    "3": {
+        "name": "boy",
+        "type": "entity"
+    },
+    "4": {
+        "name": "orc_yellow",
+        "type": "enemy"
+    },
+    "5": {
+        "name": "orc_dark_red",
+        "type": "enemy"
+    },
+    "6": {
+        "name": "orc_light_red",
+        "type": "enemy"
+    },
+    "7": {
+        "name": "worm_1",
+        "type": "enemy"
+    },
+    "8": {
+        "name": "worm_2",
+        "type": "enemy"
+    },
+    "9": {
+        "name": "worm_3",
+        "type": "enemy"
+    },
+    "10": {
+        "name": "money_bag",
+        "type": "entity"
+    },
+    "11": {
+        "name": "man_1",
+        "type": "entity"
+    },
+    "12": {
+        "name": "woman_1",
+        "type": "entity"
+    },
+    "13": {
+        "name": "girl",
+        "type": "entity"
+    },
+    "14": {
+        "name": "dog",
+        "type": "entity"
+    },
+    "15": {
+        "name": "chicken",
+        "type": "entity"
+    },
+    "16": {
+        "name": "priest",
+        "type": "entity"
+    },
+    "17": {
+        "name": "vase",
+        "type": "entity"
+    },
+    "18": {
+        "name": "chest",
+        "type": "entity"
+    },
+    "19": {
+        "name": "small_grey_ball",
+        "type": "enemy"
+    },
+    "20": {
+        "name": "large_grey_ball",
+        "type": "enemy"
+    },
+    "21": {
+        "name": "small_yellow_platform",
+        "type": "entity"
+    },
+    "22": {
+        "name": "crate",
+        "type": "entity"
+    },
+    "23": {
+        "name": "ninja_1",
+        "type": "enemy"
+    },
+    "24": {
+        "name": "ninja_2",
+        "type": "enemy"
+    },
+    "25": {
+        "name": "ninja_3",
+        "type": "enemy"
+    },
+    "26": {
+        "name": "lizard_1",
+        "type": "enemy"
+    },
+    "27": {
+        "name": "lizard_2",
+        "type": "enemy"
+    },
+    "28": {
+        "name": "lizard_3",
+        "type": "enemy"
+    },
+    "29": {
+        "name": "knight_teal",
+        "type": "enemy"
+    },
+    "30": {
+        "name": "knight_white",
+        "type": "enemy"
+    },
+    "31": {
+        "name": "knight_gold",
+        "type": "enemy"
+    },
+    "32": {
+        "name": "ghost_1",
+        "type": "enemy"
+    },
+    "33": {
+        "name": "ghost_2",
+        "type": "enemy"
+    },
+    "34": {
+        "name": "ghost_3",
+        "type": "enemy"
+    },
+    "35": {
+        "name": "mummy_1",
+        "type": "enemy"
+    },
+    "36": {
+        "name": "mummy_2",
+        "type": "enemy"
+    },
+    "37": {
+        "name": "mummy_3",
+        "type": "enemy"
+    },
+    "38": {
+        "name": "unicorn_1",
+        "type": "enemy"
+    },
+    "39": {
+        "name": "unicorn_2",
+        "type": "enemy"
+    },
+    "40": {
+        "name": "unicorn_3",
+        "type": "enemy"
+    },
+    "41": {
+        "name": "skeleton_1",
+        "type": "enemy"
+    },
+    "42": {
+        "name": "skeleton_2",
+        "type": "enemy"
+    },
+    "43": {
+        "name": "skeleton_3",
+        "type": "enemy"
+    },
+    "44": {
+        "name": "mimic_1",
+        "type": "enemy"
+    },
+    "45": {
+        "name": "mimic_2",
+        "type": "enemy"
+    },
+    "46": {
+        "name": "mimic_3",
+        "type": "enemy"
+    },
+    "47": {
+        "name": "massan_bear_child",
+        "type": "entity"
+    },
+    "48": {
+        "name": "dwarf_male",
+        "type": "entity"
+    },
+    "49": {
+        "name": "gumi_bear_female",
+        "type": "entity"
+    },
+    "50": {
+        "name": "soldier",
+        "type": "entity"
+    },
+    "51": {
+        "name": "madame_yard",
+        "type": "entity"
+    },
+    "52": {
+        "name": "dexter",
+        "type": "entity"
+    },
+    "53": {
+        "name": "raft",
+        "type": "entity"
+    },
+    "54": {
+        "name": "mushroom_green",
+        "type": "enemy"
+    },
+    "55": {
+        "name": "mushroom_red",
+        "type": "enemy"
+    },
+    "56": {
+        "name": "mushroom_black",
+        "type": "enemy"
+    },
+    "57": {
+        "name": "giant_1",
+        "type": "enemy"
+    },
+    "58": {
+        "name": "giant_2",
+        "type": "enemy"
+    },
+    "59": {
+        "name": "giant_3",
+        "type": "enemy"
+    },
+    "60": {
+        "name": "slime_1",
+        "type": "enemy"
+    },
+    "61": {
+        "name": "slime_2",
+        "type": "enemy"
+    },
+    "62": {
+        "name": "slime_3",
+        "type": "enemy"
+    },
+    "63": {
+        "name": "old_lady",
+        "type": "entity"
+    },
+    "64": {
+        "name": "gumi_bear_male",
+        "type": "entity"
+    },
+    "65": {
+        "name": "gumi_bear_child",
+        "type": "entity"
+    },
+    "66": {
+        "name": "fara_stake",
+        "type": "entity"
+    },
+    "67": {
+        "name": "gumi_bear_praying",
+        "type": "entity"
+    },
+    "68": {
+        "name": "skeleton_statue_1",
+        "type": "entity"
+    },
+    "69": {
+        "name": "massan_bear_praying",
+        "type": "entity"
+    },
+    "70": {
+        "name": "skeleton_statue_2",
+        "type": "entity"
+    },
+    "71": {
+        "name": "massan_bear_female",
+        "type": "entity"
+    },
+    "72": {
+        "name": "dwarf_female",
+        "type": "entity"
+    },
+    "73": {
+        "name": "small_gray_spikeball",
+        "type": "enemy"
+    },
+    "74": {
+        "name": "large_gray_spikeball",
+        "type": "enemy"
+    },
+    "75": {
+        "name": "sacred_tree",
+        "type": "enemy"
+    },
+    "76": {
+        "name": "large_wood_platform",
+        "type": "entity"
+    },
+    "77": {
+        "name": "injured_dog",
+        "type": "entity"
+    },
+    "78": {
+        "name": "dead_body",
+        "type": "entity"
+    },
+    "79": {
+        "name": "woman_2",
+        "type": "entity"
+    },
+    "80": {
+        "name": "man_2",
+        "type": "entity"
+    },
+    "81": {
+        "name": "invisible_cube",
+        "type": "entity"
+    },
+    "82": {
+        "name": "ink",
+        "type": "entity"
+    },
+    "83": {
+        "name": "large_concrete_block",
+        "type": "enemy"
+    },
+    "84": {
+        "name": "square_switch",
+        "type": "enemy"
+    },
+    "85": {
+        "name": "round_switch",
+        "type": "enemy"
+    },
+    "86": {
+        "name": "small_yellow_platform",
+        "type": "entity"
+    },
+    "87": {
+        "name": "small_grey_platform",
+        "type": "entity"
+    },
+    "88": {
+        "name": "small_green_platform",
+        "type": "entity"
+    },
+    "89": {
+        "name": "small_thin_yellow_platform",
+        "type": "entity"
+    },
+    "90": {
+        "name": "small_thin_grey_platform",
+        "type": "entity"
+    },
+    "91": {
+        "name": "small_thin_green_platform",
+        "type": "entity"
+    },
+    "92": {
+        "name": "large_dark_platform",
+        "type": "entity"
+    },
+    "93": {
+        "name": "large_thin_grey_platform",
+        "type": "entity"
+    },
+    "94": {
+        "name": "large_thin_green_platform",
+        "type": "entity"
+    },
+    "95": {
+        "name": "large_thin_yellow_platform",
+        "type": "entity"
+    },
+    "96": {
+        "name": "item_box",
+        "type": "entity"
+    },
+    "97": {
+        "name": "friday",
+        "type": "entity"
+    },
+    "98": {
+        "name": "boulder",
+        "type": "entity"
+    },
+    "99": {
+        "name": "nigel_in_bed",
+        "type": "entity"
+    },
+    "100": {
+        "name": "goddess_statue",
+        "type": "entity"
+    },
+    "101": {
+        "name": "two_way_signpost",
+        "type": "enemy"
+    },
+    "102": {
+        "name": "three_way_signpost",
+        "type": "enemy"
+    },
+    "103": {
+        "name": "gate_south",
+        "type": "enemy"
+    },
+    "104": {
+        "name": "gate_north",
+        "type": "entity"
+    },
+    "105": {
+        "name": "kayla",
+        "type": "entity"
+    },
+    "106": {
+        "name": "wally",
+        "type": "entity"
+    },
+    "107": {
+        "name": "woman_3",
+        "type": "entity"
+    },
+    "108": {
+        "name": "locked_door",
+        "type": "enemy"
+    },
+    "109": {
+        "name": "man_in_bed",
+        "type": "entity"
+    },
+    "110": {
+        "name": "arthur",
+        "type": "enemy"
+    },
+    "111": {
+        "name": "kayla_in_bath",
+        "type": "entity"
+    },
+    "112": {
+        "name": "duke",
+        "type": "enemy"
+    },
+    "113": {
+        "name": "small_wood_platform",
+        "type": "entity"
+    },
+    "114": {
+        "name": "small_thin_dark_platform",
+        "type": "entity"
+    },
+    "115": {
+        "name": "old_man_yellow",
+        "type": "entity"
+    },
+    "116": {
+        "name": "man_blue_shirt",
+        "type": "entity"
+    },
+    "117": {
+        "name": "chef",
+        "type": "entity"
+    },
+    "118": {
+        "name": "princess",
+        "type": "entity"
+    },
+    "119": {
+        "name": "golem_statue_1",
+        "type": "enemy"
+    },
+    "120": {
+        "name": "mir_magic_barrier",
+        "type": "enemy"
+    },
+    "121": {
+        "name": "sailor",
+        "type": "entity"
+    },
+    "122": {
+        "name": "pockets",
+        "type": "entity"
+    },
+    "123": {
+        "name": "skeleton_priest",
+        "type": "entity"
+    },
+    "124": {
+        "name": "mir",
+        "type": "enemy"
+    },
+    "125": {
+        "name": "bird_1",
+        "type": "enemy"
+    },
+    "126": {
+        "name": "bird_2",
+        "type": "enemy"
+    },
+    "127": {
+        "name": "bird_3",
+        "type": "enemy"
+    },
+    "128": {
+        "name": "moralis",
+        "type": "entity"
+    },   
+    "129": {
+        "name": "slime_4",
+        "type": "enemy"
+    },
+    "130": {
+        "name": "slime_5",
+        "type": "enemy"
+    },
+    "131": {
+        "name": "slime_6",
+        "type": "enemy"
+    },
+    "132": {
+        "name": "gnome",
+        "type": "entity"
+    },
+    "133": {
+        "name": "zak",
+        "type": "enemy"
+    },
+    "134": {
+        "name": "mir_wall_barrier",
+        "type": "entity"
+    },
+    "135": {
+        "name": "small_fireball",
+        "type": "enemy"
+    },
+    "136": {
+        "name": "reaper_1",
+        "type": "enemy"
+    },
+    "137": {
+        "name": "reaper_2",
+        "type": "enemy"
+    },
+    "138": {
+        "name": "reaper_3",
+        "type": "enemy"
+    },
+    "139": {
+        "name": "golem_statue_2",
+        "type": "enemy"
+    },
+    "140": {
+        "name": "corrupted_round_switch",
+        "type": "entity"
+    },
+    "141": {
+        "name": "small_green_spikeball",
+        "type": "enemy"
+    },
+    "142": {
+        "name": "large_grey_spikeball",
+        "type": "enemy"
+    },
+    "143": {
+        "name": "ghost_spawner_1",
+        "type": "enemy"
+    },
+    "144": {
+        "name": "ghost_spawner_2",
+        "type": "enemy"
+    },
+    "145": {
+        "name": "ghost_spawner_3",
+        "type": "enemy"
+    },
+    "146": {
+        "name": "golem_1",
+        "type": "enemy"
+    },
+    "147": {
+        "name": "golem_2",
+        "type": "enemy"
+    },
+    "148": {
+        "name": "golem_3",
+        "type": "enemy"
+    },
+    "149": {
+        "name": "spectre_1",
+        "type": "enemy"
+    },
+    "150": {
+        "name": "spectre_2",
+        "type": "enemy"
+    },
+    "151": {
+        "name": "spectre_3",
+        "type": "enemy"
+    },
+    "152": {
+        "name": "small_blue_ball",
+        "type": "enemy"
+    },
+    "153": {
+        "name": "small_red_ball",
+        "type": "enemy"
+    },
+    "154": {
+        "name": "large_blue_ball",
+        "type": "enemy"
+    },
+    "155": {
+        "name": "large_red_ball",
+        "type": "enemy"
+    },    
+    "156": {
+        "name": "magic_fox",
+        "type": "entity"
+    },
+    "157": {
+        "name": "spinner_white",
+        "type": "enemy"
+    },
+    "158": {
+        "name": "duke_chair",
+        "type": "entity"
+    },
+    "159": {
+        "name": "miro",
+        "type": "enemy"
+    },
+    "160": {
+        "name": "firedemon",
+        "type": "enemy"
+    },
+    "161": {
+        "name": "firedemon_projectile",
+        "type": "enemy"
+    },
+    "162": {
+        "name": "gola",
+        "type": "enemy"
+    },
+    "163": {
+        "name": "pink_golem_statue",
+        "type": "entity"
+    },
+    "164": {
+        "name": "gold_golem_statue",
+        "type": "entity"
+    },
+    "165": {
+        "name": "nole",
+        "type": "enemy"
+    },
+    "166": {
+        "name": "nole_projectile",
+        "type": "enemy"
+    },
+    "167": {
+        "name": "quake_grey",
+        "type": "enemy"
+    },
+    "168": {
+        "name": "zak_projectile",
+        "type": "enemy"
+    },
+    "169": {
+        "name": "one_way_sign_post",
+        "type": "entity"
+    },
+    "170": {
+        "name": "spinner_red",
+        "type": "enemy"
+    },
+    "171": {
+        "name": "quake_gold",
+        "type": "enemy"
+    },
+    "172": {
+        "name": "gola_fireball",
+        "type": "enemy"
+    }
+}

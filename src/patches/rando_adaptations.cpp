@@ -2,7 +2,7 @@
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
-
+#include "../model/item.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       RANDO ADAPTATIONS / ENHANCEMENTS
