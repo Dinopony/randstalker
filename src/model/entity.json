@@ -1,6 +1,6 @@
 {
     "0": {
-        "name": "nigel",
+        "name": "miro_1",
         "type": "enemy"
     },
     "1": {
@@ -636,7 +636,7 @@
         "type": "entity"
     },
     "159": {
-        "name": "miro",
+        "name": "miro_2",
         "type": "enemy"
     },
     "160": {

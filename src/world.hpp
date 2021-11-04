@@ -17,7 +17,7 @@ class ItemSource;
 class Item;
 class WorldTeleportTree;
 class Entity;
-class EntityOnMap;
+class Map;
 
 class World
 {
@@ -32,7 +32,7 @@ private:
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
     std::map<uint8_t, Entity*> _entities;
-    std::map<uint16_t, std::vector<EntityOnMap*>> _entities_on_maps;
+    std::map<uint16_t, Map*> _maps;
     std::vector<Entity*> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
@@ -114,5 +114,5 @@ private:
     void init_teleport_trees();
     void init_game_strings(const md::ROM& rom);
     void init_entities(const md::ROM& rom);
-    void init_entities_on_maps(const md::ROM& rom);
+    void init_maps(const md::ROM& rom);
 };

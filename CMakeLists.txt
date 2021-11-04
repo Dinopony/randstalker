@@ -68,6 +68,8 @@ set(SOURCES
     "src/model/item_source.cpp"
     "src/model/item.hpp"
     "src/model/item.cpp"
+    "src/model/map.hpp"
+    "src/model/map.cpp"
     "src/model/spawn_location.hpp"
     "src/model/world_node.hpp"
     "src/model/world_path.hpp"

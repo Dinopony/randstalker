@@ -6,9 +6,10 @@
 #include "tools/textbanks_encoder.hpp"
 
 #include "model/entity.hpp"
-#include "model/entity_on_map.hpp"
+#include "model/map.hpp"
 #include "model/item.hpp"
 #include "model/item_source.hpp"
+#include "model/map.hpp"
 #include "model/world_node.hpp"
 #include "model/world_path.hpp"
 #include "model/spawn_location.hpp"
@@ -47,7 +48,7 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_game_strings(rom);
     this->init_hint_sources();
     this->init_entities(rom);
-    this->init_entities_on_maps(rom);
+    this->init_maps(rom);
 }
 
 World::~World()
@@ -244,7 +245,23 @@ void World::init_item_sources()
     std::cout << _item_sources.size() << " item sources loaded." << std::endl;
 
     // The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
-    // 0x0E, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
+    // 0x0E (14): Mercator Kitchen (variant?)
+    // 0x1E (30): King Nole's Cave spiral staircase (variant with enemies?) ---> 29 is the one used in rando
+    // 0x20 (32): Boulder chase hallway (variant with enemies?) ---> 31 is the one used in rando
+    // 0x25 (37): Thieves Hideout entrance (variant with water)
+    // 0x27 (39): Thieves Hideout entrance (waterless variant)
+    // 0x28 (40): Thieves Hideout entrance (waterless variant)
+    // 0x33 (51): Thieves Hideout second room (waterless variant)
+    // 0x3D (61): Thieves Hideout reward room (Kayla cutscene variant) 
+    // 0x3E (62): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0x3F (63): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0x40 (64): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0x41 (65): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0xBB (187): Crypt (Larson. E room)
+    // 0xBC (188): Crypt (Larson. E room)
+    // 0xBD (189): Crypt (Larson. E room)
+    // 0xBE (190): Crypt (Larson. E room)
+    // 0xC3 (195): Map 712 / 0x2C8 ???
 }
 
 void World::init_nodes()
@@ -456,28 +473,11 @@ Entity* World::entity(const std::string& name) const
     return nullptr;
 }
 
-void World::init_entities_on_maps(const md::ROM& rom)
+void World::init_maps(const md::ROM& rom)
 {
     constexpr uint16_t MAP_COUNT = 816;
-    constexpr uint32_t MAP_ENTITIES_OFFSETS_TABLE_ADDR = 0x1B090;
-
-    std::map<uint16_t, uint16_t> map_offsets;
-    for(uint16_t map_id  = 0 ; map_id < MAP_COUNT ; map_id++)
-    {
-        uint32_t addr = MAP_ENTITIES_OFFSETS_TABLE_ADDR + (map_id * 2);
-        // Maps with offset 0000 have no entities
-        if(rom.get_word(addr) > 0)
-            map_offsets[map_id] = rom.get_word(addr) - 1;
-    }
-    
-    constexpr uint32_t MAP_ENTITIES_TABLE_ADDR = 0x1B932;
-
-    for(auto& [map_id, offset] : map_offsets)
-    {
-        uint32_t current_map_starting_addr = MAP_ENTITIES_TABLE_ADDR + offset;
-        for(uint32_t addr = current_map_starting_addr ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
-            _entities_on_maps[map_id].push_back(EntityOnMap::from_rom(rom, addr, *this));
-    }
+    for(uint16_t map_id = 0 ; map_id < MAP_COUNT ; ++map_id)
+        _maps[map_id] = new Map(map_id, rom, *this);
 }
 
 void World::add_tree_logic_paths()
@@ -823,14 +823,10 @@ void World::output_model()
         entities_json[std::to_string(id)] = entity->to_json();
     tools::dump_json_to_file(entities_json, "./json_data/entity.json");
 
-    Json entities_on_maps_json = Json::object();
-    for(auto& [map_id, entities_on_map] : _entities_on_maps)
-    {
-        entities_on_maps_json[std::to_string(map_id)] = Json::array();
-        for(EntityOnMap* entity_on_map : entities_on_map)
-            entities_on_maps_json[std::to_string(map_id)].push_back(entity_on_map->to_json());
-    }
-    tools::dump_json_to_file(entities_on_maps_json, "./json_data/entity_on_map.json");
+    Json maps_json = Json::object();
+    for(auto& [map_id, map] : _maps)
+        maps_json[std::to_string(map_id)] = map->to_json();
+    tools::dump_json_to_file(maps_json, "./json_data/map.json");
 }
 
 void World::output_graphviz()
