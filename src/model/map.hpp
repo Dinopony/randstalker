@@ -6,6 +6,48 @@
 class EntityOnMap;
 class World;
 
+struct MapExit {
+    uint8_t pos_x;
+    uint8_t pos_y;
+
+    uint16_t destination_map_id;
+    uint8_t destination_x;
+    uint8_t destination_y;
+
+    /// 0x1 => Initially closed?
+    /// 0x2 => NE
+    /// 0x4 => NW
+    /// 0x8 => ???
+    /// 0x10 => NE Stairs
+    /// 0x20 => NW Stairs
+    uint8_t extra_byte;
+
+    Json to_json() const {
+        Json json;
+        json["posX"] = pos_x;
+        json["posY"] = pos_y;
+        json["extraByte"] = extra_byte;
+        json["destinationMapId"] = destination_map_id;
+        json["destinationX"] = destination_x;
+        json["destinationY"] = destination_y;
+        return json;
+    }
+};
+
+struct MapVariant {
+    uint16_t map_variant_id;
+    uint8_t flag_byte;
+    uint8_t flag_bit;
+    
+    Json to_json() const {
+        Json json;
+        json["mapVariantId"] = map_variant_id;
+        json["flagByte"] = flag_byte;
+        json["flagBit"] = flag_bit;
+        return json;
+    }
+};
+
 class Map
 {
 private:
@@ -25,8 +67,12 @@ private:
     uint8_t _unknown_param_2;
 
     uint8_t _base_chest_id;
-
+    uint16_t _fall_destination;
+    uint16_t _climb_destination;
+    
     std::vector<EntityOnMap*> _entities;
+    std::vector<MapExit> _exits;
+    std::vector<MapVariant> _variants;
 
 public:
     Map(uint16_t map_id, const md::ROM& rom, const World& world);
