@@ -78,6 +78,31 @@ public:
     Map(uint16_t map_id, const md::ROM& rom, const World& world);
     ~Map();
 
+    void write_to_rom(md::ROM& rom);
+
+    uint8_t background_music() const { return _background_music; }
+    void background_music(uint8_t music) { _background_music = music; }
+
+    const std::vector<EntityOnMap*>& entities() { return _entities; }
+    const std::vector<MapExit>& exits() { return _exits; }
+    const std::vector<MapVariant>& variants() { return _variants; }
+
     Json to_json() const;
     Map* from_json(const Json& json);
+
+private:
+    void read_map_data(const md::ROM& rom);
+    void write_map_data(md::ROM& rom);
+    void read_base_chest_id(const md::ROM& rom);
+    void write_base_chest_id(md::ROM& rom);
+    void read_fall_destination(const md::ROM& rom);
+    void write_fall_destination(md::ROM& rom);
+    void read_climb_destination(const md::ROM& rom);
+    void write_climb_destination(md::ROM& rom);
+    void read_entities(const md::ROM& rom, const World& world);
+    void write_entities(md::ROM& rom);
+    void read_exits(const md::ROM& rom);
+    void write_exits(md::ROM& rom);
+    void read_variants(const md::ROM& rom);
+    void write_variants(md::ROM& rom);
 };

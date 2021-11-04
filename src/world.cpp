@@ -513,6 +513,10 @@ void World::write_to_rom(md::ROM& rom)
     for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
         rom.set_byte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
 
+    // Write maps
+    for(auto& [map_id, map] : _maps)
+        map->write_to_rom(rom);
+
     // Write item info
     for (auto& [key, item] : _items)
         item->write_to_rom(rom);

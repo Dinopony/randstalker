@@ -4,70 +4,200 @@
 #include "../exceptions.hpp"
 #include "../world.hpp"
 
-Map::Map(uint16_t map_id, const md::ROM& rom, const World& world)
+Map::Map(uint16_t map_id, const md::ROM& rom, const World& world) :
+    _id                 (map_id),
+    _fall_destination   (0xFFFF),
+    _climb_destination  (0xFFFF)
 {
-    _id = map_id;
+    this->read_map_data(rom);
+    this->read_base_chest_id(rom);
+    this->read_fall_destination(rom);
+    this->read_climb_destination(rom);
+    
+    this->read_entities(rom, world);
+    this->read_exits(rom);
+    this->read_variants(rom);
+}
 
-    // Read map data from the global table
-    constexpr uint32_t MAP_DATA_TABLE_ADDR = 0xA0A12;
-    uint32_t addr = MAP_DATA_TABLE_ADDR + (map_id * 8);
+Map::~Map()
+{
+    for(EntityOnMap* entity_on_map : _entities)
+        delete entity_on_map;
+}
+
+void Map::write_to_rom(md::ROM& rom)
+{
+    this->write_map_data(rom);
+    this->write_base_chest_id(rom);
+    this->write_fall_destination(rom);
+    this->write_climb_destination(rom);
+  
+    this->write_entities(rom);
+//    this->write_exits(rom);
+//    this->write_variants(rom);   
+}
+
+////////////////////////////////////////////////////////////////
+
+constexpr uint32_t MAP_DATA_TABLE_ADDR = 0xA0A12;
+
+void Map::read_map_data(const md::ROM& rom)
+{
+    uint32_t addr = MAP_DATA_TABLE_ADDR + (_id * 8);
 
     _address = rom.get_long(addr);
 
     _tileset_id = rom.get_byte(addr+4) & 0x1F;
     _primary_big_tileset_id = (rom.get_byte(addr+4) >> 5) & 0x01;
-    _secondary_big_tileset_id = (rom.get_byte(addr+7) >> 5) & 0x07;
-    _big_tileset_id = _primary_big_tileset_id << 5 | _tileset_id;
+    _unknown_param_1 = (rom.get_byte(addr+4) >> 6);
 
     _palette_id = rom.get_byte(addr+5) & 0x3F;
-    _room_height = rom.get_byte(addr+6);
-    _background_music = rom.get_byte(addr+7) & 0x1F;
-
-    _unknown_param_1 = (rom.get_byte(addr+4) >> 6);
     _unknown_param_2 = (rom.get_byte(addr+5) >> 6);
 
-    // Read base chest ID for this map from the dedicated table
-    constexpr uint32_t MAP_BASE_CHEST_ID_TABLE_ADDR = 0x9E78E;
-    _base_chest_id = rom.get_byte(MAP_BASE_CHEST_ID_TABLE_ADDR + map_id);
+    _room_height = rom.get_byte(addr+6);
 
-    // Read fall destination for this map from the dedicated table
-    constexpr uint32_t MAP_FALL_DESTINATION_TABLE_ADDR = 0xA1A8;
-    _fall_destination = 0xFFFF;
-    for(addr = MAP_FALL_DESTINATION_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
+    _background_music = rom.get_byte(addr+7) & 0x1F;
+    _secondary_big_tileset_id = (rom.get_byte(addr+7) >> 5) & 0x07;
+
+    _big_tileset_id = _primary_big_tileset_id << 5 | _tileset_id;
+}
+
+void Map::write_map_data(md::ROM& rom)
+{
+    uint32_t addr = MAP_DATA_TABLE_ADDR + (_id * 8);
+
+    uint8_t byte4;
+    byte4 = _tileset_id & 0x1F;
+    byte4 |= (_primary_big_tileset_id & 0x01) << 5;
+    byte4 |= (_unknown_param_1 & 0x03) << 6;
+    
+    uint8_t byte5;
+    byte5 = _palette_id & 0x3F;
+    byte5 |= (_unknown_param_2 & 0x03) << 6;
+    
+    uint8_t byte7;
+    byte7 = _background_music & 0x1F;
+    byte7 |= (_secondary_big_tileset_id & 0x07) << 5;
+    
+    rom.set_long(addr, _address);
+    rom.set_byte(addr+4, byte4);
+    rom.set_byte(addr+5, byte5);
+    rom.set_byte(addr+6, _room_height);
+    rom.set_byte(addr+7, byte7);
+}
+
+////////////////////////////////////////////////////////////////
+
+constexpr uint32_t MAP_BASE_CHEST_ID_TABLE_ADDR = 0x9E78E;
+
+void Map::read_base_chest_id(const md::ROM& rom)
+{
+    _base_chest_id = rom.get_byte(MAP_BASE_CHEST_ID_TABLE_ADDR + _id);
+}
+
+void Map::write_base_chest_id(md::ROM& rom)
+{
+    rom.set_byte(MAP_BASE_CHEST_ID_TABLE_ADDR + _id, _base_chest_id);
+}
+
+////////////////////////////////////////////////////////////////
+
+constexpr uint32_t MAP_FALL_DESTINATION_TABLE_ADDR = 0xA1A8;
+
+void Map::read_fall_destination(const md::ROM& rom)
+{
+    for(uint32_t addr = MAP_FALL_DESTINATION_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
     {
         if(rom.get_word(addr) == _id)
         {
             _fall_destination = rom.get_word(addr+2);
-            break;
+            return;
+        }
+    }
+}
+
+void Map::write_fall_destination(md::ROM& rom)
+{
+    if(_fall_destination == 0xFFFF)
+        return;
+
+    for(uint32_t addr = MAP_FALL_DESTINATION_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
+    {
+        if(rom.get_word(addr) == _id)
+        {
+            rom.set_word(addr+2, _fall_destination);
+            return;
         }
     }
 
-    // Read climb destination for this map from the dedicated table
-    constexpr uint32_t MAP_CLIMB_DESTINATION_TABLE_ADDR = 0xA35A;
-    _climb_destination = 0xFFFF;
-    for(addr = MAP_CLIMB_DESTINATION_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
+    throw RandomizerException("Couldn't write fall destination for map #" + std::to_string(_id) + " because it had no fall destination in base game");
+}
+
+////////////////////////////////////////////////////////////////
+
+constexpr uint32_t MAP_CLIMB_DESTINATION_TABLE_ADDR = 0xA35A;
+
+void Map::read_climb_destination(const md::ROM& rom)
+{
+    for(uint32_t addr = MAP_CLIMB_DESTINATION_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
     {
         if(rom.get_word(addr) == _id)
         {
             _climb_destination = rom.get_word(addr+2);
-            break;
+            return;
         }
     }
+}
 
-    // Read entities in this map from the dedicated table
-    constexpr uint32_t MAP_ENTITIES_OFFSETS_TABLE_ADDR = 0x1B090;
-    constexpr uint32_t MAP_ENTITIES_TABLE_ADDR = 0x1B932;
-    uint16_t offset = rom.get_word(MAP_ENTITIES_OFFSETS_TABLE_ADDR + (map_id*2));
+void Map::write_climb_destination(md::ROM& rom)
+{
+    if(_climb_destination == 0xFFFF)
+        return;
+
+    for(uint32_t addr = MAP_CLIMB_DESTINATION_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
+    {
+        if(rom.get_word(addr) == _id)
+        {
+            rom.set_word(addr+2, _climb_destination);
+            return;
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////
+
+constexpr uint32_t MAP_ENTITIES_OFFSETS_TABLE_ADDR = 0x1B090;
+constexpr uint32_t MAP_ENTITIES_TABLE_ADDR = 0x1B932;
+
+void Map::read_entities(const md::ROM& rom, const World& world)
+{
+    uint16_t offset = rom.get_word(MAP_ENTITIES_OFFSETS_TABLE_ADDR + (_id*2));
     if(offset > 0)
     {
         // Maps with offset 0000 have no entities
-        for(addr = MAP_ENTITIES_TABLE_ADDR + offset-1 ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
+        for(uint32_t addr = MAP_ENTITIES_TABLE_ADDR + offset-1 ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
             _entities.push_back(EntityOnMap::from_rom(rom, addr, world));
     }
+}
 
-    // Read map exits from the dedicated table
-    constexpr uint32_t MAP_EXITS_TABLE_ADDR = 0x11CEA2;
-    for(addr = MAP_EXITS_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
+void Map::write_entities(md::ROM& rom)
+{
+    uint16_t offset = rom.get_word(MAP_ENTITIES_OFFSETS_TABLE_ADDR + (_id*2));
+    uint32_t addr = MAP_ENTITIES_TABLE_ADDR + offset - 1;
+    for(EntityOnMap* entity : _entities)
+    {
+        rom.set_bytes(addr, entity->to_bytes());
+        addr += 0x8;
+    }
+}
+
+////////////////////////////////////////////////////////////////
+
+constexpr uint32_t MAP_EXITS_TABLE_ADDR = 0x11CEA2;
+
+void Map::read_exits(const md::ROM& rom)
+{
+    for(uint32_t addr = MAP_EXITS_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
     {
         uint16_t map_id_1 = rom.get_word(addr) & 0x3FF;
         uint8_t extra_1 = (rom.get_byte(addr) & 0xFC) >> 2;
@@ -102,10 +232,19 @@ Map::Map(uint16_t map_id, const md::ROM& rom, const World& world)
             _exits.push_back(exit);
         }
     }
+}
 
-    // Read map variants for this map from the dedicated table
+void Map::write_exits(md::ROM& rom)
+{
+    // TODO
+}
+
+////////////////////////////////////////////////////////////////
+
+void Map::read_variants(const md::ROM& rom)
+{
     constexpr uint32_t MAP_VARIANTS_TABLE_ADDR = 0xA3D8;
-    for(addr = MAP_VARIANTS_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
+    for(uint32_t addr = MAP_VARIANTS_TABLE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
     {
         if(rom.get_word(addr) == _id)
         {
@@ -118,11 +257,7 @@ Map::Map(uint16_t map_id, const md::ROM& rom, const World& world)
     }
 }
 
-Map::~Map()
-{
-    for(EntityOnMap* entity_on_map : _entities)
-        delete entity_on_map;
-}
+////////////////////////////////////////////////////////////////
 
 Json Map::to_json() const
 {
