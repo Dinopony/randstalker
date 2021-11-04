@@ -195,13 +195,16 @@ void generate(const ArgumentDictionary& args)
     }
 
     // Output current world model
-    if (args.get_boolean("dumpmodel") && options.allow_spoiler_log())
+    if (args.get_boolean("dumpmodel"))
     {
-        world.output_model();
-        std::cout << "Model dumped to './json_data/'" << std::endl;
+        if(options.allow_spoiler_log())
+        {
+            world.output_model();
+            std::cout << "Model dumped to './json_data/'" << std::endl;
+        }
+        else
+            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
-    else
-        std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
