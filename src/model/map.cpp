@@ -185,7 +185,7 @@ std::vector<uint8_t> Map::entities_as_bytes() const
 
     for(EntityOnMap* entity : _entities)
     {
-        std::vector<uint8_t> entity_bytes;
+        std::vector<uint8_t> entity_bytes = entity->to_bytes();
         bytes.insert(bytes.end(), entity_bytes.begin(), entity_bytes.end());
     }
 

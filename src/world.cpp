@@ -567,8 +567,8 @@ void World::write_maps(md::ROM& rom)
         if(!map->entities().empty())
         {
             rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), cumulated_offset_entities + 1);
-
             std::vector<uint8_t> entity_bytes = map->entities_as_bytes();
+
             rom.set_bytes(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, entity_bytes);
             cumulated_offset_entities += (uint32_t)entity_bytes.size();
         }
@@ -590,7 +590,7 @@ void World::write_maps(md::ROM& rom)
 
     if(cumulated_offset_entities > offsets::MAP_ENTITIES_TABLE_END)
         throw RandomizerException("Entities must not be bigger than the one from base game");
-    rom.mark_empty_chunk(cumulated_offset_entities, offsets::MAP_ENTITIES_TABLE_END);
+    rom.mark_empty_chunk(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, offsets::MAP_ENTITIES_TABLE_END);
 
     rom.set_long(variants_table_current_addr, 0xFFFFFFFF);
     variants_table_current_addr += 0x4;
