@@ -102,7 +102,7 @@ public:
 
     void output_model();
     void output_graphviz();
-
+    void output_maps_to_graphviz();
 private:
     void init_items();
     void init_item_sources();

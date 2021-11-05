@@ -929,3 +929,32 @@ void World::output_graphviz()
 
     graphviz << "}\n"; 
 }
+
+void World::output_maps_to_graphviz()
+{
+    std::ofstream graphviz("./json_data/map_model.dot");
+    graphviz << "digraph {\n";
+
+    graphviz << "\tgraph [pad=0.5, nodesep=0.4, ranksep=1];\n";
+    graphviz << "\tnode[shape=rect];\n\n";
+    
+    for(auto& [map_id, map] : _maps)
+    {
+        for(const MapExit& exit : map->exits())
+            graphviz << "\t" << map->id() << " -> " << exit.destination_map_id << "\n";
+
+        if(map->fall_destination() != 0xFFFF)
+            graphviz << "\t" << map->id() << " -> " << map->fall_destination() << "\n";
+
+        if(map->climb_destination() != 0xFFFF)
+            graphviz << "\t" << map->id() << " -> " << map->climb_destination() << "\n";
+
+        for(const MapVariant& variant : map->variants())
+        {
+            graphviz << "\t" << map->id() << " -> " << variant.map_variant_id << "[color=indianred2, penwidth=2]\n";
+            graphviz << "\t" << variant.map_variant_id << "[style=filled, fillcolor=indianred2]\n";            
+        }
+    }
+
+    graphviz << "}\n"; 
+}
