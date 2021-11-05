@@ -476,6 +476,10 @@ void World::init_maps(const md::ROM& rom)
     constexpr uint16_t MAP_COUNT = 816;
     for(uint16_t map_id = 0 ; map_id < MAP_COUNT ; ++map_id)
         _maps[map_id] = new Map(map_id, rom, *this);
+
+    const std::set<uint16_t> UNREACHABLE_MAPS = {};
+    for(uint16_t map_id : UNREACHABLE_MAPS)
+        _maps.at(map_id)->clear();
 }
 
 void World::add_tree_logic_paths()

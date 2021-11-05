@@ -26,6 +26,19 @@ Map::~Map()
         delete entity_on_map;
 }
 
+void Map::clear()
+{
+    _base_chest_id = 0x00;
+    _fall_destination = 0xFFFF;
+    _climb_destination = 0xFFFF;
+    
+    for(EntityOnMap* entity_on_map : _entities)
+        delete entity_on_map;
+    _entities.clear();
+    _exits.clear();
+    _variants.clear();
+}
+
 void Map::write_to_rom(md::ROM& rom)
 {
     this->write_map_data(rom);

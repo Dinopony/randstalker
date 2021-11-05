@@ -78,6 +78,7 @@ public:
     Map(uint16_t map_id, const md::ROM& rom, const World& world);
     ~Map();
 
+    void clear();
     void write_to_rom(md::ROM& rom);
 
     uint8_t background_music() const { return _background_music; }
