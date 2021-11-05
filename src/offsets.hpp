@@ -2,14 +2,14 @@
 
 #include <cstdint>
 
-namespace offsets {
-    
+namespace offsets 
+{    
     constexpr uint32_t HUD_TILEMAP = 0x009242;
 
     constexpr uint32_t MAP_FALL_DESTINATION_TABLE = 0x00A1A8;
     constexpr uint32_t MAP_CLIMB_DESTINATION_TABLE = 0x00A35A;
     constexpr uint32_t MAP_VARIANTS_TABLE = 0x00A3D8;
-    constexpr uint32_t MAP_VARIANTS_TABLE_END = 0x00A3D8;
+    constexpr uint32_t MAP_VARIANTS_TABLE_END = 0x00A61C;
 
     constexpr uint32_t MENU_ITEM_ORDER_TABLE = 0x00D55C;
     constexpr uint32_t MENU_ITEM_ORDER_TABLE_END = 0x00D584;
@@ -37,6 +37,4 @@ namespace offsets {
     constexpr uint32_t MAP_EXITS_TABLE = 0x11CEA2;
 
     constexpr uint32_t ITEM_SPRITES_TABLE = 0x121578;
-
-
 }
