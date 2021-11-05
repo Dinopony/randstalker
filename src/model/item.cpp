@@ -1,9 +1,9 @@
 #include "item.hpp"
+#include "../offsets.hpp"
 
 void Item::write_to_rom(md::ROM& rom) const
 {
-    constexpr uint32_t ITEM_TABLE_BASE_ADDR = 0x029304;
-    uint32_t item_base_addr = ITEM_TABLE_BASE_ADDR + _id * 0x04;
+    uint32_t item_base_addr = offsets::ITEM_DATA_TABLE + _id * 0x04;
 
     // Set the max quantity
     uint8_t verb_and_max_qty = rom.get_byte(item_base_addr);

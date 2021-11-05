@@ -87,6 +87,7 @@ set(SOURCES
     "src/patches/story_dependencies.cpp"
 
     "src/exceptions.hpp"
+    "src/offsets.hpp"
     "src/randomizer_options.hpp"
     "src/randomizer_options.cpp"
     "src/world.cpp"

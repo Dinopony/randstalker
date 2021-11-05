@@ -3,9 +3,8 @@
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
 #include "../exceptions.hpp"
-
+#include "../offsets.hpp"
 #include "../assets/fixed_hud_tilemap.bin.hxx"
-
 #include "../model/item.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,9 +36,9 @@ void alter_item_order_in_menu(md::ROM& rom)
         ITEM_BLUE_RIBBON,   0xFF
     };
 
-    constexpr uint32_t base_addr = 0x00D55C;
-    for (int i = 0; base_addr + i < 0x00D584; ++i)
-        rom.set_byte(base_addr + i, itemOrder[i]);
+
+    for (int i = 0; offsets::MENU_ITEM_ORDER_TABLE + i < offsets::MENU_ITEM_ORDER_TABLE_END; ++i)
+        rom.set_byte(offsets::MENU_ITEM_ORDER_TABLE + i, itemOrder[i]);
 }
 
 void rename_items(md::ROM& rom, const RandomizerOptions& options)
@@ -89,8 +88,8 @@ void rename_items(md::ROM& rom, const RandomizerOptions& options)
         addr += stringSize;
     }
 
-    constexpr uint16_t initialSize = 0x29A0A - 0x29732;
-
+    constexpr uint16_t initialSize = offsets::ITEM_NAMES_TABLE_END - offsets::ITEM_NAMES_TABLE;
+    
     item_name_bytes.clear();
     for(const std::vector<uint8_t>& itemName : item_names)
     {
@@ -101,7 +100,7 @@ void rename_items(md::ROM& rom, const RandomizerOptions& options)
 
     if(item_name_bytes.size() > initialSize)
         throw new RandomizerException("Item names size is above initial game size");
-    rom.set_bytes(0x29732, item_name_bytes);
+    rom.set_bytes(offsets::ITEM_NAMES_TABLE, item_name_bytes);
 }
 
 void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
@@ -130,20 +129,20 @@ void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
 
 void alter_credits(md::ROM& rom)
 {
-    constexpr uint32_t credits_text_base_addr = 0x9ED1A;
+
 
     // Change "LANDSTALKER" to "RANDSTALKER"
-    rom.set_byte(credits_text_base_addr + 0x2, 0x13);
+    rom.set_byte(offsets::CREDITS_TEXT + 0x2, 0x13);
 
-    rom.set_bytes(credits_text_base_addr + 0x14, { 
+    rom.set_bytes(offsets::CREDITS_TEXT + 0x14, { 
         0x27, 0x1C, 0x29, 0x1F, 0x2E, 0x2F, 0x1C, 0x27, 0x26, 0x20, 0x2D, 0x80, // "landstalker "
         0x2D, 0x1C, 0x29, 0x1F, 0x2A, 0x28, 0x24, 0x35, 0x20, 0x2D              // "randomizer"
     });
 
     // Widen the space between the end of the cast and the beginning of the rando staff
-    rom.set_byte(credits_text_base_addr + 0x5C, 0x0F);
+    rom.set_byte(offsets::CREDITS_TEXT + 0x5C, 0x0F);
 
-    rom.set_bytes(credits_text_base_addr + 0x75, { 
+    rom.set_bytes(offsets::CREDITS_TEXT + 0x75, { 
         // RANDOMIZER
         0x08, 0xFF, 0x82, 
         0x80, 0x13, 0x80, 0x02, 0x80, 0x0F, 0x80, 0x05, 0x80, 0x10, 0x80, 0x0E, 0x80, 0x0A, 0x80, 0x1B, 0x80, 0x06, 0x80, 0x13, 0x80, 0x00, 
@@ -180,9 +179,9 @@ void alter_credits(md::ROM& rom)
     });
 
     std::vector<uint8_t> rest;
-    rom.data_chunk(credits_text_base_addr + 0x1D2, credits_text_base_addr + 0x929, rest);
-    rom.set_bytes(credits_text_base_addr + 0xF5, rest);
-    for(uint32_t addr = credits_text_base_addr + 0xF5 + (uint32_t)rest.size() ; addr <= credits_text_base_addr + 0x929 ; ++addr)
+    rom.data_chunk(offsets::CREDITS_TEXT + 0x1D2, offsets::CREDITS_TEXT + 0x929, rest);
+    rom.set_bytes(offsets::CREDITS_TEXT + 0xF5, rest);
+    for(uint32_t addr = offsets::CREDITS_TEXT + 0xF5 + (uint32_t)rest.size() ; addr <= offsets::CREDITS_TEXT + 0x929 ; ++addr)
         rom.set_byte(addr, 0x00);
 }
 
@@ -192,9 +191,9 @@ void alter_credits(md::ROM& rom)
  */
 void fix_hud_tilemap(md::ROM& rom)
 {
-    constexpr uint32_t HUD_TILEMAP_ADDR = 0x9242;
+    
     for(uint32_t i=0 ; i<FIXED_HUD_TILEMAP_SIZE ; ++i)
-        rom.set_byte(HUD_TILEMAP_ADDR+i, FIXED_HUD_TILEMAP[i]);
+        rom.set_byte(offsets::HUD_TILEMAP+i, FIXED_HUD_TILEMAP[i]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

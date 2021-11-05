@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-constexpr uint32_t ROM_SIZE = 2097152;
+constexpr uint32_t ROM_SIZE = 0x200000;
 
 namespace md 
 {
@@ -106,7 +106,7 @@ namespace md
     uint32_t ROM::reserve_data_block(uint32_t byte_count, const std::string& label)
     {
         std::pair<uint32_t, uint32_t>* best_pair = nullptr;
-        uint32_t best_pair_size = UINT32_MAX;
+        size_t best_pair_size = UINT32_MAX;
 
         // Find the smallest pair that fits with the required byte count 
         for(auto& pair : _empty_chunks)

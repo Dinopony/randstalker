@@ -20,6 +20,7 @@
 #include "exceptions.hpp"
 #include "world_solver.hpp"
 #include "randomizer_options.hpp"
+#include "offsets.hpp"
 
 // Include headers automatically generated from model json files
 #include "model/entity.json.hxx"
@@ -415,16 +416,13 @@ void World::init_entities(const md::ROM& rom)
 
     // Read item drop probabilities from a table in the ROM
     std::vector<uint16_t> probability_table;
-    constexpr uint32_t PROBABILITY_TABLE_ADDR = 0x199D6;
-    constexpr uint32_t PROBABILITY_TABLE_LAST_BYTE = 0x199E5;
-    for(uint32_t addr = PROBABILITY_TABLE_ADDR ; addr < PROBABILITY_TABLE_LAST_BYTE ; addr += 0x2)
+    for(uint32_t addr = offsets::PROBABILITY_TABLE ; addr < offsets::PROBABILITY_TABLE_END ; addr += 0x2)
     {
         probability_table.push_back(rom.get_word(addr));
     }
 
     // Read enemy info from a table in the ROM
-    constexpr uint32_t ENEMIES_TABLE_BASE_ADDR = 0x1B6F0;
-    for(uint32_t addr = ENEMIES_TABLE_BASE_ADDR ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
+    for(uint32_t addr = offsets::ENEMY_STATS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
     {
         uint8_t id = rom.get_byte(addr);
 
