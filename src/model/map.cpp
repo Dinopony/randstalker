@@ -32,15 +32,9 @@ void Map::write_to_rom(md::ROM& rom)
     this->write_base_chest_id(rom);
     this->write_fall_destination(rom);
     this->write_climb_destination(rom);
-  
-    this->write_entities(rom);
-//    this->write_exits(rom);
-//    this->write_variants(rom);   
 }
 
 ////////////////////////////////////////////////////////////////
-
-
 
 void Map::read_map_data(const md::ROM& rom)
 {
@@ -89,8 +83,6 @@ void Map::write_map_data(md::ROM& rom)
 
 ////////////////////////////////////////////////////////////////
 
-
-
 void Map::read_base_chest_id(const md::ROM& rom)
 {
     _base_chest_id = rom.get_byte(offsets::MAP_BASE_CHEST_ID_TABLE + _id);
@@ -102,8 +94,6 @@ void Map::write_base_chest_id(md::ROM& rom)
 }
 
 ////////////////////////////////////////////////////////////////
-
-
 
 void Map::read_fall_destination(const md::ROM& rom)
 {
@@ -135,8 +125,6 @@ void Map::write_fall_destination(md::ROM& rom)
 }
 
 ////////////////////////////////////////////////////////////////
-
-
 
 void Map::read_climb_destination(const md::ROM& rom)
 {
@@ -178,15 +166,19 @@ void Map::read_entities(const md::ROM& rom, const World& world)
     }
 }
 
-void Map::write_entities(md::ROM& rom)
+std::vector<uint8_t> Map::entities_as_bytes() const
 {
-    uint16_t offset = rom.get_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (_id*2));
-    uint32_t addr = offsets::MAP_ENTITIES_TABLE + offset - 1;
+    std::vector<uint8_t> bytes;
+
     for(EntityOnMap* entity : _entities)
     {
-        rom.set_bytes(addr, entity->to_bytes());
-        addr += 0x8;
+        std::vector<uint8_t> entity_bytes;
+        bytes.insert(bytes.end(), entity_bytes.begin(), entity_bytes.end());
     }
+
+    bytes.push_back(0xFF);
+    bytes.push_back(0xFF);
+    return bytes;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -228,11 +220,6 @@ void Map::read_exits(const md::ROM& rom)
             _exits.push_back(exit);
         }
     }
-}
-
-void Map::write_exits(md::ROM& rom)
-{
-    // TODO
 }
 
 ////////////////////////////////////////////////////////////////

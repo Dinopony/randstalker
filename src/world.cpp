@@ -504,20 +504,8 @@ WorldRegion* World::region(const std::string& name) const
 
 void World::write_to_rom(md::ROM& rom)
 {
-    // Write a data block for gold values
-    uint8_t highest_item_id = _items.rbegin()->first;
-    uint8_t gold_items_count = (highest_item_id - ITEM_GOLDS_START) + 1;
-    uint32_t addr = rom.reserve_data_block(gold_items_count, "data_gold_values");
-    for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
-        rom.set_byte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
-
-    // Write maps
-    for(auto& [map_id, map] : _maps)
-        map->write_to_rom(rom);
-
-    // Write item info
-    for (auto& [key, item] : _items)
-        item->write_to_rom(rom);
+    this->write_items(rom);
+    this->write_maps(rom);
 
     // Write item sources' contents
     for (ItemSource* source : _item_sources)
@@ -547,6 +535,64 @@ void World::write_to_rom(md::ROM& rom)
         throw RandomizerException("Cannot put more than 50 enemies for Fahl challenge");
     for(uint8_t i=0 ; i<_fahl_enemies.size() ; ++i)
         rom.set_byte(0x12CE6 + i, _fahl_enemies[i]->id());
+}
+
+void World::write_items(md::ROM& rom)
+{
+    // Write a data block for gold values
+    uint8_t highest_item_id = _items.rbegin()->first;
+    uint8_t gold_items_count = (highest_item_id - ITEM_GOLDS_START) + 1;
+    uint32_t addr = rom.reserve_data_block(gold_items_count, "data_gold_values");
+    for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
+        rom.set_byte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
+
+    // Write item info
+    for (auto& [key, item] : _items)
+        item->write_to_rom(rom);
+}
+
+void World::write_maps(md::ROM& rom)
+{
+    uint16_t cumulated_offset_entities = 0x0;
+    uint32_t variants_table_current_addr = offsets::MAP_VARIANTS_TABLE;
+    for(auto& [map_id, map] : _maps)
+    {
+        map->write_to_rom(rom);
+        
+        // Write map entities
+        if(!map->entities().empty())
+        {
+            rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), cumulated_offset_entities + 1);
+
+            std::vector<uint8_t> entity_bytes = map->entities_as_bytes();
+            rom.set_bytes(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, entity_bytes);
+            cumulated_offset_entities += (uint32_t)entity_bytes.size();
+        }
+        else
+        {
+            rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), 0x0000);
+        }
+
+        // Write map variants
+        for(const MapVariant& variant : map->variants())
+        {
+            rom.set_word(variants_table_current_addr, map_id);
+            rom.set_word(variants_table_current_addr+2, variant.map_variant_id);
+            rom.set_byte(variants_table_current_addr+4, variant.flag_byte);
+            rom.set_byte(variants_table_current_addr+5, variant.flag_bit);
+            variants_table_current_addr += 0x6;
+        }
+    }
+
+    if(cumulated_offset_entities > offsets::MAP_ENTITIES_TABLE_END)
+        throw RandomizerException("Entities must not be bigger than the one from base game");
+    rom.mark_empty_chunk(cumulated_offset_entities, offsets::MAP_ENTITIES_TABLE_END);
+
+    rom.set_long(variants_table_current_addr, 0xFFFFFFFF);
+    variants_table_current_addr += 0x4;
+    if(variants_table_current_addr > offsets::MAP_VARIANTS_TABLE_END)
+        throw RandomizerException("Map variants must not be bigger than the one from base game");
+    rom.mark_empty_chunk(variants_table_current_addr, offsets::MAP_VARIANTS_TABLE_END);
 }
 
 Json World::to_json() const

@@ -115,4 +115,7 @@ private:
     void init_game_strings(const md::ROM& rom);
     void init_entities(const md::ROM& rom);
     void init_maps(const md::ROM& rom);
+
+    void write_items(md::ROM& rom);
+    void write_maps(md::ROM& rom);
 };

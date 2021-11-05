@@ -87,22 +87,27 @@ public:
     const std::vector<MapExit>& exits() { return _exits; }
     const std::vector<MapVariant>& variants() { return _variants; }
 
+    std::vector<uint8_t> entities_as_bytes() const;
+
     Json to_json() const;
     Map* from_json(const Json& json);
 
 private:
     void read_map_data(const md::ROM& rom);
     void write_map_data(md::ROM& rom);
+
     void read_base_chest_id(const md::ROM& rom);
     void write_base_chest_id(md::ROM& rom);
+
     void read_fall_destination(const md::ROM& rom);
     void write_fall_destination(md::ROM& rom);
+
     void read_climb_destination(const md::ROM& rom);
     void write_climb_destination(md::ROM& rom);
+
     void read_entities(const md::ROM& rom, const World& world);
-    void write_entities(md::ROM& rom);
+
     void read_exits(const md::ROM& rom);
-    void write_exits(md::ROM& rom);
+
     void read_variants(const md::ROM& rom);
-    void write_variants(md::ROM& rom);
 };
