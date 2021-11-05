@@ -105,6 +105,10 @@ namespace md
 
     uint32_t ROM::reserve_data_block(uint32_t byte_count, const std::string& label)
     {
+        std::pair<uint32_t, uint32_t>* best_pair = nullptr;
+        uint32_t best_pair_size = UINT32_MAX;
+
+        // Find the smallest pair that fits with the required byte count 
         for(auto& pair : _empty_chunks)
         {
             if(pair.first >= pair.second)
@@ -114,20 +118,29 @@ namespace md
             if(chunk_size < byte_count)
                 continue;
 
-            uint32_t injection_addr = pair.first;
-            pair.first += byte_count;
+            if(chunk_size < best_pair_size)
+            {
+                best_pair = &pair;
+                best_pair_size = chunk_size;
+            }
+        }
+
+        // Update the pair to remove reserved space from possible future injection spots
+        if(best_pair)
+        {
+            uint32_t injection_addr = best_pair->first;
+            best_pair->first += byte_count;
 
             // Don't allow an empty chunk to begin with an odd address
-            if(pair.first % 2 != 0)
-                pair.first++;
+            if(best_pair->first % 2 != 0)
+                best_pair->first++;
 
             if (!label.empty())
                 this->store_address(label, injection_addr);
 
             return injection_addr;
         }
-
-        throw std::out_of_range("Not enough empty room inside the ROM to inject data");
+        else throw std::out_of_range("Not enough empty room inside the ROM to inject data");
     }
 
     void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output) const
