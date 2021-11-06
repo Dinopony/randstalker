@@ -41,6 +41,8 @@ set(SOURCES
     "src/tools/bitfield.hpp"
     "src/tools/game_text.hpp"
     "src/tools/game_text.cpp"
+    "src/tools/graphviz.hpp"
+    "src/tools/graphviz.cpp"
     "src/tools/unsorted_set.hpp"
     "src/tools/tools.hpp"
     "src/tools/textbanks_decoder.hpp"
