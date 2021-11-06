@@ -175,7 +175,7 @@ void Map::read_entities(const md::ROM& rom, const World& world)
     {
         // Maps with offset 0000 have no entities
         for(uint32_t addr = offsets::MAP_ENTITIES_TABLE + offset-1 ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
-            _entities.push_back(EntityOnMap::from_rom(rom, addr, world));
+            _entities.push_back(EntityOnMap::from_rom(rom, addr, this, world));
     }
 }
 
@@ -254,7 +254,7 @@ void Map::read_variants(const md::ROM& rom)
 
 ////////////////////////////////////////////////////////////////
 
-Json Map::to_json() const
+Json Map::to_json(const World& world) const
 {
     Json json;
 
@@ -296,7 +296,7 @@ Json Map::to_json() const
         uint8_t chest_id = _base_chest_id;
         for(EntityOnMap* entity : _entities)
         {
-            Json entity_json = entity->to_json();
+            Json entity_json = entity->to_json(world);
             if(entity_json.at("entityType") == "chest")
                 entity_json["chestId"] = chest_id++;
             json["entities"].push_back(entity_json);

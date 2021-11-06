@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include "../tools/megadrive/rom.hpp"
+#include "world_node.hpp"
 
 class WorldTeleportTree {
 private:

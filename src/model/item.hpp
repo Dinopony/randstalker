@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../tools/megadrive/rom.hpp"
 #include "../extlibs/json.hpp"
 #include <sstream>
 
@@ -44,8 +43,6 @@ public:
     bool allowed_on_ground() const { return _allowed_on_ground; }
     void allowed_on_ground(bool allowed) { _allowed_on_ground = allowed; }
 
-    virtual void write_to_rom(md::ROM& rom) const;
-
     Json to_json() const;
     static Item* from_json(uint8_t id, const Json& json);
     void apply_json(const Json& json);
@@ -71,12 +68,6 @@ public:
         name(new_name.str());
 
         return *this;
-    }
-
-    virtual void write_to_rom(md::ROM& rom) const
-    {
-        // Do nothing, since it is not a real item
-        return;
     }
 };
 

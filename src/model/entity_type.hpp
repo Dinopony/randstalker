@@ -4,14 +4,14 @@
 
 class World;
 
-class Entity
+class EntityType
 {
 private :
     uint8_t _id;
     std::string _name;
 
 public:
-    Entity(uint8_t id, const std::string& name) :
+    EntityType(uint8_t id, const std::string& name) :
         _id     (id),
         _name   (name)
     {}
@@ -29,7 +29,7 @@ public:
         return json;
     }
 
-    static Entity* from_json(uint8_t id, const Json& json, const World& world);
+    static EntityType* from_json(uint8_t id, const Json& json, const World& world);
 
     void apply_json(const Json& json)
     {
@@ -38,7 +38,7 @@ public:
     }
 };
 
-class EntityEnemy : public Entity
+class EntityEnemy : public EntityType
 {
 private :
     uint8_t _health;
@@ -76,14 +76,14 @@ public:
     void apply_json(const Json& json, const World& world);
 };
 
-class EntityItemOnGround : public Entity
+class EntityItemOnGround : public EntityType
 {
 private :
     Item* _item;
 
 public:
     EntityItemOnGround(uint8_t id, const std::string& name, Item* item) :
-        Entity  (id, name),
+        EntityType  (id, name),
         _item   (item)
     {}
 
@@ -93,7 +93,7 @@ public:
 
     Json to_json() const
     {
-        Json json = Entity::to_json();
+        Json json = EntityType::to_json();
         json["itemId"] = _item->id();
         return json;
     }

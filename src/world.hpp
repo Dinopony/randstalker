@@ -16,7 +16,7 @@ class HintSource;
 class ItemSource;
 class Item;
 class WorldTeleportTree;
-class Entity;
+class EntityType;
 class Map;
 
 class World
@@ -31,9 +31,9 @@ private:
     std::vector<WorldRegion*> _regions;
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
-    std::map<uint8_t, Entity*> _entities;
+    std::map<uint8_t, EntityType*> _entity_types;
     std::map<uint16_t, Map*> _maps;
-    std::vector<Entity*> _fahl_enemies;
+    std::vector<EntityType*> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
     WorldRegion* _dark_region;
@@ -84,14 +84,15 @@ public:
     WorldRegion* dark_region() const { return _dark_region; }
     void dark_region(WorldRegion* region) { _dark_region = region; }
 
-    const std::map<uint8_t, Entity*>& entities() const { return _entities; }
-    Entity* entity(uint8_t id) const { return _entities.at(id); }
-    Entity* entity(const std::string& name) const;
+    const std::map<uint8_t, EntityType*>& entity_types() const { return _entity_types; }
+    EntityType* entity_type(uint8_t id) const { return _entity_types.at(id); }
+    EntityType* entity_type(const std::string& name) const;
 
-    const std::vector<Entity*>& fahl_enemies() const { return _fahl_enemies; }
-    void add_fahl_enemy(Entity* enemy) { _fahl_enemies.push_back(enemy); }
+    const std::map<uint16_t, Map*>& maps() const { return _maps; }
+    Map* map(uint16_t map_id) const { return _maps.at(map_id); }
 
-    void write_to_rom(md::ROM& rom);
+    const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
+    void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.push_back(enemy); }
 
     Json to_json() const;
     void parse_json(const Json& json);

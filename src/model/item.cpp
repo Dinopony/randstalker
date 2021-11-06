@@ -1,20 +1,6 @@
 #include "item.hpp"
 #include "../offsets.hpp"
 
-void Item::write_to_rom(md::ROM& rom) const
-{
-    uint32_t item_base_addr = offsets::ITEM_DATA_TABLE + _id * 0x04;
-
-    // Set the max quantity
-    uint8_t verb_and_max_qty = rom.get_byte(item_base_addr);
-    verb_and_max_qty &= 0xF0; // Keep the verb but erase the default quantity
-    verb_and_max_qty += _max_quantity;
-    rom.set_byte(item_base_addr, verb_and_max_qty);
-
-    // Set gold value
-    rom.set_word(item_base_addr + 0x2, _gold_value);
-}
-
 Json Item::to_json() const
 {
     Json json;

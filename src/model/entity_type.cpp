@@ -1,14 +1,14 @@
-#include "entity.hpp"
+#include "entity_type.hpp"
 #include "../world.hpp"
 
-Entity* Entity::from_json(uint8_t id, const Json& json, const World& world)
+EntityType* EntityType::from_json(uint8_t id, const Json& json, const World& world)
 {
     const std::string& name = json.at("name");
     const std::string& type = json.at("type");
 
     if(type == "entity")
     {
-        return new Entity(id, name);
+        return new EntityType(id, name);
     }
     else if(type == "enemy")
     {
@@ -32,7 +32,7 @@ Entity* Entity::from_json(uint8_t id, const Json& json, const World& world)
 
 EntityEnemy::EntityEnemy(uint8_t id, const std::string& name, uint8_t health, uint8_t attack, uint8_t defence, 
         uint8_t dropped_golds, Item* dropped_item, uint16_t drop_probability) :
-    Entity              (id, name),
+    EntityType              (id, name),
     _health             (health),
     _attack             (attack),
     _defence            (defence),
@@ -43,7 +43,7 @@ EntityEnemy::EntityEnemy(uint8_t id, const std::string& name, uint8_t health, ui
 
 Json EntityEnemy::to_json() const
 {
-    Json json = Entity::to_json();
+    Json json = EntityType::to_json();
 
     json["health"] = _health;
     json["attack"] = _attack;
@@ -61,7 +61,7 @@ Json EntityEnemy::to_json() const
 
 void EntityEnemy::apply_json(const Json& json, const World& world)
 {
-    Entity::apply_json(json);
+    EntityType::apply_json(json);
 
     if(json.contains("health"))
         _health = json.at("health");

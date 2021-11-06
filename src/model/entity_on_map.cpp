@@ -1,13 +1,13 @@
 #include "entity_on_map.hpp"
 
 #include "../world.hpp"
-#include "entity.hpp"
+#include "entity_type.hpp"
 
-Json EntityOnMap::to_json() const
+Json EntityOnMap::to_json(const World& world) const
 {
     Json json;
 
-    json["entityType"] = _entity_type->name();
+    json["entityType"] = world.entity_type(_entity_type_id)->name();
 
     json["posX"] = _pos_x;
     json["posY"] = _pos_y;
@@ -37,9 +37,9 @@ Json EntityOnMap::to_json() const
     return json;
 }
 
-EntityOnMap* EntityOnMap::from_json(const Json& json, const World& world)
+EntityOnMap* EntityOnMap::from_json(const Json& json, Map* map, const World& world)
 {
-    EntityOnMap* entity = new EntityOnMap();
+    EntityOnMap* entity = new EntityOnMap(map);
 
     entity->_pos_x = json.at("posX");
     entity->_pos_y = json.at("posY");
@@ -49,7 +49,7 @@ EntityOnMap* EntityOnMap::from_json(const Json& json, const World& world)
     entity->_half_tile_y = json.at("halfTileY");
     entity->_half_tile_z = json.at("halfTileZ");
 
-    entity->_entity_type = world.entity((std::string)json.at("entityType"));
+    entity->_entity_type_id = world.entity_type((std::string)json.at("entityType"))->id();
     entity->_palette = json.at("palette");
 
     entity->_horizontal_mirror = json.at("horizontalMirror");
@@ -71,9 +71,9 @@ EntityOnMap* EntityOnMap::from_json(const Json& json, const World& world)
     return entity;
 }
 
-EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, const World& world)
+EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, Map* map, const World& world)
 {
-    EntityOnMap* entity = new EntityOnMap();
+    EntityOnMap* entity = new EntityOnMap(map);
     
     // Byte 0
     uint8_t byte0 = rom.get_byte(addr);
@@ -103,7 +103,7 @@ EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, const Worl
     entity->_byte4 = rom.get_byte(addr + 0x4);
 
     // Byte 5
-    entity->_entity_type = world.entity(rom.get_byte(addr + 0x5));
+    entity->_entity_type_id = rom.get_byte(addr + 0x5);
 
     // Byte 6
     uint8_t byte6 = rom.get_byte(addr + 0x6);
@@ -148,7 +148,7 @@ std::vector<uint8_t> EntityOnMap::to_bytes() const
     uint8_t byte4 = _byte4;
 
     // Byte 5
-    uint8_t byte5 = _entity_type->id();
+    uint8_t byte5 = _entity_type_id;
 
     // Byte 6
     uint8_t byte6 = _pos_z & 0x0F;

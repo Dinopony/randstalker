@@ -5,7 +5,7 @@
 #include "tools/textbanks_decoder.hpp"
 #include "tools/textbanks_encoder.hpp"
 
-#include "model/entity.hpp"
+#include "model/entity_type.hpp"
 #include "model/map.hpp"
 #include "model/item.hpp"
 #include "model/item_source.hpp"
@@ -23,7 +23,7 @@
 #include "offsets.hpp"
 
 // Include headers automatically generated from model json files
-#include "model/entity.json.hxx"
+#include "model/entity_type.json.hxx"
 #include "model/item.json.hxx"
 #include "model/world_node.json.hxx"
 #include "model/world_path.json.hxx"
@@ -40,6 +40,7 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     _dark_region            (nullptr)
 {
     this->init_items();
+    this->init_maps(rom);
     this->init_nodes();
     this->init_item_sources();
     this->init_paths();
@@ -49,7 +50,6 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_game_strings(rom);
     this->init_hint_sources();
     this->init_entities(rom);
-    this->init_maps(rom);
 }
 
 World::~World()
@@ -73,7 +73,7 @@ World::~World()
         delete tree_1;
         delete tree_2;
     }
-    for (auto& [id, entity] : _entities)
+    for (auto& [id, entity] : _entity_types)
         delete entity;
 }
 
@@ -241,7 +241,7 @@ void World::init_item_sources()
     Json item_sources_json = Json::parse(ITEM_SOURCES_JSON);
     for(const Json& source_json : item_sources_json)
     {
-        _item_sources.push_back(ItemSource::from_json(source_json, _nodes));
+        _item_sources.push_back(ItemSource::from_json(source_json, *this));
     }
     std::cout << _item_sources.size() << " item sources loaded." << std::endl;
 
@@ -411,7 +411,7 @@ void World::init_entities(const md::ROM& rom)
     for(auto& [id_string, entity_json] : entities_json.items())
     {
         uint8_t id = std::stoi(id_string);
-        _entities[id] = Entity::from_json(id, entity_json, *this);
+        _entity_types[id] = EntityType::from_json(id, entity_json, *this);
     }
 
     // Read item drop probabilities from a table in the ROM
@@ -426,9 +426,9 @@ void World::init_entities(const md::ROM& rom)
     {
         uint8_t id = rom.get_byte(addr);
 
-        Entity* entity_at_id = _entities.at(id);
+        EntityType* entity_at_id = _entity_types.at(id);
         if(entity_at_id->type_name() != "enemy")
-            throw RandomizerException("Entity of ID #" + std::to_string(id) + " is not an enemy but has enemy stats");
+            throw RandomizerException("EntityType of ID #" + std::to_string(id) + " is not an enemy but has enemy stats");
         EntityEnemy* enemy_at_id = reinterpret_cast<EntityEnemy*>(entity_at_id);
 
         enemy_at_id->health(rom.get_byte(addr+1));
@@ -447,10 +447,10 @@ void World::init_entities(const md::ROM& rom)
         if(item_id > 0x3F)
             continue;
         uint8_t entity_id = item_id + 0xC0;
-        _entities[entity_id] = new EntityItemOnGround(entity_id, "ground_item (" + item->name() + ")", item);
+        _entity_types[entity_id] = new EntityItemOnGround(entity_id, "ground_item (" + item->name() + ")", item);
     }
 
-    std::cout << _entities.size()  << " entities loaded." << std::endl;
+    std::cout << _entity_types.size()  << " entities loaded." << std::endl;
 }
 
 WorldNode* World::spawn_node() const 
@@ -463,9 +463,9 @@ WorldNode* World::end_node() const
     return _nodes.at("end");
 } 
 
-Entity* World::entity(const std::string& name) const
+EntityType* World::entity_type(const std::string& name) const
 {
-    for(auto& [id, enemy] : _entities)
+    for(auto& [id, enemy] : _entity_types)
         if(enemy->name() == name)
             return enemy;
     return nullptr;
@@ -506,98 +506,6 @@ WorldRegion* World::region(const std::string& name) const
     return nullptr;
 }
 
-void World::write_to_rom(md::ROM& rom)
-{
-    this->write_items(rom);
-    this->write_maps(rom);
-
-    // Write item sources' contents
-    for (ItemSource* source : _item_sources)
-        source->write_to_rom(rom);
-
-    // Write all text lines into text banks
-    TextbanksEncoder encoder(rom, _game_strings);
-
-    // Inject dark rooms as a data block
-    const std::vector<uint16_t>& dark_map_ids = _dark_region->dark_map_ids();
-    uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
-    uint32_t dark_maps_address = rom.reserve_data_block(dark_maps_byte_count, "data_dark_rooms");
-    uint8_t i = 0;
-    for (uint16_t map_id : dark_map_ids)
-        rom.set_word(dark_maps_address + (i++) * 0x2, map_id);
-    rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
-
-    // Write Tibor tree map connections
-    for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
-    {
-        tree_1->write_to_rom(rom);
-        tree_2->write_to_rom(rom);
-    }
-
-    // Write Fahl enemies
-    if(_fahl_enemies.size() > 50)
-        throw RandomizerException("Cannot put more than 50 enemies for Fahl challenge");
-    for(uint8_t i=0 ; i<_fahl_enemies.size() ; ++i)
-        rom.set_byte(0x12CE6 + i, _fahl_enemies[i]->id());
-}
-
-void World::write_items(md::ROM& rom)
-{
-    // Write a data block for gold values
-    uint8_t highest_item_id = _items.rbegin()->first;
-    uint8_t gold_items_count = (highest_item_id - ITEM_GOLDS_START) + 1;
-    uint32_t addr = rom.reserve_data_block(gold_items_count, "data_gold_values");
-    for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
-        rom.set_byte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
-
-    // Write item info
-    for (auto& [key, item] : _items)
-        item->write_to_rom(rom);
-}
-
-void World::write_maps(md::ROM& rom)
-{
-    uint16_t cumulated_offset_entities = 0x0;
-    uint32_t variants_table_current_addr = offsets::MAP_VARIANTS_TABLE;
-    for(auto& [map_id, map] : _maps)
-    {
-        map->write_to_rom(rom);
-        
-        // Write map entities
-        if(!map->entities().empty())
-        {
-            rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), cumulated_offset_entities + 1);
-            std::vector<uint8_t> entity_bytes = map->entities_as_bytes();
-
-            rom.set_bytes(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, entity_bytes);
-            cumulated_offset_entities += (uint32_t)entity_bytes.size();
-        }
-        else
-        {
-            rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), 0x0000);
-        }
-
-        // Write map variants
-        for(const MapVariant& variant : map->variants())
-        {
-            rom.set_word(variants_table_current_addr, map_id);
-            rom.set_word(variants_table_current_addr+2, variant.map_variant_id);
-            rom.set_byte(variants_table_current_addr+4, variant.flag_byte);
-            rom.set_byte(variants_table_current_addr+5, variant.flag_bit);
-            variants_table_current_addr += 0x6;
-        }
-    }
-
-    if(cumulated_offset_entities > offsets::MAP_ENTITIES_TABLE_END)
-        throw RandomizerException("Entities must not be bigger than the one from base game");
-    rom.mark_empty_chunk(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, offsets::MAP_ENTITIES_TABLE_END);
-
-    rom.set_long(variants_table_current_addr, 0xFFFFFFFF);
-    variants_table_current_addr += 0x4;
-    if(variants_table_current_addr > offsets::MAP_VARIANTS_TABLE_END)
-        throw RandomizerException("Map variants must not be bigger than the one from base game");
-    rom.mark_empty_chunk(variants_table_current_addr, offsets::MAP_VARIANTS_TABLE_END);
-}
 
 Json World::to_json() const
 {
@@ -633,7 +541,7 @@ Json World::to_json() const
 
     // Fahl enemies
     json["fahlEnemies"] = Json::array();
-    for(Entity* enemy : _fahl_enemies)
+    for(EntityType* enemy : _fahl_enemies)
         json["fahlEnemies"].push_back(enemy->name());
 
     return json;
@@ -743,7 +651,7 @@ void World::parse_json(const Json& json)
     {
         for(std::string enemy_name : json.at("fahlEnemies"))
         {
-            Entity* enemy = this->entity(enemy_name);
+            EntityType* enemy = this->entity_type(enemy_name);
             if(!enemy)
             {
                 std::stringstream msg;
@@ -870,13 +778,13 @@ void World::output_model()
     }
     tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
 
-    Json entities_json = Json::object();
-    for(auto& [id, entity] : _entities)
-        entities_json[std::to_string(id)] = entity->to_json();
-    tools::dump_json_to_file(entities_json, "./json_data/entity.json");
+    Json entity_types_json = Json::object();
+    for(auto& [id, entity_type] : _entity_types)
+        entity_types_json[std::to_string(id)] = entity_type->to_json();
+    tools::dump_json_to_file(entity_types_json, "./json_data/entity_type.json");
 
     Json maps_json = Json::object();
     for(auto& [map_id, map] : _maps)
-        maps_json[std::to_string(map_id)] = map->to_json();
+        maps_json[std::to_string(map_id)] = map->to_json(*this);
     tools::dump_json_to_file(maps_json, "./json_data/map.json");
 }

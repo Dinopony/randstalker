@@ -5,12 +5,14 @@
 #include "../extlibs/json.hpp"
 
 class World;
-class Entity;
+class EntityType;
+class Map;
 
 class EntityOnMap
 {
 private:
-    Entity* _entity_type;
+    Map* _map;
+    uint8_t _entity_type_id;
 
     uint8_t _pos_x;
     uint8_t _pos_y;
@@ -52,10 +54,14 @@ private:
     // Invisible?
 
 public:
-    EntityOnMap() {}
+    EntityOnMap(Map* map) :
+        _map(map)
+    {}
 
-    Json to_json() const;
-    static EntityOnMap* from_json(const Json& json, const World& world);
+    Map* map() const { return _map; }
+
+    Json to_json(const World& world) const;
+    static EntityOnMap* from_json(const Json& json, Map* map, const World& world);
 
     uint8_t pos_x() const { return _pos_x; }
     void pos_x(uint8_t pos_x) { _pos_x = pos_x; }
@@ -75,8 +81,8 @@ public:
     bool half_tile_z() const { return _half_tile_z; }
     void half_tile_z(bool half_tile_z) { _half_tile_z = half_tile_z; }
 
-    Entity* entity_type() const { return _entity_type; }
-    void entity_type(Entity* entity_type) { _entity_type = entity_type; }
+    uint8_t entity_type_id() const { return _entity_type_id; }
+    void entity_type_id(uint8_t entity_type) { _entity_type_id = entity_type; }
 
     uint8_t palette() const { return _palette; }
     void palette(uint8_t palette) { _palette = palette; }
@@ -114,6 +120,6 @@ public:
     uint8_t byte7() const { return _byte7; }
     void byte7(uint8_t byte7) { _byte7 = byte7; }
 
-    static EntityOnMap* from_rom(const md::ROM& rom, uint32_t addr, const World& world);
+    static EntityOnMap* from_rom(const md::ROM& rom, uint32_t addr, Map* map, const World& world);
     std::vector<uint8_t> to_bytes() const;
 };

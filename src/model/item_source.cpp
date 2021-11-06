@@ -1,6 +1,11 @@
 #include "item_source.hpp"
 #include "world_node.hpp"
+#include "entity_on_map.hpp"
+#include "entity_type.hpp"
+#include "map.hpp"
 #include "../exceptions.hpp"
+#include "../world.hpp"
+
 
 ItemSource::ItemSource(const std::string& name, WorldNode* node, const std::vector<std::string>& hints) :
     _name   (name),
@@ -22,13 +27,13 @@ Json ItemSource::to_json() const
     return json;
 }
 
-ItemSource* ItemSource::from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes)
+ItemSource* ItemSource::from_json(const Json& json, const World& world)
 {
     const std::string& name = json.at("name");
     const std::string& type = json.at("type");
 
     const std::string& nodeId = json.at("nodeId");
-    WorldNode* node = nodes.at(nodeId);
+    WorldNode* node = world.nodes().at(nodeId);
 
     std::vector<std::string> hints;
     if(json.contains("hints")) 
@@ -39,27 +44,34 @@ ItemSource* ItemSource::from_json(const Json& json, const std::map<std::string, 
         uint8_t chest_id = json.at("chestId");
         return new ItemSourceChest(chest_id, name, node, hints);
     }
-    else if(type == "ground")
+    else if(type == "ground" || type == "shop")
     {
-        std::vector<uint32_t> addresses_in_rom;
-        if(json.at("address").is_array())
-            json.at("address").get_to(addresses_in_rom);
+        std::vector<EntityOnMap*> entities;
+
+        std::vector<Json> entity_jsons;
+        if(json.contains("entities"))
+            json.at("entities").get_to(entity_jsons);
+        else if(json.contains("entity"))
+            entity_jsons = { json.at("entity") };
         else
-            addresses_in_rom = { json.at("address") };
+            throw RandomizerException("No entity information was provided for ground item source '" + name + "'"); 
+
+        for(const Json& entity_json : entity_jsons)
+        {
+            uint16_t map_id = entity_json.at("mapId");
+            uint8_t entity_id = entity_json.at("entityId");
+            EntityOnMap* entity = world.map(map_id)->entity(entity_id);
+            if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
+                throw RandomizerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
+            
+            entities.push_back(entity);
+        }
+
+        if(type == "shop")
+            return new ItemSourceShop(name, entities, node, hints);
 
         bool cannot_be_taken_repeatedly = json.value("cannotBeTakenRepeatedly", false);
-
-        return new ItemSourceOnGround(addresses_in_rom, name, node, hints, cannot_be_taken_repeatedly);
-    }
-    else if(type == "shop")
-    {
-        std::vector<uint32_t> addresses_in_rom;
-        if(json.at("address").is_array())
-            json.at("address").get_to(addresses_in_rom);
-        else
-            addresses_in_rom = { json.at("address") };
-
-        return new ItemSourceShop(addresses_in_rom, name, node, hints);
+        return new ItemSourceOnGround(name, entities, node, hints, cannot_be_taken_repeatedly); 
     }
     else if(type == "reward")
     {
@@ -87,10 +99,26 @@ Json ItemSourceOnGround::to_json() const
 {
     Json json = ItemSource::to_json();
     
-    if(_addresses_in_rom.size() == 1)
-        json["address"] = _addresses_in_rom[0];
-    else 
-        json["address"] = _addresses_in_rom;
+    if(_entities.size() > 1)
+        json["entities"] = Json::array();
+
+    for(EntityOnMap* entity : _entities)
+    {
+        Map* map = entity->map();
+        const std::vector<EntityOnMap*>& entities_on_map = map->entities();
+        auto it = std::find(entities_on_map.begin(), entities_on_map.end(), entity);
+        auto entity_index = std::distance(entities_on_map.begin(), it);
+
+        Json entity_json = {
+            { "mapId", map->id() },
+            { "entityId", entity_index }
+        };
+
+        if(_entities.size() == 1)
+            json["entity"] = entity_json;
+        else
+            json["entities"].push_back(entity_json);
+    }
 
     if(_cannot_be_taken_repeatedly)
         json["cannotBeTakenRepeatedly"] = _cannot_be_taken_repeatedly;

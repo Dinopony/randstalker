@@ -4,7 +4,6 @@ TextbanksEncoder::TextbanksEncoder(md::ROM& rom, const std::vector<std::string>&
 {
     this->build_trees(strings);
     this->produce_textbanks(strings);
-    this->write_to_rom(rom);
 }
 
 void TextbanksEncoder::build_trees(const std::vector<std::string>& strings)

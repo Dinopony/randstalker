@@ -30,6 +30,7 @@
 
 #include "exceptions.hpp"
 #include "world.hpp"
+#include "world_writer.hpp"
 #include "world_randomizer.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
@@ -210,7 +211,7 @@ void generate(const ArgumentDictionary& args)
     if(!output_rom_path.empty())
     {
         std::cout << "Writing world to ROM...\n";
-        world.write_to_rom(*rom);
+        WorldWriter::write_world_to_rom(*rom, world);
 
         // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
         std::cout << "Applying game patches...\n\n";

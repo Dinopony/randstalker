@@ -81,16 +81,23 @@ public:
     void clear();
     void write_to_rom(md::ROM& rom);
 
+    uint16_t id() const { return _id; }
+
+    uint16_t fall_destination() const { return _fall_destination; }
+    uint16_t climb_destination() const { return _climb_destination; }
+
     uint8_t background_music() const { return _background_music; }
     void background_music(uint8_t music) { _background_music = music; }
 
-    const std::vector<EntityOnMap*>& entities() { return _entities; }
+    const std::vector<EntityOnMap*>& entities() const { return _entities; }
+    EntityOnMap* entity(uint8_t entity_id) const { return _entities.at(entity_id); }
+
     const std::vector<MapExit>& exits() { return _exits; }
     const std::vector<MapVariant>& variants() { return _variants; }
 
     std::vector<uint8_t> entities_as_bytes() const;
 
-    Json to_json() const;
+    Json to_json(const World& world) const;
     Map* from_json(const Json& json);
 
 private:
