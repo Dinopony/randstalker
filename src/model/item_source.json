@@ -1839,25 +1839,25 @@
         "address": 139509
     },
     {
-        "name": "Massan: elder reward after freeing Fara",
+        "name": "Massan: Elder reward after freeing Fara in Swamp Shrine",
         "type": "reward",
         "nodeId": "massan_after_swamp_shrine",
         "address": 155550
     },
     {
-        "name": "Mir reward after Lake Shrine (Axe Magic in OG)",
+        "name": "Lake Shrine: Mir reward after beating Duke",
         "type": "reward",
         "nodeId": "lake_shrine",
         "address": 166463
     },
     {
-        "name": "Greenmaze: lumberjack reward for saving Einstein",
+        "name": "Greenmaze: Cutter reward for saving Einstein",
         "type": "reward",
         "nodeId": "greenmaze_pre_whistle",
         "address": 166021
     },
     {
-        "name": "Zak reward after fighting (Gola's Eye in OG)",
+        "name": "Mountainous Area: Zak reward after fighting",
         "type": "reward",
         "nodeId": "mountainous_area",
         "hints": [
@@ -1866,37 +1866,37 @@
         "address": 166515
     },
     {
-        "name": "Swordman Kado reward (Magic Sword in OG)",
+        "name": "Route between Gumi and Ryuma: Swordsman Kado reward",
         "type": "reward",
         "nodeId": "route_gumi_ryuma",
         "address": 166219
     },
     {
-        "name": "Greenmaze hidden dwarf (Restoration in OG)",
+        "name": "Greenmaze: dwarf hidden in the trees",
         "type": "reward",
         "nodeId": "greenmaze_pre_whistle",
         "address": 166111
     },
     {
-        "name": "Arthur reward (Casino Ticket in OG)",
+        "name": "Mercator: Arthur reward (in castle throne room)",
         "type": "reward",
         "nodeId": "mercator",
         "address": 164191
     },
     {
-        "name": "Fahl's dojo challenge reward (Pawn Ticket in OG)",
+        "name": "Mercator: Fahl's dojo challenge reward",
         "type": "reward",
         "nodeId": "mercator",
         "address": 165029
     },
     {
-        "name": "Ryuma's mayor first reward (Safety Pass in OG)",
+        "name": "Ryuma: Mayor's first reward",
         "type": "reward",
         "nodeId": "ryuma_after_thieves_hideout",
         "address": 164731
     },
     {
-        "name": "Ryuma's mayor second reward (100g in OG)",
+        "name": "Ryuma: Mayor's second reward",
         "type": "reward",
         "nodeId": "ryuma_after_thieves_hideout",
         "address": 164735
