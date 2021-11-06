@@ -1002,7 +1002,7 @@
         "chestId": 167
     },
     {
-        "name": "Greenmaze: chest on path to lumberjack",
+        "name": "Greenmaze: chest on path to Cutter",
         "type": "chest",
         "nodeId": "greenmaze_pre_whistle",
         "chestId": 168
@@ -1330,31 +1330,31 @@
         "chestId": 221
     },
     {
-        "name": "Gumi: Idol Stone on ground",
+        "name": "Gumi: item on furniture in elder's house",
         "type": "ground",
         "nodeId": "gumi",
         "address": 135527
     },
     {
-        "name": "Greenmaze: Sun Stone on ground",
+        "name": "Greenmaze: item behind trees requiring Cutter",
         "type": "ground",
         "nodeId": "greenmaze_post_whistle",
         "address": 134177
     },
     {
-        "name": "Verla Mines: Chrome Breast on ground",
+        "name": "Verla Mines: item in the corner of lava filled room",
         "type": "ground",
         "nodeId": "verla_mines",
         "address": 122295
     },
     {
-        "name": "Lake Shrine (-3F): Shell Breast on ground",
+        "name": "Lake Shrine (-3F): item on ground at the SE exit of the golden golems roundabout",
         "type": "ground",
         "nodeId": "lake_shrine",
         "address": 126105
     },
     {
-        "name": "King Nole's Labyrinth (-3F): Hyper Breast on ground",
+        "name": "King Nole's Labyrinth (-3F): item on ground behind waterfall (after beating Spinner)",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_raft",
         "hints": [
@@ -1363,7 +1363,7 @@
         "address": 129469
     },
     {
-        "name": "Destel Well: Healing Boots on ground",
+        "name": "Destel Well: item on platform revealed after beating Quake",
         "type": "ground",
         "nodeId": "destel_well",
         "hints": [
@@ -1372,25 +1372,25 @@
         "address": 123463
     },
     {
-        "name": "King Nole's Labyrinth (-1F): Iron Boots on ground",
+        "name": "King Nole's Labyrinth (-1F): item on small cliff in ninjas room",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 127855
     },
     {
-        "name": "Massan Cave: Fireproof Boots on ground",
+        "name": "Massan Cave: item on ground in treasure room",
         "type": "ground",
         "nodeId": "massan_cave",
         "address": 142371
     },
     {
-        "name": "King Nole's Labyrinth (-3F): Snow Spikes on ground",
+        "name": "King Nole's Labyrinth (-3F): item on floating hands",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 129729
     },
     {
-        "name": "Lake Shrine (-3F): Sword of Ice on ground",
+        "name": "Lake Shrine (-3F): isolated item on ground requiring raised platform to reach",
         "type": "ground",
         "nodeId": "lake_shrine",
         "address": [
@@ -1399,19 +1399,19 @@
         ]
     },
     {
-        "name": "King Nole's Labyrinth (-2F): Sword of Gaia on ground",
+        "name": "King Nole's Labyrinth (-2F): item on ground after falling from exterior-looking map",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 127363
     },
     {
-        "name": "Route after Destel: Mars Stone on ground",
+        "name": "Route after Destel: item on ground on the cliff",
         "type": "ground",
         "nodeId": "route_after_destel",
         "address": 132121
     },
     {
-        "name": "Mountainous Area cave: Moon Stone on ground",
+        "name": "Mountainous Area cave: item on ground behind hidden path",
         "type": "ground",
         "nodeId": "mountainous_area",
         "hints": [
@@ -1421,86 +1421,86 @@
         "address": 133869
     },
     {
-        "name": "Witch Helga's Hut: Saturn Stone on ground",
+        "name": "Witch Helga's Hut: item on furniture",
         "type": "ground",
         "nodeId": "helga_hut",
         "address": 132011
     },
     {
-        "name": "King Nole's Labyrinth (-3F): Venus Stone on ground",
+        "name": "King Nole's Labyrinth (-3F): item on ground climbing back from Firedemon",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_pre_spikes",
         "address": 129239
     },
     {
-        "name": "Mercator: falling ribbon in castle court",
+        "name": "Mercator: falling item in castle court",
         "type": "ground",
         "nodeId": "mercator",
         "cannotBeTakenRepeatedly": true,
         "address": 114655
     },
     {
-        "name": "Lake Shrine (-2F): north EkeEke on ground",
+        "name": "Lake Shrine (-2F): north item on ground in quadruple items room",
         "type": "ground",
         "nodeId": "lake_shrine",
         "address": 125043
     },
     {
-        "name": "Lake Shrine (-2F): south EkeEke on ground",
+        "name": "Lake Shrine (-2F): south item on ground in quadruple items room",
         "type": "ground",
         "nodeId": "lake_shrine",
         "address": 125051
     },
     {
-        "name": "Lake Shrine (-2F): west EkeEke on ground",
+        "name": "Lake Shrine (-2F): west item on ground in quadruple items room",
         "type": "ground",
         "nodeId": "lake_shrine",
         "address": 125059
     },
     {
-        "name": "Lake Shrine (-2F): east EkeEke on ground",
+        "name": "Lake Shrine (-2F): east item on ground in quadruple items room",
         "type": "ground",
         "nodeId": "lake_shrine",
         "address": 125067
     },
     {
-        "name": "Twinkle Village: first EkeEke on ground",
+        "name": "Twinkle Village: first item on ground",
         "type": "ground",
         "nodeId": "twinkle_village",
         "address": 131357
     },
     {
-        "name": "Twinkle Village: second EkeEke on ground",
+        "name": "Twinkle Village: second item on ground",
         "type": "ground",
         "nodeId": "twinkle_village",
         "address": 131349
     },
     {
-        "name": "Twinkle Village: third EkeEke on ground",
+        "name": "Twinkle Village: third item on ground",
         "type": "ground",
         "nodeId": "twinkle_village",
         "address": 131341
     },
     {
-        "name": "Mir Tower: EkeEke on ground in priest room",
+        "name": "Mir Tower: Priest room item #1",
         "type": "ground",
         "nodeId": "mir_tower_post_garlic",
         "address": 140963
     },
     {
-        "name": "Mir Tower: Detox Grass on ground in priest room",
+        "name": "Mir Tower: Priest room item #2",
         "type": "ground",
         "nodeId": "mir_tower_post_garlic",
         "address": 140955
     },
     {
-        "name": "Mir Tower: Record Book on ground in priest room",
+        "name": "Mir Tower: Priest room item #3",
         "type": "ground",
         "nodeId": "mir_tower_post_garlic",
         "address": 140915
     },
     {
-        "name": "King Nole's Labyrinth (-2F): left Logs on ground",
+        "name": "King Nole's Labyrinth (-2F): Left item dropped by sacred tree",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_post_spikes",
         "hints": [
@@ -1509,7 +1509,7 @@
         "address": 129603
     },
     {
-        "name": "King Nole's Labyrinth (-2F): right Logs on ground",
+        "name": "King Nole's Labyrinth (-2F): Right item dropped by sacred tree",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_post_spikes",
         "hints": [
