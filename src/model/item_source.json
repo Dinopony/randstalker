@@ -1524,133 +1524,133 @@
         "address": 129249
     },
     {
-        "name": "Massan shop: Life Stock slot",
+        "name": "Massan: Shop item #1",
         "type": "shop",
         "nodeId": "massan",
         "address": 135197
     },
     {
-        "name": "Massan shop: first EkeEke slot",
+        "name": "Massan: Shop item #2",
         "type": "shop",
         "nodeId": "massan",
         "address": 135189
     },
     {
-        "name": "Massan shop: second EkeEke slot",
+        "name": "Massan: Shop item #3",
         "type": "shop",
         "nodeId": "massan",
         "address": 135181
     },
     {
-        "name": "Gumi shop: Life Stock slot",
+        "name": "Gumi: Inn item #1",
         "type": "shop",
         "nodeId": "gumi",
         "address": 135653
     },
     {
-        "name": "Gumi shop: EkeEke slot",
+        "name": "Gumi: Inn item #2",
         "type": "shop",
         "nodeId": "gumi",
         "address": 135637
     },
     {
-        "name": "Ryuma shop: Life Stock slot",
+        "name": "Ryuma: Shop item #1",
         "type": "shop",
         "nodeId": "ryuma",
         "address": 135897
     },
     {
-        "name": "Ryuma shop: Statue of Gaia slot",
+        "name": "Ryuma: Shop item #2",
         "type": "shop",
         "nodeId": "ryuma",
         "address": 135881
     },
     {
-        "name": "Ryuma shop: Golden Statue slot",
+        "name": "Ryuma: Shop item #3",
         "type": "shop",
         "nodeId": "ryuma",
         "address": 135865
     },
     {
-        "name": "Ryuma shop: EkeEke slot",
+        "name": "Ryuma: Shop item #4",
         "type": "shop",
         "nodeId": "ryuma",
         "address": 135889
     },
     {
-        "name": "Ryuma shop: Detox Grass slot",
+        "name": "Ryuma: Shop item #5",
         "type": "shop",
         "nodeId": "ryuma",
         "address": 135873
     },
     {
-        "name": "Ryuma inn: EkeEke slot",
+        "name": "Ryuma: Inn item",
         "type": "shop",
         "nodeId": "ryuma",
         "address": 136095
     },
     {
-        "name": "Mercator shop: Steel Breast slot",
+        "name": "Mercator: Shop item #1",
         "type": "shop",
         "nodeId": "mercator",
         "address": 138107
     },
     {
-        "name": "Mercator shop: Bell slot",
+        "name": "Mercator: Shop item #2",
         "type": "shop",
         "nodeId": "mercator",
         "address": 138115
     },
     {
-        "name": "Mercator shop: EkeEke slot",
+        "name": "Mercator: Shop item #3",
         "type": "shop",
         "nodeId": "mercator",
         "address": 138099
     },
     {
-        "name": "Mercator shop: Detox Grass slot",
+        "name": "Mercator: Shop item #4",
         "type": "shop",
         "nodeId": "mercator",
         "address": 138091
     },
     {
-        "name": "Mercator shop: Statue of Gaia slot",
+        "name": "Mercator: Shop item #5",
         "type": "shop",
         "nodeId": "mercator",
         "address": 138083
     },
     {
-        "name": "Mercator shop: Golden Statue slot",
+        "name": "Mercator: Shop item #6",
         "type": "shop",
         "nodeId": "mercator",
         "address": 138075
     },
     {
-        "name": "Mercator special shop: Mind Repair slot",
+        "name": "Mercator: Special shop item #1",
         "type": "shop",
         "nodeId": "mercator_special_shop",
         "address": 138463
     },
     {
-        "name": "Mercator special shop: Anti Paralyze slot",
+        "name": "Mercator: Special shop item #2",
         "type": "shop",
         "nodeId": "mercator_special_shop",
         "address": 138455
     },
     {
-        "name": "Mercator special shop: Dahl slot",
+        "name": "Mercator: Special shop item #3",
         "type": "shop",
         "nodeId": "mercator_special_shop",
         "address": 138447
     },
     {
-        "name": "Mercator special shop: Restoration slot",
+        "name": "Mercator: Special shop item #4",
         "type": "shop",
         "nodeId": "mercator_special_shop",
         "address": 138439
     },
     {
-        "name": "Mercator docks shop: left EkeEke slot",
+        "name": "Mercator: Docks shop item #1",
         "type": "shop",
         "nodeId": "mercator",
         "address": [
@@ -1659,7 +1659,7 @@
         ]
     },
     {
-        "name": "Mercator docks shop: middle EkeEke slot",
+        "name": "Mercator: Docks shop item #2",
         "type": "shop",
         "nodeId": "mercator",
         "address": [
@@ -1668,7 +1668,7 @@
         ]
     },
     {
-        "name": "Mercator docks shop: right EkeEke slot",
+        "name": "Mercator: Docks shop item #3",
         "type": "shop",
         "nodeId": "mercator",
         "address": [
@@ -1677,13 +1677,13 @@
         ]
     },
     {
-        "name": "Verla shop: Life Stock slot",
+        "name": "Verla: Shop item #1",
         "type": "shop",
         "nodeId": "verla",
         "address": 139095
     },
     {
-        "name": "Verla shop: EkeEke slot",
+        "name": "Verla: Shop item #2",
         "type": "shop",
         "nodeId": "verla",
         "address": [
@@ -1692,7 +1692,7 @@
         ]
     },
     {
-        "name": "Verla shop: Detox Grass slot",
+        "name": "Verla: Shop item #3",
         "type": "shop",
         "nodeId": "verla",
         "address": [
@@ -1701,7 +1701,7 @@
         ]
     },
     {
-        "name": "Verla shop: Dahl slot",
+        "name": "Verla: Shop item #4",
         "type": "shop",
         "nodeId": "verla",
         "address": [
@@ -1710,7 +1710,7 @@
         ]
     },
     {
-        "name": "Verla shop: Map slot",
+        "name": "Verla: Shop item #5",
         "type": "shop",
         "nodeId": "verla",
         "address": [
@@ -1719,121 +1719,121 @@
         ]
     },
     {
-        "name": "Kelketo Waterfalls shop: Life Stock slot",
+        "name": "Route from Verla to Destel: Kelketo shop item #1",
         "type": "shop",
         "nodeId": "route_verla_destel",
         "address": 133217
     },
     {
-        "name": "Kelketo Waterfalls shop: EkeEke slot",
+        "name": "Route from Verla to Destel: Kelketo shop item #2",
         "type": "shop",
         "nodeId": "route_verla_destel",
         "address": 133225
     },
     {
-        "name": "Kelketo Waterfalls shop: Detox Grass slot",
+        "name": "Route from Verla to Destel: Kelketo shop item #3",
         "type": "shop",
         "nodeId": "route_verla_destel",
         "address": 133233
     },
     {
-        "name": "Kelketo Waterfalls shop: Dahl slot",
+        "name": "Route from Verla to Destel: Kelketo shop item #4",
         "type": "shop",
         "nodeId": "route_verla_destel",
         "address": 133241
     },
     {
-        "name": "Kelketo Waterfalls shop: Restoration slot",
+        "name": "Route from Verla to Destel: Kelketo shop item #5",
         "type": "shop",
         "nodeId": "route_verla_destel",
         "address": 133249
     },
     {
-        "name": "Destel inn: EkeEke slot",
+        "name": "Destel: Inn item",
         "type": "shop",
         "nodeId": "destel",
         "address": 139287
     },
     {
-        "name": "Destel shop: EkeEke slot",
+        "name": "Destel: Shop item #1",
         "type": "shop",
         "nodeId": "destel",
         "address": 139349
     },
     {
-        "name": "Destel shop: Detox Grass slot",
+        "name": "Destel: Shop item #2",
         "type": "shop",
         "nodeId": "destel",
         "address": 139373
     },
     {
-        "name": "Destel shop: Restoration slot",
+        "name": "Destel: Shop item #3",
         "type": "shop",
         "nodeId": "destel",
         "address": 139365
     },
     {
-        "name": "Destel shop: Dahl slot",
+        "name": "Destel: Shop item #4",
         "type": "shop",
         "nodeId": "destel",
         "address": 139357
     },
     {
-        "name": "Destel shop: Life Stock slot",
+        "name": "Destel: Shop item #5",
         "type": "shop",
         "nodeId": "destel",
         "address": 139381
     },
     {
-        "name": "Greedly's shop: Statue of Gaia slot",
+        "name": "Route to Lake Shrine: Greedly's shop item #1",
         "type": "shop",
         "nodeId": "route_lake_shrine",
         "address": 133575
     },
     {
-        "name": "Greedly's shop: Golden Statue slot",
+        "name": "Route to Lake Shrine: Greedly's shop item #2",
         "type": "shop",
         "nodeId": "route_lake_shrine",
         "address": 133567
     },
     {
-        "name": "Greedly's shop: Dahl slot",
+        "name": "Route to Lake Shrine: Greedly's shop item #3",
         "type": "shop",
         "nodeId": "route_lake_shrine",
         "address": 133583
     },
     {
-        "name": "Greedly's shop: Life Stock slot",
+        "name": "Route to Lake Shrine: Greedly's shop item #4",
         "type": "shop",
         "nodeId": "route_lake_shrine",
         "address": 133551
     },
     {
-        "name": "Kazalt shop: EkeEke slot",
+        "name": "Kazalt: Shop item #1",
         "type": "shop",
         "nodeId": "kazalt",
         "address": 139541
     },
     {
-        "name": "Kazalt shop: Dahl slot",
+        "name": "Kazalt: Shop item #2",
         "type": "shop",
         "nodeId": "kazalt",
         "address": 139525
     },
     {
-        "name": "Kazalt shop: Golden Statue slot",
+        "name": "Kazalt: Shop item #3",
         "type": "shop",
         "nodeId": "kazalt",
         "address": 139549
     },
     {
-        "name": "Kazalt shop: Restoration slot",
+        "name": "Kazalt: Shop item #4",
         "type": "shop",
         "nodeId": "kazalt",
         "address": 139533
     },
     {
-        "name": "Kazalt shop: Life Stock slot",
+        "name": "Kazalt: Shop item #5",
         "type": "shop",
         "nodeId": "kazalt",
         "address": 139509
