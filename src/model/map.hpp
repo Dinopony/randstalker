@@ -83,7 +83,7 @@ struct EntityMask {
 
     uint16_t to_bytes() const
     {
-        uint8_t msb = flag.byte & 0xEF;
+        uint8_t msb = flag.byte & 0x7F;
         if(visibility_if_flag_set)
             msb |= 0x80;
 
