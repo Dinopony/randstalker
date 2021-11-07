@@ -87,6 +87,7 @@ set(SOURCES
     "src/patches/rando_adaptations.cpp"
     "src/patches/softlocks.cpp"
     "src/patches/story_dependencies.cpp"
+    "src/patches/world_edits.cpp"
 
     "src/exceptions.hpp"
     "src/offsets.hpp"

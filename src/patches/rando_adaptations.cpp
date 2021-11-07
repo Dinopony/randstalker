@@ -106,7 +106,7 @@ void make_ryuma_mayor_saveable(md::ROM& rom)
     // Disable the cutscene when opening vanilla lithograph chest
     rom.set_code(0x136BE, md::Code().rts());
 
-    // Disable Friday blocker in the treasure room by removing last entity from the map
+    // Disable Friday blocker in the treasure room
     rom.set_word(0x9BA62, 0xFEFE); // Why does that even work? I don't know...
 
     // Set the "Mayor freed" flag to byte 10D6, bit 4 (which happens to be the "Visited treasure room with mayor variant" flag)
@@ -140,28 +140,6 @@ void make_ryuma_mayor_saveable(md::ROM& rom)
     rom.set_code(0x26496, md::Code().rts());
     // Clear out the rest
     rom.set_long(0x26498, 0xFFFFFFFF);
-}
-
-void replace_sick_merchant_by_chest(md::ROM& rom)
-{
-    // Neutralize map variant triggers for both the shop and the backroom to remove the "sidequest complete" check.
-    // Either we forced them to be always true or always false
-    rom.set_word(0x0050B4, 0x0008);  // Before: 0x2A0C (bit 4 of 102A) | After: 0x0008 (bit 0 of 1000 - always true)
-    rom.set_word(0x00A568, 0x3F07);	// Before: 0x2A04 (bit 4 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
-    rom.set_word(0x00A56E, 0x3F07);	// Before: 0x2A03 (bit 3 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
-    rom.set_word(0x01A6F8, 0x3FE0);	// Before: 0x2A80 (bit 4 of 102A) | After: 0x3FE0 (bit 7 of 103F - always false)
-
-    // Set the index for added chest in map to "0E" instead of "C2"
-    rom.set_byte(0x09EA48, 0x0E);
-
-    // Transform the sick merchant into a chest
-    rom.set_word(0x021D0E, 0xCE92);  // First word: position, orientation and palette (CE16 => CE92)
-    rom.set_word(0x021D10, 0x0000);  // Second word: ??? (3000 => 0000)
-    rom.set_word(0x021D12, 0x0012);  // Third word: type (006D = sick merchant NPC => 0012 = chest)
-//	rom.set_word(0x021D14, 0x0000); 
-
-    // Move the kid to hide the fact that the bed looks broken af
-    rom.set_word(0x021D16, 0x5055);
 }
 
 /**
@@ -288,19 +266,6 @@ void handle_armor_upgrades(md::ROM& rom)
 //       LOGIC ENFORCING
 ///////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Add a door inside Mercator enforcing that Safety Pass is owned to allow exiting from the front gate
- */
-void add_reverse_mercator_gate(md::ROM& rom)
-{
-    // Alter map variants so that we are in map 0x27A while safety pass is not owned
-    rom.set_word(0xA50E, 0x5905); // Byte 1050 bit 5 is required to trigger map variant
-    rom.set_word(0xA514, 0x5905); // Byte 1050 bit 5 is required to trigger map variant
-
-    // Modify entities in map variant 0x27A to replace two NPCs by a door blocking the way out of Mercator
-    rom.set_bytes(0x2153A, { 0x70, 0x2A, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00, 0x70, 0x2C, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00 });
-}
-
 void add_jewel_check_for_kazalt_teleporter(md::ROM& rom, const RandomizerOptions& options)
 {
     // ----------- Rejection textbox handling ------------
@@ -372,7 +337,7 @@ void add_jewel_check_for_kazalt_teleporter(md::ROM& rom, const RandomizerOptions
 
     uint32_t handle_jewels_addr = rom.inject_code(proc_handle_jewels_check);
 
-    // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
+    // This adds the jewels as a requirement for the Kazalt teleporter to work correctly
     rom.set_code(0x62F4, md::Code().jmp(handle_jewels_addr));
 }
 
@@ -400,37 +365,12 @@ void make_sword_of_gaia_work_in_volcano(md::ROM& rom)
     rom.set_code(0x1611E, md::Code().jmp(proc_addr));
 }
 
-/**
- * There is a sailor NPC in the "dark" version of Mercator port who responds badly to story triggers, 
- * allowing us to sail to Verla even without having repaired the lighthouse. To prevent this from being exploited, 
- * we removed him altogether.
- */
-void remove_sailor_in_dark_port(md::ROM& rom)
-{
-    // 0x021646:
-        // Before:	23 EC
-        // After:	00 00
-    rom.set_word(0x021646, 0x0000);
-}
-
-/*
- * There is a guard staying in front of the Mercator castle backdoor to prevent you from using
- * Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
- * but we actually never want him to be there, so we delete him from existence by moving him away from the map.
- */
-void remove_mercator_castle_backdoor_guard(md::ROM& rom)
-{
-    // 0x0215A6:
-        // Before:	93 9D
-        // After:	00 00
-    rom.set_word(0x0215A6, 0x0000);
-}
-
 /*
  * Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
  */
 void fix_mir_tower_priest_room_items(md::ROM& rom)
 {
+    // TODO: Handle ShopScript
     // 0x024E5A:
         // Before:	0307
         // After:	7F7F
@@ -441,17 +381,6 @@ void fix_mir_tower_priest_room_items(md::ROM& rom)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //      ORIGINAL GAME BUGS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
- */
-void fix_armlet_skip(md::ROM& rom)
-{
-    // 0x02030C:
-        // Before:  0x82 (Tornado pos Y = 20)
-        // After:   0x85 (Tornado pos Y = 50)
-    rom.set_byte(0x02030C, 0x85);
-}
 
 void fix_tree_cutting_glitch(md::ROM& rom)
 {
@@ -484,25 +413,19 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
     make_ryuma_mayor_saveable(rom);
-    replace_sick_merchant_by_chest(rom);
     if (options.remove_tibor_requirement())
         remove_tibor_requirement_to_use_trees(rom);
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
 
     // Logic enforcing
-    add_reverse_mercator_gate(rom);
     add_jewel_check_for_kazalt_teleporter(rom, options);
 
     // Fix randomizer-related bugs
     make_sword_of_gaia_work_in_volcano(rom);
-    remove_sailor_in_dark_port(rom);
-    remove_mercator_castle_backdoor_guard(rom);
     fix_mir_tower_priest_room_items(rom);
 
     // Fix original game bugs
-    if(options.fix_armlet_skip())
-        fix_armlet_skip(rom);
     if(options.fix_tree_cutting_glitch())
         fix_tree_cutting_glitch(rom);
 }

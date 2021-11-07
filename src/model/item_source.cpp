@@ -60,7 +60,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
         {
             uint16_t map_id = entity_json.at("mapId");
             uint8_t entity_id = entity_json.at("entityId");
-            EntityOnMap* entity = world.map(map_id)->entity(entity_id);
+            EntityOnMap* entity = &world.map(map_id)->entity(entity_id);
             if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
                 throw RandomizerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
             
@@ -106,8 +106,16 @@ Json ItemSourceOnGround::to_json() const
     {
         Map* map = entity->map();
         const std::vector<EntityOnMap*>& entities_on_map = map->entities();
-        auto it = std::find(entities_on_map.begin(), entities_on_map.end(), entity);
-        auto entity_index = std::distance(entities_on_map.begin(), it);
+
+        size_t entity_index = 0;
+        for(EntityOnMap* entity_on_map : entities_on_map)
+        {
+            if(entity_on_map == entity)
+                break;
+            entity_index++;
+        }
+        if(entity_index >= entities_on_map.size())
+            throw RandomizerException("Could not find entity referenced by item source in map to determine its index");
 
         Json entity_json = {
             { "mapId", map->id() },

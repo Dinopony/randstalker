@@ -482,6 +482,16 @@ void World::init_maps(const md::ROM& rom)
         _maps.at(map_id)->clear();
 }
 
+void World::replace_map(uint16_t map_id, Map* map)
+{
+    if(!_maps.count(map_id))
+        throw RandomizerException("Attempting to replace map #" + std::to_string(map_id) + " but it doesn't exist");
+
+    delete _maps[map_id];
+    map->id(map_id);
+    _maps[map_id] = map;
+}
+
 void World::add_tree_logic_paths()
 {
     if(_options.all_trees_visited_at_start())

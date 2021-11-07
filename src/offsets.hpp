@@ -17,6 +17,12 @@ namespace offsets
     constexpr uint32_t PROBABILITY_TABLE = 0x0199D6;
     constexpr uint32_t PROBABILITY_TABLE_END = 0x0199E6;
 
+    constexpr uint32_t MAP_ENTITY_MASKS_TABLE = 0x01A5BA;
+    constexpr uint32_t MAP_ENTITY_MASKS_TABLE_END = 0x01A974;
+
+    constexpr uint32_t MAP_CLEAR_FLAGS_TABLE = 0x01A9BE;
+    constexpr uint32_t MAP_CLEAR_FLAGS_TABLE_END = 0x01AACC;
+
     constexpr uint32_t MAP_ENTITIES_OFFSETS_TABLE = 0x01B090;
     constexpr uint32_t ENEMY_STATS_TABLE = 0x01B6F0;
     constexpr uint32_t MAP_ENTITIES_TABLE = 0x01B932;

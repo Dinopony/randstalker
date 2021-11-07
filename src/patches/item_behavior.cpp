@@ -8,6 +8,7 @@
 #include "../assets/yellow_jewel.bin.hxx"
 
 #include "../model/item.hpp"
+#include "../model/map.hpp"
 #include "../offsets.hpp"
 
 /**
@@ -207,23 +208,6 @@ static void handle_additional_jewels(md::ROM& rom, const RandomizerOptions& opti
         uint32_t yellow_jewel_sprite_addr = rom.inject_bytes(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE);
         rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_YELLOW_JEWEL * 0x4), yellow_jewel_sprite_addr);
     }
-
-    // Remove jewels replaced from book IDs from priest stands
-    constexpr uint8_t emptyItem = ITEM_NONE + 0xC0;
-    rom.set_byte(0x21037, emptyItem); // Massan Blue Jewel
-    rom.set_byte(0x2103F, emptyItem); // Massan Yellow Jewel
-    rom.set_byte(0x21193, emptyItem); // Gumi Blue Jewel
-    rom.set_byte(0x2119B, emptyItem); // Gumi Yellow Jewel
-    rom.set_byte(0x21287, emptyItem); // Ryuma Blue Jewel
-    rom.set_byte(0x2128F, emptyItem); // Ryuma Yellow Jewel
-    rom.set_byte(0x21D77, emptyItem); // Mercator Blue Jewel
-    rom.set_byte(0x21D6F, emptyItem); // Mercator Yellow Jewel
-    rom.set_byte(0x21F79, emptyItem); // Verla Blue Jewel
-    rom.set_byte(0x21F71, emptyItem); // Verla Yellow Jewel
-    rom.set_byte(0x22099, emptyItem); // Destel Blue Jewel
-    rom.set_byte(0x220A1, emptyItem); // Destel Yellow Jewel
-    rom.set_byte(0x22137, emptyItem); // Kazalt Blue Jewel
-    rom.set_byte(0x2213F, emptyItem); // Kazalt Yellow Jewel
 
     // Make the Awakening Book (the only one remaining in churches) heal all status conditions
     rom.set_code(0x24F6C, md::Code().nop(6));

@@ -18,12 +18,46 @@ Map::Map(uint16_t map_id, const md::ROM& rom, const World& world) :
     this->read_entities(rom, world);
     this->read_exits(rom);
     this->read_variants(rom);
+    this->read_entity_masks(rom);
+    this->read_clear_flags(rom);
+}
+
+Map::Map(const Map& map) :
+    _id                         (map._id),
+    _address                    (map._address),
+    _tileset_id                 (map._tileset_id),
+    _primary_big_tileset_id     (map._primary_big_tileset_id),
+    _secondary_big_tileset_id   (map._secondary_big_tileset_id),
+    _big_tileset_id             (map._big_tileset_id),
+    _palette_id                 (map._palette_id),
+    _room_height                (map._room_height),
+    _background_music           (map._background_music),
+    _unknown_param_1            (map._unknown_param_1),
+    _unknown_param_2            (map._unknown_param_2),
+    _base_chest_id              (map._base_chest_id),
+    _fall_destination           (map._fall_destination),
+    _climb_destination          (map._climb_destination)
+{
+    for(EntityOnMap* entity : map._entities)
+        this->add_entity(new EntityOnMap(*entity));
+
+    for(const MapExit& exit : map._exits)
+        _exits.push_back(exit);    
+
+    for(const MapVariant& variant : map._variants)
+        _variants.push_back(variant);
+
+    for(const EntityMask& mask : map._entity_masks)
+        _entity_masks.push_back(mask);
+
+    for(const ClearFlag& flag : map._clear_flags)
+        _clear_flags.push_back(flag);
 }
 
 Map::~Map()
 {
-    for(EntityOnMap* entity_on_map : _entities)
-        delete entity_on_map;
+    for(EntityOnMap* entity : _entities)
+        delete entity;
 }
 
 void Map::clear()
@@ -31,12 +65,11 @@ void Map::clear()
     _base_chest_id = 0x00;
     _fall_destination = 0xFFFF;
     _climb_destination = 0xFFFF;
-    
-    for(EntityOnMap* entity_on_map : _entities)
-        delete entity_on_map;
     _entities.clear();
     _exits.clear();
     _variants.clear();
+    _entity_masks.clear();
+    _clear_flags.clear();
 }
 
 void Map::write_to_rom(md::ROM& rom)
@@ -175,7 +208,7 @@ void Map::read_entities(const md::ROM& rom, const World& world)
     {
         // Maps with offset 0000 have no entities
         for(uint32_t addr = offsets::MAP_ENTITIES_TABLE + offset-1 ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
-            _entities.push_back(EntityOnMap::from_rom(rom, addr, this, world));
+            this->add_entity(EntityOnMap::from_rom(rom, addr, world));
     }
 }
 
@@ -192,6 +225,68 @@ std::vector<uint8_t> Map::entities_as_bytes() const
     bytes.push_back(0xFF);
     bytes.push_back(0xFF);
     return bytes;
+}
+
+uint8_t Map::add_entity(EntityOnMap* entity) 
+{
+    entity->map(this);
+    _entities.push_back(entity); 
+    return (uint8_t)_entities.size()-1;
+}
+
+void Map::remove_entity(uint8_t entity_id) 
+{ 
+    delete _entities[entity_id];
+    _entities.erase(_entities.begin() + entity_id);
+
+    // Shift entity indexes in entity masks
+    for(uint8_t i=0 ; i<_entity_masks.size() ; ++i)
+    {
+        EntityMask& mask = _entity_masks[i];
+        if(mask.entity_id == entity_id)
+        {
+            _entity_masks.erase(_entity_masks.begin() + i);
+            --i;
+        }
+        else if(mask.entity_id > entity_id)
+            mask.entity_id--;
+    }
+    
+    // Shift entity indexes in clear flags
+    for(uint8_t i=0 ; i<_clear_flags.size() ; ++i)
+    {
+        ClearFlag& clear_flag = _clear_flags[i];
+        if(clear_flag.first_entity_id >= _entities.size())
+        {
+            _clear_flags.erase(_clear_flags.begin() + i);
+            --i;
+        }
+        else if(clear_flag.first_entity_id > entity_id)
+            clear_flag.first_entity_id--;
+    }
+
+    // Shift entity indexes in "entityIdToUseTilesFrom"
+    for(uint8_t i=entity_id ; i<_entities.size() ; ++i)
+    {
+        if(!_entities[i]->use_tiles_from_other_entity())
+            continue;
+
+        uint8_t other_entity_id = _entities[i]->entity_id_to_use_tiles_from();
+        if(other_entity_id == entity_id)
+        {
+            _entities[i]->use_tiles_from_other_entity(false);
+            _entities[i]->entity_id_to_use_tiles_from(0);
+        }
+        else if(other_entity_id > entity_id)
+        {
+            _entities[i]->entity_id_to_use_tiles_from(other_entity_id - 1);
+        }
+    }
+}
+
+void Map::clear_entities()
+{
+    _entities.clear();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -249,6 +344,29 @@ void Map::read_variants(const md::ROM& rom)
             variant.flag_bit = rom.get_byte(addr+5);
             _variants.push_back(variant);
         }
+    } 
+
+}
+
+////////////////////////////////////////////////////////////////
+
+void Map::read_entity_masks(const md::ROM& rom)
+{
+    for(uint32_t addr = offsets::MAP_ENTITY_MASKS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
+    {
+        if(rom.get_word(addr) == _id)
+            _entity_masks.push_back(EntityMask(rom.get_word(addr+2)));
+    }
+}
+
+////////////////////////////////////////////////////////////////
+
+void Map::read_clear_flags(const md::ROM& rom)
+{
+    for(uint32_t addr = offsets::MAP_CLEAR_FLAGS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x4)
+    {
+        if(rom.get_word(addr) == _id)
+            _clear_flags.push_back(ClearFlag(rom.get_word(addr+2)));
     }
 }
 
@@ -290,6 +408,20 @@ Json Map::to_json(const World& world) const
             json["variants"].push_back(variant.to_json());
     }
 
+    if(!_entity_masks.empty())
+    {
+        json["entityMasks"] = Json::array();
+        for(const EntityMask& mask : _entity_masks)
+            json["entityMasks"].push_back(mask.to_json());
+    }
+
+    if(!_clear_flags.empty())
+    {
+        json["clearFlags"] = Json::array();
+        for(const ClearFlag& clear_flag : _clear_flags)
+            json["clearFlags"].push_back(clear_flag.to_json());
+    }
+
     if(!_entities.empty())
     {
         json["entities"] = Json::array();
@@ -302,7 +434,6 @@ Json Map::to_json(const World& world) const
             json["entities"].push_back(entity_json);
         }
     }
-
 
     return json;
 }

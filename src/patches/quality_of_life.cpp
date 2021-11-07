@@ -129,8 +129,6 @@ void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
 
 void alter_credits(md::ROM& rom)
 {
-
-
     // Change "LANDSTALKER" to "RANDSTALKER"
     rom.set_byte(offsets::CREDITS_TEXT + 0x2, 0x13);
 
@@ -191,7 +189,6 @@ void alter_credits(md::ROM& rom)
  */
 void fix_hud_tilemap(md::ROM& rom)
 {
-    
     for(uint32_t i=0 ; i<FIXED_HUD_TILEMAP_SIZE ; ++i)
         rom.set_byte(offsets::HUD_TILEMAP+i, FIXED_HUD_TILEMAP[i]);
 }

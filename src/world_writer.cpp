@@ -78,6 +78,11 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
 {
     uint16_t cumulated_offset_entities = 0x0;
     uint32_t variants_table_current_addr = offsets::MAP_VARIANTS_TABLE;
+    uint32_t entity_masks_table_current_addr = offsets::MAP_ENTITY_MASKS_TABLE;
+    uint32_t clear_flags_table_current_addr = offsets::MAP_CLEAR_FLAGS_TABLE;
+
+    std::vector<std::pair<uint16_t, MapVariant>> variants;
+
     for(auto& [map_id, map] : world.maps())
     {
         map->write_to_rom(rom);
@@ -98,13 +103,39 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
 
         // Write map variants
         for(const MapVariant& variant : map->variants())
+            variants.push_back(std::make_pair(map_id, variant));
+
+        // Write entity masks
+        for(const EntityMask& mask : map->entity_masks())
         {
-            rom.set_word(variants_table_current_addr, map_id);
-            rom.set_word(variants_table_current_addr+2, variant.map_variant_id);
-            rom.set_byte(variants_table_current_addr+4, variant.flag_byte);
-            rom.set_byte(variants_table_current_addr+5, variant.flag_bit);
-            variants_table_current_addr += 0x6;
+            uint16_t mask_bytes = mask.to_bytes();
+            rom.set_word(entity_masks_table_current_addr, map->id());
+            rom.set_word(entity_masks_table_current_addr+2, mask_bytes);
+            entity_masks_table_current_addr += 0x4;
         }
+
+        // Write clear flags
+        for(const ClearFlag& clear_flag : map->clear_flags())
+        {
+            uint16_t flag_bytes = clear_flag.to_bytes();
+            rom.set_word(clear_flags_table_current_addr, map->id());
+            rom.set_word(clear_flags_table_current_addr+2, flag_bytes);
+            clear_flags_table_current_addr += 0x4;
+        }
+    }
+
+    // We process variants reversed so that when several variants are available,
+    // the last one in the list is the one coming from the "origin" map. This is especially
+    // important since the game only defines map exits for the origin map (not the variants)
+    // and the algorithm it uses to find back the origin map takes the last find in the list.
+    std::reverse(variants.begin(), variants.end());
+    for(auto& [map_id, variant] : variants)
+    {
+        rom.set_word(variants_table_current_addr, map_id);
+        rom.set_word(variants_table_current_addr+2, variant.map_variant_id);
+        rom.set_byte(variants_table_current_addr+4, variant.flag_byte);
+        rom.set_byte(variants_table_current_addr+5, variant.flag_bit);
+        variants_table_current_addr += 0x6;
     }
 
     if(cumulated_offset_entities > offsets::MAP_ENTITIES_TABLE_END)
@@ -116,6 +147,18 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
     if(variants_table_current_addr > offsets::MAP_VARIANTS_TABLE_END)
         throw RandomizerException("Map variants must not be bigger than the one from base game");
     rom.mark_empty_chunk(variants_table_current_addr, offsets::MAP_VARIANTS_TABLE_END);
+    
+    rom.set_word(entity_masks_table_current_addr, 0xFFFF);
+    entity_masks_table_current_addr += 0x2;
+    if(entity_masks_table_current_addr > offsets::MAP_ENTITY_MASKS_TABLE_END)
+        throw RandomizerException("Map entity masks table must not be bigger than the one from base game");
+    rom.mark_empty_chunk(entity_masks_table_current_addr, offsets::MAP_ENTITY_MASKS_TABLE_END);
+
+    rom.set_word(clear_flags_table_current_addr, 0xFFFF);
+    clear_flags_table_current_addr += 0x2;
+    if(clear_flags_table_current_addr > offsets::MAP_CLEAR_FLAGS_TABLE_END)
+        throw RandomizerException("Map clear flags table must not be bigger than the one from base game");
+    rom.mark_empty_chunk(clear_flags_table_current_addr, offsets::MAP_CLEAR_FLAGS_TABLE_END);
 }
 
 void WorldWriter::write_game_strings(md::ROM& rom, const World& world)

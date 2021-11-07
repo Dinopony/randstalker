@@ -44,20 +44,6 @@ void remove_logs_room_exit_check(md::ROM& rom)
     rom.set_code(0x011EC4, md::Code().bra());
 }
 
-/**
- * In the original game, coming back to Mir room after Lake Shrine would softlock you because Mir
- * would not be there. This check is removed to prevent any softlock and allow fighting Mir after having
- * done Lake Shrine.
- */
-void fix_mir_after_lake_shrine_softlock(md::ROM& rom)
-{
-    // 0x01AA22:
-        // Before:	0310 2A A2 (in map 310, check bit 5 of flag 102A)
-        // After:	0000 5F E2 (in map 0, check bit 7 of flag 105F - never true)
-    rom.set_word(0x01AA22, 0x0000);
-    rom.set_word(0x01AA24, 0x5FE2);
-}
-
 void fix_reverse_greenmaze_fountain_softlock(md::ROM& rom)
 {
     // Pressing the button behind the locked door now triggers the flag "Visited Greenmaze Crossroads map"
@@ -69,36 +55,6 @@ void fix_reverse_greenmaze_fountain_softlock(md::ROM& rom)
     rom.set_byte(0x500D, 0x08);
 }
 
-/**
- * Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
- */
-void fix_fara_arena_chest_softlock(md::ROM& rom)
-{
-    // --------- Function to remove all entities but the chest when coming back in the room ---------
-    md::Code func_remove_all_entities_but_chest_in_fara_room;
-
-    func_remove_all_entities_but_chest_in_fara_room.movem_to_stack({ reg_D0_D7 }, { reg_A0_A6 });
-    func_remove_all_entities_but_chest_in_fara_room.lea(0xFF5480, reg_A0);
-    func_remove_all_entities_but_chest_in_fara_room.moveq(0xD, reg_D0);
-    func_remove_all_entities_but_chest_in_fara_room.label("loop_remove_entities");
-        func_remove_all_entities_but_chest_in_fara_room.movew(0x7F7F, addr_(reg_A0));
-        func_remove_all_entities_but_chest_in_fara_room.adda(0x80, reg_A0);
-    func_remove_all_entities_but_chest_in_fara_room.dbra(reg_D0, "loop_remove_entities");
-    func_remove_all_entities_but_chest_in_fara_room.movem_from_stack({ reg_D0_D7 }, { reg_A0_A6 });
-    func_remove_all_entities_but_chest_in_fara_room.rts();
-
-    uint32_t addr = rom.inject_code(func_remove_all_entities_but_chest_in_fara_room);
-
-    // Call the injected function
-    rom.set_code(0x019BE0, md::Code().jsr(addr).nop());
-
-    // --------- Moving the chest to the ground ---------
-    rom.set_word(0x01BF6C, 0x1A93);
-    rom.set_word(0x01BF6E, 0x0000);
-    rom.set_word(0x01BF70, 0x0012);
-    rom.set_word(0x01BF72, 0x0400);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_softlocks(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -106,7 +62,5 @@ void patch_softlocks(md::ROM& rom, const RandomizerOptions& options, const World
     fix_crypt_soflocks(rom);
     alter_labyrinth_rafts(rom);
     remove_logs_room_exit_check(rom);
-    fix_mir_after_lake_shrine_softlock(rom);
     fix_reverse_greenmaze_fountain_softlock(rom);
-    fix_fara_arena_chest_softlock(rom);
 }

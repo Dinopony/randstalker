@@ -12,6 +12,8 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
 void patch_softlocks(md::ROM& rom, const RandomizerOptions& options, const World& world);
 void patch_story_dependencies(md::ROM& rom, const RandomizerOptions& options, const World& world);
 
+void apply_world_edits(World& world, const RandomizerOptions& options);
+
 inline void apply_game_patches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     patch_game_init(rom, options, world);
