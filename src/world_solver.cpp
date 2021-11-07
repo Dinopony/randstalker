@@ -7,9 +7,14 @@
 
 #include "exceptions.hpp"
 
-void WorldSolver::forbid_items(const std::vector<Item*>& forbidden_items)
+void WorldSolver::forbid_item_instances(const std::vector<Item*>& forbidden_item_instances)
 { 
-    _forbidden_items = forbidden_items;
+    _forbidden_item_instances = forbidden_item_instances;
+}
+
+void WorldSolver::forbid_item_types(const std::vector<Item*>& forbidden_item_types)
+{
+    _forbidden_item_types = forbidden_item_types;
 }
 
 void WorldSolver::forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes)
@@ -148,7 +153,7 @@ void WorldSolver::update_current_inventory()
     _inventory = _starting_inventory;
     _inventory.reserve(_reachable_item_sources.size());
     
-    std::vector<Item*> forbidden_items_copy = _forbidden_items;
+    std::vector<Item*> forbidden_items_copy = _forbidden_item_instances;
 
     for(ItemSource* source : _reachable_item_sources)
     {
@@ -162,6 +167,10 @@ void WorldSolver::update_current_inventory()
 
         // If item isn't useful for opening something, don't bother putting it in our inventory
         if(!_relevant_items.contains(item))
+            continue;
+
+        // If item is contained in the forbidden item types, don't take it
+        if(std::find(_forbidden_item_types.begin(), _forbidden_item_types.end(), item) != _forbidden_item_types.end())
             continue;
 
         auto it = std::find(forbidden_items_copy.begin(), forbidden_items_copy.end(), item);
@@ -260,7 +269,7 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
         forbidden_items_plus_one.push_back(item);
         
         WorldSolver solver(_start_node, _end_node);
-        solver.forbid_items(forbidden_items_plus_one);
+        solver.forbid_item_instances(forbidden_items_plus_one);
         if(solver.try_to_solve())
         {
             // Item can be freely removed: keep it removed for further solves

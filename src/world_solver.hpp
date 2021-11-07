@@ -24,7 +24,8 @@ class WorldSolver
 private:
     WorldNode* _start_node;
     WorldNode* _end_node;
-    std::vector<Item*> _forbidden_items;
+    std::vector<Item*> _forbidden_item_instances;
+    std::vector<Item*> _forbidden_item_types;
     UnsortedSet<WorldNode*> _forbidden_nodes_to_pick_items;
 
     UnsortedSet<WorldNode*> _explored_nodes;
@@ -61,7 +62,8 @@ public:
         this->setup(world.spawn_node(), world.end_node(), world.starting_inventory());
     }
 
-    void forbid_items(const std::vector<Item*>& forbidden_items);
+    void forbid_item_instances(const std::vector<Item*>& forbidden_item_instances);
+    void forbid_item_types(const std::vector<Item*>& forbidden_item_types);
     void forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes);
 
     bool try_to_solve();

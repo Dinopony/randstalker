@@ -708,7 +708,7 @@ bool World::is_region_avoidable(WorldRegion* region) const
 bool World::is_item_avoidable(Item* item) const
 {
     WorldSolver solver(*this);
-    solver.forbid_items({ item });
+    solver.forbid_item_types({ item });
     return solver.try_to_solve();
 }
 
