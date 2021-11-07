@@ -198,7 +198,6 @@
     {
         "fromId": "greenmaze_pre_whistle",
         "toId": "greenmaze_post_whistle",
-        "twoWay": true,
         "requiredItems": [
             "Einstein Whistle"
         ]
