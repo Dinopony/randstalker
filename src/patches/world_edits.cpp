@@ -162,12 +162,15 @@ void add_reverse_mercator_gate(World& world)
     // Add doors in the non-safety pass variant blocking the way out of Mercator
     EntityOnMap* door1 = new EntityOnMap();
     door1->entity_type_id(0x67);
-    door1->position(48, 42, 1);
+    door1->position(48, 41, 1);
+    door1->half_tile_y(true);
     door1->orientation(ENTITY_ORIENTATION_SE);
     world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door1);
 
     EntityOnMap* door2 = new EntityOnMap(*door1);
-    door2->pos_y(44);
+    door2->pos_y(door1->pos_y()+2);
+    door2->use_tiles_from_other_entity(true);
+    door2->entity_id_to_use_tiles_from((uint8_t)world.map(MAP_MERCATOR_ENTRANCE)->entities().size()-1);
     world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door2);
 }
 
