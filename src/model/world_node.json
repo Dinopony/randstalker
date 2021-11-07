@@ -3,7 +3,7 @@
         "name": "Massan",
         "hints": [
             "in a village",
-            "in a node inhabited by bears",
+            "in a region inhabited by bears",
             "in the village of Massan"
         ]
     },
@@ -18,7 +18,7 @@
         "name": "Route between Massan and Gumi",
         "hints": [
             "on a route",
-            "in a node inhabited by bears",
+            "in a region inhabited by bears",
             "between Massan and Gumi"
         ]
     },
@@ -27,7 +27,7 @@
         "hints": [
             "in a shrine",
             "close to a waterfall",
-            "in a node inhabited by bears",
+            "in a region inhabited by bears",
             "in Waterfall Shrine"
         ]
     },
@@ -36,7 +36,7 @@
         "hints": [
             "in a shrine",
             "near a swamp",
-            "in a node inhabited by bears",
+            "in a region inhabited by bears",
             "in Swamp Shrine"
         ]
     },
@@ -58,7 +58,7 @@
         "name": "Gumi",
         "hints": [
             "in a village",
-            "in a node inhabited by bears",
+            "in a region inhabited by bears",
             "in the village of Gumi"
         ]
     },
@@ -66,7 +66,7 @@
         "name": "Route from Gumi to Ryuma",
         "hints": [
             "on a route",
-            "in a node inhabited by bears",
+            "in a region inhabited by bears",
             "between Gumi and Ryuma"
         ]
     },
@@ -218,7 +218,7 @@
         "name": "Route between Verla and Destel",
         "hints": [
             "on a route",
-            "in Destel node",
+            "in Destel region",
             "between Verla and Destel"
         ]
     },
@@ -226,7 +226,7 @@
         "name": "Destel",
         "hints": [
             "in a village",
-            "in Destel node",
+            "in Destel region",
             "in the village of Destel"
         ]
     },
@@ -235,14 +235,14 @@
         "hints": [
             "on a route",
             "near a lake",
-            "in Destel node",
+            "in Destel region",
             "on the route to the lake after Destel"
         ]
     },
     "destel_well": {
         "name": "Destel Well",
         "hints": [
-            "in Destel node",
+            "in Destel region",
             "in a large cave",
             "in Destel Well"
         ]
