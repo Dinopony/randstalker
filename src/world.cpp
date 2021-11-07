@@ -586,7 +586,7 @@ bool World::is_macro_region_avoidable(WorldMacroRegion* macro_region) const
 bool World::is_item_avoidable(Item* item) const
 {
     WorldSolver solver(*this);
-    solver.forbid_items({ item });
+    solver.forbid_item_types({ item });
     return solver.try_to_solve();
 }
 
