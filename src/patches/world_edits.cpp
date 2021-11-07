@@ -2,6 +2,7 @@
 #include "../randomizer_options.hpp"
 #include "../model/map.hpp"
 #include "../model/entity_on_map.hpp"
+#include "../model/entity_type.hpp"
 
 void handle_additionnal_jewels(World& world)
 {
@@ -41,15 +42,19 @@ void fix_fara_arena_chest_softlock(World& world)
 
 void make_gumi_boulder_push_not_story_dependant(World& world)
 {
+    // Turn the last boulder into a platform to prevent any softlock
+    EntityOnMap& last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
+    last_boulder.entity_type_id(world.entity_type("large_wood_platform")->id());
+    last_boulder.use_tiles_from_other_entity(false);
+    last_boulder.half_tile_z(true);
+    last_boulder.palette(2);
+
     // Always remove Pockets from Gumi boulder map
     world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->remove_entity(4);
 
     // Erase the 2 first entity masks which make bears only appear under a specific scenario requirement
     std::vector<EntityMask>& entity_masks = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity_masks();
-    entity_masks.erase(entity_masks.begin(), entity_masks.begin()+3);
-    
-    // Show the last boulder on ground only if upper boulder was pushed to prevent softlocks when coming from behind
-    entity_masks.push_back(EntityMask(true, 2, 6, 6));
+    entity_masks.erase(entity_masks.begin(), entity_masks.begin()+2);
 }
 
 /**
