@@ -205,7 +205,7 @@ void remove_mercator_castle_backdoor_guard(World& world)
 void fix_armlet_skip(World& world)
 {
     // Make Mir Tower magic barrier higher to prevent jumping off of it
-    world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9).pos_z(5);
+    world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9).pos_z(4);
 }
 
 
