@@ -215,7 +215,7 @@ constexpr uint16_t MAP_SWAMP_SHRINE_26 = 26;
 constexpr uint16_t MAP_SWAMP_SHRINE_27 = 27;
 constexpr uint16_t MAP_SWAMP_SHRINE_BOSS_ROOM = 28;
 constexpr uint16_t MAP_SWAMP_SHRINE_29 = 29;
-constexpr uint16_t MAP_SWAMP_SHRINE_30 = 30;
+constexpr uint16_t MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS = 30;
 
 // Mercator castle & dungeon
 constexpr uint16_t MAP_31 = 31;

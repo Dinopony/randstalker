@@ -1,4 +1,8 @@
 #include "../world.hpp"
+
+#include "../tools/megadrive/rom.hpp"
+#include "../tools/megadrive/code.hpp"
+
 #include "../randomizer_options.hpp"
 #include "../model/map.hpp"
 #include "../model/entity_on_map.hpp"
@@ -26,13 +30,30 @@ void handle_additionnal_jewels(World& world)
 /**
  * Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
  */
-void fix_fara_arena_chest_softlock(World& world)
+void fix_fara_arena_chest_softlock(World& world, md::ROM& rom)
 {
-    // Make the chest the first entity in the room instead of the last one
-    world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->move_entity(14, 0);
+    // Move the chest to the ground
+    EntityOnMap* chest = world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->entity(14);
+    chest->position(26, 19, 4);
+    chest->behavior_id(0);
+    
+    // --------- Function to remove all entities but the chest when coming back in the room ---------
+    md::Code func_remove_all_entities_but_chest_in_fara_room;
 
-    // Add a global entity mask flag that removes all entities in the room excepted the chest if Fara was freed
-    world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->global_entity_mask_flags().push_back(GlobalEntityMaskFlag(2, 5, 1));
+    func_remove_all_entities_but_chest_in_fara_room.movem_to_stack({ reg_D0_D7 }, { reg_A0_A6 });
+    func_remove_all_entities_but_chest_in_fara_room.lea(0xFF5480, reg_A0);
+    func_remove_all_entities_but_chest_in_fara_room.moveq(0xD, reg_D0);
+    func_remove_all_entities_but_chest_in_fara_room.label("loop_remove_entities");
+        func_remove_all_entities_but_chest_in_fara_room.movew(0x7F7F, addr_(reg_A0));
+        func_remove_all_entities_but_chest_in_fara_room.adda(0x80, reg_A0);
+    func_remove_all_entities_but_chest_in_fara_room.dbra(reg_D0, "loop_remove_entities");
+    func_remove_all_entities_but_chest_in_fara_room.movem_from_stack({ reg_D0_D7 }, { reg_A0_A6 });
+    func_remove_all_entities_but_chest_in_fara_room.rts();
+
+    uint32_t addr = rom.inject_code(func_remove_all_entities_but_chest_in_fara_room);
+
+    // Call the injected function
+    rom.set_code(0x019BE0, md::Code().jsr(addr).nop());
 }
 
 void make_gumi_boulder_push_not_story_dependant(World& world)
@@ -205,12 +226,12 @@ void fix_armlet_skip(World& world)
 
 
 
-void apply_world_edits(World& world, const RandomizerOptions& options)
+void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
 {
     if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
         handle_additionnal_jewels(world);
 
-    fix_fara_arena_chest_softlock(world);
+    fix_fara_arena_chest_softlock(world, rom);
     make_gumi_boulder_push_not_story_dependant(world);
     fix_mir_after_lake_shrine_softlock(world);
     make_arthur_always_in_throne_room(world);

@@ -182,7 +182,7 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x1FFAC0, 0x200000);
 
     World world(*rom, options);
-    apply_world_edits(world, options);
+    apply_world_edits(world, options, *rom);
 
     display_options(options);
 
