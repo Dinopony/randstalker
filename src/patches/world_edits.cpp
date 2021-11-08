@@ -28,33 +28,28 @@ void handle_additionnal_jewels(World& world)
  */
 void fix_fara_arena_chest_softlock(World& world)
 {
-    // Create a map variant only containing the chest for when Fara has already been freed
-    Map* new_variant = new Map(*world.map(MAP_SWAMP_SHRINE_BOSS_ROOM));
-    new_variant->clear_entities();
+    // Make the chest the first entity in the room instead of the last one
+    world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->move_entity(14, 0);
 
-    EntityOnMap* chest_copy = new EntityOnMap(world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->entity(14));
-    chest_copy->pos_z(0x2);
-    new_variant->add_entity(chest_copy);
-
-    world.replace_map(15, new_variant);
-    world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->add_variant(15, 2, 5);
+    // Add a global entity mask flag that removes all entities in the room excepted the chest if Fara was freed
+    world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->global_entity_mask_flags().push_back(GlobalEntityMaskFlag(2, 5, 1));
 }
 
 void make_gumi_boulder_push_not_story_dependant(World& world)
 {
     // Turn the last boulder into a platform to prevent any softlock
-    EntityOnMap& last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
-    last_boulder.entity_type_id(world.entity_type("large_wood_platform")->id());
-    last_boulder.use_tiles_from_other_entity(false);
-    last_boulder.half_tile_z(true);
-    last_boulder.palette(2);
+    EntityOnMap* last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
+    last_boulder->entity_type_id(world.entity_type("large_wood_platform")->id());
+    last_boulder->entity_to_use_tiles_from(nullptr);
+    last_boulder->half_tile_z(true);
+    last_boulder->palette(2);
 
     // Always remove Pockets from Gumi boulder map
     world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->remove_entity(4);
 
-    // Erase the 2 first entity masks which make bears only appear under a specific scenario requirement
-    std::vector<EntityMask>& entity_masks = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity_masks();
-    entity_masks.erase(entity_masks.begin(), entity_masks.begin()+2);
+    // Erase the entity masks which make bears only appear under a specific scenario requirement
+    world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(2)->mask_flags().clear();
+    world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(3)->mask_flags().clear();
 }
 
 /**
@@ -64,13 +59,14 @@ void make_gumi_boulder_push_not_story_dependant(World& world)
  */
 void fix_mir_after_lake_shrine_softlock(World& world)
 {
-    world.map(MAP_MIR_TOWER_BOSS_ARENA)->clear_flags().clear();
+    world.map(MAP_MIR_TOWER_BOSS_ARENA)->global_entity_mask_flags().clear();
 }
 
 void make_arthur_always_in_throne_room(World& world)
 {
-    // Make Arthur always present in its throne room variant
-    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entity_masks().clear();
+    // Make Arthur and the boy next to him always present in their throne room variant
+    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entity(0)->mask_flags().clear();
+    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entity(1)->mask_flags().clear();
 
     // Remove Arthur from the armory
     world.map(MAP_MERCATOR_CASTLE_ARMORY_1F)->remove_entity(0);
@@ -81,13 +77,13 @@ void make_mercator_docks_shop_always_open(World& world)
     // Mercator docks (lighthouse fixed variant) has a clear flag that makes the shop
     // disappear once you reach a certain point in the scenario. We remove this clear flag
     // to prevent any potential softlock.
-    world.map(MAP_MERCATOR_DOCKS_LIGHTHOUSE_FIXED_VARIANT)->clear_flags().clear();
+    world.map(MAP_MERCATOR_DOCKS_LIGHTHOUSE_FIXED_VARIANT)->global_entity_mask_flags().clear();
 }
 
 void make_ryuma_shop_always_open(World& world)
 {
     // Make Ryuma's shop open before saving the mayor from Thieves Hideout
-    world.map(MAP_RYUMA_SHOP)->entity_masks().clear();
+    world.map(MAP_RYUMA_SHOP)->entity(0)->mask_flags().clear();
 }
 
 /**
@@ -102,10 +98,10 @@ void make_falling_ribbon_not_story_dependant(World& world)
     world.map(MAP_MERCATOR_CASTLE_LEFT_COURT_RIBBONLESS_VARIANT)->clear();
 
     // Remove an entity mask preventing us from getting the ribbon once we get too far in the story
-    std::vector<EntityMask>& entity_masks = world.map(MAP_MERCATOR_CASTLE_LEFT_COURT)->entity_masks();
-    entity_masks.erase(entity_masks.begin() + entity_masks.size()-1);
+    std::vector<EntityMaskFlag>& ribbon_masks = world.map(MAP_MERCATOR_CASTLE_LEFT_COURT)->entity(2)->mask_flags();
+    ribbon_masks.erase(ribbon_masks.begin() + ribbon_masks.size()-1);
 
-    // Remove the servant guarding the door, setting her position to 00 00
+    // Remove the servant guarding the door
     world.map(MAP_MERCATOR_CASTLE_LEFT_COURT)->remove_entity(0);
 }
 
@@ -126,7 +122,7 @@ void replace_sick_merchant_by_chest(World& world)
     world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->add_entity(new_chest);
 
     // Move the kid to hide the fact that the bed looks broken af
-    world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->entity(0).pos_y(21);
+    world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->entity(0)->pos_y(21);
 
 //   Bed tile GFX swap?
 //   rom.set_word(0x0050B4, 0x0008); // Before: 0x2A0C (bit 4 of 102A) | After: 0x0008 (bit 0 of 1000 - always true)
@@ -174,8 +170,7 @@ void add_reverse_mercator_gate(World& world)
 
     EntityOnMap* door2 = new EntityOnMap(*door1);
     door2->pos_y(door1->pos_y()+2);
-    door2->use_tiles_from_other_entity(true);
-    door2->entity_id_to_use_tiles_from((uint8_t)world.map(MAP_MERCATOR_ENTRANCE)->entities().size()-1);
+    door2->entity_to_use_tiles_from(door1);
     world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door2);
 }
 
@@ -204,8 +199,8 @@ void remove_mercator_castle_backdoor_guard(World& world)
  */
 void fix_armlet_skip(World& world)
 {
-    // Make Mir Tower magic barrier higher to prevent jumping off of it
-    world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9).pos_z(4);
+    // Make Mir Tower magic barrier non-colliding
+    world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9)->can_pass_through(true);
 }
 
 

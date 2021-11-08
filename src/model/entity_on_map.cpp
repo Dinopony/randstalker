@@ -1,6 +1,7 @@
 #include "entity_on_map.hpp"
 
 #include "../world.hpp"
+#include "map.hpp"
 #include "entity_type.hpp"
 
 EntityOnMap::EntityOnMap() :
@@ -22,8 +23,7 @@ EntityOnMap::EntityOnMap() :
     _appear_after_player_moved_away (false),
     _dialogue                       (0),
     _behavior_id                    (0),
-    _use_tiles_from_other_entity    (false),
-    _entity_id_to_use_tiles_from    (0),
+    _entity_to_use_tiles_from       (nullptr),
     _flag_unknown_2_3               (false),
     _flag_unknown_2_4               (false),
     _flag_unknown_3_5               (false),
@@ -42,8 +42,7 @@ EntityOnMap::EntityOnMap(const EntityOnMap& entity) :
     _orientation                        (entity._orientation),
     _palette                            (entity._palette),
     _speed                              (entity._speed),
-    _use_tiles_from_other_entity        (entity._use_tiles_from_other_entity),
-    _entity_id_to_use_tiles_from        (entity._entity_id_to_use_tiles_from),
+    _entity_to_use_tiles_from           (entity._entity_to_use_tiles_from),
     _dialogue                           (entity._dialogue),
     _fightable                          (entity._fightable),
     _liftable                           (entity._liftable),
@@ -56,6 +55,11 @@ EntityOnMap::EntityOnMap(const EntityOnMap& entity) :
     _flag_unknown_3_5                   (entity._flag_unknown_3_5),
     _flag_unknown_6_7                   (entity._flag_unknown_6_7)
 {}
+
+uint8_t EntityOnMap::entity_id() const 
+{ 
+    return _map->entity_id(this);
+}
 
 Json EntityOnMap::to_json(const World& world) const
 {
@@ -84,20 +88,31 @@ Json EntityOnMap::to_json(const World& world) const
     json["dialogue"] = _dialogue;
     json["behaviorId"] = _behavior_id;
 
-    json["useTilesFromOtherEntity"] = _use_tiles_from_other_entity;
-    json["entityIdToUseTilesFrom"] = _entity_id_to_use_tiles_from;
+    bool use_tiles_from_other_entity = (_entity_to_use_tiles_from != nullptr);
+    json["useTilesFromOtherEntity"] = use_tiles_from_other_entity;
+    if(use_tiles_from_other_entity)
+        json["entityIdToUseTilesFrom"] = _entity_to_use_tiles_from->entity_id();
 
     json["flagUnknown_2_3"] = _flag_unknown_2_3;
     json["flagUnknown_2_4"] = _flag_unknown_2_4;
 //    json["flagUnknown_3_5"] = _flag_unknown_3_5;
     json["flagUnknown_6_7"] = _flag_unknown_6_7;
 
+    if(!_mask_flags.empty())
+    {
+        json["maskFlags"] = Json::array();
+        for(const EntityMaskFlag& mask : _mask_flags)
+            json["maskFlags"].push_back(mask.to_json());
+    }
+
     return json;
 }
 
-EntityOnMap* EntityOnMap::from_json(const Json& json, const World& world)
+EntityOnMap* EntityOnMap::from_json(const Json& json, Map* map, const World& world)
 {
     EntityOnMap* entity = new EntityOnMap();
+
+    entity->_map = map;
 
     entity->_entity_type_id = world.entity_type((std::string)json.at("entityType"))->id();
 
@@ -122,21 +137,33 @@ EntityOnMap* EntityOnMap::from_json(const Json& json, const World& world)
     entity->_dialogue = json.at("dialogue");
     entity->_behavior_id = json.at("behaviorId");
 
-    entity->_use_tiles_from_other_entity = json.at("useTilesFromOtherEntity");
-    entity->_entity_id_to_use_tiles_from = json.at("entityIdToUseTilesFrom");
+    bool use_tiles_from_other_entity = json.at("useTilesFromOtherEntity");
+    if(use_tiles_from_other_entity)
+    {
+        uint8_t entity_id_to_use_tiles_from = json.at("entityIdToUseTilesFrom");
+        entity->_entity_to_use_tiles_from = map->entity(entity_id_to_use_tiles_from);
+    }
 
     entity->_flag_unknown_2_3 = json.at("flagUnknown_2_3");
     entity->_flag_unknown_2_4 = json.at("flagUnknown_2_4");
 //    entity->_flag_unknown_3_5 = json.at("flagUnknown_3_5");
     entity->_flag_unknown_6_7 = json.at("flagUnknown_6_7");
 
+    if(json.contains("maskFlags"))
+    {
+        for(const Json& j : json.at("maskFlags"))
+            entity->_mask_flags.push_back(EntityMaskFlag::from_json(j));
+    }
+
     return entity;
 }
 
-EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, const World& world)
+EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
 {
     EntityOnMap* entity = new EntityOnMap();
-    
+
+    entity->_map = map;
+
     // Byte 0
     uint8_t byte0 = rom.get_byte(addr);
     entity->_orientation = (byte0 & 0xC0) >> 6;
@@ -161,8 +188,17 @@ EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, const Worl
     entity->_half_tile_x = byte3 & 0x80;
     entity->_half_tile_y = byte3 & 0x40;
     entity->_flag_unknown_3_5 = byte3 & 0x20;
-    entity->_use_tiles_from_other_entity = byte3 & 0x10;
-    entity->_entity_id_to_use_tiles_from = byte3 & 0x0F;
+    
+    bool use_tiles_from_other_entity = byte3 & 0x10;
+    if(use_tiles_from_other_entity)
+    {
+        uint8_t entity_id_to_use_tiles_from = byte3 & 0x0F;
+        // There are a few occurences in the game where an entity points at itself on this property...
+        if(entity_id_to_use_tiles_from == map->entities().size())
+            entity->_entity_to_use_tiles_from = entity;
+        else
+            entity->_entity_to_use_tiles_from = map->entity(entity_id_to_use_tiles_from);
+    }
 
     // Byte 4
     uint8_t byte4 = rom.get_byte(addr+4);
@@ -206,11 +242,16 @@ std::vector<uint8_t> EntityOnMap::to_bytes() const
     if(_flag_unknown_2_3)   byte2 |= 0x08;
 
     // Byte 3
-    uint8_t byte3 = _entity_id_to_use_tiles_from & 0x0F;
+    bool use_tiles_from_other_entity = (_entity_to_use_tiles_from != nullptr);
+    uint8_t entity_id_to_use_tiles_from = 0;
+    if(_entity_to_use_tiles_from)
+        entity_id_to_use_tiles_from = _entity_to_use_tiles_from->entity_id();
+
+    uint8_t byte3 = entity_id_to_use_tiles_from & 0x0F;
     if(_half_tile_x)                 byte3 |= 0x80;
     if(_half_tile_y)                 byte3 |= 0x40;
     if(_flag_unknown_3_5)            byte3 |= 0x20;
-    if(_use_tiles_from_other_entity) byte3 |= 0x10;
+    if(use_tiles_from_other_entity)  byte3 |= 0x10;
 
     // Byte 4
     uint8_t byte4 = (_dialogue & 0x3F) << 2;

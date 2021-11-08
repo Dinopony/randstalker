@@ -106,18 +106,14 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
             variants.push_back(std::make_pair(map_id, variant));
 
         // Write entity masks
-        for(const EntityMask& mask : map->entity_masks())
-        {
-            uint16_t mask_bytes = mask.to_bytes();
-            rom.set_word(entity_masks_table_current_addr, map->id());
-            rom.set_word(entity_masks_table_current_addr+2, mask_bytes);
-            entity_masks_table_current_addr += 0x4;
-        }
+        std::vector<uint8_t> entity_masks_bytes = map->entity_masks_as_bytes();
+        rom.set_bytes(entity_masks_table_current_addr, entity_masks_bytes);
+        entity_masks_table_current_addr += (uint32_t)entity_masks_bytes.size();
 
-        // Write clear flags
-        for(const ClearFlag& clear_flag : map->clear_flags())
+        // Write global entity mask flags
+        for(const GlobalEntityMaskFlag& global_mask_flags : map->global_entity_mask_flags())
         {
-            uint16_t flag_bytes = clear_flag.to_bytes();
+            uint16_t flag_bytes = global_mask_flags.to_bytes();
             rom.set_word(clear_flags_table_current_addr, map->id());
             rom.set_word(clear_flags_table_current_addr+2, flag_bytes);
             clear_flags_table_current_addr += 0x4;

@@ -60,7 +60,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
         {
             uint16_t map_id = entity_json.at("mapId");
             uint8_t entity_id = entity_json.at("entityId");
-            EntityOnMap* entity = &world.map(map_id)->entity(entity_id);
+            EntityOnMap* entity = world.map(map_id)->entity(entity_id);
             if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
                 throw RandomizerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
             

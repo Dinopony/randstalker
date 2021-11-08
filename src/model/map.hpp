@@ -2,6 +2,7 @@
 
 #include "../tools/megadrive/rom.hpp"
 #include "../extlibs/json.hpp"
+#include "../tools/flag.h"
 
 class EntityOnMap;
 class World;
@@ -48,90 +49,27 @@ struct MapVariant {
     }
 };
 
-struct Flag {
-    uint8_t byte;
-    uint8_t bit;
-
-    Flag() : byte(0), bit(0)
-    {}
-
-    Flag(uint8_t byte, uint8_t bit) : byte(byte), bit(bit)
-    {}
-};
-
-struct EntityMask {
-    bool visibility_if_flag_set;
-    Flag flag;
-    uint8_t entity_id;
-
-    EntityMask(bool p_visibility_if_flag_set, uint8_t flag_byte, uint8_t flag_bit, uint8_t p_entity_id) :
-        visibility_if_flag_set  (p_visibility_if_flag_set),
-        flag                    (flag_byte, flag_bit),
-        entity_id               (p_entity_id)
-    {}
-
-    EntityMask(uint16_t word)
-    {
-        uint8_t msb = word >> 8;
-        uint8_t lsb = word & 0x00FF;
-
-        visibility_if_flag_set = msb >> 7;
-        flag.byte = msb & 0x7F;
-        flag.bit = lsb >> 5;
-        entity_id = lsb & 0x0F;
-    }
-
-    uint16_t to_bytes() const
-    {
-        uint8_t msb = flag.byte & 0x7F;
-        if(visibility_if_flag_set)
-            msb |= 0x80;
-
-        uint8_t lsb = entity_id & 0x0F;
-        lsb |= (flag.bit & 0x7) << 5;
-        
-        return (((uint16_t)msb) << 8) + lsb;
-    }
-
-    Json to_json() const
-    {
-        Json json;
-        json["ifFlagSet"] = visibility_if_flag_set ? "show" : "hide";
-        json["flagByte"] = flag.byte;
-        json["flagBit"] = flag.bit;
-        json["entityId"] = entity_id;
-        return json;
-    }
-};
-
-struct ClearFlag {
-    Flag flag;
+struct GlobalEntityMaskFlag : public Flag
+{
     uint8_t first_entity_id;
     
-    ClearFlag(uint16_t word)
-    {
-        uint8_t msb = word >> 8;
-        uint8_t lsb = word & 0x00FF;
-
-        flag.byte = msb;
-        flag.bit = lsb >> 5;
-        first_entity_id = lsb & 0x1F;
-    }
+    GlobalEntityMaskFlag(uint8_t byte, uint8_t bit, uint8_t first_entity_id) :
+        Flag(byte, bit),
+        first_entity_id(first_entity_id)
+    {}
 
     uint16_t to_bytes() const
     {
-        uint8_t msb = flag.byte;
+        uint8_t msb = byte;
         uint8_t lsb = first_entity_id & 0x1F;
-        lsb |= (flag.bit & 0x7) << 5;
+        lsb |= (bit & 0x7) << 5;
 
         return (((uint16_t)msb) << 8) + lsb;
     }
 
     Json to_json() const
     {
-        Json json;
-        json["flagByte"] = flag.byte;
-        json["flagBit"] = flag.bit;
+        Json json = Flag::to_json();
         json["firstEntityId"] = first_entity_id;
         return json;
     }
@@ -140,7 +78,7 @@ struct ClearFlag {
 class Map
 {
 private:
-    uint32_t _id;
+    uint16_t _id;
     uint32_t _address;
 
     uint8_t _tileset_id;
@@ -162,8 +100,7 @@ private:
     std::vector<EntityOnMap*> _entities;
     std::vector<MapExit> _exits;
     std::vector<MapVariant> _variants;
-    std::vector<EntityMask> _entity_masks;
-    std::vector<ClearFlag> _clear_flags;
+    std::vector<GlobalEntityMaskFlag> _global_entity_mask_flags;
 
 public:
     Map(uint16_t map_id, const md::ROM& rom, const World& world);
@@ -187,10 +124,14 @@ public:
 
     const std::vector<EntityOnMap*>& entities() const { return _entities; }
     const EntityOnMap& entity(uint8_t entity_id) const { return *_entities.at(entity_id); }
-    EntityOnMap& entity(uint8_t entity_id) { return *_entities.at(entity_id); }
+    EntityOnMap* entity(uint8_t entity_id) { return _entities.at(entity_id); }
     uint8_t add_entity(EntityOnMap* entity);
-    void remove_entity(uint8_t entity_id);
+    void insert_entity(uint8_t entity_id, EntityOnMap* entity);
+    void remove_entity(uint8_t entity_id, bool delete_pointer = true);
+    void move_entity(uint8_t entity_id, uint8_t entity_new_id);
     void clear_entities();
+    uint8_t entity_id(const EntityOnMap* entity) const;
+    void shift_all_entity_ids_above(uint8_t threshold, int diff);
 
     const std::vector<MapExit>& exits() const { return _exits; }
     std::vector<MapExit>& exits() { return _exits; }
@@ -198,11 +139,8 @@ public:
     const std::vector<MapVariant>& variants() const { return _variants; }
     std::vector<MapVariant>& variants() { return _variants; }
 
-    const std::vector<EntityMask>& entity_masks() const { return _entity_masks; }
-    std::vector<EntityMask>& entity_masks() { return _entity_masks; }
-
-    const std::vector<ClearFlag>& clear_flags() const { return _clear_flags; }
-    std::vector<ClearFlag>& clear_flags() { return _clear_flags; }
+    const std::vector<GlobalEntityMaskFlag>& global_entity_mask_flags() const { return _global_entity_mask_flags; }
+    std::vector<GlobalEntityMaskFlag>& global_entity_mask_flags() { return _global_entity_mask_flags; }
 
     void add_variant(uint16_t map_variant_id, uint8_t flag_byte, uint8_t flag_bit)
     {
@@ -222,6 +160,7 @@ public:
     }
 
     std::vector<uint8_t> entities_as_bytes() const;
+    std::vector<uint8_t> entity_masks_as_bytes() const;
 
     Json to_json(const World& world) const;
     Map* from_json(const Json& json);

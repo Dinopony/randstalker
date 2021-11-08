@@ -3,6 +3,7 @@
 #include <vector>
 #include "../tools/megadrive/rom.hpp"
 #include "../extlibs/json.hpp"
+#include "../tools/flag.h"
 
 class World;
 class EntityType;
@@ -12,6 +13,31 @@ class Map;
 #define ENTITY_ORIENTATION_SE 0x1
 #define ENTITY_ORIENTATION_SW 0x2
 #define ENTITY_ORIENTATION_NW 0x3
+
+struct EntityMaskFlag : public Flag
+{
+    bool visibility_if_flag_set;
+
+    EntityMaskFlag(bool p_visibility_if_flag_set, uint8_t flag_byte, uint8_t flag_bit) :
+        Flag                    (flag_byte, flag_bit),
+        visibility_if_flag_set  (p_visibility_if_flag_set)
+    {}
+
+    Json to_json() const
+    {
+        Json json = Flag::to_json();
+        json["ifFlagSet"] = visibility_if_flag_set ? "show" : "hide";
+        return json;
+    }
+
+    static EntityMaskFlag from_json(const Json& json)
+    {
+        bool visibility_if_flag_set = json.at("ifFlagSet");
+        uint8_t flag_byte = json.at("flagByte");
+        uint8_t flag_bit = json.at("flagBit");
+        return EntityMaskFlag(visibility_if_flag_set, flag_byte, flag_bit);
+    }
+};
 
 class EntityOnMap
 {
@@ -43,13 +69,14 @@ private:
     /// 114 => Mir wall barrier 2
     uint16_t _behavior_id;
 
-    bool _use_tiles_from_other_entity;
-    uint8_t _entity_id_to_use_tiles_from;
+    EntityOnMap* _entity_to_use_tiles_from;
 
     bool _flag_unknown_2_3;
     bool _flag_unknown_2_4;
     bool _flag_unknown_3_5;
     bool _flag_unknown_6_7;
+
+    std::vector<EntityMaskFlag> _mask_flags;
 
 public:
     EntityOnMap();
@@ -57,6 +84,8 @@ public:
 
     void map(Map* map) { _map = map; }
     Map* map() const { return _map; }
+
+    uint8_t entity_id() const;
 
     uint8_t entity_type_id() const { return _entity_type_id; }
     void entity_type_id(uint8_t entity_type) { _entity_type_id = entity_type; }
@@ -111,11 +140,8 @@ public:
     uint16_t behavior_id() const { return _behavior_id; }
     void behavior_id(uint16_t behavior_id) { _behavior_id = behavior_id; }
     
-    bool use_tiles_from_other_entity() const { return _use_tiles_from_other_entity; }
-    void use_tiles_from_other_entity(bool value) { _use_tiles_from_other_entity = value; }
-
-    bool entity_id_to_use_tiles_from() const { return _entity_id_to_use_tiles_from; }
-    void entity_id_to_use_tiles_from(uint8_t value) { _entity_id_to_use_tiles_from = value; }
+    EntityOnMap* entity_to_use_tiles_from() const { return _entity_to_use_tiles_from; }
+    void entity_to_use_tiles_from(EntityOnMap* entity) { _entity_to_use_tiles_from = entity; }
 
     bool flag_unknown_2_3() const { return _flag_unknown_2_3; }
     void flag_unknown_2_3(bool value) { _flag_unknown_2_3 = value; }
@@ -129,9 +155,12 @@ public:
     bool flag_unknown_6_7() const { return _flag_unknown_6_7; }
     void flag_unknown_6_7(bool value) { _flag_unknown_6_7 = value; }
 
-    static EntityOnMap* from_rom(const md::ROM& rom, uint32_t addr, const World& world);
+    const std::vector<EntityMaskFlag>& mask_flags() const { return _mask_flags; }
+    std::vector<EntityMaskFlag>& mask_flags() { return _mask_flags; }
+
+    static EntityOnMap* from_rom(const md::ROM& rom, uint32_t addr, Map* map);
     std::vector<uint8_t> to_bytes() const;
 
     Json to_json(const World& world) const;
-    static EntityOnMap* from_json(const Json& json, const World& world);
+    static EntityOnMap* from_json(const Json& json, Map* map, const World& world);
 };
