@@ -64,7 +64,7 @@ static void setup_starting_items(const World& world, std::vector<uint8_t>& out_f
 
 static void setup_ingame_tracker(std::vector<uint8_t>& out_flag_array)
 {
-    // The ingame-tracker consists in putting in "greyed-out" key items in the inventory,
+    // The ingame-tracker consists in putting in "grayed-out" key items in the inventory,
     // as if they were already obtained but lost (like lithograph in OG)
     out_flag_array[0x4B] |= 0x10;
     out_flag_array[0x4C] |= 0x10;

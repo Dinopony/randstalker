@@ -10,6 +10,7 @@ public:
 private:
     static void write_items(md::ROM& rom, const World& world);
     static void write_item_sources(md::ROM& rom, const World& world);
+    static void write_entity_types(md::ROM& rom, const World& world);
     static void write_maps(md::ROM& rom, const World& world);
     static void write_game_strings(md::ROM& rom, const World& world);
     static void write_dark_rooms(md::ROM& rom, const World& world);

@@ -61,7 +61,7 @@ Json EntityEnemy::to_json() const
 
 void EntityEnemy::apply_json(const Json& json, const World& world)
 {
-    EntityType::apply_json(json);
+    EntityType::apply_json(json, world);
 
     if(json.contains("health"))
         _health = json.at("health");

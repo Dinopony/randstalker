@@ -21,7 +21,7 @@ public:
     uint8_t id() const { return _id; }
     std::string name() const { return _name; }
 
-    Json to_json() const
+    virtual Json to_json() const
     {
         Json json;
         json["name"] = _name;
@@ -31,7 +31,7 @@ public:
 
     static EntityType* from_json(uint8_t id, const Json& json, const World& world);
 
-    void apply_json(const Json& json)
+    virtual void apply_json(const Json& json, const World& world)
     {
         if(json.contains("name"))
             _name = json.at("name");
@@ -72,8 +72,8 @@ public:
     uint16_t drop_probability() const { return _drop_probability; }
     void drop_probability(uint16_t drop_probability) { _drop_probability = drop_probability; }
 
-    Json to_json() const;
-    void apply_json(const Json& json, const World& world);
+    virtual Json to_json() const;
+    virtual void apply_json(const Json& json, const World& world);
 };
 
 class EntityItemOnGround : public EntityType
@@ -91,7 +91,7 @@ public:
 
     Item* item() const { return _item; }
 
-    Json to_json() const
+    virtual Json to_json() const
     {
         Json json = EntityType::to_json();
         json["itemId"] = _item->id();

@@ -24,7 +24,10 @@ namespace offsets
     constexpr uint32_t MAP_CLEAR_FLAGS_TABLE_END = 0x01AACC;
 
     constexpr uint32_t MAP_ENTITIES_OFFSETS_TABLE = 0x01B090;
+    
     constexpr uint32_t ENEMY_STATS_TABLE = 0x01B6F0;
+    constexpr uint32_t ENEMY_STATS_TABLE_END = 0x01B932;
+    
     constexpr uint32_t MAP_ENTITIES_TABLE = 0x01B932;
     constexpr uint32_t MAP_ENTITIES_TABLE_END = 0x022E80;
 

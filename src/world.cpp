@@ -40,6 +40,7 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     _dark_region            (nullptr)
 {
     this->init_items();
+    this->init_entity_types(rom);
     this->init_maps(rom);
     this->init_nodes();
     this->init_item_sources();
@@ -49,7 +50,7 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_teleport_trees();
     this->init_game_strings(rom);
     this->init_hint_sources();
-    this->init_entities(rom);
+
 }
 
 World::~World()
@@ -405,49 +406,49 @@ void World::init_game_strings(const md::ROM& rom)
         + std::to_string(_options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
-void World::init_entities(const md::ROM& rom)
+void World::init_entity_types(const md::ROM& rom)
 {
-    Json entities_json = Json::parse(ENTITIES_JSON);
-    for(auto& [id_string, entity_json] : entities_json.items())
-    {
-        uint8_t id = std::stoi(id_string);
-        _entity_types[id] = EntityType::from_json(id, entity_json, *this);
-    }
-
     // Read item drop probabilities from a table in the ROM
     std::vector<uint16_t> probability_table;
     for(uint32_t addr = offsets::PROBABILITY_TABLE ; addr < offsets::PROBABILITY_TABLE_END ; addr += 0x2)
-    {
         probability_table.push_back(rom.get_word(addr));
-    }
 
     // Read enemy info from a table in the ROM
     for(uint32_t addr = offsets::ENEMY_STATS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
     {
         uint8_t id = rom.get_byte(addr);
-
-        EntityType* entity_at_id = _entity_types.at(id);
-        if(entity_at_id->type_name() != "enemy")
-            throw RandomizerException("EntityType of ID #" + std::to_string(id) + " is not an enemy but has enemy stats");
-        EntityEnemy* enemy_at_id = reinterpret_cast<EntityEnemy*>(entity_at_id);
-
-        enemy_at_id->health(rom.get_byte(addr+1));
-        enemy_at_id->defence(rom.get_byte(addr+2));
-        enemy_at_id->dropped_golds(rom.get_byte(addr+3));
-        enemy_at_id->attack(rom.get_byte(addr+4) & 0x7F);
-        enemy_at_id->dropped_item(_items.at(rom.get_byte(addr+5) & 0x3F));
+        std::string name = "enemy_" + std::to_string(id);
+        uint8_t health = rom.get_byte(addr+1);
+        uint8_t defence = rom.get_byte(addr+2);
+        uint8_t dropped_golds = rom.get_byte(addr+3);
+        uint8_t attack = rom.get_byte(addr+4) & 0x7F;
+        Item* dropped_item = _items.at(rom.get_byte(addr+5) & 0x3F);
 
         // Use previously built probability table to know the real drop chances
         uint8_t probability_id = ((rom.get_byte(addr+4) & 0x80) >> 5) | (rom.get_byte(addr+5) >> 6);
-        enemy_at_id->drop_probability(probability_table.at(probability_id));
+        uint16_t drop_probability = probability_table.at(probability_id);
+
+        _entity_types[id] = new EntityEnemy(id, name, health, attack, defence, dropped_golds, dropped_item, drop_probability);  
     }
 
+    // Init ground item entity types
     for(auto& [item_id, item] : _items)
     {
         if(item_id > 0x3F)
             continue;
         uint8_t entity_id = item_id + 0xC0;
         _entity_types[entity_id] = new EntityItemOnGround(entity_id, "ground_item (" + item->name() + ")", item);
+    }
+
+    // Apply the randomizer model changes to the model loaded from ROM
+    Json entities_json = Json::parse(ENTITIES_JSON);
+    for(auto& [id_string, entity_json] : entities_json.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        if(!_entity_types.count(id))
+            _entity_types[id] = EntityType::from_json(id, entity_json, *this);
+        else
+            _entity_types[id]->apply_json(entity_json, *this);
     }
 
     std::cout << _entity_types.size()  << " entities loaded." << std::endl;

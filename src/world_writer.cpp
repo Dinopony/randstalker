@@ -16,6 +16,7 @@ void WorldWriter::write_world_to_rom(md::ROM& rom, const World& world)
 {
     write_items(rom, world);
     write_item_sources(rom, world);
+    write_entity_types(rom, world);
     write_maps(rom, world);
     write_game_strings(rom, world);
     write_dark_rooms(rom, world);
@@ -72,6 +73,82 @@ void WorldWriter::write_item_sources(md::ROM& rom, const World& world)
         // Ground & shop item sources are tied to map entities that are updated as their contents change.
         // Therefore those types of item sources will effectively be written when map entities are written.
     }
+}
+
+void WorldWriter::write_entity_types(md::ROM& rom, const World& world)
+{
+    std::vector<EntityEnemy*> enemy_types;
+    std::set<uint16_t> drop_probabilities;
+    std::map<uint16_t, uint8_t> drop_probability_lookup;
+    std::map<EntityEnemy*, uint16_t> instances_in_game;
+
+    // List all different enemy types and different drop probabilities
+    // Also count the number of instances for each enemy in the game to optimize
+    // stats loading in game.
+    for(auto& [id, entity_type] : world.entity_types())
+    {
+        if(entity_type->type_name() != "enemy")
+            continue;
+        EntityEnemy* enemy_type = reinterpret_cast<EntityEnemy*>(entity_type);
+
+        enemy_types.push_back(enemy_type);
+        drop_probabilities.insert(enemy_type->drop_probability());
+
+        uint32_t count = 0;
+        for(auto& [map_id, map] : world.maps())
+        {
+            for(Entity* entity : map->entities())
+            {
+                if(entity->entity_type_id() == entity_type->id())
+                    count++;
+            }
+        }
+        instances_in_game[enemy_type] = count;
+    }
+
+    // Sort the enemy types by number of instances in game (descending)
+    std::sort(enemy_types.begin(), enemy_types.end(), 
+        [instances_in_game](EntityEnemy* a, EntityEnemy* b) -> bool {
+            return instances_in_game.at(a) > instances_in_game.at(b);
+        }
+    );
+
+    // Build a lookup table with probabilities
+    if(drop_probabilities.size() > 8)
+        throw RandomizerException("Having more than 8 different loot probabilities is not allowed");
+
+    uint8_t current_id = 0;
+    uint32_t addr = offsets::PROBABILITY_TABLE;
+    for(uint16_t probability : drop_probabilities)
+    {
+        drop_probability_lookup[probability] = current_id++;
+        rom.set_word(addr, probability);
+        addr += 0x2;
+    }
+
+    // Write the actual enemy stats
+    addr = offsets::ENEMY_STATS_TABLE;
+    for(EntityEnemy* enemy_type : enemy_types)
+    {
+        uint8_t byte5 = enemy_type->attack() & 0x7F;
+        uint8_t byte6 = enemy_type->dropped_item()->id() & 0x3F;
+
+        uint8_t probability_id = drop_probability_lookup.at(enemy_type->drop_probability());
+        byte5 |= (probability_id & 0x4) << 5;
+        byte6 |= (probability_id & 0x3) << 6;
+
+        rom.set_byte(addr, enemy_type->id());
+        rom.set_byte(addr+1, enemy_type->health());
+        rom.set_byte(addr+2, enemy_type->defence());
+        rom.set_byte(addr+3, enemy_type->dropped_golds());
+        rom.set_byte(addr+4, byte5);
+        rom.set_byte(addr+5, byte6);
+        addr += 0x6;
+    }
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::ENEMY_STATS_TABLE_END)
+        throw RandomizerException("Enemy stats table is bigger than in original game");
 }
 
 void WorldWriter::write_maps(md::ROM& rom, const World& world)
