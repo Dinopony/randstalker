@@ -1,6 +1,6 @@
 #include "item_source.hpp"
 #include "world_node.hpp"
-#include "entity_on_map.hpp"
+#include "entity.hpp"
 #include "entity_type.hpp"
 #include "map.hpp"
 #include "../exceptions.hpp"
@@ -46,7 +46,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
     }
     else if(type == "ground" || type == "shop")
     {
-        std::vector<EntityOnMap*> entities;
+        std::vector<Entity*> entities;
 
         std::vector<Json> entity_jsons;
         if(json.contains("entities"))
@@ -60,7 +60,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
         {
             uint16_t map_id = entity_json.at("mapId");
             uint8_t entity_id = entity_json.at("entityId");
-            EntityOnMap* entity = world.map(map_id)->entity(entity_id);
+            Entity* entity = world.map(map_id)->entity(entity_id);
             if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
                 throw RandomizerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
             
@@ -102,24 +102,11 @@ Json ItemSourceOnGround::to_json() const
     if(_entities.size() > 1)
         json["entities"] = Json::array();
 
-    for(EntityOnMap* entity : _entities)
+    for(Entity* entity : _entities)
     {
-        Map* map = entity->map();
-        const std::vector<EntityOnMap*>& entities_on_map = map->entities();
-
-        size_t entity_index = 0;
-        for(EntityOnMap* entity_on_map : entities_on_map)
-        {
-            if(entity_on_map == entity)
-                break;
-            entity_index++;
-        }
-        if(entity_index >= entities_on_map.size())
-            throw RandomizerException("Could not find entity referenced by item source in map to determine its index");
-
         Json entity_json = {
-            { "mapId", map->id() },
-            { "entityId", entity_index }
+            { "mapId", entity->map()->id() },
+            { "entityId", entity->entity_id() }
         };
 
         if(_entities.size() == 1)

@@ -39,7 +39,7 @@ struct EntityMaskFlag : public Flag
     }
 };
 
-class EntityOnMap
+class Entity
 {
 private:
     Map* _map;
@@ -69,7 +69,7 @@ private:
     /// 114 => Mir wall barrier 2
     uint16_t _behavior_id;
 
-    EntityOnMap* _entity_to_use_tiles_from;
+    Entity* _entity_to_use_tiles_from;
 
     bool _flag_unknown_2_3;
     bool _flag_unknown_2_4;
@@ -79,8 +79,8 @@ private:
     std::vector<EntityMaskFlag> _mask_flags;
 
 public:
-    EntityOnMap();
-    EntityOnMap(const EntityOnMap& entity);
+    Entity();
+    Entity(const Entity& entity);
 
     void map(Map* map) { _map = map; }
     Map* map() const { return _map; }
@@ -140,8 +140,8 @@ public:
     uint16_t behavior_id() const { return _behavior_id; }
     void behavior_id(uint16_t behavior_id) { _behavior_id = behavior_id; }
     
-    EntityOnMap* entity_to_use_tiles_from() const { return _entity_to_use_tiles_from; }
-    void entity_to_use_tiles_from(EntityOnMap* entity) { _entity_to_use_tiles_from = entity; }
+    Entity* entity_to_use_tiles_from() const { return _entity_to_use_tiles_from; }
+    void entity_to_use_tiles_from(Entity* entity) { _entity_to_use_tiles_from = entity; }
 
     bool flag_unknown_2_3() const { return _flag_unknown_2_3; }
     void flag_unknown_2_3(bool value) { _flag_unknown_2_3 = value; }
@@ -158,9 +158,9 @@ public:
     const std::vector<EntityMaskFlag>& mask_flags() const { return _mask_flags; }
     std::vector<EntityMaskFlag>& mask_flags() { return _mask_flags; }
 
-    static EntityOnMap* from_rom(const md::ROM& rom, uint32_t addr, Map* map);
+    static Entity* from_rom(const md::ROM& rom, uint32_t addr, Map* map);
     std::vector<uint8_t> to_bytes() const;
 
     Json to_json(const World& world) const;
-    static EntityOnMap* from_json(const Json& json, Map* map, const World& world);
+    static Entity* from_json(const Json& json, Map* map, const World& world);
 };

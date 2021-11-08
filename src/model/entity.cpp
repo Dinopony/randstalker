@@ -1,10 +1,10 @@
-#include "entity_on_map.hpp"
+#include "entity.hpp"
 
 #include "../world.hpp"
 #include "map.hpp"
 #include "entity_type.hpp"
 
-EntityOnMap::EntityOnMap() :
+Entity::Entity() :
     _map                            (nullptr),
     _entity_type_id                 (0),
     _pos_x                          (0),
@@ -30,7 +30,7 @@ EntityOnMap::EntityOnMap() :
     _flag_unknown_6_7               (false)
 {}
 
-EntityOnMap::EntityOnMap(const EntityOnMap& entity) :
+Entity::Entity(const Entity& entity) :
     _map                                (entity._map),
     _entity_type_id                     (entity._entity_type_id),
     _pos_x                              (entity._pos_x),
@@ -56,12 +56,12 @@ EntityOnMap::EntityOnMap(const EntityOnMap& entity) :
     _flag_unknown_6_7                   (entity._flag_unknown_6_7)
 {}
 
-uint8_t EntityOnMap::entity_id() const 
+uint8_t Entity::entity_id() const 
 { 
     return _map->entity_id(this);
 }
 
-Json EntityOnMap::to_json(const World& world) const
+Json Entity::to_json(const World& world) const
 {
     Json json;
 
@@ -108,9 +108,9 @@ Json EntityOnMap::to_json(const World& world) const
     return json;
 }
 
-EntityOnMap* EntityOnMap::from_json(const Json& json, Map* map, const World& world)
+Entity* Entity::from_json(const Json& json, Map* map, const World& world)
 {
-    EntityOnMap* entity = new EntityOnMap();
+    Entity* entity = new Entity();
 
     entity->_map = map;
 
@@ -158,9 +158,9 @@ EntityOnMap* EntityOnMap::from_json(const Json& json, Map* map, const World& wor
     return entity;
 }
 
-EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
+Entity* Entity::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
 {
-    EntityOnMap* entity = new EntityOnMap();
+    Entity* entity = new Entity();
 
     entity->_map = map;
 
@@ -223,7 +223,7 @@ EntityOnMap* EntityOnMap::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
     return entity;
 }
 
-std::vector<uint8_t> EntityOnMap::to_bytes() const
+std::vector<uint8_t> Entity::to_bytes() const
 {
     // Byte 0
     uint8_t byte0 = _pos_x & 0x3F;

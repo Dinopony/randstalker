@@ -1,5 +1,5 @@
 #include "map.hpp"
-#include "entity_on_map.hpp"
+#include "entity.hpp"
 
 #include "../exceptions.hpp"
 #include "../world.hpp"
@@ -38,8 +38,8 @@ Map::Map(const Map& map) :
     _fall_destination           (map._fall_destination),
     _climb_destination          (map._climb_destination)
 {
-    for(EntityOnMap* entity : map._entities)
-        this->add_entity(new EntityOnMap(*entity));
+    for(Entity* entity : map._entities)
+        this->add_entity(new Entity(*entity));
 
     for(const MapExit& exit : map._exits)
         _exits.push_back(exit);    
@@ -53,7 +53,7 @@ Map::Map(const Map& map) :
 
 Map::~Map()
 {
-    for(EntityOnMap* entity : _entities)
+    for(Entity* entity : _entities)
         delete entity;
 }
 
@@ -204,7 +204,7 @@ void Map::read_entities(const md::ROM& rom, const World& world)
     {
         // Maps with offset 0000 have no entities
         for(uint32_t addr = offsets::MAP_ENTITIES_TABLE + offset-1 ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
-            this->add_entity(EntityOnMap::from_rom(rom, addr, this));
+            this->add_entity(Entity::from_rom(rom, addr, this));
     }
 }
 
@@ -212,7 +212,7 @@ std::vector<uint8_t> Map::entities_as_bytes() const
 {
     std::vector<uint8_t> bytes;
 
-    for(EntityOnMap* entity : _entities)
+    for(Entity* entity : _entities)
     {
         std::vector<uint8_t> entity_bytes = entity->to_bytes();
         bytes.insert(bytes.end(), entity_bytes.begin(), entity_bytes.end());
@@ -223,14 +223,14 @@ std::vector<uint8_t> Map::entities_as_bytes() const
     return bytes;
 }
 
-uint8_t Map::add_entity(EntityOnMap* entity) 
+uint8_t Map::add_entity(Entity* entity) 
 {
     entity->map(this);
     _entities.push_back(entity);
     return (uint8_t)_entities.size()-1;
 }
 
-void Map::insert_entity(uint8_t entity_id, EntityOnMap* entity) 
+void Map::insert_entity(uint8_t entity_id, Entity* entity) 
 {
     entity->map(this);
     _entities.insert(_entities.begin() + entity_id, entity);
@@ -244,7 +244,7 @@ void Map::insert_entity(uint8_t entity_id, EntityOnMap* entity)
     }
 }
 
-uint8_t Map::entity_id(const EntityOnMap* entity) const
+uint8_t Map::entity_id(const Entity* entity) const
 {
     for(uint8_t id=0 ; id < _entities.size() ; ++id)
         if(_entities[id] == entity)
@@ -254,11 +254,11 @@ uint8_t Map::entity_id(const EntityOnMap* entity) const
 
 void Map::remove_entity(uint8_t entity_id, bool delete_pointer) 
 { 
-    EntityOnMap* erased_entity = _entities.at(entity_id);
+    Entity* erased_entity = _entities.at(entity_id);
     _entities.erase(_entities.begin() + entity_id);
 
     // If any other entity were using tiles from this entity, clear that
-    for(EntityOnMap* entity : _entities)
+    for(Entity* entity : _entities)
     {
         if(entity->entity_to_use_tiles_from() == erased_entity)
             entity->entity_to_use_tiles_from(nullptr);
@@ -283,7 +283,7 @@ void Map::remove_entity(uint8_t entity_id, bool delete_pointer)
 
 void Map::move_entity(uint8_t entity_id, uint8_t entity_new_id)
 {
-    EntityOnMap* entity_to_move = _entities.at(entity_id); 
+    Entity* entity_to_move = _entities.at(entity_id); 
     this->remove_entity(entity_id, false);
     this->insert_entity(entity_new_id, entity_to_move);
 } 
@@ -371,7 +371,7 @@ void Map::read_entity_masks(const md::ROM& rom)
         uint8_t flag_bit = lsb >> 5;
         uint8_t entity_id = lsb & 0x0F;
 
-        EntityOnMap* entity = _entities.at(entity_id);
+        Entity* entity = _entities.at(entity_id);
         entity->mask_flags().push_back(EntityMaskFlag(visibility_if_flag_set, flag_byte, flag_bit));
     }
 }
@@ -385,7 +385,7 @@ std::vector<uint8_t> Map::entity_masks_as_bytes() const
 
     for(uint8_t entity_id=0 ; entity_id<_entities.size() ; ++entity_id)
     {
-        EntityOnMap* entity = _entities.at(entity_id);
+        Entity* entity = _entities.at(entity_id);
         for(EntityMaskFlag& mask_flag : entity->mask_flags())
         {
             uint8_t flag_msb = mask_flag.byte & 0x7F;
@@ -475,7 +475,7 @@ Json Map::to_json(const World& world) const
     {
         json["entities"] = Json::array();
         uint8_t chest_id = _base_chest_id;
-        for(EntityOnMap* entity : _entities)
+        for(Entity* entity : _entities)
         {
             Json entity_json = entity->to_json(world);
             if(entity_json.at("entityType") == "chest")

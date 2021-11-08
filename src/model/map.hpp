@@ -4,7 +4,7 @@
 #include "../extlibs/json.hpp"
 #include "../tools/flag.h"
 
-class EntityOnMap;
+class Entity;
 class World;
 
 struct MapExit {
@@ -97,7 +97,7 @@ private:
     uint16_t _fall_destination;
     uint16_t _climb_destination;
     
-    std::vector<EntityOnMap*> _entities;
+    std::vector<Entity*> _entities;
     std::vector<MapExit> _exits;
     std::vector<MapVariant> _variants;
     std::vector<GlobalEntityMaskFlag> _global_entity_mask_flags;
@@ -122,15 +122,15 @@ public:
     uint8_t background_music() const { return _background_music; }
     void background_music(uint8_t music) { _background_music = music; }
 
-    const std::vector<EntityOnMap*>& entities() const { return _entities; }
-    const EntityOnMap& entity(uint8_t entity_id) const { return *_entities.at(entity_id); }
-    EntityOnMap* entity(uint8_t entity_id) { return _entities.at(entity_id); }
-    uint8_t add_entity(EntityOnMap* entity);
-    void insert_entity(uint8_t entity_id, EntityOnMap* entity);
+    const std::vector<Entity*>& entities() const { return _entities; }
+    const Entity& entity(uint8_t entity_id) const { return *_entities.at(entity_id); }
+    Entity* entity(uint8_t entity_id) { return _entities.at(entity_id); }
+    uint8_t add_entity(Entity* entity);
+    void insert_entity(uint8_t entity_id, Entity* entity);
     void remove_entity(uint8_t entity_id, bool delete_pointer = true);
     void move_entity(uint8_t entity_id, uint8_t entity_new_id);
     void clear_entities();
-    uint8_t entity_id(const EntityOnMap* entity) const;
+    uint8_t entity_id(const Entity* entity) const;
     void shift_all_entity_ids_above(uint8_t threshold, int diff);
 
     const std::vector<MapExit>& exits() const { return _exits; }

@@ -3,7 +3,7 @@
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
 #include "../model/map.hpp"
-#include "../model/entity_on_map.hpp"
+#include "../model/entity.hpp"
 
 /**
  * Usually, when trying to cut trees, the game checks if you have seen the

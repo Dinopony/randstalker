@@ -5,7 +5,7 @@
 
 #include "../randomizer_options.hpp"
 #include "../model/map.hpp"
-#include "../model/entity_on_map.hpp"
+#include "../model/entity.hpp"
 #include "../model/entity_type.hpp"
 
 void handle_additionnal_jewels(World& world)
@@ -43,7 +43,7 @@ void put_orcs_back_in_room_before_boss_swamp_shrine(World& world)
 void fix_fara_arena_chest_softlock(World& world, md::ROM& rom)
 {
     // Move the chest to the ground
-    EntityOnMap* chest = world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->entity(14);
+    Entity* chest = world.map(MAP_SWAMP_SHRINE_BOSS_ROOM)->entity(14);
     chest->position(26, 19, 4);
     chest->behavior_id(0);
     
@@ -69,7 +69,7 @@ void fix_fara_arena_chest_softlock(World& world, md::ROM& rom)
 void make_gumi_boulder_push_not_story_dependant(World& world)
 {
     // Turn the last boulder into a platform to prevent any softlock
-    EntityOnMap* last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
+    Entity* last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
     last_boulder->entity_type_id(world.entity_type("large_wood_platform")->id());
     last_boulder->entity_to_use_tiles_from(nullptr);
     last_boulder->half_tile_z(true);
@@ -145,7 +145,7 @@ void replace_sick_merchant_by_chest(World& world)
     world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->remove_entity(0);
 
     // Add a chest
-    EntityOnMap* new_chest = new EntityOnMap();
+    Entity* new_chest = new Entity();
     new_chest->entity_type_id(0x12);
     new_chest->position(14, 18, 0);
     new_chest->orientation(ENTITY_ORIENTATION_NW);
@@ -192,14 +192,14 @@ void add_reverse_mercator_gate(World& world)
     variant2.flag_bit = 5;
 
     // Add doors in the non-safety pass variant blocking the way out of Mercator
-    EntityOnMap* door1 = new EntityOnMap();
+    Entity* door1 = new Entity();
     door1->entity_type_id(0x67);
     door1->position(48, 41, 1);
     door1->half_tile_y(true);
     door1->orientation(ENTITY_ORIENTATION_SE);
     world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door1);
 
-    EntityOnMap* door2 = new EntityOnMap(*door1);
+    Entity* door2 = new Entity(*door1);
     door2->pos_y(door1->pos_y()+2);
     door2->entity_to_use_tiles_from(door1);
     world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door2);

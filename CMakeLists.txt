@@ -62,8 +62,8 @@ set(SOURCES
 
     "src/model/entity_type.hpp"
     "src/model/entity_type.cpp"
-    "src/model/entity_on_map.hpp"
-    "src/model/entity_on_map.cpp"
+    "src/model/entity.hpp"
+    "src/model/entity.cpp"
     "src/model/hint_source.hpp"
     "src/model/hint_source.cpp"
     "src/model/item_source.hpp"

@@ -2,7 +2,7 @@
 
 #include <string>
 #include "item.hpp"
-#include "entity_on_map.hpp"
+#include "entity.hpp"
 
 class WorldNode;
 
@@ -66,11 +66,11 @@ public:
 class ItemSourceOnGround : public ItemSource
 {
 private:
-    std::vector<EntityOnMap*> _entities;
+    std::vector<Entity*> _entities;
     bool _cannot_be_taken_repeatedly;
 
 public:
-    ItemSourceOnGround(const std::string& name, std::vector<EntityOnMap*> entities, WorldNode* node, 
+    ItemSourceOnGround(const std::string& name, std::vector<Entity*> entities, WorldNode* node, 
                         const std::vector<std::string>& hints, bool cannot_be_taken_repeatedly) :
         ItemSource                  (name, node, hints), 
         _entities                   (entities),
@@ -82,12 +82,12 @@ public:
         }
     }
 
-    const std::vector<EntityOnMap*>& entities() const { return _entities; }
+    const std::vector<Entity*>& entities() const { return _entities; }
 
     virtual void item(Item* item)
     { 
         ItemSource::item(item);
-        for (EntityOnMap* entity : _entities)
+        for (Entity* entity : _entities)
             entity->entity_type_id(this->item_id() + 0xC0);
     }
 
@@ -112,7 +112,7 @@ public:
 class ItemSourceShop : public ItemSourceOnGround
 {
 public:
-    ItemSourceShop(const std::string& name, std::vector<EntityOnMap*> entities, WorldNode* node, 
+    ItemSourceShop(const std::string& name, std::vector<Entity*> entities, WorldNode* node, 
                     const std::vector<std::string>& hints) :
         ItemSourceOnGround (name, entities, node, hints, true)
     {
