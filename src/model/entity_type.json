@@ -1,7 +1,9 @@
 {
     "0": {
         "name": "miro_1",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 25
     },
     "1": {
         "name": "old_man",
@@ -449,7 +451,9 @@
     },
     "112": {
         "name": "duke",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 68
     },
     "113": {
         "name": "small_wood_platform",
@@ -497,7 +501,9 @@
     },
     "124": {
         "name": "mir",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 28
     },
     "125": {
         "name": "bird_1",
@@ -533,7 +539,9 @@
     },
     "133": {
         "name": "zak",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 120
     },
     "134": {
         "name": "mir_wall_barrier",
@@ -629,7 +637,9 @@
     },
     "157": {
         "name": "spinner_white",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 110
     },
     "158": {
         "name": "duke_chair",
@@ -637,7 +647,9 @@
     },
     "159": {
         "name": "miro_2",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 120
     },
     "160": {
         "name": "firedemon",
@@ -649,7 +661,9 @@
     },
     "162": {
         "name": "gola",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 50
     },
     "163": {
         "name": "pink_golem_statue",
@@ -661,7 +675,9 @@
     },
     "165": {
         "name": "nole",
-        "type": "enemy"
+        "type": "enemy",
+        "unkillable": true,
+        "health": 100
     },
     "166": {
         "name": "nole_projectile",

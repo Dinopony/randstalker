@@ -234,53 +234,6 @@ void fix_armlet_skip(World& world)
     world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9)->can_pass_through(true);
 }
 
-void normalize_bosses_hp(const World& world, md::ROM& rom)
-{
-    // 1* Make the HP check below 0x0002 instead of below 0x6400
-    // 2* Make the corresponding boss have 100 less HP
-    // 3* Make the corresponding boss unkillable to ensure cutscene is played
-
-    rom.set_byte(0x118DC, 0x0002);
-    EntityEnemy* miro_1 = reinterpret_cast<EntityEnemy*>(world.entity_type("miro_1"));
-    miro_1->health(miro_1->health() - 100);
-    miro_1->unkillable(true);
-
-    rom.set_byte(0x118EC, 0x0002);
-    EntityEnemy* mir = reinterpret_cast<EntityEnemy*>(world.entity_type("mir"));
-    mir->health(mir->health() - 100);
-    mir->unkillable(true);
-
-    rom.set_word(0x11D38, 0x0002);
-    EntityEnemy* duke = reinterpret_cast<EntityEnemy*>(world.entity_type("duke"));
-    duke->health(duke->health() - 100);
-    duke->unkillable(true);
-
-    rom.set_byte(0x11D80, 0x0002);
-    EntityEnemy* zak = reinterpret_cast<EntityEnemy*>(world.entity_type("zak"));
-    zak->health(zak->health() - 100);
-    zak->unkillable(true);
-
-    rom.set_byte(0x11F8A, 0x0002);
-    EntityEnemy* spinner_white = reinterpret_cast<EntityEnemy*>(world.entity_type("spinner_white"));
-    spinner_white->health(spinner_white->health() - 100);
-    spinner_white->unkillable(true);
-    
-    rom.set_byte(0x11FAA, 0x0002);
-    EntityEnemy* miro_2 = reinterpret_cast<EntityEnemy*>(world.entity_type("miro_2"));
-    miro_2->health(miro_2->health() - 100);
-    miro_2->unkillable(true);
-
-    rom.set_byte(0x12072, 0x0002);
-    EntityEnemy* nole = reinterpret_cast<EntityEnemy*>(world.entity_type("nole"));
-    nole->health(nole->health() - 100);
-    nole->unkillable(true);
-
-    rom.set_byte(0x120C0, 0x0002);
-    EntityEnemy* gola = reinterpret_cast<EntityEnemy*>(world.entity_type("gola"));
-    gola->health(gola->health() - 100);
-    gola->unkillable(true);
-}
-
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
 {
     if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
@@ -302,6 +255,4 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
 
     if(options.fix_armlet_skip())
         fix_armlet_skip(world);
-
-    normalize_bosses_hp(world, rom);
 }

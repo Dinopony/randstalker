@@ -440,6 +440,27 @@ void improve_checks_before_kill(md::ROM& rom, const RandomizerOptions& options)
     rom.set_code(0x01625C, md::Code().jmp(func_addr));
 }
 
+/**
+ * In original game, bosses have way higher HP than their real HP pool, and the game checks regularly
+ * if their health goes below 0x100 to trigger a death cutscene. In an effort to normalize bosses HP
+ * and allow us to make them have bigger HP pools, we lower all of those checks to verify that health
+ * goes below 0x002
+ */
+void normalize_bosses_hp_checks(md::ROM& rom)
+{
+    // 1* Make the HP check below 0x0002 instead of below 0x6400
+    // 2* Make the corresponding boss have 100 less HP
+    // 3* Make the corresponding boss unkillable to ensure cutscene is played
+    rom.set_byte(0x118DC, 0x0002);
+    rom.set_byte(0x118EC, 0x0002);
+    rom.set_word(0x11D38, 0x0002);
+    rom.set_byte(0x11D80, 0x0002);
+    rom.set_byte(0x11F8A, 0x0002);
+    rom.set_byte(0x11FAA, 0x0002);
+    rom.set_byte(0x12072, 0x0002);
+    rom.set_byte(0x120C0, 0x0002);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -465,5 +486,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     prevent_hint_item_save_scumming(rom);
 
     improve_checks_before_kill(rom, options);
+    normalize_bosses_hp_checks(rom);
 }
 
