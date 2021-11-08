@@ -27,6 +27,16 @@ void handle_additionnal_jewels(World& world)
     world.map(MAP_KAZALT_CHURCH)->remove_entity(2);
 }
 
+void put_orcs_back_in_room_before_boss_swamp_shrine(World& world)
+{
+    // In map before boss, put the orcs back and only remove the locked door
+    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->global_entity_mask_flags().clear();
+    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->remove_entity(5);
+    // Remove the door orcs if Fara has been freed
+    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->entity(1)->mask_flags().push_back(EntityMaskFlag(false, 2, 5));
+    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->entity(2)->mask_flags().push_back(EntityMaskFlag(false, 2, 5));
+}
+
 /**
  * Make it so Lifestock chest near Fara in Swamp Shrine appears again when going back into the room afterwards, preventing any softlock there.
  */
@@ -231,6 +241,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
         handle_additionnal_jewels(world);
 
+    put_orcs_back_in_room_before_boss_swamp_shrine(world);
     fix_fara_arena_chest_softlock(world, rom);
     make_gumi_boulder_push_not_story_dependant(world);
     fix_mir_after_lake_shrine_softlock(world);
