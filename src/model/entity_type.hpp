@@ -47,6 +47,7 @@ private :
     uint8_t _dropped_golds;
     Item* _dropped_item;
     uint16_t _drop_probability;  ///< 128 ---> 1/128 chance
+    bool _unkillable;
 
 public:
     EntityEnemy(uint8_t id, const std::string& name, uint8_t health, uint8_t attack, uint8_t defence, 
@@ -63,14 +64,18 @@ public:
     uint8_t defence() const { return _defence; }
     void defence(uint8_t defence) { _defence = defence; }
 
-    uint8_t dropped_golds() const { return _dropped_golds; }
+    uint8_t dropped_golds() const { return (_unkillable) ? 0 : _dropped_golds; }
     void dropped_golds(uint8_t dropped_golds) { _dropped_golds = dropped_golds; }
 
     Item* dropped_item() const { return _dropped_item; }
+    uint8_t dropped_item_id() const { return (_unkillable) ? 0x3F : _dropped_item->id(); }
     void dropped_item(Item* dropped_item) { _dropped_item = dropped_item; }
 
-    uint16_t drop_probability() const { return _drop_probability; }
+    uint16_t drop_probability() const { return (_unkillable) ? 1 : _drop_probability; }
     void drop_probability(uint16_t drop_probability) { _drop_probability = drop_probability; }
+
+    bool unkillable() const { return _unkillable; }
+    void unkillable(bool value) { _unkillable = value; }
 
     virtual Json to_json() const;
     virtual void apply_json(const Json& json, const World& world);

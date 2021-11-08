@@ -38,7 +38,8 @@ EntityEnemy::EntityEnemy(uint8_t id, const std::string& name, uint8_t health, ui
     _defence            (defence),
     _dropped_golds      (dropped_golds),
     _dropped_item       (dropped_item),
-    _drop_probability   (drop_probability)
+    _drop_probability   (drop_probability),
+    _unkillable         (false)
 {}
 
 Json EntityEnemy::to_json() const
@@ -55,6 +56,8 @@ Json EntityEnemy::to_json() const
         json["droppedItem"] = _dropped_item->name();
         json["dropProbability"] = _drop_probability;
     }
+    if(_unkillable)
+        json["unkillable"] = _unkillable;
 
     return json;
 }
@@ -78,4 +81,6 @@ void EntityEnemy::apply_json(const Json& json, const World& world)
     }
     if(json.contains("dropProbability"))
         _drop_probability = json.at("dropProbability");
+    if(json.contains("unkillable"))
+        _unkillable = json.at("unkillable");
 }

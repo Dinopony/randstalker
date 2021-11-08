@@ -131,7 +131,7 @@ void WorldWriter::write_entity_types(md::ROM& rom, const World& world)
     for(EntityEnemy* enemy_type : enemy_types)
     {
         uint8_t byte5 = enemy_type->attack() & 0x7F;
-        uint8_t byte6 = enemy_type->dropped_item()->id() & 0x3F;
+        uint8_t byte6 = enemy_type->dropped_item_id() & 0x3F;
 
         uint8_t probability_id = drop_probability_lookup.at(enemy_type->drop_probability());
         byte5 |= (probability_id & 0x4) << 5;
