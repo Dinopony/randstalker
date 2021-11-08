@@ -377,6 +377,20 @@ void fix_mir_tower_priest_room_items(md::ROM& rom)
     rom.set_word(0x024E5A, 0x7F7F);
 }
 
+void prevent_hint_item_save_scumming(md::ROM& rom)
+{
+    md::Code func_save_on_buy;
+    // Redo instructions that were removed by injection
+    func_save_on_buy.movew(reg_D2, reg_D0);
+    func_save_on_buy.jsr(0x291D6); 
+    // Save game
+    func_save_on_buy.jsr(0x1592);
+    func_save_on_buy.rts();
+    uint32_t func_save_on_buy_addr = rom.inject_code(func_save_on_buy);
+
+    rom.set_code(0x24F3E, md::Code().jsr(func_save_on_buy_addr));
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //      ORIGINAL GAME BUGS
@@ -424,6 +438,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     // Fix randomizer-related bugs
     make_sword_of_gaia_work_in_volcano(rom);
     fix_mir_tower_priest_room_items(rom);
+    prevent_hint_item_save_scumming(rom);
 
     // Fix original game bugs
     if(options.fix_tree_cutting_glitch())
