@@ -42,6 +42,58 @@ EntityEnemy::EntityEnemy(uint8_t id, const std::string& name, uint8_t health, ui
     _unkillable         (false)
 {}
 
+void EntityEnemy::apply_health_factor(double factor)
+{
+    if(_health < 255)
+    {
+        double factored_health = static_cast<uint16_t>(_health) * factor;
+        if (factored_health > 254)
+            factored_health = 254;
+        _health = static_cast<uint8_t>(factored_health);
+    }
+}
+
+void EntityEnemy::apply_armor_factor(double factor)
+{
+    if(_defence < 99)
+    {
+        double factored_defence = static_cast<uint16_t>(_defence) * factor;
+        if (factored_defence > 98)
+            factored_defence = 98;
+        _defence = static_cast<uint8_t>(factored_defence);
+    }
+}
+
+void EntityEnemy::apply_damage_factor(double factor)
+{
+    if(_attack < 127)
+    {
+        double factored_attack = static_cast<uint16_t>(_attack) * factor;
+        if (factored_attack > 126)
+            factored_attack = 126;
+        _attack = static_cast<uint8_t>(factored_attack);
+    }
+}
+
+void EntityEnemy::apply_golds_factor(double factor)
+{
+    double factored_golds = static_cast<uint16_t>(_dropped_golds) * factor;
+    if (factored_golds > 255)
+        factored_golds = 255;
+    _dropped_golds = static_cast<uint8_t>(factored_golds);
+}
+
+void EntityEnemy::apply_drop_chance_factor(double factor)
+{
+    if(_drop_probability > 0)
+    {
+        double factored_drop_rate = _drop_probability / factor;
+        if (factored_drop_rate < 1)
+            factored_drop_rate = 1;
+        _drop_probability = static_cast<uint16_t>(factored_drop_rate);
+    }
+}
+
 Json EntityEnemy::to_json() const
 {
     Json json = EntityType::to_json();

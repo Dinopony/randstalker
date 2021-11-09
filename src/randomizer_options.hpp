@@ -44,6 +44,8 @@ public:
     double enemies_damage_factor() const { return _enemies_damage_factor; }
     double enemies_health_factor() const { return _enemies_health_factor; }
     double enemies_armor_factor() const { return _enemies_armor_factor; }
+    double enemies_golds_factor() const { return _enemies_golds_factor; }
+    double enemies_drop_chance_factor() const { return _enemies_drop_chance_factor; }
 
     // Randomization options
     uint32_t seed() const { return _seed; }
@@ -91,6 +93,8 @@ private:
     double _enemies_damage_factor;
     double _enemies_health_factor;
     double _enemies_armor_factor;
+    double _enemies_golds_factor;
+    double _enemies_drop_chance_factor;
 
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)

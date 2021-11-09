@@ -77,6 +77,12 @@ public:
     bool unkillable() const { return _unkillable; }
     void unkillable(bool value) { _unkillable = value; }
 
+    void apply_health_factor(double factor);
+    void apply_armor_factor(double factor);
+    void apply_damage_factor(double factor);
+    void apply_golds_factor(double factor);
+    void apply_drop_chance_factor(double factor);
+
     virtual Json to_json() const;
     virtual void apply_json(const Json& json, const World& world);
 };

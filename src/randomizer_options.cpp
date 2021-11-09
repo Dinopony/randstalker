@@ -21,6 +21,8 @@ RandomizerOptions::RandomizerOptions() :
     _enemies_damage_factor          (1.0),
     _enemies_health_factor          (1.0),
     _enemies_armor_factor           (1.0),
+    _enemies_golds_factor           (1.0),
+    _enemies_drop_chance_factor     (1.0),
 
     _seed                           (0),
     _allow_spoiler_log              (true),
@@ -149,6 +151,8 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesDamageFactor"] = _enemies_damage_factor;
     json["gameSettings"]["enemiesHealthFactor"] = _enemies_health_factor;
     json["gameSettings"]["enemiesArmorFactor"] = _enemies_armor_factor;
+    json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
+    json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
@@ -206,6 +210,10 @@ void RandomizerOptions::parse_json(const Json& json)
             _enemies_health_factor = game_settings_json.at("enemiesHealthFactor");
         if(game_settings_json.contains("enemiesArmorFactor"))
             _enemies_armor_factor = game_settings_json.at("enemiesArmorFactor");
+        if(game_settings_json.contains("enemiesGoldsFactor"))
+            _enemies_golds_factor = game_settings_json.at("enemiesGoldsFactor");
+        if(game_settings_json.contains("enemiesDropChanceFactor"))    
+            _enemies_drop_chance_factor = game_settings_json.at("enemiesDropChanceFactor");
 
         if(game_settings_json.contains("startingItems"))
         {
