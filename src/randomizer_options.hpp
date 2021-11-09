@@ -41,6 +41,9 @@ public:
     bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
     bool remove_tibor_requirement() const { return _remove_tibor_requirement; }
     bool all_trees_visited_at_start() const { return _all_trees_visited_at_start; }
+    double enemies_damage_factor() const { return _enemies_damage_factor; }
+    double enemies_health_factor() const { return _enemies_health_factor; }
+    double enemies_armor_factor() const { return _enemies_armor_factor; }
 
     // Randomization options
     uint32_t seed() const { return _seed; }
@@ -85,7 +88,10 @@ private:
     bool _remove_gumi_boulder;
     bool _remove_tibor_requirement;
     bool _all_trees_visited_at_start;
-    
+    double _enemies_damage_factor;
+    double _enemies_health_factor;
+    double _enemies_armor_factor;
+
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)
     uint32_t _seed;

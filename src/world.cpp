@@ -418,6 +418,7 @@ void World::init_entity_types(const md::ROM& rom)
     {
         uint8_t id = rom.get_byte(addr);
         std::string name = "enemy_" + std::to_string(id);
+        
         uint8_t health = rom.get_byte(addr+1);
         uint8_t defence = rom.get_byte(addr+2);
         uint8_t dropped_golds = rom.get_byte(addr+3);
@@ -449,6 +450,41 @@ void World::init_entity_types(const md::ROM& rom)
             _entity_types[id] = EntityType::from_json(id, entity_json, *this);
         else
             _entity_types[id]->apply_json(entity_json, *this);
+    }
+
+    // Apply multiplicators from the settings
+    for (auto& [id, entity_type] : _entity_types)
+    {
+        if(entity_type->type_name() != "enemy")
+            continue;
+        EntityEnemy* enemy_type = reinterpret_cast<EntityEnemy*>(entity_type);
+
+        uint8_t health = enemy_type->health();
+        if(health < 255)
+        {
+            double factored_health = static_cast<uint16_t>(health) * _options.enemies_health_factor();
+            if (factored_health > 254)
+                factored_health = 254;
+            enemy_type->health(static_cast<uint8_t>(factored_health));
+        }
+
+        uint8_t defence = enemy_type->defence();
+        if(defence < 99)
+        {
+            double factored_defence = static_cast<uint16_t>(defence) * _options.enemies_armor_factor();
+            if (factored_defence > 98)
+                factored_defence = 98;
+            enemy_type->defence(static_cast<uint8_t>(factored_defence));
+        }
+
+        uint8_t attack = enemy_type->attack();
+        if(attack < 127)
+        {
+            double factored_attack = static_cast<uint16_t>(attack) * _options.enemies_damage_factor();
+            if (factored_attack > 126)
+                factored_attack = 126;
+            enemy_type->attack(static_cast<uint8_t>(factored_attack));
+        }
     }
 
     std::cout << _entity_types.size()  << " entities loaded." << std::endl;

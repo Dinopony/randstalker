@@ -18,6 +18,9 @@ RandomizerOptions::RandomizerOptions() :
     _remove_gumi_boulder            (false),
     _remove_tibor_requirement       (false),
     _all_trees_visited_at_start     (false),
+    _enemies_damage_factor          (1.0),
+    _enemies_health_factor          (1.0),
+    _enemies_armor_factor           (1.0),
 
     _seed                           (0),
     _allow_spoiler_log              (true),
@@ -143,6 +146,9 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
+    json["gameSettings"]["enemiesDamageFactor"] = _enemies_damage_factor;
+    json["gameSettings"]["enemiesHealthFactor"] = _enemies_health_factor;
+    json["gameSettings"]["enemiesArmorFactor"] = _enemies_armor_factor;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
@@ -194,6 +200,12 @@ void RandomizerOptions::parse_json(const Json& json)
             _remove_tibor_requirement = game_settings_json.at("removeTiborRequirement");
         if(game_settings_json.contains("allTreesVisitedAtStart"))
             _all_trees_visited_at_start = game_settings_json.at("allTreesVisitedAtStart");
+        if(game_settings_json.contains("enemiesDamageFactor"))
+            _enemies_damage_factor = game_settings_json.at("enemiesDamageFactor");
+        if(game_settings_json.contains("enemiesHealthFactor"))
+            _enemies_health_factor = game_settings_json.at("enemiesHealthFactor");
+        if(game_settings_json.contains("enemiesArmorFactor"))
+            _enemies_armor_factor = game_settings_json.at("enemiesArmorFactor");
 
         if(game_settings_json.contains("startingItems"))
         {
