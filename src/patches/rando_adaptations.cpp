@@ -100,6 +100,16 @@ void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom)
     rom.set_code(0x004E18, md::Code().clrw(reg_D0).jmp(proc_addr));
 }
 
+/**
+ * In default game, the function that sets the flag to indicate that a room has been visited
+ * is very limited in the number of addresses it can reach.
+ * We modify it to be able to set any game flag, which is especially useful in some cases
+ */
+void improve_visited_flag_setter(md::ROM& rom)
+{
+    rom.set_long(0x2954, 0xFF1000);
+}
+
 void make_ryuma_mayor_saveable(md::ROM& rom)
 {
     // Disable the cutscene (CSA_0068) when opening vanilla lithograph chest
@@ -462,6 +472,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_fahl_challenge(rom, world);
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
+    improve_visited_flag_setter(rom);
     make_ryuma_mayor_saveable(rom);
     fix_ryuma_mayor_reward(rom);
     if (options.remove_tibor_requirement())

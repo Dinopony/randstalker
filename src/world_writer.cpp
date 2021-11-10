@@ -195,6 +195,11 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
             rom.set_word(clear_flags_table_current_addr+2, flag_bytes);
             clear_flags_table_current_addr += 0x4;
         }
+
+        // Write map visited flag
+        const Flag& visited_flag = map->visited_flag();
+        uint16_t flag_word = (visited_flag.byte << 3) + visited_flag.bit;
+        rom.set_word(offsets::MAP_VISITED_FLAG_TABLE + (map->id()*2), flag_word);
     }
 
     // We process variants reversed so that when several variants are available,

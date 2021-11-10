@@ -60,7 +60,7 @@ struct GlobalEntityMaskFlag : public Flag
 
     uint16_t to_bytes() const
     {
-        uint8_t msb = byte;
+        uint8_t msb = byte & 0xFF;
         uint8_t lsb = first_entity_id & 0x1F;
         lsb |= (bit & 0x7) << 5;
 
@@ -101,6 +101,7 @@ private:
     std::vector<MapExit> _exits;
     std::vector<MapVariant> _variants;
     std::vector<GlobalEntityMaskFlag> _global_entity_mask_flags;
+    Flag _visited_flag;
 
 public:
     Map(uint16_t map_id, const md::ROM& rom, const World& world);
@@ -159,11 +160,13 @@ public:
         throw std::out_of_range("No variant with given ID");
     }
 
+    const Flag& visited_flag() const { return _visited_flag; }
+    void visited_flag(const Flag& flag) { _visited_flag = flag; }
+
     std::vector<uint8_t> entities_as_bytes() const;
     std::vector<uint8_t> entity_masks_as_bytes() const;
 
     Json to_json(const World& world) const;
-    Map* from_json(const Json& json);
 
 private:
     void read_map_data(const md::ROM& rom);
@@ -183,6 +186,7 @@ private:
     void read_variants(const md::ROM& rom);
     void read_entity_masks(const md::ROM& rom);
     void read_clear_flags(const md::ROM& rom);
+    void read_visited_flag(const md::ROM& rom);
 };
 
 constexpr uint16_t MAP_SWAMP_SHRINE_0 = 0;

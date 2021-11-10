@@ -5,13 +5,13 @@
 
 struct Flag
 {
-    uint8_t byte;
+    uint16_t byte;
     uint8_t bit;
 
     Flag() : byte(0), bit(0)
     {}
 
-    Flag(uint8_t byte, uint8_t bit) : byte(byte), bit(bit)
+    Flag(uint16_t byte, uint8_t bit) : byte(byte), bit(bit)
     {}
 
     Json to_json() const
