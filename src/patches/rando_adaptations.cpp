@@ -102,32 +102,23 @@ void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom)
 
 void make_ryuma_mayor_saveable(md::ROM& rom)
 {
-    // --------------- Fixes for thieves hideout treasure room ---------------
-    // Disable the cutscene when opening vanilla lithograph chest
+    // Disable the cutscene (CSA_0068) when opening vanilla lithograph chest
     rom.set_code(0x136BE, md::Code().rts());
 
-    // Disable Friday blocker in the treasure room
-    rom.set_word(0x9BA62, 0xFEFE); // Why does that even work? I don't know...
+    // Shorten the boss cutscene right before to make room for one more instruction in mayor cutscene
+    rom.set_word(0x28364, 0xE51D);
 
-    // Set the "Mayor freed" flag to byte 10D6, bit 4 (which happens to be the "Visited treasure room with mayor variant" flag)
-    rom.set_word(0xA3F4, 0xD604);
+    // Set the bit 1 of flag 1004 as the first instruction in mayor's cutscene, and move starting
+    // offset of this cutscene accordingly
+    rom.set_word(0x28366, 0x1421);
+    rom.set_word(0x2546C, 0x2F39);
 
-    // Remove the "remove all NPCs on flag set" trigger in treasure room by putting it to an impossible flag
-    rom.set_byte(0x1A9C0, 0x01);
+    // Edit Friday blocker behavior in the treasure room
+    rom.set_word(0x9BA62, 0xFEFE);
+}
 
-    // Inject custom code "on map enter" to set the flag when it is convenient to do so
-    md::Code func_on_map_enter;
-    func_on_map_enter.lea(0xFF10C0, reg_A0); // Do the instruction that was replaced the hook call
-    // When entering the cavern where we save Ryuma's mayor, set the flag "mayor is saved"
-    func_on_map_enter.cmpib(0xE0, reg_D0);
-    func_on_map_enter.bne(2);
-        func_on_map_enter.bset(0x01, addr_(0xFF1004));
-    func_on_map_enter.rts();
-
-    uint32_t func_on_map_enter_addr = rom.inject_code(func_on_map_enter);
-    rom.set_code(0x2952, md::Code().jsr(func_on_map_enter_addr));
-
-    // --------------- Fixes for Ryuma's mayor reward ---------------
+void fix_ryuma_mayor_reward(md::ROM& rom)
+{
     // Change the second reward from "fixed 100 golds" to "item with ID located at 0x2837F"
     rom.set_byte(0x2837E, 0x00);
     rom.set_word(0x28380, 0x17E8);
@@ -472,6 +463,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
     make_ryuma_mayor_saveable(rom);
+    fix_ryuma_mayor_reward(rom);
     if (options.remove_tibor_requirement())
         remove_tibor_requirement_to_use_trees(rom);
     if (options.use_armor_upgrades())

@@ -50,7 +50,6 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_teleport_trees();
     this->init_game_strings(rom);
     this->init_hint_sources();
-
 }
 
 World::~World()
@@ -493,7 +492,9 @@ void World::init_maps(const md::ROM& rom)
     for(uint16_t map_id = 0 ; map_id < MAP_COUNT ; ++map_id)
         _maps[map_id] = new Map(map_id, rom, *this);
 
-    const std::set<uint16_t> UNREACHABLE_MAPS = {};
+    const std::set<uint16_t> UNREACHABLE_MAPS = { 
+        MAP_THIEVES_HIDEOUT_TREASURE_ROOM_KAYLA_VARIANT 
+    };
     for(uint16_t map_id : UNREACHABLE_MAPS)
         _maps.at(map_id)->clear();
 }

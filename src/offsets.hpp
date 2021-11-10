@@ -11,6 +11,9 @@ namespace offsets
     constexpr uint32_t MAP_VARIANTS_TABLE = 0x00A3D8;
     constexpr uint32_t MAP_VARIANTS_TABLE_END = 0x00A61C;
 
+    constexpr uint32_t MAP_VISITED_FLAG_TABLE = 0x00C74E;
+    constexpr uint32_t MAP_VISITED_FLAG_TABLE_END = 0x00CDAE;
+
     constexpr uint32_t MENU_ITEM_ORDER_TABLE = 0x00D55C;
     constexpr uint32_t MENU_ITEM_ORDER_TABLE_END = 0x00D584;
 
@@ -34,7 +37,11 @@ namespace offsets
     constexpr uint32_t ITEM_DATA_TABLE = 0x029304;
     constexpr uint32_t ITEM_NAMES_TABLE = 0x029732;
     constexpr uint32_t ITEM_NAMES_TABLE_END = 0x029A0A;
-    
+
+    constexpr uint32_t BEHAVIOR_OFFSETS_TABLE = 0x09B058; 
+    constexpr uint32_t BEHAVIOR_TABLE = 0x09B458;
+    constexpr uint32_t BEHAVIOR_TABLE_END = 0x09E75E;
+
     constexpr uint32_t MAP_BASE_CHEST_ID_TABLE = 0x09E78E;
     constexpr uint32_t CREDITS_TEXT = 0x09ED1A;
 

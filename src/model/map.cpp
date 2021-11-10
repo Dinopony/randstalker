@@ -20,6 +20,7 @@ Map::Map(uint16_t map_id, const md::ROM& rom, const World& world) :
     this->read_variants(rom);
     this->read_entity_masks(rom);
     this->read_clear_flags(rom);
+    this->read_visited_flag(rom);
 }
 
 Map::Map(const Map& map) :
@@ -428,6 +429,16 @@ void Map::read_clear_flags(const md::ROM& rom)
 
 ////////////////////////////////////////////////////////////////
 
+void Map::read_visited_flag(const md::ROM& rom)
+{
+    uint16_t flag_description = rom.get_word(offsets::MAP_VISITED_FLAG_TABLE + (_id * 2));
+    uint16_t byte = (flag_description >> 3) + 0xC0;
+    uint8_t bit = flag_description & 0x7;
+    _visited_flag = Flag(byte, bit);
+}
+
+////////////////////////////////////////////////////////////////
+
 Json Map::to_json(const World& world) const
 {
     Json json;
@@ -440,9 +451,6 @@ Json Map::to_json(const World& world) const
     json["paletteId"] = _palette_id;
     json["roomHeight"] = _room_height;
     json["backgroundMusic"] = _background_music;
-    json["unknownParam1"] = _unknown_param_1;
-    json["unknownParam2"] = _unknown_param_2;
-
     json["baseChestId"] = _base_chest_id;
 
     if(_fall_destination != 0xFFFF)
@@ -456,6 +464,8 @@ Json Map::to_json(const World& world) const
         for(const MapExit& exit : _exits)
             json["exits"].push_back(exit.to_json());
     }
+
+    json["visitedFlag"] = _visited_flag.to_json();
 
     if(!_variants.empty())
     {
@@ -484,11 +494,8 @@ Json Map::to_json(const World& world) const
         }
     }
 
-    return json;
-}
+    json["unknownParam1"] = _unknown_param_1;
+    json["unknownParam2"] = _unknown_param_2;
 
-Map* Map::from_json(const Json& json)
-{
-    // TODO
-    return nullptr;
+    return json;
 }
