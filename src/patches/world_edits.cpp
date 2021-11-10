@@ -215,7 +215,7 @@ void remove_sailor_in_dark_port(World& world)
     world.map(MAP_MERCATOR_DOCKS_DARK_VARIANT)->remove_entity(1);
 }
 
-/*
+/**
  * There is a guard staying in front of the Mercator castle backdoor to prevent you from using
  * Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
  * but we actually never want him to be there, so we delete him from existence by moving him away from the map.
@@ -223,6 +223,15 @@ void remove_sailor_in_dark_port(World& world)
 void remove_mercator_castle_backdoor_guard(World& world)
 {
     world.map(MAP_MERCATOR_FOUNTAIN)->remove_entity(5);
+}
+
+/**
+ * Make entering the fountain tunnel automatically trigger the fountain button to prevent 
+ * any softlock by coming from Greenmaze without having opened the passage.
+ */
+void fix_reverse_greenmaze_fountain_softlock(World& world)
+{
+    world.map(MAP_MERCATOR_TUNNEL_TO_GREENMAZE)->visited_flag(Flag(0xE, 1));
 }
 
 /**
@@ -252,6 +261,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     add_reverse_mercator_gate(world);
     remove_sailor_in_dark_port(world);
     remove_mercator_castle_backdoor_guard(world);
+    fix_reverse_greenmaze_fountain_softlock(world);
 
     if(options.fix_armlet_skip())
         fix_armlet_skip(world);

@@ -44,16 +44,6 @@ void remove_logs_room_exit_check(md::ROM& rom)
     rom.set_code(0x011EC4, md::Code().bra());
 }
 
-void fix_reverse_greenmaze_fountain_softlock(md::ROM& rom)
-{
-    // Pressing the button behind the locked door now triggers the flag "Visited Greenmaze Crossroads map"
-    rom.set_byte(0x9C66C, 0xF1);
-    rom.set_byte(0x9C66D, 0x00);
-
-    // Change the flag checked for lowering fountain to "Visited Greenmaze Crossroads map"
-    rom.set_byte(0x500C, 0xF1);
-    rom.set_byte(0x500D, 0x08);
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,5 +52,4 @@ void patch_softlocks(md::ROM& rom, const RandomizerOptions& options, const World
     fix_crypt_soflocks(rom);
     alter_labyrinth_rafts(rom);
     remove_logs_room_exit_check(rom);
-    fix_reverse_greenmaze_fountain_softlock(rom);
 }
