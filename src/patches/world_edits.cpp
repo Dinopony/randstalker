@@ -78,9 +78,12 @@ void make_gumi_boulder_push_not_story_dependant(World& world)
     // Always remove Pockets from Gumi boulder map
     world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->remove_entity(4);
 
-    // Erase the entity masks which make bears only appear under a specific scenario requirement
-    world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(2)->mask_flags().clear();
-    world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(3)->mask_flags().clear();
+    // Erase the first entity mask for each bear which makes them only appear under a specific scenario requirement
+    std::vector<EntityMaskFlag>& first_bear_masks = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(2)->mask_flags();
+    first_bear_masks.erase(first_bear_masks.begin());
+    
+    std::vector<EntityMaskFlag>& second_bear_masks = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(3)->mask_flags();
+    second_bear_masks.erase(second_bear_masks.begin());
 }
 
 /**
