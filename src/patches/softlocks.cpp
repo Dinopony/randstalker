@@ -35,21 +35,10 @@ void alter_labyrinth_rafts(md::ROM& rom)
     rom.set_word(0x09E051, 0x0100);
 }
 
-/**
- * Usually, when trying to leave the room where you get Logs in the vanilla game without having taken both logs, a dwarf
- * comes and prevents you from leaving. Here, we remove that check since we cannot softlock anymore on the raft.
- */
-void remove_logs_room_exit_check(md::ROM& rom)
-{
-    rom.set_code(0x011EC4, md::Code().bra());
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_softlocks(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     fix_crypt_soflocks(rom);
     alter_labyrinth_rafts(rom);
-    remove_logs_room_exit_check(rom);
 }

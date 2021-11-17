@@ -246,6 +246,15 @@ void fix_armlet_skip(World& world)
     world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9)->can_pass_through(true);
 }
 
+/**
+ * Usually, when trying to leave the room where you get Logs in the vanilla game without having taken both logs, a dwarf
+ * comes and prevents you from leaving. Here, we remove that check since we cannot softlock anymore on the raft.
+ */
+void remove_logs_room_exit_check(World& world)
+{
+    world.map(MAP_KN_LABYRINTH_TREE_LOGS)->remove_entity(3);
+}
+
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
 {
     if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
@@ -265,6 +274,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     remove_sailor_in_dark_port(world);
     remove_mercator_castle_backdoor_guard(world);
     fix_reverse_greenmaze_fountain_softlock(world);
+    remove_logs_room_exit_check(world);
 
     if(options.fix_armlet_skip())
         fix_armlet_skip(world);
