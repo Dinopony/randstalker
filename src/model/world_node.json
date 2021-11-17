@@ -214,6 +214,12 @@
             "in Verla Mines"
         ]
     },
+    "verla_mines_behind_lava": {
+        "name": "Verla Mines (behind lava)",
+        "hints": [
+            "in Verla Mines"
+        ]
+    },
     "route_verla_destel": {
         "name": "Route between Verla and Destel",
         "hints": [
@@ -291,24 +297,60 @@
             "in Kazalt"
         ]
     },
-    "king_nole_labyrinth_pre_spikes": {
-        "name": "King Nole's Labyrinth (pre-spikes)",
+    "king_nole_labyrinth_pre_door": {
+        "name": "King Nole's Labyrinth (before door)",
         "hints": [
             "in King Nole's domain",
             "in King Nole's labyrinth"
         ]
     },
-    "king_nole_labyrinth_post_spikes": {
-        "name": "King Nole's Labyrinth (post-spikes)",
+    "king_nole_labyrinth_post_door": {
+        "name": "King Nole's Labyrinth (after door)",
+        "hints": [
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    "king_nole_labyrinth_exterior": {
+        "name": "King Nole's Labyrinth (exterior)",
+        "hints": [
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    "king_nole_labyrinth_fall_from_exterior": {
+        "name": "King Nole's Labyrinth (fall from exterior)",
+        "hints": [
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    "king_nole_labyrinth_raft_entrance": {
+        "name": "King Nole's Labyrinth (raft entrance)",
         "hints": [
             "in King Nole's domain",
             "in King Nole's labyrinth"
         ]
     },
     "king_nole_labyrinth_raft": {
-        "name": "King Nole's Labyrinth (raft sector)",
+        "name": "King Nole's Labyrinth (raft)",
         "hints": [
             "close to a waterfall",
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    "king_nole_labyrinth_sacred_tree": {
+        "name": "King Nole's Labyrinth (sacred tree)",
+        "hints": [
+            "among the trees",
+            "in King Nole's domain",
+            "in King Nole's labyrinth"
+        ]
+    },
+    "king_nole_labyrinth_path_to_palace": {
+        "name": "King Nole's Labyrinth (path to palace)",
+        "hints": [
             "in King Nole's domain",
             "in King Nole's labyrinth"
         ]

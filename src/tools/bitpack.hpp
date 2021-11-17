@@ -4,8 +4,7 @@
 #include "bitfield.hpp"
 
 class Bitpack;
-template<typename T>
-T unpack_from(Bitpack& bitpack);
+template<typename T> T unpack_from(Bitpack& bitpack);
 
 class Bitpack
 {

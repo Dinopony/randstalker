@@ -401,7 +401,7 @@
     {
         "name": "Verla Mines: chest in hidden room accessed by walking on lava",
         "type": "chest",
-        "nodeId": "verla_mines",
+        "nodeId": "verla_mines_behind_lava",
         "chestId": 76
     },
     {
@@ -600,136 +600,136 @@
         "chestId": 107
     },
     {
-        "name": "King Nole's Labyrinth (0F): key chest in \"outside room\"",
+        "name": "King Nole's Labyrinth (0F): chest in exterior room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_exterior",
         "chestId": 108
     },
     {
-        "name": "King Nole's Labyrinth (0F): ekeeke chest in room after key door",
+        "name": "King Nole's Labyrinth (0F): left chest in room after key door",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 109
     },
     {
-        "name": "King Nole's Labyrinth (0F): lifestock chest in room after key door",
+        "name": "King Nole's Labyrinth (0F): right chest in room after key door",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 110
     },
     {
-        "name": "King Nole's Labyrinth (-1F): lifestock chest in \"small maze\" room",
+        "name": "King Nole's Labyrinth (-1F): chest in maze room with healing tile",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 111
     },
     {
         "name": "King Nole's Labyrinth (0F): chest in spike balls room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_door",
         "chestId": 112
     },
     {
-        "name": "King Nole's Labyrinth (-1F): ekeeke chest in triple chest dark room (left side)",
+        "name": "King Nole's Labyrinth (-1F): right chest in triple chest dark room (left side)",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 113
     },
     {
-        "name": "King Nole's Labyrinth (-1F): ekeeke chest in triple chest dark room (right side)",
+        "name": "King Nole's Labyrinth (-1F): chest in triple chest dark room (right side)",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_door",
         "chestId": 114
     },
     {
-        "name": "King Nole's Labyrinth (-1F): restoration chest in triple chest dark room (left side)",
+        "name": "King Nole's Labyrinth (-1F): left chest in triple chest dark room (left side)",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 115
     },
     {
-        "name": "King Nole's Labyrinth (-1F): lifestock chest in \"big maze\" room",
+        "name": "King Nole's Labyrinth (-1F): chest in maze room with two buttons",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 116
     },
     {
-        "name": "King Nole's Labyrinth (-1F): ekeeke chest in lantern room",
+        "name": "King Nole's Labyrinth (-1F): upper chest in lantern room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_door",
         "chestId": 117
     },
     {
-        "name": "King Nole's Labyrinth (-1F): lantern chest",
+        "name": "King Nole's Labyrinth (-1F): lower chest in lantern room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_door",
         "chestId": 118
     },
     {
-        "name": "King Nole's Labyrinth (-1F): key chest in ice shortcut room",
+        "name": "King Nole's Labyrinth (-1F): chest in ice shortcut room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_pre_door",
         "chestId": 119
     },
     {
-        "name": "King Nole's Labyrinth (-2F): ekeeke chest in skeleton priest room",
+        "name": "King Nole's Labyrinth (-2F): chest in save room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 120
     },
     {
-        "name": "King Nole's Labyrinth (-1F): key chest in \"button and crates\" room",
+        "name": "King Nole's Labyrinth (-1F): chest in room with button and crates stairway",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 121
     },
     {
-        "name": "King Nole's Labyrinth (-3F): ekeeke chest before Firedemon",
+        "name": "King Nole's Labyrinth (-3F): first chest before Firedemon",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 122
     },
     {
-        "name": "King Nole's Labyrinth (-3F): dahl chest before Firedemon",
+        "name": "King Nole's Labyrinth (-3F): second chest before Firedemon",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 123
     },
     {
-        "name": "King Nole's Labyrinth (-3F): reward for beating Firedemon",
+        "name": "King Nole's Labyrinth (-3F): reward chest for beating Firedemon",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "hints": [
             "kept by a threatening guardian"
         ],
         "chestId": 124
     },
     {
-        "name": "King Nole's Labyrinth (-2F): lifestock chest in four buttons room",
+        "name": "King Nole's Labyrinth (-2F): chest in four buttons room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 125
     },
     {
-        "name": "King Nole's Labyrinth (-3F): first ekeeke chest before Spinner",
+        "name": "King Nole's Labyrinth (-3F): first chest after falling from raft",
         "type": "chest",
         "nodeId": "king_nole_labyrinth_raft",
         "chestId": 126
     },
     {
-        "name": "King Nole's Labyrinth (-3F): second ekeeke chest before Spinner",
+        "name": "King Nole's Labyrinth (-3F): left chest in double chest room before Spinner",
         "type": "chest",
         "nodeId": "king_nole_labyrinth_raft",
         "chestId": 127
     },
     {
-        "name": "King Nole's Labyrinth (-3F): statue of gaia chest before Spinner",
+        "name": "King Nole's Labyrinth (-3F): right chest in double chest room before Spinner",
         "type": "chest",
         "nodeId": "king_nole_labyrinth_raft",
         "chestId": 128
     },
     {
-        "name": "King Nole's Labyrinth (-3F): reward for beating Spinner",
+        "name": "King Nole's Labyrinth (-3F): reward chest for beating Spinner",
         "type": "chest",
         "nodeId": "king_nole_labyrinth_raft",
         "hints": [
@@ -738,7 +738,7 @@
         "chestId": 129
     },
     {
-        "name": "King Nole's Labyrinth (-3F): key chest in Hyper Breast room",
+        "name": "King Nole's Labyrinth (-3F): chest in room after Spinner",
         "type": "chest",
         "nodeId": "king_nole_labyrinth_raft",
         "hints": [
@@ -749,13 +749,13 @@
     {
         "name": "King Nole's Labyrinth (-3F): chest before Miro",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_post_spikes",
+        "nodeId": "king_nole_labyrinth_path_to_palace",
         "chestId": 131
     },
     {
-        "name": "King Nole's Labyrinth (-3F): reward for beating Miro",
+        "name": "King Nole's Labyrinth (-3F): reward chest for beating Miro",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_post_spikes",
+        "nodeId": "king_nole_labyrinth_path_to_palace",
         "hints": [
             "kept by a threatening guardian"
         ],
@@ -764,7 +764,7 @@
     {
         "name": "King Nole's Labyrinth (-3F): chest in hands room",
         "type": "chest",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "chestId": 133
     },
     {
@@ -1354,7 +1354,7 @@
         "entity": { "mapId": 333, "entityId": 0 }
     },
     {
-        "name": "King Nole's Labyrinth (-3F): item on ground behind waterfall (after beating Spinner)",
+        "name": "King Nole's Labyrinth (-3F): item on ground behind waterfall after beating Spinner",
         "type": "ground",
         "nodeId": "king_nole_labyrinth_raft",
         "hints": [
@@ -1372,9 +1372,9 @@
         "entity": { "mapId": 288, "entityId": 0 }
     },
     {
-        "name": "King Nole's Labyrinth (-1F): item on small cliff in ninjas room",
+        "name": "King Nole's Labyrinth (-1F): item on ground in ninjas room",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "entity": { "mapId": 374, "entityId": 3 }
     },
     {
@@ -1386,7 +1386,7 @@
     {
         "name": "King Nole's Labyrinth (-3F): item on floating hands",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "entity": { "mapId": 418, "entityId": 0 }
     },
     {
@@ -1399,9 +1399,9 @@
         ]
     },
     {
-        "name": "King Nole's Labyrinth (-2F): item on ground after falling from exterior-looking map",
+        "name": "King Nole's Labyrinth (-2F): item on ground after falling from exterior room",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_fall_from_exterior",
         "entity": { "mapId": 363, "entityId": 0 }
     },
     {
@@ -1429,7 +1429,7 @@
     {
         "name": "King Nole's Labyrinth (-3F): item on ground climbing back from Firedemon",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "entity": { "mapId": 399, "entityId": 0 }
     },
     {
@@ -1502,25 +1502,19 @@
     {
         "name": "King Nole's Labyrinth (-2F): Left item dropped by sacred tree",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_post_spikes",
-        "hints": [
-            "among the trees"
-        ],
+        "nodeId": "king_nole_labyrinth_sacred_tree",
         "entity": { "mapId": 415, "entityId": 2 }
     },
     {
         "name": "King Nole's Labyrinth (-2F): Right item dropped by sacred tree",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_post_spikes",
-        "hints": [
-            "among the trees"
-        ],
+        "nodeId": "king_nole_labyrinth_sacred_tree",
         "entity": { "mapId": 415, "entityId": 1 }
     },
     {
-        "name": "King Nole's Labyrinth (-3F): EkeEke on ground before Firedemon",
+        "name": "King Nole's Labyrinth (-3F): First item on ground before Firedemon",
         "type": "ground",
-        "nodeId": "king_nole_labyrinth_pre_spikes",
+        "nodeId": "king_nole_labyrinth_post_door",
         "entity": { "mapId": 400, "entityId": 0 }
     },
     {

@@ -170,7 +170,8 @@
         "name": "Verla Mines",
         "hintName": "in the mines near Verla",
         "nodeIds": [
-            "verla_mines"
+            "verla_mines",
+            "verla_mines_behind_lava"
         ],
         "darkMapIds": [
             227, 228, 229, 230, 231, 232, 233, 234, 235, 237, 239, 240, 241, 242, 243, 244, 246, 
@@ -254,9 +255,14 @@
         "name": "King Nole's Labyrinth",
         "hintName": "in King Nole's labyrinth",
         "nodeIds": [
-            "king_nole_labyrinth_pre_spikes",
-            "king_nole_labyrinth_post_spikes",
-            "king_nole_labyrinth_raft"
+            "king_nole_labyrinth_pre_door",
+            "king_nole_labyrinth_post_door",
+            "king_nole_labyrinth_exterior",
+            "king_nole_labyrinth_fall_from_exterior",
+            "king_nole_labyrinth_path_to_palace",
+            "king_nole_labyrinth_raft_entrance",
+            "king_nole_labyrinth_raft",
+            "king_nole_labyrinth_sacred_tree"
         ],
         "darkMapIds": [
             355, 356, 357, 358, 359, 360, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 

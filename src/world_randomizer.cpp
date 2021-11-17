@@ -242,9 +242,8 @@ void WorldRandomizer::init_mandatory_items()
         mandatory_items_desc = {
             {"Magic Sword", 1},      {"Thunder Sword", 1},     {"Sword of Ice", 1},     {"Sword of Gaia", 1},
             {"Steel Breast", 1},     {"Chrome Breast", 1},     {"Shell Breast", 1},     {"Hyper Breast", 1},
-            {"Healing Boots", 1},    {"Iron Boots", 1},        {"Fireproof", 1},
-            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1},
-            {"Oracle Stone", 1},     {"Statue of Jypta", 1},   {"Spell Book", 1},
+            {"Healing Boots", 1},    {"Oracle Stone", 1},      {"Statue of Jypta", 1},  {"Spell Book", 1},
+            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1}
         };
     }
 
