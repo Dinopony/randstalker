@@ -24,6 +24,7 @@ public:
                 const std::vector<Item*>& items_placed_when_crossing = {} );
 
     const std::vector<Item*>& required_items() const { return _required_items; }
+    std::vector<Item*>& required_items() { return _required_items; }
     void add_required_item(Item* item) { _required_items.push_back(item); }
 
     WorldNode* origin() const { return _from_node; }

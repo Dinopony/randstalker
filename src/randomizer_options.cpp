@@ -30,6 +30,7 @@ RandomizerOptions::RandomizerOptions() :
     _filling_rate                    (20),
     _shuffle_tibor_trees            (false), 
     _ghost_jumping_in_logic         (false),
+    _damage_boosting_in_logic       (false),
     _mandatory_items                (nullptr),
     _filler_items                   (nullptr),
 
@@ -163,6 +164,7 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
     json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
+    json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
 
     if(_mandatory_items)
         json["randomizerSettings"]["mandatoryItems"] = *_mandatory_items;
@@ -242,6 +244,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
         if(randomizer_settings_json.contains("ghostJumpingInLogic"))
             _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
+        if(randomizer_settings_json.contains("damageBoostingInLogic"))
+            _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
 
         if(randomizer_settings_json.contains("mandatoryItems"))
         {
@@ -342,6 +346,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_allow_spoiler_log);
     bitpack.pack(_shuffle_tibor_trees);
     bitpack.pack(_ghost_jumping_in_logic);
+    bitpack.pack(_damage_boosting_in_logic);
 
     bitpack.pack_vector(_possible_spawn_locations);
     bitpack.pack(_mandatory_items ? Json(*_mandatory_items) : Json());
@@ -385,6 +390,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _allow_spoiler_log = bitpack.unpack<bool>();
     _shuffle_tibor_trees = bitpack.unpack<bool>();
     _ghost_jumping_in_logic = bitpack.unpack<bool>();
+    _damage_boosting_in_logic = bitpack.unpack<bool>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 

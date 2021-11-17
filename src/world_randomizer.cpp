@@ -245,6 +245,12 @@ void WorldRandomizer::init_mandatory_items()
             {"Healing Boots", 1},    {"Oracle Stone", 1},      {"Statue of Jypta", 1},  {"Spell Book", 1},
             {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1}
         };
+
+        if(_options.handle_damage_boosting_in_logic())
+        {
+            mandatory_items_desc["Iron Boots"] = 1;
+            mandatory_items_desc["Fireproof"] = 1;
+        }
     }
 
     for (auto& [item_name, quantity] : mandatory_items_desc)

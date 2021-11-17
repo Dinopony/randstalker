@@ -53,6 +53,7 @@ public:
     double filling_rate() const { return (double)_filling_rate / 100.0; }
     bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
     bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
+    bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
     bool has_custom_mandatory_items() const { return _mandatory_items != nullptr; }
     const std::map<std::string, uint16_t>& mandatory_items() const { return *_mandatory_items; }
     bool has_custom_filler_items() const { return _filler_items != nullptr; }
@@ -103,6 +104,7 @@ private:
     std::vector<std::string> _possible_spawn_locations;
     bool _shuffle_tibor_trees;
     bool _ghost_jumping_in_logic;
+    bool _damage_boosting_in_logic;
     std::map<std::string, uint16_t>* _mandatory_items;
     std::map<std::string, uint16_t>* _filler_items;
 

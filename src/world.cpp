@@ -323,6 +323,23 @@ void World::init_paths()
     {
         this->add_path(new WorldPath(_nodes.at("route_lake_shrine"), _nodes.at("route_lake_shrine_cliff")));
     }
+
+    // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements 
+    if(_options.handle_damage_boosting_in_logic())
+    {
+        for(auto& [pair, path] : _paths)
+        {
+            std::vector<Item*>& required_items = path->required_items();
+            
+            auto it = std::find(required_items.begin(), required_items.end(), this->item(ITEM_IRON_BOOTS));
+            if(it != required_items.end())
+                required_items.erase(it);
+                
+            it = std::find(required_items.begin(), required_items.end(), this->item(ITEM_FIREPROOF_BOOTS));
+            if(it != required_items.end())
+                required_items.erase(it);
+        }
+    }
 }
 
 void World::init_regions()
