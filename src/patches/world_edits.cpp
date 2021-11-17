@@ -246,6 +246,21 @@ void fix_armlet_skip(World& world)
     world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9)->can_pass_through(true);
 }
 
+void alter_palettes_for_miscolored_ground_items(World& world)
+{
+    // Force trees to use environmental palette
+    for(uint8_t i=2 ; i<=5 ; ++i)
+        world.map(MAP_GREENMAZE_SUNSTONE)->entities().at(i)->palette(0);
+    // Put item back on its appropriate palette
+    world.map(MAP_GREENMAZE_SUNSTONE)->entities().at(0)->palette(1);
+
+    // Force tree to use environmental palette
+    world.map(MAP_KN_LABYRINTH_TREE_LOGS)->entities().at(0)->palette(0);
+    // Put items back on their appropriate palette
+    for(uint8_t i=1 ; i<=2 ; ++i)
+        world.map(MAP_KN_LABYRINTH_TREE_LOGS)->entities().at(i)->palette(1);
+}
+
 /**
  * Usually, when trying to leave the room where you get Logs in the vanilla game without having taken both logs, a dwarf
  * comes and prevents you from leaving. Here, we remove that check since we cannot softlock anymore on the raft.
@@ -274,6 +289,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     remove_sailor_in_dark_port(world);
     remove_mercator_castle_backdoor_guard(world);
     fix_reverse_greenmaze_fountain_softlock(world);
+    alter_palettes_for_miscolored_ground_items(world);
     remove_logs_room_exit_check(world);
 
     if(options.fix_armlet_skip())
