@@ -39,6 +39,7 @@ set(SOURCES
    
     "src/tools/argument_dictionary.hpp"
     "src/tools/bitfield.hpp"
+    "src/tools/bitpack.hpp"
     "src/tools/game_text.hpp"
     "src/tools/game_text.cpp"
     "src/tools/graphviz.hpp"

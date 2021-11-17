@@ -112,7 +112,7 @@ void TextbanksEncoder::produce_textbanks(const std::vector<std::string>& strings
         while (bits.size() % 8 != 0)
             bits.add(0);
 
-        compressed_strings_bytes.push_back(bits.toValues());
+        compressed_strings_bytes.push_back(bits.to_bytes());
     }
 
     std::vector<uint8_t> textbank_bytes;

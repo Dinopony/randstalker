@@ -26,12 +26,12 @@ public:
     Json to_json() const;
     void parse_json(const Json& json);
     Json personal_settings_as_json() const;
-    
+
     // Game patching options 
     const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
     uint8_t jewel_count() const { return _jewel_count; }
     bool use_armor_upgrades() const { return _use_armor_upgrades; }
-    bool dungeon_sign_hints() const { return _dungeonSignHints; }
+    bool dungeon_sign_hints() const { return _dungeon_sign_hints; }
     uint8_t starting_life() const { return _startingLife; }
     uint16_t starting_gold() const { return _startingGold; }
     const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
@@ -41,16 +41,16 @@ public:
     bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
     bool remove_tibor_requirement() const { return _remove_tibor_requirement; }
     bool all_trees_visited_at_start() const { return _all_trees_visited_at_start; }
-    double enemies_damage_factor() const { return _enemies_damage_factor; }
-    double enemies_health_factor() const { return _enemies_health_factor; }
-    double enemies_armor_factor() const { return _enemies_armor_factor; }
-    double enemies_golds_factor() const { return _enemies_golds_factor; }
-    double enemies_drop_chance_factor() const { return _enemies_drop_chance_factor; }
+    double enemies_damage_factor() const { return (double)_enemies_damage_factor / 100.0; }
+    double enemies_health_factor() const { return (double)_enemies_health_factor / 100.0; }
+    double enemies_armor_factor() const { return (double)_enemies_armor_factor / 100.0; }
+    double enemies_golds_factor() const { return (double)_enemies_golds_factor / 100.0; }
+    double enemies_drop_chance_factor() const { return (double)_enemies_drop_chance_factor / 100.0; }
 
     // Randomization options
     uint32_t seed() const { return _seed; }
     bool allow_spoiler_log() const { return _allow_spoiler_log; }
-    double filling_rate() const { return _fillingRate; }
+    double filling_rate() const { return (double)_filling_rate / 100.0; }
     bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
     bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
     bool has_custom_mandatory_items() const { return _mandatory_items != nullptr; }
@@ -70,7 +70,6 @@ public:
     std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
     std::string permalink() const;
 
-
     // Plando-specific options
     bool is_plando() const { return _plando_enabled; }
     const Json& input_plando_json() const { return _plando_json; }
@@ -78,9 +77,9 @@ public:
 private:
     // ------------- Game patching settings -------------
     // (included in permalink, presets & plandos)
-    uint32_t _jewel_count;
+    uint8_t _jewel_count;
     bool _use_armor_upgrades;
-    bool _dungeonSignHints;
+    bool _dungeon_sign_hints;
     uint8_t _startingLife;
     uint16_t _startingGold;
     std::map<std::string, uint8_t> _starting_items;
@@ -90,17 +89,17 @@ private:
     bool _remove_gumi_boulder;
     bool _remove_tibor_requirement;
     bool _all_trees_visited_at_start;
-    double _enemies_damage_factor;
-    double _enemies_health_factor;
-    double _enemies_armor_factor;
-    double _enemies_golds_factor;
-    double _enemies_drop_chance_factor;
+    uint16_t _enemies_damage_factor;
+    uint16_t _enemies_health_factor;
+    uint16_t _enemies_armor_factor;
+    uint16_t _enemies_golds_factor;
+    uint16_t _enemies_drop_chance_factor;
 
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)
     uint32_t _seed;
     bool _allow_spoiler_log;
-    double _fillingRate;
+    uint8_t _filling_rate;
     std::vector<std::string> _possible_spawn_locations;
     bool _shuffle_tibor_trees;
     bool _ghost_jumping_in_logic;
