@@ -774,7 +774,7 @@
         "chestId": 134
     },
     {
-        "name": "Route between Massan and Gumi: chest on promontory",
+        "name": "Route between Massan and Gumi: chest on cliff",
         "type": "chest",
         "nodeId": "route_massan_gumi",
         "hints": [
@@ -783,43 +783,43 @@
         "chestId": 135
     },
     {
-        "name": "Route between Mercator and Verla: golden statue chest on promontory",
+        "name": "Route between Mercator and Verla: chest on cliff next to tree",
         "type": "chest",
         "nodeId": "mir_tower_sector",
         "chestId": 136
     },
     {
-        "name": "Route between Mercator and Verla: restoration chest on promontory",
+        "name": "Route between Mercator and Verla: chest on cliff next to blocked cave",
         "type": "chest",
         "nodeId": "mir_tower_sector",
         "chestId": 137
     },
     {
-        "name": "Route between Mercator and Verla: chest near Friday's village",
+        "name": "Route between Mercator and Verla: chest near Twinkle village",
         "type": "chest",
         "nodeId": "mir_tower_sector",
         "chestId": 138
     },
     {
-        "name": "Verla Shore: chest on angle promontory after Verla tunnel",
+        "name": "Verla Shore: chest on corner cliff after Verla tunnel",
         "type": "chest",
         "nodeId": "verla_shore",
         "chestId": 139
     },
     {
-        "name": "Verla Shore: chest on highest promontory after Verla tunnel (accessible through Verla mines)",
+        "name": "Verla Shore: chest on highest cliff after Verla tunnel (accessible through Verla mines)",
         "type": "chest",
         "nodeId": "verla_shore",
         "chestId": 140
     },
     {
-        "name": "Route to Mir Tower: chest on promontory accessed by pressing hidden switch",
+        "name": "Route to Mir Tower: chest on cliff accessed by pressing hidden switch",
         "type": "chest",
         "nodeId": "mir_tower_sector",
         "chestId": 141
     },
     {
-        "name": "Route to Mir Tower: dahl chest behind sacred tree",
+        "name": "Route to Mir Tower: chest behind first sacred tree",
         "type": "chest",
         "nodeId": "mir_tower_sector_trees",
         "chestId": 142
@@ -840,13 +840,13 @@
         "chestId": 144
     },
     {
-        "name": "Route to Destel: chest in 'elevator' map",
+        "name": "Route to Destel: chest in small platform elevator map",
         "type": "chest",
         "nodeId": "route_verla_destel",
         "chestId": 145
     },
     {
-        "name": "Route to Mir Tower: lifestock chest behind sacred tree",
+        "name": "Route to Mir Tower: chest behind second sacred tree",
         "type": "chest",
         "nodeId": "mir_tower_sector_trees",
         "chestId": 146
@@ -873,7 +873,7 @@
         "chestId": 149
     },
     {
-        "name": "Mountainous Area: hidden chest in narrow path",
+        "name": "Mountainous Area: hidden chest in L-shaped path",
         "type": "chest",
         "nodeId": "mountainous_area",
         "hints": [
@@ -882,7 +882,7 @@
         "chestId": 150
     },
     {
-        "name": "Mountainous Area: hidden Statue of Gaia chest",
+        "name": "Mountainous Area: hidden chest in back path",
         "type": "chest",
         "nodeId": "mountainous_area",
         "hints": [
@@ -891,7 +891,7 @@
         "chestId": 151
     },
     {
-        "name": "Mountainous Area: isolated life stock in bridge map",
+        "name": "Mountainous Area: isolated chest on cliff in bridge map",
         "type": "chest",
         "nodeId": "mountainous_area",
         "chestId": 152
@@ -909,25 +909,25 @@
         "chestId": 154
     },
     {
-        "name": "Mountainous Area: restoration chest in map before Zak arena",
+        "name": "Mountainous Area: right chest in map before Zak arena",
         "type": "chest",
         "nodeId": "mountainous_area",
         "chestId": 155
     },
     {
-        "name": "Mountainous Area: ekeeke chest in map before Zak arena",
+        "name": "Mountainous Area: left chest in map before Zak arena",
         "type": "chest",
         "nodeId": "mountainous_area",
         "chestId": 156
     },
     {
-        "name": "Route after Destel: chest on cliff angle",
+        "name": "Route after Destel: chest on tiny cliff",
         "type": "chest",
         "nodeId": "route_after_destel",
         "chestId": 157
     },
     {
-        "name": "Route after Destel: lifestock chest in map after seeing Duke raft",
+        "name": "Route after Destel: hidden chest in map after seeing Duke raft",
         "type": "chest",
         "nodeId": "route_after_destel",
         "hints": [
@@ -936,7 +936,7 @@
         "chestId": 158
     },
     {
-        "name": "Route after Destel: dahl chest in map after seeing Duke raft",
+        "name": "Route after Destel: visible chest in map after seeing Duke raft",
         "type": "chest",
         "nodeId": "route_after_destel",
         "chestId": 159
@@ -951,13 +951,13 @@
         "chestId": 160
     },
     {
-        "name": "Route to Lake Shrine: 'easy' chest on crossroads with mountainous area",
+        "name": "Route to Lake Shrine: chest on long cliff in crossroads map",
         "type": "chest",
         "nodeId": "route_lake_shrine",
         "chestId": 161
     },
     {
-        "name": "Route to Lake Shrine: 'hard' chest on crossroads with mountainous area",
+        "name": "Route to Lake Shrine: chest on middle cliff in crossroads map (reached from Mountainous Area)",
         "type": "chest",
         "nodeId": "route_lake_shrine_cliff",
         "chestId": 162
@@ -1008,7 +1008,7 @@
         "chestId": 168
     },
     {
-        "name": "Greenmaze: chest on promontory appearing after pressing a button in other section",
+        "name": "Greenmaze: chest on cliff appearing after pressing a button in swamp section",
         "type": "chest",
         "nodeId": "greenmaze_pre_whistle",
         "chestId": 169
@@ -1080,7 +1080,7 @@
         "chestId": 178
     },
     {
-        "name": "Massan: lifestock chest in house",
+        "name": "Massan: chest in middle house",
         "type": "chest",
         "nodeId": "massan",
         "chestId": 179
@@ -1165,7 +1165,7 @@
         "chestId": 196
     },
     {
-        "name": "Mir Tower: garlic chest",
+        "name": "Mir Tower: timed jump trial chest",
         "type": "chest",
         "nodeId": "mir_tower_pre_garlic",
         "chestId": 197
@@ -1177,25 +1177,25 @@
         "chestId": 198
     },
     {
-        "name": "Mir Tower: mimic room empty chest 1",
+        "name": "Mir Tower: mimic room chest #1",
         "type": "chest",
         "nodeId": "mir_tower_pre_garlic",
         "chestId": 199
     },
     {
-        "name": "Mir Tower: mimic room empty chest 2",
+        "name": "Mir Tower: mimic room chest #2",
         "type": "chest",
         "nodeId": "mir_tower_pre_garlic",
         "chestId": 200
     },
     {
-        "name": "Mir Tower: mimic room empty chest 3",
+        "name": "Mir Tower: mimic room chest #3",
         "type": "chest",
         "nodeId": "mir_tower_pre_garlic",
         "chestId": 201
     },
     {
-        "name": "Mir Tower: mimic room empty chest 4",
+        "name": "Mir Tower: mimic room chest #4",
         "type": "chest",
         "nodeId": "mir_tower_pre_garlic",
         "chestId": 202
@@ -1288,19 +1288,19 @@
         "chestId": 214
     },
     {
-        "name": "Witch Helga's Hut: lifestock chest",
+        "name": "Witch Helga's Hut: end chest",
         "type": "chest",
         "nodeId": "helga_hut",
         "chestId": 215
     },
     {
-        "name": "Massan Cave: lifestock chest",
+        "name": "Massan Cave: right chest",
         "type": "chest",
         "nodeId": "massan_cave",
         "chestId": 216
     },
     {
-        "name": "Massan Cave: dahl chest",
+        "name": "Massan Cave: left chest",
         "type": "chest",
         "nodeId": "massan_cave",
         "chestId": 217
