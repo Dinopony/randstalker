@@ -85,7 +85,7 @@ void EntityEnemy::apply_golds_factor(double factor)
 
 void EntityEnemy::apply_drop_chance_factor(double factor)
 {
-    if(_drop_probability > 0)
+    if(_drop_probability > 0 && _dropped_item->id() != 1)
     {
         double factored_drop_rate = _drop_probability / factor;
         if (factored_drop_rate < 1)
