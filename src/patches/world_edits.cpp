@@ -270,6 +270,12 @@ void remove_logs_room_exit_check(World& world)
     world.map(MAP_KN_LABYRINTH_TREE_LOGS)->remove_entity(3);
 }
 
+void allow_going_backwards_in_knl_exterior(World& world)
+{
+    world.map(MAP_KN_LABYRINTH_EXTERIOR)->remove_entity(1);
+    world.map(MAP_KN_LABYRINTH_EXTERIOR)->remove_entity(0);
+}
+
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
 {
     if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
@@ -291,6 +297,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     fix_reverse_greenmaze_fountain_softlock(world);
     alter_palettes_for_miscolored_ground_items(world);
     remove_logs_room_exit_check(world);
+    allow_going_backwards_in_knl_exterior(world);
 
     if(options.fix_armlet_skip())
         fix_armlet_skip(world);
