@@ -94,39 +94,23 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint8_t* pointer_on_current_byte()
+    {
+        return &(_bytes[_current_byte_index]);
+    }
+
+    void increment_byte_pointer(size_t type_size)
+    {
+        _current_byte_index += type_size;
+    }
+
     template<typename T>
     T unpack()
     {
-        uint8_t type_size = sizeof(T);
-        std::vector<uint8_t> value_as_bytes(_bytes.begin() + _current_byte_index, _bytes.begin() + _current_byte_index + type_size);
-        _current_byte_index += type_size;
-
-        uint8_t* value_as_array = &(value_as_bytes[0]);
-        T* value_pointer = reinterpret_cast<T*>(value_as_array);
-        T value = *value_pointer;
-        return value;
+        return unpack_from<T>(*this);
     }
 
-    template<>
-    std::string unpack<std::string>()
-    {
-        uint8_t* string_bytes = &(_bytes[_current_byte_index]);
-        const char* string_chars_array = reinterpret_cast<const char*>(string_bytes);
-        std::string string(string_chars_array);
-        _current_byte_index += string.size() + 1;
-   
-        return string;
-    }
-
-    template<>
-    Json unpack<Json>()
-    {
-        std::vector<uint8_t> json_bytes = this->unpack_vector<uint8_t>();
-        return Json::from_msgpack(json_bytes);
-    }
-
-    template<>
-    bool unpack<bool>()
+    bool unpack_bit()
     {
         return _bits.get((uint32_t)_current_bit_index++);
     }
@@ -159,3 +143,34 @@ public:
         return ret;
     }
 };
+
+template<typename T>
+T unpack_from(Bitpack& bitpack)
+{
+    T value = *reinterpret_cast<T*>(bitpack.pointer_on_current_byte());
+    bitpack.increment_byte_pointer(sizeof(T));
+    return value;
+}
+
+template<>
+std::string unpack_from<std::string>(Bitpack& bitpack)
+{
+    uint8_t* string_bytes = bitpack.pointer_on_current_byte();
+    std::string string(reinterpret_cast<const char*>(string_bytes));
+
+    bitpack.increment_byte_pointer(string.size() + 1);
+    return string;
+}
+
+template<>
+Json unpack_from<Json>(Bitpack& bitpack)
+{
+    std::vector<uint8_t> json_bytes = bitpack.unpack_vector<uint8_t>();
+    return Json::from_msgpack(json_bytes);
+}
+
+template<>
+bool unpack_from<bool>(Bitpack& bitpack)
+{
+    return bitpack.unpack_bit();
+}

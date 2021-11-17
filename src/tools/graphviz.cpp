@@ -11,7 +11,7 @@
 
 namespace graphviz {
 
-constexpr char* COLORS[] = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
+constexpr const char* COLORS[] = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
 size_t COLORS_SIZE = 7;
 
 void output_logic_as_dot(const World& world, const std::string& path)
