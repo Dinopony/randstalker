@@ -26,7 +26,7 @@ RandomizerOptions::RandomizerOptions() :
 
     _seed                           (0),
     _allow_spoiler_log              (true),
-    _filling_rate                   (20),
+    _item_sources_window            (30),
     _shuffle_tibor_trees            (false), 
     _ghost_jumping_in_logic         (false),
     _damage_boosting_in_logic       (false),
@@ -120,7 +120,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
     if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
 
-    if(args.contains("fillingrate"))          _filling_rate = (uint8_t)(args.get_double("fillingrate") * 100);
+    if(args.contains("itemsourceswindow"))    _item_sources_window = args.get_integer("itemsourceswindow");
     if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
     if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
@@ -157,7 +157,7 @@ Json RandomizerOptions::to_json() const
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
-    json["randomizerSettings"]["fillingRate"] = _filling_rate;
+    json["randomizerSettings"]["itemSourcesWindow"] = _item_sources_window;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
     json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
@@ -227,8 +227,8 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("allowSpoilerLog"))
             _allow_spoiler_log = randomizer_settings_json.at("allowSpoilerLog");
-        if(randomizer_settings_json.contains("fillingRate"))
-            _filling_rate = randomizer_settings_json.at("fillingRate");
+        if(randomizer_settings_json.contains("itemSourcesWindow"))
+            _item_sources_window = randomizer_settings_json.at("itemSourcesWindow");
 
         if(randomizer_settings_json.contains("spawnLocations"))
             randomizer_settings_json.at("spawnLocations").get_to(_possible_spawn_locations);
@@ -328,7 +328,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemies_drop_chance_factor);
 
     bitpack.pack(_seed);
-    bitpack.pack(_filling_rate);
+    bitpack.pack(_item_sources_window);
 
     bitpack.pack(_use_armor_upgrades);
     bitpack.pack(_fix_armlet_skip);
@@ -371,7 +371,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
 
     _seed = bitpack.unpack<uint32_t>();
-    _filling_rate = bitpack.unpack<uint8_t>();
+    _item_sources_window = bitpack.unpack<uint16_t>();
 
     _use_armor_upgrades = bitpack.unpack<bool>();
     _fix_armlet_skip = bitpack.unpack<bool>();

@@ -49,7 +49,7 @@ public:
     // Randomization options
     uint32_t seed() const { return _seed; }
     bool allow_spoiler_log() const { return _allow_spoiler_log; }
-    double filling_rate() const { return (double)_filling_rate / 100.0; }
+    uint16_t item_sources_window() const { return _item_sources_window; }
     bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
     bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
     bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
@@ -98,7 +98,7 @@ private:
     // (included in permalink & presets, not in plandos)
     uint32_t _seed;
     bool _allow_spoiler_log;
-    uint8_t _filling_rate;
+    uint16_t _item_sources_window;
     std::vector<std::string> _possible_spawn_locations;
     bool _shuffle_tibor_trees;
     bool _ghost_jumping_in_logic;

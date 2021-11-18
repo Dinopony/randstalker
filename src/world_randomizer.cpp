@@ -288,8 +288,11 @@ void WorldRandomizer::randomize_items()
         this->place_key_items(empty_sources);
 
         // Fill a fraction of already available sources with filler items
-        size_t sources_to_fill_count = (size_t)(empty_sources.size() * _options.filling_rate());
-        this->place_filler_items(empty_sources, sources_to_fill_count);
+        if(empty_sources.size() > _options.item_sources_window())
+        {
+            size_t sources_to_fill_count = (size_t)(empty_sources.size() - _options.item_sources_window());
+            this->place_filler_items(empty_sources, sources_to_fill_count);
+        }
 
         // Item sources changed, force the solver to update its inventory
         _solver.update_current_inventory();
