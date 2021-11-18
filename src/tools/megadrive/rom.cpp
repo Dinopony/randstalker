@@ -1,6 +1,5 @@
 #include "rom.hpp"
 #include "code.hpp"
-#include <fstream>
 #include <iostream>
 
 constexpr uint32_t ROM_SIZE = 0x200000;
@@ -190,13 +189,11 @@ namespace md
         return count;
     }
 
-    void ROM::save_as(const std::string& outputPath)
+    void ROM::write_to_file(std::ofstream& output_file)
     {
         this->update_checksum();
-
-        std::ofstream file(outputPath, std::ios::binary);
-        file.write(_byte_array, ROM_SIZE);
-        file.close();
+        output_file.write(_byte_array, ROM_SIZE);
+        output_file.close();
     }
 
     void ROM::update_checksum()

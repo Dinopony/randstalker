@@ -198,7 +198,7 @@ void generate(const ArgumentDictionary& args)
         spoiler_json = randomize(world, options, args);
     }
 
-    // Output current world model
+    // Output current world model if requested
     if (args.get_boolean("dumpmodel"))
     {
         if(options.allow_spoiler_log())
@@ -220,7 +220,11 @@ void generate(const ArgumentDictionary& args)
         std::cout << "Applying game patches...\n\n";
         apply_game_patches(*rom, options, world);
 
-        rom->save_as(output_rom_path);
+        std::ofstream output_rom_file(output_rom_path, std::ios::binary);
+        if(!output_rom_file)
+            throw RandomizerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
+
+        rom->write_to_file(output_rom_file);
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
     }
 
@@ -229,10 +233,12 @@ void generate(const ArgumentDictionary& args)
     {
         if(options.allow_spoiler_log())
         {
-            std::ofstream spoilerFile(spoiler_log_path);
-            if (spoilerFile)
-                spoilerFile << spoiler_json.dump(4);
-            spoilerFile.close();
+            std::ofstream spoiler_file(spoiler_log_path);
+            if(!spoiler_file)
+                throw RandomizerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
+
+            spoiler_file << spoiler_json.dump(4);
+            spoiler_file.close();
             std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n\n";
         }
         else
@@ -242,6 +248,8 @@ void generate(const ArgumentDictionary& args)
 
 int main(int argc, char* argv[])
 {
+    int return_code = EXIT_SUCCESS;
+
     ArgumentDictionary args(argc, argv);
 
     std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
@@ -255,7 +263,7 @@ int main(int argc, char* argv[])
     catch(RandomizerException& e) 
     {
         std::cerr << "ERROR: " << e.what() << std::endl;
-        return 1;
+        return_code = EXIT_FAILURE;
     }
 
     if(args.get_boolean("pause", true))
@@ -265,5 +273,5 @@ int main(int argc, char* argv[])
         std::getline(std::cin, dummy);
     }
 
-    return 0;
+    return return_code;
 }
