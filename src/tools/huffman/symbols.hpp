@@ -56,4 +56,21 @@ namespace Symbols
             '\0', // unused
         '\x1F', // {DELAY_SHORT} = Wait
     };
+
+    inline uint8_t byte_for_symbol(char symbol)
+    {
+        for(uint8_t i=0 ; i<SYMBOL_COUNT ; ++i)
+            if(TABLE[i] == symbol)
+                return i;
+        return 0xFF;
+    }
+
+    inline std::vector<uint8_t> bytes_for_symbols(const std::string& symbol_string)
+    {
+        std::vector<uint8_t> ret;
+        ret.reserve(symbol_string.size());
+        for(char c : symbol_string)
+            ret.push_back(byte_for_symbol(c));
+        return ret;
+    }
 }
