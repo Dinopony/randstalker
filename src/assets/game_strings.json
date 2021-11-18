@@ -1,14 +1,11 @@
 {
     "emptiedIndices": [
-        "19", 
-        "1d", "1e", "1f", "20", "21", 
+        // Debug menu strings
+        "1d", "1e", "1f", "20",
         "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f", 
               "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", 
               "3c", "3d", "3e", "3f", "40", "41", "42", "43", "44", "45", "46", "47", 
               "48", "49", "4a", "4b", "4c", "4d", 
-        "101", "102", "103", "104", 
-        "134", 
-        "139", "13a", "140", "141", "142", "143", "144", 
         // Unreachable Massan elder dialogues
         "148", "149",
         // Unreachable Fara dialogues
@@ -20,12 +17,16 @@
                "1d2", "1d3", "1d4", "1d5", "1d6", "1d7", "1d8", "1d9",
         // Arthur gift cutscene
         "497", "498", "499", "49a", "49b",
+        // Fara discovering Nigel fallen from waterfall cutscene
         "52e", "52f", "530", "531", "532", "533", "534", 
-        "572", "573", "574", "575", "576", "577", "578", "579", "57a", "57b", "57c", "57d", 
-               "57e", "57f", "580", "581", "582", "583", "584", "585", "586", "587", "588", 
-               "589", "58a", "58b", "58c", "58d", "58e", "58f", "590", "591", "592", 
-        "5a0", "5a1", "5a2", "5a3", "5a4", "5a5", "5a6", "5a7", "5a8", "5a9", 
-        "51a",
+        // Kayla raft cutscene
+        "572", "573", "574", "575", "576", "577", "578", 
+        // Lithograph cutscene
+        "579", "57a", "57b", "57c", "57d", "57e", "57f", "580", "581", "582", "583", "584", "585", 
+               "586", "587", "588", "589", "58a", "58b", "58c", "58d", "58e", "58f", "590", "591", 
+               "592", 
+        // Mercator gate guards
+        "5a0", "5a1", "5a2", "5a3", "5a4", "5a5", "5a6", "5a7", "5a8", "5a9",
         "5b6", "5b7", "5b8", "5b9", "5ba", "5bb", "5bc", "5bd", "5be", "5bf", "5c0", "5c1", 
                "5c2", "5c3", 
         "5e1", "5e2", "5e3", "5e4", "5e5", "5e6", "5e7", "5e8", "5e9", "5ea", "5eb", "5ec", "5ed", 
@@ -55,7 +56,10 @@
     "patches":
     {
     //    "19_old": "You have finished \u001b%\nof this island...\u001e\nspoke the Oracle Stone.\u001e",
-        "19": "",
+        "19": "The stone looks blurry. It looks like it won't be of any use...",
+
+    //    "21_old": "MAP MENU",
+        "21": "This tablet seems of no use...",
 
     //    "22_old": "MASSAN",
         "22": "Only the bearers of the 5 jewels\n are worthy of entering\n King Nole's domain...\u001e",
@@ -73,17 +77,16 @@
     //      ROAD SIGNS DEFAULT MESSAGES
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////    
         "101": "This sign is severely damaged\nand cannot be read.\u0003",
-        "102": "This sign is severely damaged\nand cannot be read.\u0003",
+        "102": "This sign shows uninteresting\ndirections on the area.\u0003",
         "103": "This sign is severely damaged\nand cannot be read.\u0003",
-        "104": "This sign is severely damaged\nand cannot be read.\u0003",
+        "104": "This sign shows uninteresting\ndirections on the area.\u0003",
         "134": "This sign is severely damaged\nand cannot be read.\u0003",
-        "139": "This sign is severely damaged\nand cannot be read.\u0003",
+        "139": "This sign shows uninteresting\ndirections on the area.\u0003",
         "13a": "This sign is severely damaged\nand cannot be read.\u0003",
-        "140": "This sign is severely damaged\nand cannot be read.\u0003",
+        "140": "This sign shows uninteresting\ndirections on the area.\u0003",
         "141": "This sign is severely damaged\nand cannot be read.\u0003",
-        "142": "This sign is severely damaged\nand cannot be read.\u0003",
+        "142": "This sign shows uninteresting\ndirections on the area.\u0003",
         "143": "This sign is severely damaged\nand cannot be read.\u0003",
-        "144": "This sign is severely damaged\nand cannot be read.\u0003",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MASSAN ELDER REWARD DIALOGUE
@@ -98,8 +101,8 @@
     //    "1c4_old": "\u001cIs it true that Fara\nhas been kidnapped?\nUnbelievable...\u001e",
     //    "1c5_old": "\u001cI think the Gumi tribe is\ncontrolled by the Orcs!\nFara must be in danger...\u001e",
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////      
-        "0x1c4": "\u001cI've studied the books here\nfor quite some time, and\nit brought me to one conclusion:\u001e",
-        "0x1c5": "\u001cNole made his treasure\nextremely hard to find...\u001e",
+        "1c4": "\u001cI've studied the books here\nfor quite some time, and\nit brought me to one conclusion:\u001e",
+        "1c5": "\u001cNole made his treasure\nextremely hard to find...\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MERCATOR FORTUNE TELLER DIALOGUE
