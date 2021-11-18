@@ -9,7 +9,6 @@
 RandomizerOptions::RandomizerOptions() :
     _jewel_count                    (2),
     _use_armor_upgrades             (true),
-    _dungeon_sign_hints             (false),
     _startingLife                   (0),
     _startingGold                   (0),
     _starting_items                 ({{"Record Book",1}}),
@@ -27,7 +26,7 @@ RandomizerOptions::RandomizerOptions() :
 
     _seed                           (0),
     _allow_spoiler_log              (true),
-    _filling_rate                    (20),
+    _filling_rate                   (20),
     _shuffle_tibor_trees            (false), 
     _ghost_jumping_in_logic         (false),
     _damage_boosting_in_logic       (false),
@@ -119,7 +118,6 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("jewelcount"))           _jewel_count = args.get_integer("jewelcount");
     if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
-    if(args.contains("dungeonsignhints"))     _dungeon_sign_hints = args.get_boolean("dungeonsignhints");
     if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
 
     if(args.contains("fillingrate"))          _filling_rate = (uint8_t)(args.get_double("fillingrate") * 100);
@@ -141,7 +139,6 @@ Json RandomizerOptions::to_json() const
     // Game settings 
     json["gameSettings"]["jewelCount"] = _jewel_count;
     json["gameSettings"]["armorUpgrades"] = _use_armor_upgrades;
-    json["gameSettings"]["dungeonSignHints"] = _dungeon_sign_hints;
     json["gameSettings"]["startingGold"] = _startingGold;
     json["gameSettings"]["startingItems"] = _starting_items;
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
@@ -189,8 +186,6 @@ void RandomizerOptions::parse_json(const Json& json)
             _jewel_count = game_settings_json.at("jewelCount");
         if(game_settings_json.contains("armorUpgrades"))
             _use_armor_upgrades = game_settings_json.at("armorUpgrades");
-        if(game_settings_json.contains("dungeonSignHints"))
-            _dungeon_sign_hints = game_settings_json.at("dungeonSignHints");
         if(game_settings_json.contains("startingLife"))
             _startingLife = game_settings_json.at("startingLife");
         if(game_settings_json.contains("startingGold"))
@@ -336,7 +331,6 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_filling_rate);
 
     bitpack.pack(_use_armor_upgrades);
-    bitpack.pack(_dungeon_sign_hints);
     bitpack.pack(_fix_armlet_skip);
     bitpack.pack(_fix_tree_cutting_glitch);
     bitpack.pack(_consumable_record_book);
@@ -380,7 +374,6 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _filling_rate = bitpack.unpack<uint8_t>();
 
     _use_armor_upgrades = bitpack.unpack<bool>();
-    _dungeon_sign_hints = bitpack.unpack<bool>();
     _fix_armlet_skip = bitpack.unpack<bool>();
     _fix_tree_cutting_glitch = bitpack.unpack<bool>();
     _consumable_record_book = bitpack.unpack<bool>();

@@ -31,7 +31,6 @@ public:
     const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
     uint8_t jewel_count() const { return _jewel_count; }
     bool use_armor_upgrades() const { return _use_armor_upgrades; }
-    bool dungeon_sign_hints() const { return _dungeon_sign_hints; }
     uint8_t starting_life() const { return _startingLife; }
     uint16_t starting_gold() const { return _startingGold; }
     const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
@@ -80,7 +79,6 @@ private:
     // (included in permalink, presets & plandos)
     uint8_t _jewel_count;
     bool _use_armor_upgrades;
-    bool _dungeon_sign_hints;
     uint8_t _startingLife;
     uint16_t _startingGold;
     std::map<std::string, uint8_t> _starting_items;
