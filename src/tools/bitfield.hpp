@@ -8,7 +8,9 @@ class Bitfield
 {
 public:
     Bitfield() : _values(), _size(0)
-    {}
+    {
+        _values.reserve(4);
+    }
 
     Bitfield(const std::vector<uint8_t>& values, uint8_t size) : _values(values), _size(size)
     {}
@@ -21,7 +23,7 @@ public:
         }
         else
         {
-            uint8_t& value = *_values.rbegin();
+            uint8_t& value = _values[_values.size()-1];
             value <<= 1;
             if (bit)
                 value += 1;
@@ -70,7 +72,8 @@ public:
 
     Bitfield& operator+=(const Bitfield& other)
     {
-        *this = *this + other;
+        for (uint32_t i = 0; i < other._size; ++i)
+            this->add(other.get(i));
         return *this;
     }
 

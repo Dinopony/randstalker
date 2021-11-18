@@ -586,9 +586,6 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
         // Hint source is special (e.g. Oracle Stone, Lithograph...), don't handle it here
         if(hint_source->special())
             continue;
-
-        WorldSolver solver(_world.spawn_node(), hint_source->node(), _world.starting_inventory());
-        UnsortedSet<Item*> min_inventory_at_sign = solver.find_minimal_inventory();
         
         double random_number = (double) _rng() / (double) _rng.max();
 
@@ -615,9 +612,12 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
             for(uint8_t item_id : hintable_item_requirements)
             {
                 Item* tested_item = _world.item(item_id);
-                if(!min_inventory_at_sign.contains(tested_item))
+                
+                WorldSolver solver(_world.spawn_node(), hint_source->node(), _world.starting_inventory());
+                solver.forbid_item_types({ tested_item });
+                if(solver.try_to_solve())
                 {
-                    // If item was not already obtained at sign, we can hint it
+                    // If item is not mandatory to reach the hint source, we can hint it
                     hinted_item_requirement = tested_item;
                     hintable_item_requirements.erase(item_id);
                     break;
@@ -642,9 +642,12 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
             for(uint8_t item_id : hintable_item_locations)
             {
                 Item* tested_item = _world.item(item_id);
-                if(!min_inventory_at_sign.contains(tested_item))
+
+                WorldSolver solver(_world.spawn_node(), hint_source->node(), _world.starting_inventory());
+                solver.forbid_item_types({ tested_item });
+                if(solver.try_to_solve())
                 {
-                    // If item was not already obtained at sign, we can hint it
+                    // If item is not mandatory to reach the hint source, we can hint it
                     hinted_item_location = tested_item;
                     hintable_item_locations.erase(item_id);
                     break;
