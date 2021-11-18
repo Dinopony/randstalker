@@ -38,6 +38,9 @@ namespace offsets
     constexpr uint32_t ITEM_NAMES_TABLE = 0x029732;
     constexpr uint32_t ITEM_NAMES_TABLE_END = 0x029A0A;
 
+    constexpr uint32_t LITHOGRAPH_TILES = 0x0389D3;
+    constexpr uint32_t LITHOGRAPH_TILES_END = 0x039762;
+
     constexpr uint32_t BEHAVIOR_OFFSETS_TABLE = 0x09B058; 
     constexpr uint32_t BEHAVIOR_TABLE = 0x09B458;
     constexpr uint32_t BEHAVIOR_TABLE_END = 0x09E75E;

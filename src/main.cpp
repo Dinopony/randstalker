@@ -29,6 +29,7 @@
 #include "tools/tools.hpp"
 
 #include "exceptions.hpp"
+#include "offsets.hpp"
 #include "world.hpp"
 #include "world_writer.hpp"
 #include "world_randomizer.hpp"
@@ -178,8 +179,7 @@ void generate(const ArgumentDictionary& args)
 
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
     md::ROM* rom = get_input_rom(input_rom_path);
-    rom->mark_empty_chunk(0x0389D3, 0x039762); // Remove lithograph tiles
-//    rom->mark_empty_chunk(0x03ED9A, 0x044010); // Remove island map tiles to make room
+    rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
 
