@@ -14,7 +14,7 @@ static void setup_story_flags(const RandomizerOptions& options, const World& wor
     out_flag_array[0x06] = 0x7C;
     out_flag_array[0x07] = 0xB4;
     out_flag_array[0x08] = 0xFE;
-    out_flag_array[0x09] = 0x7E;
+    out_flag_array[0x09] = 0x7C;
     out_flag_array[0x12] = 0x1E;
     out_flag_array[0x13] = 0x43;
     out_flag_array[0x14] = 0x81;
