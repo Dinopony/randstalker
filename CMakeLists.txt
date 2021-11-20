@@ -86,7 +86,6 @@ set(SOURCES
     "src/patches/item_behavior.cpp"
     "src/patches/quality_of_life.cpp"
     "src/patches/rando_adaptations.cpp"
-    "src/patches/softlocks.cpp"
     "src/patches/story_dependencies.cpp"
     "src/patches/world_edits.cpp"
 
