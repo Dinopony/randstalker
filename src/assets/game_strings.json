@@ -146,6 +146,17 @@
         "517": "\u001cI've found a scroll that looks\nlike a map to an ancient\ntreasure. It says:\u001e",
         "518": "\u001cFollow the path of the dragon.\u0003",
         "519": "\u001cQuite mysterious, don't you think?\u001e",
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      NON-FITTING TEXTLINES MENTIONING ITEMS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "570_old": "\u001cYou can get into\nMercator with it.\u0003",
+    //    "5c5_old": "\u001cI'll give you this\n\u001d.  It's the most\nprecious thing I own.\u001e",
+    //    "71f_old": "\u001cNigel, look!\nI can see something shining\nover there! The \u001d!\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "570": "\u001cThanks again for saving\n me from a certain death.\u0003",
+        "5c5": "\u001cI'll give you this, it's\nthe most precious thing I own.\u001e",
+        "71f": "\u001cNigel, look!\nI can see something shining\nover there!\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MIR INTRO CUTSCENE
