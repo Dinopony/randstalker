@@ -1550,31 +1550,31 @@
     {
         "name": "Ryuma: Shop item #1",
         "type": "shop",
-        "nodeId": "ryuma",
+        "nodeId": "ryuma_after_thieves_hideout",
         "entity": { "mapId": 615, "entityId": 2 }
     },
     {
         "name": "Ryuma: Shop item #2",
         "type": "shop",
-        "nodeId": "ryuma",
+        "nodeId": "ryuma_after_thieves_hideout",
         "entity": { "mapId": 615, "entityId": 3 }
     },
     {
         "name": "Ryuma: Shop item #3",
         "type": "shop",
-        "nodeId": "ryuma",
+        "nodeId": "ryuma_after_thieves_hideout",
         "entity": { "mapId": 615, "entityId": 4 }
     },
     {
         "name": "Ryuma: Shop item #4",
         "type": "shop",
-        "nodeId": "ryuma",
+        "nodeId": "ryuma_after_thieves_hideout",
         "entity": { "mapId": 615, "entityId": 5 }
     },
     {
         "name": "Ryuma: Shop item #5",
         "type": "shop",
-        "nodeId": "ryuma",
+        "nodeId": "ryuma_after_thieves_hideout",
         "entity": { "mapId": 615, "entityId": 6 }
     },
     {

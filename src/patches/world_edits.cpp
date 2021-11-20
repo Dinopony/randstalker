@@ -114,12 +114,6 @@ void make_mercator_docks_shop_always_open(World& world)
     world.map(MAP_MERCATOR_DOCKS_LIGHTHOUSE_FIXED_VARIANT)->global_entity_mask_flags().clear();
 }
 
-void make_ryuma_shop_always_open(World& world)
-{
-    // Make Ryuma's shop open before saving the mayor from Thieves Hideout
-    world.map(MAP_RYUMA_SHOP)->entity(0)->mask_flags().clear();
-}
-
 /**
  * The "falling ribbon" item source in Mercator castle court is pretty dependant on story flags. In the original game,
  * the timeframe in the story where we can get it is tight. We get rid of any condition here, apart from checking
@@ -302,7 +296,6 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     fix_mir_after_lake_shrine_softlock(world);
     make_arthur_always_in_throne_room(world);
     make_mercator_docks_shop_always_open(world);
-    make_ryuma_shop_always_open(world);
     make_falling_ribbon_not_story_dependant(world);
     replace_sick_merchant_by_chest(world);
     alter_mercator_special_shop_check(world);
