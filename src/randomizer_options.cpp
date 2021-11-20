@@ -11,7 +11,7 @@ RandomizerOptions::RandomizerOptions() :
     _use_armor_upgrades             (true),
     _startingLife                   (0),
     _startingGold                   (0),
-    _starting_items                 ({{"Record Book",1}}),
+    _starting_items                 (),
     _fix_armlet_skip                (true),
     _fix_tree_cutting_glitch        (true),
     _consumable_record_book         (false),
@@ -118,6 +118,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("jewelcount"))           _jewel_count = args.get_integer("jewelcount");
     if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
+    if(args.contains("nospellbook"))          _starting_items["Spell Book"] = 0;
     if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
 
     if(args.contains("itemsourceswindow"))    _item_sources_window = args.get_integer("itemsourceswindow");

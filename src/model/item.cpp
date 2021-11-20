@@ -20,7 +20,7 @@ Item* Item::from_json(uint8_t id, const Json& json)
     uint16_t gold_value = json.value("goldValue", 0);
     bool allowed_on_ground = json.value("allowedOnGround", true);
 
-    return new Item(id, name, max_quantity, gold_value, allowed_on_ground);
+    return new Item(id, name, max_quantity, starting_quantity, gold_value, allowed_on_ground);
 }
 
 void Item::apply_json(const Json& json)
