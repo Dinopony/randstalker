@@ -162,8 +162,8 @@ void WorldRandomizer::init_filler_items()
     {
         filler_items_desc = { 
             {"Life Stock", 80},      {"EkeEke", 55},         {"Golds", 30},          {"Dahl", 16},             
-            {"Statue of Gaia", 12},  {"Detox Grass", 11},    {"Golden Statue", 10},  {"Restoration", 10},     
-            {"Mind Repair", 7},      {"Anti Paralyze", 7},   {"No Item", 4},         {"Pawn Ticket", 1},
+            {"Statue of Gaia", 12},  {"Golden Statue", 10},  {"Restoration", 9},     {"Detox Grass", 9},    
+            {"Mind Repair", 7},      {"Anti Paralyze", 7},   {"No Item", 6},         {"Pawn Ticket", 4},
             {"Short Cake", 1},       {"Bell", 1},            {"Blue Ribbon", 1},     {"Death Statue", 1}
         };
     }
@@ -242,8 +242,8 @@ void WorldRandomizer::init_mandatory_items()
         mandatory_items_desc = {
             {"Magic Sword", 1},      {"Thunder Sword", 1},     {"Sword of Ice", 1},     {"Sword of Gaia", 1},
             {"Steel Breast", 1},     {"Chrome Breast", 1},     {"Shell Breast", 1},     {"Hyper Breast", 1},
-            {"Healing Boots", 1},    {"Oracle Stone", 1},      {"Statue of Jypta", 1},  {"Spell Book", 1},
-            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1}
+            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1},
+            {"Healing Boots", 1},    {"Oracle Stone", 1},      {"Statue of Jypta", 1}
         };
 
         if(_options.handle_damage_boosting_in_logic())
