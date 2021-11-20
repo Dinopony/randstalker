@@ -161,7 +161,7 @@ void WorldRandomizer::init_filler_items()
     else
     {
         filler_items_desc = { 
-            {"Life Stock", 80},      {"EkeEke", 55},         {"Golds", 30},          {"Dahl", 16},             
+            {"Life Stock", 80},      {"EkeEke", 55},         {"Golds", 28},          {"Dahl", 16},             
             {"Statue of Gaia", 12},  {"Golden Statue", 10},  {"Restoration", 9},     {"Detox Grass", 9},    
             {"Mind Repair", 7},      {"Anti Paralyze", 7},   {"No Item", 6},         {"Pawn Ticket", 4},
             {"Short Cake", 1},       {"Bell", 1},            {"Blue Ribbon", 1},     {"Death Statue", 1}
@@ -196,33 +196,17 @@ void WorldRandomizer::init_filler_items()
 
 void WorldRandomizer::randomize_gold_values(uint8_t gold_items_count)
 {
-    constexpr uint16_t AVERAGE_GOLD_PER_CHEST = 35;
-    constexpr double MAX_FACTOR_OF_TOTAL_GOLD = 0.16;
-
-    uint16_t total_gold = AVERAGE_GOLD_PER_CHEST * gold_items_count;
-
+    std::normal_distribution<double> distribution(40.0, 18.0);
+    double total_golds = 0;
     for (uint8_t i = 0; i < gold_items_count ; ++i)
     {
-        uint16_t gold_value;
-
-        if (i < gold_items_count - 1)
-        {
-            double proportion = (double) _rng() / (double) _rng.max();
-            double factor = (proportion * MAX_FACTOR_OF_TOTAL_GOLD);
-
-            gold_value = (uint16_t)((double)total_gold * factor);
-        }
-        else
-        {
-            gold_value = total_gold;
-        }
-
-        if (gold_value == 0)
+        double gold_value = distribution(_rng);
+        if (gold_value < 1)
             gold_value = 1;
         else if (gold_value > 255)
             gold_value = 255;
 
-        total_gold -= gold_value;
+        total_golds += gold_value;
 
         Item* gold_item = _world.add_gold_item(static_cast<uint8_t>(gold_value));
         if(gold_item)
