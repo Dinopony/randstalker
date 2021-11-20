@@ -281,6 +281,16 @@ void make_pockets_always_in_thieves_hideout_cell(World& world)
     world.map(MAP_THIEVES_HIDEOUT_POCKETS_CELL)->entity(2)->mask_flags().clear();
 }
 
+void optimize_laggy_rooms(World& world)
+{
+    world.map(MAP_TIBOR_808)->remove_entity(5);
+    world.map(MAP_TIBOR_811)->remove_entity(4);
+    world.map(MAP_TIBOR_812)->remove_entity(2);
+    world.map(MAP_TIBOR_813)->remove_entity(1);
+    world.map(MAP_TIBOR_814)->remove_entity(2);
+    world.map(MAP_TIBOR_815)->remove_entity(3);
+}
+
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
 {
     if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
@@ -304,7 +314,8 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     remove_logs_room_exit_check(world);
     allow_going_backwards_in_knl_exterior(world);
     make_pockets_always_in_thieves_hideout_cell(world);
-
+    optimize_laggy_rooms(world);
+    
     if(options.fix_armlet_skip())
         fix_armlet_skip(world);
 }
