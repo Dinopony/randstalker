@@ -208,7 +208,8 @@ void WorldWriter::write_dialogue_table(md::ROM& rom, const World& world)
     rom.set_word(addr, 0xFFFF);
     addr += 0x2;
     if(addr > offsets::DIALOGUE_TABLE_END)
-        throw RandomizerException("Dialogue table is bigger than in original game (" + std::to_string(addr) + " > " + std::to_string(offsets::DIALOGUE_TABLE_END) + ")");
+        throw RandomizerException("Dialogue table is bigger than in original game");
+    rom.mark_empty_chunk(addr, offsets::DIALOGUE_TABLE_END);
 }
 
 void WorldWriter::write_maps(md::ROM& rom, const World& world)
