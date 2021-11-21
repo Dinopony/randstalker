@@ -71,16 +71,14 @@ private:
 
 public:
     ItemSourceOnGround(const std::string& name, std::vector<Entity*> entities, WorldNode* node, 
-                        const std::vector<std::string>& hints, bool cannot_be_taken_repeatedly) :
+                        const std::vector<std::string>& hints, bool cannot_be_taken_repeatedly, bool add_hint = true) :
         ItemSource                  (name, node, hints), 
         _entities                   (entities),
         _cannot_be_taken_repeatedly (cannot_be_taken_repeatedly)
     {
-        if(this->type_name() == "ground")
-        {
+        if(add_hint)
             this->add_hint("lying on the ground, waiting for someone to pick it up");
-        }
-        
+
         for (Entity* entity : _entities)
             entity->entity_type_id(this->item_id() + 0xC0);
     }
@@ -117,7 +115,7 @@ class ItemSourceShop : public ItemSourceOnGround
 public:
     ItemSourceShop(const std::string& name, std::vector<Entity*> entities, WorldNode* node, 
                     const std::vector<std::string>& hints) :
-        ItemSourceOnGround (name, entities, node, hints, true)
+        ItemSourceOnGround (name, entities, node, hints, true, false)
     {
         this->add_hint("owned by someone trying to make profit out of it");
     }
