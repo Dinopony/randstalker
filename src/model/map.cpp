@@ -199,7 +199,7 @@ void Map::write_climb_destination(md::ROM& rom)
 
 ////////////////////////////////////////////////////////////////
 
-void Map::read_entities(const md::ROM& rom, const World& world)
+void Map::read_entities(const md::ROM& rom)
 {
     uint16_t offset = rom.get_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (_id*2));
     if(offset > 0)

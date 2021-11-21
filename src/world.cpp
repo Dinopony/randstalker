@@ -507,7 +507,7 @@ void World::init_maps(const md::ROM& rom)
 {
     constexpr uint16_t MAP_COUNT = 816;
     for(uint16_t map_id = 0 ; map_id < MAP_COUNT ; ++map_id)
-        _maps[map_id] = new Map(map_id, rom, *this);
+        _maps[map_id] = new Map(map_id, rom);
 
     const std::set<uint16_t> UNREACHABLE_MAPS = { 
         MAP_THIEVES_HIDEOUT_TREASURE_ROOM_KAYLA_VARIANT 

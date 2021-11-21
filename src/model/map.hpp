@@ -104,7 +104,7 @@ private:
     Flag _visited_flag;
 
 public:
-    Map(uint16_t map_id, const md::ROM& rom, const World& world);
+    Map(uint16_t map_id, const md::ROM& rom);
     Map(const Map& map);
     ~Map();
     
