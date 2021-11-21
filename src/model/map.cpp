@@ -21,6 +21,7 @@ Map::Map(uint16_t map_id, const md::ROM& rom, const World& world) :
     this->read_entity_masks(rom);
     this->read_clear_flags(rom);
     this->read_visited_flag(rom);
+    this->read_dialogue_table(rom);
 }
 
 Map::Map(const Map& map) :
@@ -435,6 +436,54 @@ void Map::read_visited_flag(const md::ROM& rom)
     uint16_t byte = (flag_description >> 3) + 0xC0;
     uint8_t bit = flag_description & 0x7;
     _visited_flag = Flag(byte, bit);
+}
+
+////////////////////////////////////////////////////////////////
+
+void Map::read_dialogue_table(const md::ROM& rom)
+{
+    uint32_t addr = offsets::DIALOGUE_TABLE;
+
+    // Build a table to know which entity uses which dialogue
+    std::map<uint8_t, std::vector<Entity*>> talkable_entities;
+    for(Entity* entity : _entities)
+    {
+        if(entity->talkable())
+            talkable_entities[entity->dialogue()].push_back(entity);
+    }
+
+    // Read actual dialogue info to match entities with speaker ID
+    uint16_t header_word = rom.get_word(addr);
+    while(header_word != 0xFFFF)
+    {
+        uint16_t map_id = header_word & 0x7FF;
+        uint8_t length = header_word >> 11;
+
+        if(map_id == _id)
+        {
+            uint8_t current_npc_dialogue = 0;
+
+            for(uint8_t i=0 ; i<length ; ++i)
+            {
+                uint32_t offset = (i+1)*2;
+                uint16_t word = rom.get_word(addr + offset);
+                
+                uint16_t speaker_id = word & 0x7FF;
+                uint8_t consecutive_speakers = word >> 11;
+                for(uint8_t j=0 ; j<consecutive_speakers ; ++j)
+                {
+                    for(Entity* entity : talkable_entities[current_npc_dialogue++])
+                        entity->speaker_id(speaker_id);
+                    speaker_id++;
+                }
+            }
+
+            return;
+        }
+
+        addr += (length + 1) * 2;
+        header_word = rom.get_word(addr);
+    }
 }
 
 ////////////////////////////////////////////////////////////////

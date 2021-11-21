@@ -58,11 +58,13 @@ private:
 
     bool _fightable;
     bool _liftable;
-    bool _talkable;
     bool _can_pass_through;
     bool _appear_after_player_moved_away;
 
+    bool _talkable;
     uint8_t _dialogue;
+    uint16_t _speaker_id;
+
     /// Changing it for enemies change their default AI (0 makes an orc frozen at first, then moves normally once spotted)
     /// 106 => disappears when all enemies are killed in the room
     /// 113 => Mir wall barrier 1
@@ -125,18 +127,21 @@ public:
     bool liftable() const { return _liftable; }
     void liftable(bool liftable) { _liftable = liftable; }
 
-    bool talkable() const { return _talkable; }
-    void talkable(bool talkable) { _talkable = talkable; }
-
     bool can_pass_through() const { return _can_pass_through; }
     void can_pass_through(bool can_pass_through) { _can_pass_through = can_pass_through; }
 
     bool appear_after_player_moved_away() const { return _appear_after_player_moved_away; }
     void appear_after_player_moved_away(bool appear_after_player_moved_away) { _appear_after_player_moved_away = appear_after_player_moved_away; }
 
+    bool talkable() const { return _talkable; }
+    void talkable(bool talkable) { _talkable = talkable; }
+
     uint8_t dialogue() const { return _dialogue; }
     void dialogue(uint8_t dialogue) { _dialogue = dialogue; }
     
+    uint16_t speaker_id() const { return _speaker_id; }
+    void speaker_id(uint16_t speaker_id) { _speaker_id = speaker_id; }
+
     uint16_t behavior_id() const { return _behavior_id; }
     void behavior_id(uint16_t behavior_id) { _behavior_id = behavior_id; }
     

@@ -17,6 +17,7 @@ void WorldWriter::write_world_to_rom(md::ROM& rom, const World& world)
     write_items(rom, world);
     write_item_sources(rom, world);
     write_entity_types(rom, world);
+    write_dialogue_table(rom, world);
     write_maps(rom, world);
     write_game_strings(rom, world);
     write_dark_rooms(rom, world);
@@ -149,6 +150,65 @@ void WorldWriter::write_entity_types(md::ROM& rom, const World& world)
     addr += 0x2;
     if(addr > offsets::ENEMY_STATS_TABLE_END)
         throw RandomizerException("Enemy stats table is bigger than in original game");
+}
+
+void WorldWriter::write_dialogue_table(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::DIALOGUE_TABLE;
+
+    for(auto& [map_id, map] : world.maps())
+    {
+        std::vector<Entity*> sorted_entities = map->entities();
+        std::sort(sorted_entities.begin(), sorted_entities.end(), [](Entity* e1, Entity* e2) { return e1->speaker_id() < e2->speaker_id(); });
+       
+        std::vector<std::pair<uint16_t, uint8_t>> consecutive_packs;
+
+        uint16_t previous_speaker_id = 0xFFFE;
+        uint8_t current_dialogue_id = -1;
+        // Assign "dialogue" sequentially to entities
+        for(Entity* entity : sorted_entities)
+        {
+            if(!entity->talkable())
+                continue;
+
+            if(entity->speaker_id() != previous_speaker_id)
+            {
+                if(entity->speaker_id() == previous_speaker_id + 1)
+                    consecutive_packs[consecutive_packs.size()-1].second++;
+                else
+                    consecutive_packs.push_back(std::make_pair(entity->speaker_id(), 1));
+
+                previous_speaker_id = entity->speaker_id();
+                current_dialogue_id++;
+            }
+            
+            entity->dialogue(current_dialogue_id);
+        }
+
+        if(consecutive_packs.empty())
+            continue;
+
+        // Write map header announcing how many dialogue words follow
+        uint16_t header_word = map_id + ((uint16_t)consecutive_packs.size() << 11);
+        rom.set_word(addr, header_word);
+        addr += 0x2;
+
+        // Write speaker IDs in map
+        for(auto& pair : consecutive_packs)
+        {
+            uint16_t speaker_id = pair.first;
+            uint8_t consecutive_speakers = pair.second;
+
+            uint16_t pack_word = (speaker_id & 0x7FF) + (consecutive_speakers << 11);
+            rom.set_word(addr, pack_word);
+            addr += 0x2;
+        }
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::DIALOGUE_TABLE_END)
+        throw RandomizerException("Dialogue table is bigger than in original game (" + std::to_string(addr) + " > " + std::to_string(offsets::DIALOGUE_TABLE_END) + ")");
 }
 
 void WorldWriter::write_maps(md::ROM& rom, const World& world)

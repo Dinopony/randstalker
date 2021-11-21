@@ -187,6 +187,7 @@ private:
     void read_entity_masks(const md::ROM& rom);
     void read_clear_flags(const md::ROM& rom);
     void read_visited_flag(const md::ROM& rom);
+    void read_dialogue_table(const md::ROM& rom);
 };
 
 constexpr uint16_t MAP_SWAMP_SHRINE_0 = 0;
