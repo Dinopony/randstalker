@@ -276,14 +276,51 @@ void make_pockets_always_in_thieves_hideout_cell(World& world)
     world.map(MAP_THIEVES_HIDEOUT_POCKETS_CELL)->entity(2)->mask_flags().clear();
 }
 
-void optimize_laggy_rooms(World& world)
+void optimize_maps(World& world)
 {
+    // Remove ghosts from laggy Tibor rooms
     world.map(MAP_TIBOR_808)->remove_entity(5);
     world.map(MAP_TIBOR_811)->remove_entity(4);
     world.map(MAP_TIBOR_812)->remove_entity(2);
     world.map(MAP_TIBOR_813)->remove_entity(1);
     world.map(MAP_TIBOR_814)->remove_entity(2);
     world.map(MAP_TIBOR_815)->remove_entity(3);
+
+    // Remove a useless Miro from a map in Swamp Shrine
+    world.map(MAP_SWAMP_SHRINE_0)->remove_entity(7);
+    
+    // Remove Mercator castle throne room variants
+    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->clear_entities();
+    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->variants().clear();
+    for(Entity* entity : world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entities())
+        world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->add_entity(new Entity(*entity));
+
+    // Remove Mercator castle entrance hallway variants
+    world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->variants().clear();
+    world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->clear_entities();
+
+    // Remove Mercator castle main hall variants
+    world.map(MAP_MERCATOR_CASTLE_MAIN_HALL)->variants().clear();
+
+    // Clear unreachable maps
+    const std::vector<uint16_t> UNREACHABLE_MAPS = { 
+        MAP_THIEVES_HIDEOUT_TREASURE_ROOM_KAYLA_VARIANT,
+
+        MAP_MERCATOR_CASTLE_THRONE_ROOM_52,
+        MAP_MERCATOR_CASTLE_THRONE_ROOM_53,
+        MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT,
+
+        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_56,
+        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_57,
+        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_58,
+        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_59,
+
+        MAP_MERCATOR_CASTLE_MAIN_HALL_61,
+        MAP_MERCATOR_CASTLE_MAIN_HALL_62
+    };
+
+    for(uint16_t map_id : UNREACHABLE_MAPS)
+        world.map(map_id)->clear();
 }
 
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
@@ -308,7 +345,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     remove_logs_room_exit_check(world);
     allow_going_backwards_in_knl_exterior(world);
     make_pockets_always_in_thieves_hideout_cell(world);
-    optimize_laggy_rooms(world);
+    optimize_maps(world);
     
     if(options.fix_armlet_skip())
         fix_armlet_skip(world);
