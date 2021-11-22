@@ -21,6 +21,7 @@
 #include "world_solver.hpp"
 #include "randomizer_options.hpp"
 #include "offsets.hpp"
+#include "world_reader.hpp"
 
 // Include headers automatically generated from model json files
 #include "model/entity_type.json.hxx"
@@ -39,16 +40,27 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     _active_spawn_location  (nullptr),
     _dark_region            (nullptr)
 {
+    // No requirements
     this->init_items();
+    this->init_game_strings(rom);
     this->init_entity_types(rom);
-    this->init_maps(rom);
     this->init_nodes();
+
+    // Reading map entities might actually require items
+    WorldReader::read_maps(*this, rom);
+
+    // Require nodes, maps & entities
     this->init_item_sources();
+
+    // Require nodes & items
     this->init_paths();
+
+    // Require nodes
     this->init_regions();
     this->init_spawn_locations();
     this->init_teleport_trees();
-    this->init_game_strings(rom);
+
+    // Requires nodes & game strings
     this->init_hint_sources();
 }
 
@@ -503,25 +515,11 @@ EntityType* World::entity_type(const std::string& name) const
     return nullptr;
 }
 
-void World::init_maps(const md::ROM& rom)
+void World::set_map(uint16_t map_id, Map* map)
 {
-    constexpr uint16_t MAP_COUNT = 816;
-    for(uint16_t map_id = 0 ; map_id < MAP_COUNT ; ++map_id)
-        _maps[map_id] = new Map(map_id, rom);
-
-    const std::set<uint16_t> UNREACHABLE_MAPS = { 
-        MAP_THIEVES_HIDEOUT_TREASURE_ROOM_KAYLA_VARIANT 
-    };
-    for(uint16_t map_id : UNREACHABLE_MAPS)
-        _maps.at(map_id)->clear();
-}
-
-void World::replace_map(uint16_t map_id, Map* map)
-{
-    if(!_maps.count(map_id))
-        throw RandomizerException("Attempting to replace map #" + std::to_string(map_id) + " but it doesn't exist");
-
-    delete _maps[map_id];
+    if(_maps.count(map_id))
+        delete _maps[map_id];
+ 
     map->id(map_id);
     _maps[map_id] = map;
 }

@@ -35,20 +35,6 @@ struct MapExit {
     }
 };
 
-struct MapVariant {
-    uint16_t map_variant_id;
-    uint8_t flag_byte;
-    uint8_t flag_bit;
-
-    Json to_json() const {
-        Json json;
-        json["mapVariantId"] = map_variant_id;
-        json["flagByte"] = flag_byte;
-        json["flagBit"] = flag_bit;
-        return json;
-    }
-};
-
 struct GlobalEntityMaskFlag : public Flag
 {
     uint8_t first_entity_id;
@@ -84,7 +70,6 @@ private:
     uint8_t _tileset_id;
     uint8_t _primary_big_tileset_id;
     uint8_t _secondary_big_tileset_id;
-    uint8_t _big_tileset_id;
 
     uint8_t _palette_id;
     uint8_t _room_height;
@@ -99,29 +84,54 @@ private:
     
     std::vector<Entity*> _entities;
     std::vector<MapExit> _exits;
-    std::vector<MapVariant> _variants;
+    
+    std::map<Map*, Flag> _variants;
+    Map* _parent_map;
+
     std::vector<GlobalEntityMaskFlag> _global_entity_mask_flags;
     Flag _visited_flag;
 
 public:
-    Map(uint16_t map_id, const md::ROM& rom);
+    Map(uint16_t map_id);
     Map(const Map& map);
     ~Map();
     
     void clear();
-    void write_to_rom(md::ROM& rom);
 
     void id(uint16_t id) { _id = id; }
     uint16_t id() const { return _id; }
+
+    uint32_t address() const { return _address; }
+    void address(uint32_t value) { _address = value; }
+
+    bool is_variant() const { return _parent_map != nullptr; }
+
+    uint8_t tileset_id() const { return _tileset_id; }
+    void tileset_id(uint8_t tileset_id) { _tileset_id = tileset_id; }
+    uint8_t primary_big_tileset_id() const { return _primary_big_tileset_id; }
+    void primary_big_tileset_id(uint8_t value) { _primary_big_tileset_id = value; }
+    uint8_t secondary_big_tileset_id() const { return _secondary_big_tileset_id; }
+    void secondary_big_tileset_id(uint8_t value) { _secondary_big_tileset_id = value; }
+
+    uint8_t palette_id() const { return _palette_id; }
+    void palette_id(uint8_t value) { _palette_id = value; }
+    uint8_t room_height() const { return _room_height; }
+    void room_height(uint8_t value) { _room_height = value; }
+    uint8_t background_music() const { return _background_music; }
+    void background_music(uint8_t music) { _background_music = music; }
+
+    uint8_t unknown_param_1() const { return _unknown_param_1; }
+    void unknown_param_1(uint8_t value) { _unknown_param_1 = value; }
+    uint8_t unknown_param_2() const { return _unknown_param_2; }
+    void unknown_param_2(uint8_t value) { _unknown_param_2 = value; }
 
     uint8_t base_chest_id() const { return _base_chest_id; }
     void base_chest_id(uint8_t id) { _base_chest_id = id; }
 
     uint16_t fall_destination() const { return _fall_destination; }
+    void fall_destination(uint16_t value) { _fall_destination = value; }
     uint16_t climb_destination() const { return _climb_destination; }
-
-    uint8_t background_music() const { return _background_music; }
-    void background_music(uint8_t music) { _background_music = music; }
+    void climb_destination(uint16_t value) { _climb_destination = value; }
 
     const std::vector<Entity*>& entities() const { return _entities; }
     const Entity& entity(uint8_t entity_id) const { return *_entities.at(entity_id); }
@@ -132,62 +142,23 @@ public:
     void move_entity(uint8_t entity_id, uint8_t entity_new_id);
     void clear_entities();
     uint8_t entity_id(const Entity* entity) const;
-    void shift_all_entity_ids_above(uint8_t threshold, int diff);
 
     const std::vector<MapExit>& exits() const { return _exits; }
     std::vector<MapExit>& exits() { return _exits; }
 
-    const std::vector<MapVariant>& variants() const { return _variants; }
-    std::vector<MapVariant>& variants() { return _variants; }
+    const std::map<Map*, Flag>& variants() const { return _variants; }
+    std::map<Map*, Flag>& variants() { return _variants; }
+    const Flag& variant(Map* variant_map) const { return _variants.at(variant_map); }
+    Flag& variant(Map* variant_map) { return _variants.at(variant_map); }
+    void add_variant(Map* variant_map, uint8_t flag_byte, uint8_t flag_bit);
 
     const std::vector<GlobalEntityMaskFlag>& global_entity_mask_flags() const { return _global_entity_mask_flags; }
     std::vector<GlobalEntityMaskFlag>& global_entity_mask_flags() { return _global_entity_mask_flags; }
 
-    void add_variant(uint16_t map_variant_id, uint8_t flag_byte, uint8_t flag_bit)
-    {
-        MapVariant new_variant;
-        new_variant.map_variant_id = map_variant_id;
-        new_variant.flag_byte = flag_byte;
-        new_variant.flag_bit = flag_bit;
-        _variants.push_back(new_variant);
-    }
-
-    MapVariant& variant(uint16_t map_variant_id)
-    {
-        for(MapVariant& variant : _variants)
-            if(variant.map_variant_id == map_variant_id)
-                return variant;
-        throw std::out_of_range("No variant with given ID");
-    }
-
     const Flag& visited_flag() const { return _visited_flag; }
     void visited_flag(const Flag& flag) { _visited_flag = flag; }
 
-    std::vector<uint8_t> entities_as_bytes() const;
-    std::vector<uint8_t> entity_masks_as_bytes() const;
-
     Json to_json(const World& world) const;
-
-private:
-    void read_map_data(const md::ROM& rom);
-    void write_map_data(md::ROM& rom);
-
-    void read_base_chest_id(const md::ROM& rom);
-    void write_base_chest_id(md::ROM& rom);
-
-    void read_fall_destination(const md::ROM& rom);
-    void write_fall_destination(md::ROM& rom);
-
-    void read_climb_destination(const md::ROM& rom);
-    void write_climb_destination(md::ROM& rom);
-
-    void read_entities(const md::ROM& rom, const World& world);
-    void read_exits(const md::ROM& rom);
-    void read_variants(const md::ROM& rom);
-    void read_entity_masks(const md::ROM& rom);
-    void read_clear_flags(const md::ROM& rom);
-    void read_visited_flag(const md::ROM& rom);
-    void read_dialogue_table(const md::ROM& rom);
 };
 
 constexpr uint16_t MAP_SWAMP_SHRINE_0 = 0;
@@ -243,18 +214,18 @@ constexpr uint16_t MAP_47 = 47;
 constexpr uint16_t MAP_48 = 48;
 constexpr uint16_t MAP_49 = 49;
 constexpr uint16_t MAP_50 = 50;
-constexpr uint16_t MAP_51 = 51;
-constexpr uint16_t MAP_52 = 52;
-constexpr uint16_t MAP_53 = 53;
+constexpr uint16_t MAP_MERCATOR_CASTLE_THRONE_ROOM = 51;
+constexpr uint16_t MAP_MERCATOR_CASTLE_THRONE_ROOM_52 = 52;
+constexpr uint16_t MAP_MERCATOR_CASTLE_THRONE_ROOM_53 = 53;
 constexpr uint16_t MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT = 54;
-constexpr uint16_t MAP_55 = 55;
-constexpr uint16_t MAP_56 = 56;
-constexpr uint16_t MAP_57 = 57;
-constexpr uint16_t MAP_58 = 58;
-constexpr uint16_t MAP_59 = 59;
-constexpr uint16_t MAP_60 = 60;
-constexpr uint16_t MAP_61 = 61;
-constexpr uint16_t MAP_62 = 62;
+constexpr uint16_t MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY = 55;
+constexpr uint16_t MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_56 = 56;
+constexpr uint16_t MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_57 = 57;
+constexpr uint16_t MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_58 = 58;
+constexpr uint16_t MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_59 = 59;
+constexpr uint16_t MAP_MERCATOR_CASTLE_MAIN_HALL = 60;
+constexpr uint16_t MAP_MERCATOR_CASTLE_MAIN_HALL_61 = 61;
+constexpr uint16_t MAP_MERCATOR_CASTLE_MAIN_HALL_62 = 62;
 constexpr uint16_t MAP_63 = 63;
 constexpr uint16_t MAP_64 = 64;
 constexpr uint16_t MAP_65 = 65;

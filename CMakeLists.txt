@@ -97,6 +97,8 @@ set(SOURCES
     "src/world.hpp"
     "src/world_randomizer.hpp"
     "src/world_randomizer.cpp"
+    "src/world_reader.hpp"
+    "src/world_reader.cpp"
     "src/world_solver.hpp"
     "src/world_solver.cpp"
     "src/world_writer.hpp"

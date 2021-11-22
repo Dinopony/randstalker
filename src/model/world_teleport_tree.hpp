@@ -24,16 +24,13 @@ public:
 
     const std::string& name() const { return _name; }
 
+    uint32_t left_entrance_address() const { return _left_entrance_address; }
+    uint32_t right_entrance_address() const { return _right_entrance_address; }
+
     uint16_t tree_map_id() const{ return _tree_map_id; }
     void tree_map_id(uint16_t map_id) { _tree_map_id = map_id; }
 
     WorldNode* node() const { return _node; }
-
-    void write_to_rom(md::ROM& rom) const
-    {
-        rom.set_word(_left_entrance_address, _tree_map_id);
-        rom.set_word(_right_entrance_address, _tree_map_id);
-    }
 
     Json to_json() const
     {

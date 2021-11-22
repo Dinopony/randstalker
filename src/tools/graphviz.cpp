@@ -79,10 +79,10 @@ void output_maps_as_dot(const World& world, const std::string& path)
         if(map->climb_destination() != 0xFFFF)
             graphviz << "\t" << map->id() << " -> " << map->climb_destination() << "\n";
 
-        for(const MapVariant& variant : map->variants())
+        for(auto& [variant_map, flag] : map->variants())
         {
-            graphviz << "\t" << map->id() << " -> " << variant.map_variant_id << "[color=indianred2, penwidth=2]\n";
-            graphviz << "\t" << variant.map_variant_id << "[style=filled, fillcolor=indianred2]\n";            
+            graphviz << "\t" << map->id() << " -> " << variant_map->id() << "[color=indianred2, penwidth=2]\n";
+            graphviz << "\t" << variant_map->id() << "[style=filled, fillcolor=indianred2]\n";            
         }
     }
 

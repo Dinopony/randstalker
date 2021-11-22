@@ -90,7 +90,7 @@ public:
 
     const std::map<uint16_t, Map*>& maps() const { return _maps; }
     Map* map(uint16_t map_id) const { return _maps.at(map_id); }
-    void replace_map(uint16_t map_id, Map* map);
+    void set_map(uint16_t map_id, Map* map);
 
     const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
     void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.push_back(enemy); }

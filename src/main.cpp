@@ -197,18 +197,6 @@ void generate(const ArgumentDictionary& args)
     {
         spoiler_json = randomize(world, options, args);
     }
-
-    // Output current world model if requested
-    if (args.get_boolean("dumpmodel"))
-    {
-        if(options.allow_spoiler_log())
-        {
-            world.output_model();
-            std::cout << "Model dumped to './json_data/'" << std::endl;
-        }
-        else
-            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
-    }
     
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
@@ -226,6 +214,18 @@ void generate(const ArgumentDictionary& args)
 
         rom->write_to_file(output_rom_file);
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
+    }
+
+    // Output current world model if requested
+    if (args.get_boolean("dumpmodel"))
+    {
+        if(options.allow_spoiler_log())
+        {
+            world.output_model();
+            std::cout << "Model dumped to './json_data/'" << std::endl;
+        }
+        else
+            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
 
     // Write a spoiler log to help the player

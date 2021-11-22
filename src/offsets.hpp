@@ -7,8 +7,10 @@ namespace offsets
     constexpr uint32_t HUD_TILEMAP = 0x009242;
 
     constexpr uint32_t MAP_FALL_DESTINATION_TABLE = 0x00A1A8;
-    constexpr uint32_t MAP_CLIMB_DESTINATION_TABLE = 0x00A35A;
-    constexpr uint32_t MAP_VARIANTS_TABLE = 0x00A3D8;
+    constexpr uint32_t MAP_FALL_DESTINATION_TABLE_END = 0x00A35A;
+    constexpr uint32_t MAP_CLIMB_DESTINATION_TABLE = MAP_FALL_DESTINATION_TABLE_END;
+    constexpr uint32_t MAP_CLIMB_DESTINATION_TABLE_END = 0x00A3D8;
+    constexpr uint32_t MAP_VARIANTS_TABLE = MAP_CLIMB_DESTINATION_TABLE_END;
     constexpr uint32_t MAP_VARIANTS_TABLE_END = 0x00A61C;
 
     constexpr uint32_t MAP_VISITED_FLAG_TABLE = 0x00C74E;
@@ -34,15 +36,15 @@ namespace offsets
     constexpr uint32_t MAP_ENTITIES_TABLE = 0x01B932;
     constexpr uint32_t MAP_ENTITIES_TABLE_END = 0x022E80;
 
+    constexpr uint32_t DIALOGUE_TABLE = 0x0256D6;
+    constexpr uint32_t DIALOGUE_TABLE_END = 0x025B0C;
+
     constexpr uint32_t ITEM_DATA_TABLE = 0x029304;
     constexpr uint32_t ITEM_NAMES_TABLE = 0x029732;
     constexpr uint32_t ITEM_NAMES_TABLE_END = 0x029A0A;
 
     constexpr uint32_t LITHOGRAPH_TILES = 0x0389D3;
     constexpr uint32_t LITHOGRAPH_TILES_END = 0x039762;
-    
-    constexpr uint32_t DIALOGUE_TABLE = 0x0256D6;
-    constexpr uint32_t DIALOGUE_TABLE_END = 0x025B0C;
 
     constexpr uint32_t BEHAVIOR_OFFSETS_TABLE = 0x09B058; 
     constexpr uint32_t BEHAVIOR_TABLE = 0x09B458;

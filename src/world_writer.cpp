@@ -17,14 +17,14 @@ void WorldWriter::write_world_to_rom(md::ROM& rom, const World& world)
     write_items(rom, world);
     write_item_sources(rom, world);
     write_entity_types(rom, world);
-    write_dialogue_table(rom, world);
-    write_maps(rom, world);
     write_game_strings(rom, world);
     write_dark_rooms(rom, world);
     write_tibor_tree_connections(rom, world);
     write_fahl_enemies(rom, world);
+    write_maps(rom, world);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
 void WorldWriter::write_items(md::ROM& rom, const World& world)
 {
@@ -152,13 +152,253 @@ void WorldWriter::write_entity_types(md::ROM& rom, const World& world)
         throw RandomizerException("Enemy stats table is bigger than in original game");
 }
 
-void WorldWriter::write_dialogue_table(md::ROM& rom, const World& world)
+void WorldWriter::write_game_strings(md::ROM& rom, const World& world)
+{
+    TextbanksEncoder encoder(rom, world.game_strings());
+    encoder.write_to_rom(rom);
+}
+
+void WorldWriter::write_dark_rooms(md::ROM& rom, const World& world)
+{
+    // Inject dark rooms as a data block
+    const std::vector<uint16_t>& dark_map_ids = world.dark_region()->dark_map_ids();
+    uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
+    uint32_t dark_maps_address = rom.reserve_data_block(dark_maps_byte_count, "data_dark_rooms");
+    uint8_t i = 0;
+    for (uint16_t map_id : dark_map_ids)
+        rom.set_word(dark_maps_address + (i++) * 0x2, map_id);
+    rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
+}
+
+void WorldWriter::write_tibor_tree_connections(md::ROM& rom, const World& world)
+{
+    for (auto& [tree_1, tree_2] : world.teleport_tree_pairs())
+    {
+        rom.set_word(tree_1->left_entrance_address(), tree_1->tree_map_id());
+        rom.set_word(tree_1->right_entrance_address(), tree_1->tree_map_id());
+        rom.set_word(tree_2->left_entrance_address(), tree_2->tree_map_id());
+        rom.set_word(tree_2->right_entrance_address(), tree_2->tree_map_id());
+    }
+}
+
+void WorldWriter::write_fahl_enemies(md::ROM& rom, const World& world)
+{
+    if(world.fahl_enemies().size() > 50)
+        throw RandomizerException("Cannot put more than 50 enemies for Fahl challenge");
+
+    for(uint8_t i=0 ; i < world.fahl_enemies().size() ; ++i)
+        rom.set_byte(0x12CE6 + i, world.fahl_enemies().at(i)->id());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void WorldWriter::write_maps(md::ROM& rom, const World& world)
+{
+    write_maps_data(rom, world);
+    write_maps_climb_destination(rom, world);
+    write_maps_fall_destination(rom, world);
+    write_maps_variants(rom, world);
+    write_maps_global_entity_masks(rom, world);
+    write_maps_entity_masks(rom, world);
+    write_maps_dialogue_table(rom, world);
+
+    // Entities must be written after dialogue table since building dialogue tables alter them slightly
+    write_maps_entities(rom, world);
+}
+
+void WorldWriter::write_maps_data(md::ROM& rom, const World& world)
+{
+    for(auto& [map_id, map] : world.maps())
+    {
+        uint32_t addr = offsets::MAP_DATA_TABLE + (map_id * 8);
+
+        uint8_t byte4;
+        byte4 = map->tileset_id() & 0x1F;
+        byte4 |= (map->primary_big_tileset_id() & 0x01) << 5;
+        byte4 |= (map->unknown_param_1() & 0x03) << 6;
+        
+        uint8_t byte5;
+        byte5 = map->palette_id() & 0x3F;
+        byte5 |= (map->unknown_param_2() & 0x03) << 6;
+        
+        uint8_t byte7;
+        byte7 = map->background_music() & 0x1F;
+        byte7 |= (map->secondary_big_tileset_id() & 0x07) << 5;
+        
+        rom.set_long(addr, map->address());
+        rom.set_byte(addr+4, byte4);
+        rom.set_byte(addr+5, byte5);
+        rom.set_byte(addr+6, map->room_height());
+        rom.set_byte(addr+7, byte7);
+
+        // Write map base chest id
+        rom.set_byte(offsets::MAP_BASE_CHEST_ID_TABLE + map_id, map->base_chest_id());
+
+        // Write map visited flag
+        uint16_t flag_word = (map->visited_flag().byte << 3) + map->visited_flag().bit;
+        rom.set_word(offsets::MAP_VISITED_FLAG_TABLE + (map->id()*2), flag_word);
+    }
+}
+
+void WorldWriter::write_maps_fall_destination(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::MAP_FALL_DESTINATION_TABLE;
+
+    for(auto& [map_id, map] : world.maps())
+    {
+        uint16_t fall_destination = map->fall_destination();
+        if(fall_destination != 0xFFFF)
+        {
+            rom.set_word(addr, map_id);
+            rom.set_word(addr+2, fall_destination);
+            addr += 0x4;
+        }
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::MAP_FALL_DESTINATION_TABLE_END)
+        throw RandomizerException("Fall destination table must not be bigger than the one from base game");
+}
+
+void WorldWriter::write_maps_climb_destination(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::MAP_CLIMB_DESTINATION_TABLE;
+
+    for(auto& [map_id, map] : world.maps())
+    {
+        uint16_t climb_destination = map->climb_destination();
+        if(climb_destination != 0xFFFF)
+        {
+            rom.set_word(addr, map_id);
+            rom.set_word(addr+2, climb_destination);
+            addr += 0x4;
+        }
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::MAP_CLIMB_DESTINATION_TABLE_END)
+        throw RandomizerException("Climb destination table must not be bigger than the one from base game");
+}
+
+void WorldWriter::write_maps_variants(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::MAP_VARIANTS_TABLE;
+
+    std::map<std::pair<uint16_t, uint16_t>, Flag> variant_flags;
+    for(auto& [map_id, map] : world.maps())
+    {
+        for(auto& [variant_map, flag] : map->variants())
+            variant_flags[std::make_pair(map->id(), variant_map->id())] = flag;
+    }
+
+    // We process variants reversed so that when several variants are available,
+    // the last one in the list is the one coming from the "origin" map. This is especially
+    // important since the game only defines map exits for the origin map (not the variants)
+    // and the algorithm it uses to find back the origin map takes the last find in the list.
+    for(auto it = variant_flags.rbegin() ; it != variant_flags.rend() ; ++it)
+    {
+        uint16_t map_id = it->first.first;
+        uint16_t variant_map_id = it->first.second;
+        const Flag& flag = it->second;
+
+        rom.set_word(addr, map_id);
+        rom.set_word(addr+2, variant_map_id);
+        rom.set_byte(addr+4, (uint8_t)flag.byte);
+        rom.set_byte(addr+5, flag.bit);
+        addr += 0x6;
+    }
+
+    rom.set_long(addr, 0xFFFFFFFF);
+    addr += 0x4;
+    if(addr > offsets::MAP_VARIANTS_TABLE_END)
+        throw RandomizerException("Map variants must not be bigger than the one from base game");
+    rom.mark_empty_chunk(addr, offsets::MAP_VARIANTS_TABLE_END);
+}
+
+void WorldWriter::write_maps_global_entity_masks(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::MAP_CLEAR_FLAGS_TABLE;
+
+    for(auto& [map_id, map] : world.maps())
+    {
+        for(const GlobalEntityMaskFlag& global_mask_flags : map->global_entity_mask_flags())
+        {
+            uint16_t flag_bytes = global_mask_flags.to_bytes();
+            rom.set_word(addr, map->id());
+            rom.set_word(addr+2, flag_bytes);
+            addr += 0x4;
+        }
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::MAP_CLEAR_FLAGS_TABLE_END)
+        throw RandomizerException("Map clear flags table must not be bigger than the one from base game");
+    rom.mark_empty_chunk(addr, offsets::MAP_CLEAR_FLAGS_TABLE_END);
+}
+
+void WorldWriter::write_maps_entity_masks(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::MAP_ENTITY_MASKS_TABLE;
+
+    for(auto& [map_id, map] : world.maps())
+    {
+        std::vector<uint8_t> bytes; 
+
+        uint8_t entity_id = 0;
+        for(Entity* entity : map->entities())
+        {
+            for(EntityMaskFlag& mask_flag : entity->mask_flags())
+            {
+                uint8_t flag_msb = mask_flag.byte & 0x7F;
+                if(mask_flag.visibility_if_flag_set)
+                    flag_msb |= 0x80;
+
+                uint8_t flag_lsb = entity_id & 0x0F;
+                flag_lsb |= (mask_flag.bit & 0x7) << 5;
+
+                rom.set_word(addr, map_id);
+                rom.set_byte(addr+2, flag_msb);
+                rom.set_byte(addr+3, flag_lsb);
+                addr += 0x4;
+            }
+            entity_id++;
+        }
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::MAP_ENTITY_MASKS_TABLE_END)
+        throw RandomizerException("Map entity masks table must not be bigger than the one from base game");
+    rom.mark_empty_chunk(addr, offsets::MAP_ENTITY_MASKS_TABLE_END);
+}
+
+void WorldWriter::write_maps_dialogue_table(md::ROM& rom, const World& world)
 {
     uint32_t addr = offsets::DIALOGUE_TABLE;
 
     for(auto& [map_id, map] : world.maps())
     {
-        std::vector<Entity*> sorted_entities = map->entities();
+        if(map->is_variant())
+            continue;
+
+        // Build a table to know which entity uses which dialogue in processed map and all its variants
+        std::vector<Map*> processed_maps = { map };
+        for(auto& [variant_map, flag] : map->variants())
+            processed_maps.push_back(variant_map);
+
+        // Build a sorted list of all talkable entities for the processed map and all its variants
+        std::vector<Entity*> sorted_entities;
+        for(Map* processed_map : processed_maps)
+        {
+            for(Entity* entity : processed_map->entities())
+            {
+                if(entity->talkable())
+                    sorted_entities.push_back(entity);
+            }
+        }
         std::sort(sorted_entities.begin(), sorted_entities.end(), [](Entity* e1, Entity* e2) { return e1->speaker_id() < e2->speaker_id(); });
        
         std::vector<std::pair<uint16_t, uint8_t>> consecutive_packs;
@@ -168,9 +408,6 @@ void WorldWriter::write_dialogue_table(md::ROM& rom, const World& world)
         // Assign "dialogue" sequentially to entities
         for(Entity* entity : sorted_entities)
         {
-            if(!entity->talkable())
-                continue;
-
             if(entity->speaker_id() != previous_speaker_id)
             {
                 if(entity->speaker_id() == previous_speaker_id + 1)
@@ -212,126 +449,33 @@ void WorldWriter::write_dialogue_table(md::ROM& rom, const World& world)
     rom.mark_empty_chunk(addr, offsets::DIALOGUE_TABLE_END);
 }
 
-void WorldWriter::write_maps(md::ROM& rom, const World& world)
+void WorldWriter::write_maps_entities(md::ROM& rom, const World& world)
 {
-    uint16_t cumulated_offset_entities = 0x0;
-    uint32_t variants_table_current_addr = offsets::MAP_VARIANTS_TABLE;
-    uint32_t entity_masks_table_current_addr = offsets::MAP_ENTITY_MASKS_TABLE;
-    uint32_t clear_flags_table_current_addr = offsets::MAP_CLEAR_FLAGS_TABLE;
-
-    std::vector<std::pair<uint16_t, MapVariant>> variants;
-
+    uint16_t cumulated_offset = 0x0;
     for(auto& [map_id, map] : world.maps())
     {
-        map->write_to_rom(rom);
-        
         // Write map entities
         if(!map->entities().empty())
         {
-            rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), cumulated_offset_entities + 1);
-            std::vector<uint8_t> entity_bytes = map->entities_as_bytes();
+            rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), cumulated_offset + 1);
 
-            rom.set_bytes(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, entity_bytes);
-            cumulated_offset_entities += (uint32_t)entity_bytes.size();
+            for(Entity* entity : map->entities())
+            {
+                std::vector<uint8_t> entity_bytes = entity->to_bytes();
+                rom.set_bytes(offsets::MAP_ENTITIES_TABLE + cumulated_offset, entity_bytes);
+                cumulated_offset += (uint32_t)entity_bytes.size();
+            }
+
+            rom.set_word(offsets::MAP_ENTITIES_TABLE + cumulated_offset, 0xFFFF);
+            cumulated_offset += 0x2;
         }
         else
         {
             rom.set_word(offsets::MAP_ENTITIES_OFFSETS_TABLE + (map_id*2), 0x0000);
         }
-
-        // Write map variants
-        for(const MapVariant& variant : map->variants())
-            variants.push_back(std::make_pair(map_id, variant));
-
-        // Write entity masks
-        std::vector<uint8_t> entity_masks_bytes = map->entity_masks_as_bytes();
-        rom.set_bytes(entity_masks_table_current_addr, entity_masks_bytes);
-        entity_masks_table_current_addr += (uint32_t)entity_masks_bytes.size();
-
-        // Write global entity mask flags
-        for(const GlobalEntityMaskFlag& global_mask_flags : map->global_entity_mask_flags())
-        {
-            uint16_t flag_bytes = global_mask_flags.to_bytes();
-            rom.set_word(clear_flags_table_current_addr, map->id());
-            rom.set_word(clear_flags_table_current_addr+2, flag_bytes);
-            clear_flags_table_current_addr += 0x4;
-        }
-
-        // Write map visited flag
-        const Flag& visited_flag = map->visited_flag();
-        uint16_t flag_word = (visited_flag.byte << 3) + visited_flag.bit;
-        rom.set_word(offsets::MAP_VISITED_FLAG_TABLE + (map->id()*2), flag_word);
     }
 
-    // We process variants reversed so that when several variants are available,
-    // the last one in the list is the one coming from the "origin" map. This is especially
-    // important since the game only defines map exits for the origin map (not the variants)
-    // and the algorithm it uses to find back the origin map takes the last find in the list.
-    std::reverse(variants.begin(), variants.end());
-    for(auto& [map_id, variant] : variants)
-    {
-        rom.set_word(variants_table_current_addr, map_id);
-        rom.set_word(variants_table_current_addr+2, variant.map_variant_id);
-        rom.set_byte(variants_table_current_addr+4, variant.flag_byte);
-        rom.set_byte(variants_table_current_addr+5, variant.flag_bit);
-        variants_table_current_addr += 0x6;
-    }
-
-    if(cumulated_offset_entities > offsets::MAP_ENTITIES_TABLE_END)
-        throw RandomizerException("Entities must not be bigger than the one from base game");
-    rom.mark_empty_chunk(offsets::MAP_ENTITIES_TABLE + cumulated_offset_entities, offsets::MAP_ENTITIES_TABLE_END);
-
-    rom.set_long(variants_table_current_addr, 0xFFFFFFFF);
-    variants_table_current_addr += 0x4;
-    if(variants_table_current_addr > offsets::MAP_VARIANTS_TABLE_END)
-        throw RandomizerException("Map variants must not be bigger than the one from base game");
-    rom.mark_empty_chunk(variants_table_current_addr, offsets::MAP_VARIANTS_TABLE_END);
-    
-    rom.set_word(entity_masks_table_current_addr, 0xFFFF);
-    entity_masks_table_current_addr += 0x2;
-    if(entity_masks_table_current_addr > offsets::MAP_ENTITY_MASKS_TABLE_END)
-        throw RandomizerException("Map entity masks table must not be bigger than the one from base game");
-    rom.mark_empty_chunk(entity_masks_table_current_addr, offsets::MAP_ENTITY_MASKS_TABLE_END);
-
-    rom.set_word(clear_flags_table_current_addr, 0xFFFF);
-    clear_flags_table_current_addr += 0x2;
-    if(clear_flags_table_current_addr > offsets::MAP_CLEAR_FLAGS_TABLE_END)
-        throw RandomizerException("Map clear flags table must not be bigger than the one from base game");
-    rom.mark_empty_chunk(clear_flags_table_current_addr, offsets::MAP_CLEAR_FLAGS_TABLE_END);
-}
-
-void WorldWriter::write_game_strings(md::ROM& rom, const World& world)
-{
-    TextbanksEncoder encoder(rom, world.game_strings());
-    encoder.write_to_rom(rom);
-}
-
-void WorldWriter::write_dark_rooms(md::ROM& rom, const World& world)
-{
-    // Inject dark rooms as a data block
-    const std::vector<uint16_t>& dark_map_ids = world.dark_region()->dark_map_ids();
-    uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
-    uint32_t dark_maps_address = rom.reserve_data_block(dark_maps_byte_count, "data_dark_rooms");
-    uint8_t i = 0;
-    for (uint16_t map_id : dark_map_ids)
-        rom.set_word(dark_maps_address + (i++) * 0x2, map_id);
-    rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
-}
-
-void WorldWriter::write_tibor_tree_connections(md::ROM& rom, const World& world)
-{
-    for (auto& [tree_1, tree_2] : world.teleport_tree_pairs())
-    {
-        tree_1->write_to_rom(rom);
-        tree_2->write_to_rom(rom);
-    }
-}
-
-void WorldWriter::write_fahl_enemies(md::ROM& rom, const World& world)
-{
-    if(world.fahl_enemies().size() > 50)
-        throw RandomizerException("Cannot put more than 50 enemies for Fahl challenge");
-
-    for(uint8_t i=0 ; i < world.fahl_enemies().size() ; ++i)
-        rom.set_byte(0x12CE6 + i, world.fahl_enemies().at(i)->id());
+    if(offsets::MAP_ENTITIES_TABLE + cumulated_offset > offsets::MAP_ENTITIES_TABLE_END)
+        throw RandomizerException("Entities table must not be bigger than the one from base game");
+    rom.mark_empty_chunk(offsets::MAP_ENTITIES_TABLE + cumulated_offset, offsets::MAP_ENTITIES_TABLE_END);
 }

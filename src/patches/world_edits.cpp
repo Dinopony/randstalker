@@ -163,15 +163,16 @@ void replace_sick_merchant_by_chest(World& world)
  */
 void alter_mercator_special_shop_check(World& world)
 {
-    std::vector<MapVariant>& special_shop_variants = world.map(MAP_MERCATOR_SPECIAL_SHOP)->variants();
-    
     // Remove the second shop variant that is not used in the rando (and clear the map to make room for other data)
-    special_shop_variants.erase(special_shop_variants.begin());
-    world.map(MAP_MERCATOR_SPECIAL_SHOP_VARIETY_VARIANT)->clear();
+    Map* variant_to_erase = world.map(MAP_MERCATOR_SPECIAL_SHOP_VARIETY_VARIANT);
+    world.map(MAP_MERCATOR_SPECIAL_SHOP)->variants().erase(variant_to_erase);
+    variant_to_erase->clear();
 
     // Make the remaining special shop variant triggered by owning Buyer's Card
-    special_shop_variants[0].flag_byte = 0x4C;
-    special_shop_variants[0].flag_bit = 5;
+    Map* variant_to_alter = world.map(MAP_MERCATOR_SPECIAL_SHOP_CONSUMABLE_VARIANT);
+    Flag& variant_flag = world.map(MAP_MERCATOR_SPECIAL_SHOP)->variants().at(variant_to_alter);
+    variant_flag.byte = 0x4C;
+    variant_flag.bit = 5;
 }
 
 /**
@@ -180,13 +181,13 @@ void alter_mercator_special_shop_check(World& world)
 void add_reverse_mercator_gate(World& world)
 {
     // Alter map variants so that we are stuck in the base map as long as Safety Pass is not owned
-    MapVariant& variant1 = world.map(MAP_MERCATOR_ENTRANCE)->variant(MAP_MERCATOR_ENTRANCE_VARIANT_1);
-    variant1.flag_byte = 0x59;
-    variant1.flag_bit = 5;
+    Flag& variant_1_flag = world.map(MAP_MERCATOR_ENTRANCE)->variant(world.map(MAP_MERCATOR_ENTRANCE_VARIANT_1));
+    variant_1_flag.byte = 0x59;
+    variant_1_flag.bit = 5;
 
-    MapVariant& variant2 = world.map(MAP_MERCATOR_ENTRANCE)->variant(MAP_MERCATOR_ENTRANCE_VARIANT_2);
-    variant2.flag_byte = 0x59;
-    variant2.flag_bit = 5;
+    Flag& variant_2_flag = world.map(MAP_MERCATOR_ENTRANCE)->variant(world.map(MAP_MERCATOR_ENTRANCE_VARIANT_2));
+    variant_2_flag.byte = 0x59;
+    variant_2_flag.bit = 5;
 
     // Add doors in the non-safety pass variant blocking the way out of Mercator
     Entity* door1 = new Entity();
