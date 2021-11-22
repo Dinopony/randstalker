@@ -200,7 +200,7 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
     write_maps_variants(rom, world);
     write_maps_global_entity_masks(rom, world);
     write_maps_entity_masks(rom, world);
-    write_maps_dialogue_table(rom, world);
+//    write_maps_dialogue_table(rom, world);
 
     // Entities must be written after dialogue table since building dialogue tables alter them slightly
     write_maps_entities(rom, world);
