@@ -88,6 +88,8 @@ private:
     std::map<Map*, Flag> _variants;
     Map* _parent_map;
 
+    std::vector<uint16_t> _speaker_ids;
+
     std::vector<GlobalEntityMaskFlag> _global_entity_mask_flags;
     Flag _visited_flag;
 
@@ -151,6 +153,9 @@ public:
     const Flag& variant(Map* variant_map) const { return _variants.at(variant_map); }
     Flag& variant(Map* variant_map) { return _variants.at(variant_map); }
     void add_variant(Map* variant_map, uint8_t flag_byte, uint8_t flag_bit);
+
+    const std::vector<uint16_t>& speaker_ids() const { return _speaker_ids; }
+    std::vector<uint16_t>& speaker_ids() { return _speaker_ids; }
 
     const std::vector<GlobalEntityMaskFlag>& global_entity_mask_flags() const { return _global_entity_mask_flags; }
     std::vector<GlobalEntityMaskFlag>& global_entity_mask_flags() { return _global_entity_mask_flags; }

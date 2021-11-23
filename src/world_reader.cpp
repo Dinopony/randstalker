@@ -185,27 +185,12 @@ void WorldReader::read_maps_dialogue_table(World& world, const md::ROM& rom)
     while(header_word != 0xFFFF)
     {
         uint16_t map_id = header_word & 0x7FF;
-        uint8_t length = header_word >> 11;
-        Map* map = world.map(map_id);
+        uint8_t word_count = header_word >> 11;
 
-        // Build a table to know which entity uses which dialogue in processed map and all its variants
-        std::vector<Map*> processed_maps = { map };
-        for(auto& [variant_map, flag] : map->variants())
-            processed_maps.push_back(variant_map);
-        
-        std::map<uint8_t, std::vector<Entity*>> talkable_entities_from_map_and_variants;
-        for(Map* processed_map : processed_maps)
-        {
-            for(Entity* entity : processed_map->entities())
-            {
-                if(entity->talkable())
-                    talkable_entities_from_map_and_variants[entity->dialogue()].push_back(entity);
-            }
-        }
-        
-        // Read actual dialogue info to match entities with speaker ID
-        uint8_t current_npc_dialogue = 0;
-        for(uint8_t i=0 ; i<length ; ++i)
+        Map* map = world.map(map_id);
+        std::vector<uint16_t>& map_speakers = map->speaker_ids();
+
+        for(uint8_t i=0 ; i<word_count ; ++i)
         {
             uint32_t offset = (i+1)*2;
             uint16_t word = rom.get_word(addr + offset);
@@ -213,15 +198,10 @@ void WorldReader::read_maps_dialogue_table(World& world, const md::ROM& rom)
             uint16_t speaker_id = word & 0x7FF;
             uint8_t consecutive_speakers = word >> 11;
             for(uint8_t j=0 ; j<consecutive_speakers ; ++j)
-            {
-                for(Entity* entity : talkable_entities_from_map_and_variants[current_npc_dialogue])
-                    entity->speaker_id(speaker_id);
-                current_npc_dialogue++;
-                speaker_id++;
-            }
+                map_speakers.push_back(speaker_id++);
         }
 
-        addr += (length + 1) * 2;
+        addr += (word_count + 1) * 2;
         header_word = rom.get_word(addr);
     }
 }

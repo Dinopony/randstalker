@@ -194,6 +194,9 @@ Json Map::to_json(const World& world) const
             json["entities"].push_back(entity_json);
         }
     }
+    
+    if(!_speaker_ids.empty())
+        json["speakers"] = _speaker_ids;
 
     json["unknownParam1"] = _unknown_param_1;
     json["unknownParam2"] = _unknown_param_2;

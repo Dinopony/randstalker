@@ -22,7 +22,6 @@ Entity::Entity() :
     _appear_after_player_moved_away (false),
     _talkable                       (false),
     _dialogue                       (0),
-    _speaker_id                     (0),
     _behavior_id                    (0),
     _entity_to_use_tiles_from       (nullptr),
     _flag_unknown_2_3               (false),
@@ -50,7 +49,6 @@ Entity::Entity(const Entity& entity) :
     _appear_after_player_moved_away     (entity._appear_after_player_moved_away),
     _talkable                           (entity._talkable),
     _dialogue                           (entity._dialogue),
-    _speaker_id                         (entity._speaker_id),
     _behavior_id                        (entity._behavior_id),
     _flag_unknown_2_3                   (entity._flag_unknown_2_3),
     _flag_unknown_2_4                   (entity._flag_unknown_2_4),
@@ -88,7 +86,7 @@ Json Entity::to_json(const World& world) const
 
     json["talkable"] = _talkable;
     if(_talkable)
-        json["speakerId"] = _speaker_id;
+        json["dialogue"] = _dialogue;
 
     json["behaviorId"] = _behavior_id;
 
@@ -138,7 +136,7 @@ Entity* Entity::from_json(const Json& json, Map* map, const World& world)
     entity->_can_pass_through = json.at("canPassThrough");
 
     entity->_talkable = json.at("talkable");
-    entity->_speaker_id = json.value("speakerId", 0);
+    entity->_dialogue = json.value("dialogue", 0);
 
     entity->_behavior_id = json.at("behaviorId");
 

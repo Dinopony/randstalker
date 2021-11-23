@@ -200,9 +200,7 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
     write_maps_variants(rom, world);
     write_maps_global_entity_masks(rom, world);
     write_maps_entity_masks(rom, world);
-//    write_maps_dialogue_table(rom, world);
-
-    // Entities must be written after dialogue table since building dialogue tables alter them slightly
+    write_maps_dialogue_table(rom, world);
     write_maps_entities(rom, world);
 }
 
@@ -381,64 +379,44 @@ void WorldWriter::write_maps_dialogue_table(md::ROM& rom, const World& world)
 
     for(auto& [map_id, map] : world.maps())
     {
-        if(map->is_variant())
-            continue;
+        const std::vector<uint16_t>& map_speakers = map->speaker_ids();
 
-        // Build a table to know which entity uses which dialogue in processed map and all its variants
-        std::vector<Map*> processed_maps = { map };
-        for(auto& [variant_map, flag] : map->variants())
-            processed_maps.push_back(variant_map);
-
-        // Build a sorted list of all talkable entities for the processed map and all its variants
-        std::vector<Entity*> sorted_entities;
-        for(Map* processed_map : processed_maps)
-        {
-            for(Entity* entity : processed_map->entities())
-            {
-                if(entity->talkable())
-                    sorted_entities.push_back(entity);
-            }
-        }
-        std::sort(sorted_entities.begin(), sorted_entities.end(), [](Entity* e1, Entity* e2) { return e1->speaker_id() < e2->speaker_id(); });
-       
         std::vector<std::pair<uint16_t, uint8_t>> consecutive_packs;
 
         uint16_t previous_speaker_id = 0xFFFE;
         uint8_t current_dialogue_id = -1;
         // Assign "dialogue" sequentially to entities
-        for(Entity* entity : sorted_entities)
+        for(uint16_t speaker_id : map_speakers)
         {
-            if(entity->speaker_id() != previous_speaker_id)
+            if(speaker_id != previous_speaker_id)
             {
-                if(entity->speaker_id() == previous_speaker_id + 1)
+                if(speaker_id == previous_speaker_id + 1)
                     consecutive_packs[consecutive_packs.size()-1].second++;
                 else
-                    consecutive_packs.push_back(std::make_pair(entity->speaker_id(), 1));
+                    consecutive_packs.push_back(std::make_pair(speaker_id, 1));
 
-                previous_speaker_id = entity->speaker_id();
+                previous_speaker_id = speaker_id;
                 current_dialogue_id++;
             }
-            
-            entity->dialogue(current_dialogue_id);
         }
 
-        if(consecutive_packs.empty())
-            continue;
-
-        // Write map header announcing how many dialogue words follow
-        uint16_t header_word = map_id + ((uint16_t)consecutive_packs.size() << 11);
-        rom.set_word(addr, header_word);
-        addr += 0x2;
-
-        // Write speaker IDs in map
-        for(auto& pair : consecutive_packs)
+        if(!consecutive_packs.empty())
         {
-            uint16_t speaker_id = pair.first;
-            uint8_t consecutive_speakers = pair.second;
-
-            uint16_t pack_word = (speaker_id & 0x7FF) + (consecutive_speakers << 11);
-            rom.set_word(addr, pack_word);
+            // Write map header announcing how many dialogue words follow
+            uint16_t header_word = map_id + ((uint16_t)consecutive_packs.size() << 11);
+            rom.set_word(addr, header_word);
             addr += 0x2;
+
+            // Write speaker IDs in map
+            for(auto& pair : consecutive_packs)
+            {
+                uint16_t speaker_id = pair.first;
+                uint8_t consecutive_speakers = pair.second;
+
+                uint16_t pack_word = (speaker_id & 0x7FF) + (consecutive_speakers << 11);
+                rom.set_word(addr, pack_word);
+                addr += 0x2;
+            }
         }
     }
 

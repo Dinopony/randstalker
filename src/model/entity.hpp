@@ -63,7 +63,6 @@ private:
 
     bool _talkable;
     uint8_t _dialogue;
-    uint16_t _speaker_id;
 
     /// Changing it for enemies change their default AI (0 makes an orc frozen at first, then moves normally once spotted)
     /// 106 => disappears when all enemies are killed in the room
@@ -138,9 +137,6 @@ public:
 
     uint8_t dialogue() const { return _dialogue; }
     void dialogue(uint8_t dialogue) { _dialogue = dialogue; }
-    
-    uint16_t speaker_id() const { return _speaker_id; }
-    void speaker_id(uint16_t speaker_id) { _speaker_id = speaker_id; }
 
     uint16_t behavior_id() const { return _behavior_id; }
     void behavior_id(uint16_t behavior_id) { _behavior_id = behavior_id; }
