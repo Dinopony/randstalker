@@ -555,8 +555,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
     // A shuffled list of items which location is interesting, useful for the "item X is in Y" hints
     UnsortedSet<uint8_t> hintable_item_locations = {
         ITEM_SPIKE_BOOTS,       ITEM_AXE_MAGIC,      ITEM_BUYER_CARD,    ITEM_GARLIC,
-        ITEM_EINSTEIN_WHISTLE,  ITEM_ARMLET,         ITEM_IDOL_STONE,
-        ITEM_THUNDER_SWORD,     ITEM_HEALING_BOOTS,  ITEM_VENUS_STONE,   ITEM_STATUE_JYPTA,
+        ITEM_EINSTEIN_WHISTLE,  ITEM_ARMLET,         ITEM_IDOL_STONE,    ITEM_LANTERN,
         ITEM_SUN_STONE,         ITEM_KEY,            ITEM_SAFETY_PASS,   ITEM_LOGS,
         ITEM_GOLA_EYE,          ITEM_GOLA_NAIL,      ITEM_GOLA_FANG,     ITEM_GOLA_HORN
     };
