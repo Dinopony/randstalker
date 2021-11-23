@@ -55,9 +55,9 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
 {
     input_rom_path = args.get_string("inputrom", "./input.md");
     output_rom_path = args.get_string("outputrom", "./");
-    spoiler_log_path = args.get_string("outputlog");
+    spoiler_log_path = args.get_string("outputlog", "./");
 
-   // Clean output ROM path and determine if it's a directory or a file
+    // Clean output ROM path and determine if it's a directory or a file
     bool output_path_is_a_directory = true;
     if(!output_rom_path.empty())
     {
@@ -67,20 +67,20 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
     }
 
     // Clean output log path and if it wasn't specified, give it an appropriate default value
-    if(spoiler_log_path.empty())
+    if(!args.contains("outputlog"))
     {
         if(output_path_is_a_directory && !output_rom_path.empty())
             spoiler_log_path = output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
         else
             spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
     }
-    if(!tools::ends_with(spoiler_log_path, ".json") && *spoiler_log_path.rbegin() != '/')
+    else if(!spoiler_log_path.empty() && !tools::ends_with(spoiler_log_path, ".json") && *spoiler_log_path.rbegin() != '/')
         spoiler_log_path += "/";
 
     // Add the filename afterwards
     if(!output_rom_path.empty() && *output_rom_path.rbegin() == '/')
         output_rom_path += options.hash_sentence() + ".md";
-    if(*spoiler_log_path.rbegin() == '/')
+    if(!spoiler_log_path.empty() && *spoiler_log_path.rbegin() == '/')
         spoiler_log_path += options.hash_sentence() + ".json";
 }
 
