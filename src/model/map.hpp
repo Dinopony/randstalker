@@ -138,7 +138,7 @@ public:
     const std::vector<Entity*>& entities() const { return _entities; }
     const Entity& entity(uint8_t entity_id) const { return *_entities.at(entity_id); }
     Entity* entity(uint8_t entity_id) { return _entities.at(entity_id); }
-    uint8_t add_entity(Entity* entity);
+    Entity* add_entity(Entity* entity);
     void insert_entity(uint8_t entity_id, Entity* entity);
     void remove_entity(uint8_t entity_id, bool delete_pointer = true);
     void move_entity(uint8_t entity_id, uint8_t entity_new_id);
@@ -609,7 +609,7 @@ constexpr uint16_t MAP_426 = 426;
 constexpr uint16_t MAP_427 = 427;
 constexpr uint16_t MAP_428 = 428;
 constexpr uint16_t MAP_429 = 429;
-constexpr uint16_t MAP_430 = 430;
+constexpr uint16_t MAP_ROUTE_GUMI_RYUMA_KADO_CLIMB = 430;
 constexpr uint16_t MAP_431 = 431;
 constexpr uint16_t MAP_432 = 432;
 constexpr uint16_t MAP_433 = 433;
@@ -622,7 +622,7 @@ constexpr uint16_t MAP_439 = 439;
 constexpr uint16_t MAP_440 = 440;
 constexpr uint16_t MAP_441 = 441;
 constexpr uint16_t MAP_442 = 442;
-constexpr uint16_t MAP_443 = 443;
+constexpr uint16_t MAP_ROUTE_GUMI_RYUMA_HELGA_SWAMP = 443;
 constexpr uint16_t MAP_444 = 444;
 constexpr uint16_t MAP_445 = 445;
 constexpr uint16_t MAP_446 = 446;
@@ -789,8 +789,8 @@ constexpr uint16_t MAP_606 = 606;
 constexpr uint16_t MAP_GUMI_CHURCH = 607;
 constexpr uint16_t MAP_608 = 608;
 constexpr uint16_t MAP_609 = 609;
-constexpr uint16_t MAP_610 = 610;
-constexpr uint16_t MAP_611 = 611;
+constexpr uint16_t MAP_RYUMA_EXTERIOR = 610;
+constexpr uint16_t MAP_RYUMA_EXTERIOR_VARIANT = 611;
 constexpr uint16_t MAP_612 = 612;
 constexpr uint16_t MAP_RYUMA_CHURCH = 613;
 constexpr uint16_t MAP_614 = 614;

@@ -111,64 +111,73 @@ public:
 };
 
 
-#define ENEMY_SLIME_1 0x3C
-#define ENEMY_SLIME_2 0x3D
-#define ENEMY_SLIME_3 0x3E
-#define ENEMY_SLIME_4 0x81
-#define ENEMY_SLIME_5 0x82
-#define ENEMY_SLIME_6 0x83
-#define ENEMY_ORC_1 0x04
-#define ENEMY_ORC_2 0x05
-#define ENEMY_ORC_3 0x06
-#define ENEMY_WORM_1 0x07
-#define ENEMY_WORM_2 0x08
-#define ENEMY_WORM_3 0x09
-#define ENEMY_MUSHROOM_1 0x36
-#define ENEMY_MUSHROOM_2 0x37
-#define ENEMY_MUSHROOM_3 0x38
-#define ENEMY_GIANT_1 0x39
-#define ENEMY_GIANT_2 0x3A
-#define ENEMY_GIANT_3 0x3B
-#define ENEMY_REAPER_1 0x88
-#define ENEMY_REAPER_2 0x89
-#define ENEMY_GOLEM_1 0x92
-#define ENEMY_GOLEM_2 0x93
-#define ENEMY_GOLEM_3 0x94
-#define ENEMY_SPECTRE_1 0x95
-#define ENEMY_SPECTRE_2 0x96
-#define ENEMY_SPECTRE_3 0x97
-#define ENEMY_NINJA_1 0x17
-#define ENEMY_NINJA_2 0x18
-#define ENEMY_NINJA_3 0x19
-#define ENEMY_LIZARD_1 0x1A
-#define ENEMY_LIZARD_2 0x1B
-#define ENEMY_LIZARD_3 0x1C
-#define ENEMY_KNIGHT_1 0x1D
-#define ENEMY_KNIGHT_2 0x1E
-#define ENEMY_KNIGHT_3 0x1F
-#define ENEMY_GHOST_1 0x20
-#define ENEMY_GHOST_2 0x21
-#define ENEMY_GHOST_3 0x22
-#define ENEMY_MUMMY_1 0x23
-#define ENEMY_MUMMY_2 0x24
-#define ENEMY_MUMMY_3 0x25
-#define ENEMY_UNICORN_1 0x26
-#define ENEMY_UNICORN_2 0x27
-#define ENEMY_UNICORN_3 0x28
-#define ENEMY_SKELETON_1 0x29
-#define ENEMY_SKELETON_2 0x2A
-#define ENEMY_SKELETON_3 0x2B
-#define ENEMY_MIMIC_1 0x2C
-#define ENEMY_MIMIC_2 0x2D
-#define ENEMY_MIMIC_3 0x2E
-#define ENEMY_SPINNER_1 0x9D
-#define ENEMY_SPINNER_2 0xAA
-#define ENEMY_QUAKE_1 0xA7
-#define ENEMY_QUAKE_2 0xAB
-#define ENEMY_DUKE 0x70
-#define ENEMY_MIR 0x7C
-#define ENEMY_ZAK 0x85
-#define ENEMY_MIRO 0x9F
-#define ENEMY_IFRIT 0xA0
-#define ENEMY_NOLE 0xA5
-#define ENEMY_GOLA 0xA2
+constexpr uint8_t ENEMY_SLIME_1 = 0x3C;
+constexpr uint8_t ENEMY_SLIME_2 = 0x3D;
+constexpr uint8_t ENEMY_SLIME_3 = 0x3E;
+constexpr uint8_t ENEMY_SLIME_4 = 0x81;
+constexpr uint8_t ENEMY_SLIME_5 = 0x82;
+constexpr uint8_t ENEMY_SLIME_6 = 0x83;
+constexpr uint8_t ENEMY_ORC_1 = 0x04;
+constexpr uint8_t ENEMY_ORC_2 = 0x05;
+constexpr uint8_t ENEMY_ORC_3 = 0x06;
+constexpr uint8_t ENEMY_WORM_1 = 0x07;
+constexpr uint8_t ENEMY_WORM_2 = 0x08;
+constexpr uint8_t ENEMY_WORM_3 = 0x09;
+constexpr uint8_t ENEMY_MUSHROOM_1 = 0x36;
+constexpr uint8_t ENEMY_MUSHROOM_2 = 0x37;
+constexpr uint8_t ENEMY_MUSHROOM_3 = 0x38;
+constexpr uint8_t ENEMY_GIANT_1 = 0x39;
+constexpr uint8_t ENEMY_GIANT_2 = 0x3A;
+constexpr uint8_t ENEMY_GIANT_3 = 0x3B;
+constexpr uint8_t ENEMY_REAPER_1 = 0x88;
+constexpr uint8_t ENEMY_REAPER_2 = 0x89;
+constexpr uint8_t ENEMY_GOLEM_1 = 0x92;
+constexpr uint8_t ENEMY_GOLEM_2 = 0x93;
+constexpr uint8_t ENEMY_GOLEM_3 = 0x94;
+constexpr uint8_t ENEMY_SPECTRE_1 = 0x95;
+constexpr uint8_t ENEMY_SPECTRE_2 = 0x96;
+constexpr uint8_t ENEMY_SPECTRE_3 = 0x97;
+constexpr uint8_t ENEMY_NINJA_1 = 0x17;
+constexpr uint8_t ENEMY_NINJA_2 = 0x18;
+constexpr uint8_t ENEMY_NINJA_3 = 0x19;
+constexpr uint8_t ENEMY_LIZARD_1 = 0x1A;
+constexpr uint8_t ENEMY_LIZARD_2 = 0x1B;
+constexpr uint8_t ENEMY_LIZARD_3 = 0x1C;
+constexpr uint8_t ENEMY_KNIGHT_1 = 0x1D;
+constexpr uint8_t ENEMY_KNIGHT_2 = 0x1E;
+constexpr uint8_t ENEMY_KNIGHT_3 = 0x1F;
+constexpr uint8_t ENEMY_GHOST_1 = 0x20;
+constexpr uint8_t ENEMY_GHOST_2 = 0x21;
+constexpr uint8_t ENEMY_GHOST_3 = 0x22;
+constexpr uint8_t ENEMY_MUMMY_1 = 0x23;
+constexpr uint8_t ENEMY_MUMMY_2 = 0x24;
+constexpr uint8_t ENEMY_MUMMY_3 = 0x25;
+constexpr uint8_t ENEMY_UNICORN_1 = 0x26;
+constexpr uint8_t ENEMY_UNICORN_2 = 0x27;
+constexpr uint8_t ENEMY_UNICORN_3 = 0x28;
+constexpr uint8_t ENEMY_SKELETON_1 = 0x29;
+constexpr uint8_t ENEMY_SKELETON_2 = 0x2A;
+constexpr uint8_t ENEMY_SKELETON_3 = 0x2B;
+constexpr uint8_t ENEMY_MIMIC_1 = 0x2C;
+constexpr uint8_t ENEMY_MIMIC_2 = 0x2D;
+constexpr uint8_t ENEMY_MIMIC_3 = 0x2E;
+constexpr uint8_t ENEMY_SPINNER_1 = 0x9D;
+constexpr uint8_t ENEMY_SPINNER_2 = 0xAA;
+constexpr uint8_t ENEMY_QUAKE_1 = 0xA7;
+constexpr uint8_t ENEMY_QUAKE_2 = 0xAB;
+constexpr uint8_t ENEMY_DUKE = 0x70;
+constexpr uint8_t ENEMY_MIR = 0x7C;
+constexpr uint8_t ENEMY_ZAK = 0x85;
+constexpr uint8_t ENEMY_MIRO_1 = 0x00;
+constexpr uint8_t ENEMY_MIRO_2 = 0x9F;
+constexpr uint8_t ENEMY_IFRIT = 0xA0;
+constexpr uint8_t ENEMY_NOLE = 0xA5;
+constexpr uint8_t ENEMY_GOLA = 0xA2;
+
+constexpr uint8_t ENTITY_CHEST = 18;
+constexpr uint8_t ENTITY_SMALL_YELLOW_PLATFORM = 21;
+constexpr uint8_t ENTITY_CRATE = 22;
+constexpr uint8_t ENTITY_SMALL_GRAY_SPIKEBALL = 73;
+constexpr uint8_t ENTITY_BIG_THIN_YELLOW_PLATFORM = 95;
+constexpr uint8_t ENTITY_BIG_GRAY_SPIKEBALL = 142;
+constexpr uint8_t ENTITY_BIG_BLUE_BALL = 154;

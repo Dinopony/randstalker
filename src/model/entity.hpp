@@ -60,6 +60,7 @@ private:
     bool _liftable;
     bool _can_pass_through;
     bool _appear_after_player_moved_away;
+    bool _gravity_immune;
 
     bool _talkable;
     uint8_t _dialogue;
@@ -75,12 +76,11 @@ private:
     bool _flag_unknown_2_3;
     bool _flag_unknown_2_4;
     bool _flag_unknown_3_5;
-    bool _flag_unknown_6_7;
 
     std::vector<EntityMaskFlag> _mask_flags;
 
 public:
-    Entity();
+    Entity(uint8_t type_id = 0, uint8_t pos_x = 0, uint8_t pos_y = 0, uint8_t pos_z = 0);
     Entity(const Entity& entity);
 
     void map(Map* map) { _map = map; }
@@ -129,6 +129,9 @@ public:
     bool can_pass_through() const { return _can_pass_through; }
     void can_pass_through(bool can_pass_through) { _can_pass_through = can_pass_through; }
 
+    bool gravity_immune() const { return _gravity_immune; }
+    void gravity_immune(bool value) { _gravity_immune = value; }
+
     bool appear_after_player_moved_away() const { return _appear_after_player_moved_away; }
     void appear_after_player_moved_away(bool appear_after_player_moved_away) { _appear_after_player_moved_away = appear_after_player_moved_away; }
 
@@ -153,9 +156,6 @@ public:
     bool flag_unknown_3_5() const { return _flag_unknown_3_5; }
     void flag_unknown_3_5(bool value) { _flag_unknown_3_5 = value; }
     
-    bool flag_unknown_6_7() const { return _flag_unknown_6_7; }
-    void flag_unknown_6_7(bool value) { _flag_unknown_6_7 = value; }
-
     const std::vector<EntityMaskFlag>& mask_flags() const { return _mask_flags; }
     std::vector<EntityMaskFlag>& mask_flags() { return _mask_flags; }
 

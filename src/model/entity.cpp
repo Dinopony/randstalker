@@ -3,32 +3,57 @@
 #include "../world.hpp"
 #include "map.hpp"
 #include "entity_type.hpp"
+#include <set>
 
-Entity::Entity() :
+static std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
+    { ENTITY_SMALL_YELLOW_PLATFORM, 2 },
+    { ENTITY_BIG_THIN_YELLOW_PLATFORM, 2 }
+};
+
+static std::set<uint8_t> LIFTABLE_TYPES = {
+    ENTITY_CRATE
+};
+
+static std::set<uint8_t> FIGHTABLE_TYPES = {
+    ENTITY_SMALL_GRAY_SPIKEBALL,
+    ENTITY_BIG_GRAY_SPIKEBALL
+};
+
+Entity::Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z) :
     _map                            (nullptr),
-    _entity_type_id                 (0),
-    _pos_x                          (0),
-    _pos_y                          (0),
-    _pos_z                          (0),
+    _entity_type_id                 (type_id),
+    _pos_x                          (pos_x),
+    _pos_y                          (pos_y),
+    _pos_z                          (pos_z),
     _half_tile_x                    (false),
     _half_tile_y                    (false),
     _half_tile_z                    (false),
     _orientation                    (0),
-    _palette                        (0),
+    _palette                        (1),
     _speed                          (0),
     _fightable                      (false),
     _liftable                       (false),
     _can_pass_through               (false),
     _appear_after_player_moved_away (false),
+    _gravity_immune                 (false),
     _talkable                       (false),
     _dialogue                       (0),
     _behavior_id                    (0),
     _entity_to_use_tiles_from       (nullptr),
     _flag_unknown_2_3               (false),
     _flag_unknown_2_4               (false),
-    _flag_unknown_3_5               (false),
-    _flag_unknown_6_7               (false)
-{}
+    _flag_unknown_3_5               (false)
+
+{
+    if(DEFAULT_PALETTES.count(type_id))
+        _palette = DEFAULT_PALETTES[type_id];
+
+    if(LIFTABLE_TYPES.count(type_id))
+        _liftable = true;
+
+    if(FIGHTABLE_TYPES.count(type_id))
+        _fightable = true;
+}
 
 Entity::Entity(const Entity& entity) :
     _map                                (entity._map),
@@ -50,10 +75,10 @@ Entity::Entity(const Entity& entity) :
     _talkable                           (entity._talkable),
     _dialogue                           (entity._dialogue),
     _behavior_id                        (entity._behavior_id),
+    _gravity_immune                     (entity._gravity_immune),
     _flag_unknown_2_3                   (entity._flag_unknown_2_3),
     _flag_unknown_2_4                   (entity._flag_unknown_2_4),
-    _flag_unknown_3_5                   (entity._flag_unknown_3_5),
-    _flag_unknown_6_7                   (entity._flag_unknown_6_7)
+    _flag_unknown_3_5                   (entity._flag_unknown_3_5)
 {}
 
 uint8_t Entity::entity_id() const 
@@ -81,8 +106,9 @@ Json Entity::to_json(const World& world) const
 
     json["fightable"] = _fightable;
     json["liftable"] = _liftable;
-    json["appearAfterPlayerMovedAway"] = _appear_after_player_moved_away;
     json["canPassThrough"] = _can_pass_through;
+    json["appearAfterPlayerMovedAway"] = _appear_after_player_moved_away;
+    json["gravityImmune"] = _gravity_immune;
 
     json["talkable"] = _talkable;
     if(_talkable)
@@ -98,7 +124,6 @@ Json Entity::to_json(const World& world) const
     json["flagUnknown_2_3"] = _flag_unknown_2_3;
     json["flagUnknown_2_4"] = _flag_unknown_2_4;
 //    json["flagUnknown_3_5"] = _flag_unknown_3_5;
-    json["flagUnknown_6_7"] = _flag_unknown_6_7;
 
     if(!_mask_flags.empty())
     {
@@ -132,8 +157,9 @@ Entity* Entity::from_json(const Json& json, Map* map, const World& world)
 
     entity->_fightable = json.at("fightable");
     entity->_liftable = json.at("liftable");
-    entity->_appear_after_player_moved_away = json.at("appearAfterPlayerMovedAway");
     entity->_can_pass_through = json.at("canPassThrough");
+    entity->_appear_after_player_moved_away = json.at("appearAfterPlayerMovedAway");
+    entity->_gravity_immune = json.at("gravityImmune");
 
     entity->_talkable = json.at("talkable");
     entity->_dialogue = json.value("dialogue", 0);
@@ -150,8 +176,7 @@ Entity* Entity::from_json(const Json& json, Map* map, const World& world)
     entity->_flag_unknown_2_3 = json.at("flagUnknown_2_3");
     entity->_flag_unknown_2_4 = json.at("flagUnknown_2_4");
 //    entity->_flag_unknown_3_5 = json.at("flagUnknown_3_5");
-    entity->_flag_unknown_6_7 = json.at("flagUnknown_6_7");
-
+    
     if(json.contains("maskFlags"))
     {
         for(const Json& j : json.at("maskFlags"))
@@ -216,7 +241,7 @@ Entity* Entity::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
     entity->_can_pass_through = byte6 & 0x10;
     entity->_appear_after_player_moved_away = byte6 & 0x20;
     entity->_half_tile_z = byte6 & 0x40;
-    entity->_flag_unknown_6_7 = byte6 & 0x80;
+    entity->_gravity_immune = byte6 & 0x80;
 
     // Byte 7
     uint8_t byte7 = rom.get_byte(addr+7);
@@ -268,7 +293,7 @@ std::vector<uint8_t> Entity::to_bytes() const
     if(_can_pass_through)   byte6 |= 0x10;
     if(_appear_after_player_moved_away)   byte6 |= 0x20;
     if(_half_tile_z)        byte6 |= 0x40;
-    if(_flag_unknown_6_7)   byte6 |= 0x80;
+    if(_gravity_immune)   byte6 |= 0x80;
 
     // Byte 7
     uint8_t byte7 = _behavior_id & 0x00FF;

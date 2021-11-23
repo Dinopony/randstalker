@@ -54,11 +54,11 @@ void Map::clear()
 
 ////////////////////////////////////////////////////////////////
 
-uint8_t Map::add_entity(Entity* entity) 
+Entity* Map::add_entity(Entity* entity) 
 {
     entity->map(this);
     _entities.push_back(entity);
-    return (uint8_t)_entities.size()-1;
+    return entity;
 }
 
 void Map::insert_entity(uint8_t entity_id, Entity* entity) 
