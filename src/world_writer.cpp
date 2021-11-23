@@ -441,7 +441,7 @@ void WorldWriter::write_maps_entities(md::ROM& rom, const World& world)
             {
                 std::vector<uint8_t> entity_bytes = entity->to_bytes();
                 rom.set_bytes(offsets::MAP_ENTITIES_TABLE + cumulated_offset, entity_bytes);
-                cumulated_offset += (uint32_t)entity_bytes.size();
+                cumulated_offset += (uint16_t)entity_bytes.size();
             }
 
             rom.set_word(offsets::MAP_ENTITIES_TABLE + cumulated_offset, 0xFFFF);

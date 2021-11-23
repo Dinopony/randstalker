@@ -344,6 +344,8 @@ healthchecksdb
 
 # CMake related
 build/*
+build_release_win64/*
+build_release_win32/*
 CMakeCache.txt
 cmake_install.cmake
 

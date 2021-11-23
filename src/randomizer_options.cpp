@@ -245,14 +245,23 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("mandatoryItems"))
         {
-            _mandatory_items = new std::map<std::string, uint16_t>();
-            *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
+            try {            
+                _mandatory_items = new std::map<std::string, uint16_t>();
+                *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
+            } 
+            catch(Json::exception) { 
+                throw RandomizerException("Error while parsing mandatory items from preset");
+            }
         }
 
         if(randomizer_settings_json.contains("fillerItems"))
         {
-            _filler_items = new std::map<std::string, uint16_t>();
-            *(_filler_items) = randomizer_settings_json.at("fillerItems");
+            try {
+                _filler_items = new std::map<std::string, uint16_t>();
+                *(_filler_items) = randomizer_settings_json.at("fillerItems");
+            } catch (Json::exception) {
+                throw RandomizerException("Error while parsing filler items from preset");
+            }
         }
     }
 

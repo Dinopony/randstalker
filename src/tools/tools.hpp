@@ -60,7 +60,7 @@ namespace tools
             return "";
             
         std::string ret = words[0];
-        for(int i=1 ; i<words.size() ; ++i)
+        for(size_t i=1 ; i<words.size() ; ++i)
         {
             ret += junction;
             ret += words[i];

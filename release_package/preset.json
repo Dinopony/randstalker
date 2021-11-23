@@ -26,8 +26,6 @@
         ],
         "shuffleTrees": false,
         "ghostJumpingInLogic": false,
-        "damageBoostingInLogic": false,
-        "mandatoryItems": "default",
-        "fillerItems": "default"
+        "damageBoostingInLogic": false
     }
 }
