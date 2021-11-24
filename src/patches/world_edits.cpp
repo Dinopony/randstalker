@@ -276,6 +276,11 @@ void make_pockets_always_in_thieves_hideout_cell(World& world)
     world.map(MAP_THIEVES_HIDEOUT_POCKETS_CELL)->entity(2)->mask_flags().clear();
 }
 
+void remove_pockets_from_gumi(World& world)
+{
+    world.map(MAP_GUMI_EXTERIOR)->remove_entity(3);
+}
+
 void optimize_maps(World& world)
 {
     // Remove ghosts from laggy Tibor rooms
@@ -345,6 +350,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     remove_logs_room_exit_check(world);
     allow_going_backwards_in_knl_exterior(world);
     make_pockets_always_in_thieves_hideout_cell(world);
+    remove_pockets_from_gumi(world);
     optimize_maps(world);
     
     if(options.fix_armlet_skip())

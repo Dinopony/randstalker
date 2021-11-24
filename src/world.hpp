@@ -75,6 +75,7 @@ public:
 
     const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     const std::vector<std::string>& game_strings() const { return _game_strings; }
+    std::vector<std::string>& game_strings() { return _game_strings; }
 
     void active_spawn_location(SpawnLocation* spawn) { _active_spawn_location = spawn; }
     SpawnLocation* active_spawn_location() const { return _active_spawn_location; }

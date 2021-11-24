@@ -7,7 +7,10 @@
 
 static std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
     { ENTITY_SMALL_YELLOW_PLATFORM, 2 },
-    { ENTITY_BIG_THIN_YELLOW_PLATFORM, 2 }
+    { ENTITY_SMALL_THIN_YELLOW_PLATFORM, 2 },
+    { ENTITY_BIG_THIN_YELLOW_PLATFORM, 2 },
+    { ENTITY_SMALL_GREEN_PLATFORM, 2 },
+    { ENTITY_BIG_THIN_GREEN_PLATFORM, 2 }
 };
 
 static std::set<uint8_t> LIFTABLE_TYPES = {
@@ -16,7 +19,8 @@ static std::set<uint8_t> LIFTABLE_TYPES = {
 
 static std::set<uint8_t> FIGHTABLE_TYPES = {
     ENTITY_SMALL_GRAY_SPIKEBALL,
-    ENTITY_BIG_GRAY_SPIKEBALL
+    ENTITY_BIG_GRAY_SPIKEBALL,
+    ENEMY_SACRED_TREE
 };
 
 Entity::Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z) :

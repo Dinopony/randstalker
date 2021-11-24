@@ -173,11 +173,16 @@ constexpr uint8_t ENEMY_MIRO_2 = 0x9F;
 constexpr uint8_t ENEMY_IFRIT = 0xA0;
 constexpr uint8_t ENEMY_NOLE = 0xA5;
 constexpr uint8_t ENEMY_GOLA = 0xA2;
+constexpr uint8_t ENEMY_SACRED_TREE = 75;
 
 constexpr uint8_t ENTITY_CHEST = 18;
 constexpr uint8_t ENTITY_SMALL_YELLOW_PLATFORM = 21;
 constexpr uint8_t ENTITY_CRATE = 22;
 constexpr uint8_t ENTITY_SMALL_GRAY_SPIKEBALL = 73;
+constexpr uint8_t ENTITY_BUTTON = 85;
+constexpr uint8_t ENTITY_SMALL_GREEN_PLATFORM = 88;
+constexpr uint8_t ENTITY_SMALL_THIN_YELLOW_PLATFORM = 89;
+constexpr uint8_t ENTITY_BIG_THIN_GREEN_PLATFORM = 94;
 constexpr uint8_t ENTITY_BIG_THIN_YELLOW_PLATFORM = 95;
 constexpr uint8_t ENTITY_BIG_GRAY_SPIKEBALL = 142;
 constexpr uint8_t ENTITY_BIG_BLUE_BALL = 154;
