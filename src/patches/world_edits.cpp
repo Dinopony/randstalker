@@ -70,10 +70,10 @@ void make_gumi_boulder_push_not_story_dependant(World& world)
 {
     // Turn the last boulder into a platform to prevent any softlock
     Entity* last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
-    last_boulder->entity_type_id(world.entity_type("large_wood_platform")->id());
+    last_boulder->entity_type_id(world.entity_type("large_thin_yellow_platform")->id());
     last_boulder->entity_to_use_tiles_from(nullptr);
     last_boulder->half_tile_z(true);
-    last_boulder->palette(2);
+    last_boulder->palette(0);
 
     // Always remove Pockets from Gumi boulder map
     world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->remove_entity(4);
