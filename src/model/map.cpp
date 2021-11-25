@@ -50,6 +50,7 @@ void Map::clear()
     _exits.clear();
     _variants.clear();
     _global_entity_mask_flags.clear();
+    _speaker_ids.clear();
 }
 
 ////////////////////////////////////////////////////////////////

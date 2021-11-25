@@ -181,11 +181,11 @@ void alter_mercator_special_shop_check(World& world)
 void add_reverse_mercator_gate(World& world)
 {
     // Alter map variants so that we are stuck in the base map as long as Safety Pass is not owned
-    Flag& variant_1_flag = world.map(MAP_MERCATOR_ENTRANCE)->variant(world.map(MAP_MERCATOR_ENTRANCE_VARIANT_1));
+    Flag& variant_1_flag = world.map(MAP_MERCATOR_EXTERIOR_1)->variant(world.map(MAP_MERCATOR_EXTERIOR_1_VARIANT_1));
     variant_1_flag.byte = 0x59;
     variant_1_flag.bit = 5;
 
-    Flag& variant_2_flag = world.map(MAP_MERCATOR_ENTRANCE)->variant(world.map(MAP_MERCATOR_ENTRANCE_VARIANT_2));
+    Flag& variant_2_flag = world.map(MAP_MERCATOR_EXTERIOR_1)->variant(world.map(MAP_MERCATOR_EXTERIOR_1_VARIANT_2));
     variant_2_flag.byte = 0x59;
     variant_2_flag.bit = 5;
 
@@ -195,12 +195,12 @@ void add_reverse_mercator_gate(World& world)
     door1->position(48, 41, 1);
     door1->half_tile_y(true);
     door1->orientation(ENTITY_ORIENTATION_SE);
-    world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door1);
+    world.map(MAP_MERCATOR_EXTERIOR_1)->add_entity(door1);
 
     Entity* door2 = new Entity(*door1);
     door2->pos_y(door1->pos_y()+2);
     door2->entity_to_use_tiles_from(door1);
-    world.map(MAP_MERCATOR_ENTRANCE)->add_entity(door2);
+    world.map(MAP_MERCATOR_EXTERIOR_1)->add_entity(door2);
 }
 
 /**

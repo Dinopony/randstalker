@@ -186,3 +186,8 @@ constexpr uint8_t ENTITY_BIG_THIN_GREEN_PLATFORM = 94;
 constexpr uint8_t ENTITY_BIG_THIN_YELLOW_PLATFORM = 95;
 constexpr uint8_t ENTITY_BIG_GRAY_SPIKEBALL = 142;
 constexpr uint8_t ENTITY_BIG_BLUE_BALL = 154;
+
+constexpr uint8_t ENTITY_SOLDIER = 50;
+constexpr uint8_t ENTITY_INJURED_DOG = 77;
+constexpr uint8_t ENTITY_DEAD_BODY = 78;
+constexpr uint8_t ENTITY_BOULDER = 98;
