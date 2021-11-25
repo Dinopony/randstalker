@@ -281,6 +281,15 @@ void remove_pockets_from_gumi(World& world)
     world.map(MAP_GUMI_EXTERIOR)->remove_entity(3);
 }
 
+void put_back_giants_in_verla_mines_keydoor_map(World& world)
+{
+    Map* map = world.map(MAP_VERLA_MINES_KEYDOOR_NEAR_ENTRANCE);
+    map->global_entity_mask_flags().clear();
+    // Remove the keydoor and an invisible cube
+    map->remove_entity(1);
+    map->remove_entity(0);
+}
+
 void optimize_maps(World& world)
 {
     // Remove ghosts from laggy Tibor rooms
@@ -351,6 +360,7 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     allow_going_backwards_in_knl_exterior(world);
     make_pockets_always_in_thieves_hideout_cell(world);
     remove_pockets_from_gumi(world);
+    put_back_giants_in_verla_mines_keydoor_map(world);
     optimize_maps(world);
     
     if(options.fix_armlet_skip())
