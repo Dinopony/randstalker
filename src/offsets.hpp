@@ -58,7 +58,8 @@ namespace offsets
     constexpr uint32_t KNL_LIT_ROOM_PALETTE = 0x11CD1C;
     constexpr uint32_t KNL_DARK_ROOM_PALETTE = 0x11CD36;
 
-    constexpr uint32_t MAP_EXITS_TABLE = 0x11CEA2;
+    constexpr uint32_t MAP_CONNECTIONS_TABLE = 0x11CEA2;
+    constexpr uint32_t MAP_CONNECTIONS_TABLE_END = 0x11EA64;
 
     constexpr uint32_t ITEM_SPRITES_TABLE = 0x121578;
 }

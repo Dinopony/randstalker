@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+#include "model/map_connection.hpp"
+
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
 
 class RandomizerOptions;
@@ -33,6 +35,7 @@ private:
     std::vector<std::string> _game_strings;
     std::map<uint8_t, EntityType*> _entity_types;
     std::map<uint16_t, Map*> _maps;
+    std::vector<MapConnection> _map_connections;
     std::vector<EntityType*> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
@@ -92,6 +95,9 @@ public:
     const std::map<uint16_t, Map*>& maps() const { return _maps; }
     Map* map(uint16_t map_id) const { return _maps.at(map_id); }
     void set_map(uint16_t map_id, Map* map);
+
+    const std::vector<MapConnection>& map_connections() const { return _map_connections; }
+    std::vector<MapConnection>& map_connections() { return _map_connections; }
 
     const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
     void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.push_back(enemy); }

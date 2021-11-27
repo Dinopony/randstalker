@@ -7,34 +7,6 @@
 class Entity;
 class World;
 
-struct MapExit {
-    uint8_t pos_x;
-    uint8_t pos_y;
-
-    uint16_t destination_map_id;
-    uint8_t destination_x;
-    uint8_t destination_y;
-
-    /// 0x1 => Initially closed?
-    /// 0x2 => NE
-    /// 0x4 => NW
-    /// 0x8 => ???
-    /// 0x10 => NE Stairs
-    /// 0x20 => NW Stairs
-    uint8_t extra_byte;
-
-    Json to_json() const {
-        Json json;
-        json["posX"] = pos_x;
-        json["posY"] = pos_y;
-        json["extraByte"] = extra_byte;
-        json["destinationMapId"] = destination_map_id;
-        json["destinationX"] = destination_x;
-        json["destinationY"] = destination_y;
-        return json;
-    }
-};
-
 struct GlobalEntityMaskFlag : public Flag
 {
     uint8_t first_entity_id;
@@ -83,7 +55,6 @@ private:
     uint16_t _climb_destination;
     
     std::vector<Entity*> _entities;
-    std::vector<MapExit> _exits;
     
     std::map<Map*, Flag> _variants;
     Map* _parent_map;
@@ -144,9 +115,6 @@ public:
     void move_entity(uint8_t entity_id, uint8_t entity_new_id);
     void clear_entities();
     uint8_t entity_id(const Entity* entity) const;
-
-    const std::vector<MapExit>& exits() const { return _exits; }
-    std::vector<MapExit>& exits() { return _exits; }
 
     const std::map<Map*, Flag>& variants() const { return _variants; }
     std::map<Map*, Flag>& variants() { return _variants; }

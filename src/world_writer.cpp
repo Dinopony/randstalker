@@ -190,6 +190,36 @@ void WorldWriter::write_fahl_enemies(md::ROM& rom, const World& world)
         rom.set_byte(0x12CE6 + i, world.fahl_enemies().at(i)->id());
 }
 
+
+void WorldWriter::write_map_connections(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::MAP_CONNECTIONS_TABLE;
+
+    for(const MapConnection& connection : world.map_connections())
+    {
+        uint8_t byte_1 = (connection.map_id >> 8) & 0x03;
+        byte_1 |= (connection.extra_byte & 0xFC) << 2;
+        uint8_t byte_2 = connection.map_id & 0xFF;
+        uint8_t byte_3 = connection.pos_x;
+        uint8_t byte_4 = connection.pos_y;
+
+        uint8_t byte_5 = (connection.destination_map_id >> 8) & 0x03;
+        byte_5 |= (connection.destination_extra_byte & 0xFC) << 2;
+        uint8_t byte_6 = connection.destination_map_id & 0xFF;
+        uint8_t byte_7 = connection.destination_pos_x;
+        uint8_t byte_8 = connection.destination_pos_y;
+
+        rom.set_bytes(addr, { byte_1, byte_2, byte_3, byte_4, byte_5, byte_6, byte_7, byte_8 });
+        addr += 0x8;
+    }
+    
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+    if(addr > offsets::MAP_CONNECTIONS_TABLE_END)
+        throw RandomizerException("Map connections table is bigger than in original game");
+    rom.mark_empty_chunk(addr, offsets::MAP_CONNECTIONS_TABLE_END);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void WorldWriter::write_maps(md::ROM& rom, const World& world)

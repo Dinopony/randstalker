@@ -18,7 +18,6 @@ void WorldReader::read_maps(World& world, const md::ROM& rom)
     read_maps_fall_destination(world, rom);
     read_maps_climb_destination(world, rom);
     read_maps_entities(world, rom);
-    read_maps_exits(world, rom);
     read_maps_variants(world, rom);
     read_maps_entity_masks(world, rom);
     read_maps_global_entity_masks(world, rom);
@@ -93,37 +92,23 @@ void WorldReader::read_maps_entities(World& world, const md::ROM& rom)
     }
 }
 
-void WorldReader::read_maps_exits(World& world, const md::ROM& rom)
+void WorldReader::read_map_connections(World& world, const md::ROM& rom)
 {
-    for(uint32_t addr = offsets::MAP_EXITS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
+    for(uint32_t addr = offsets::MAP_CONNECTIONS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
     {
-        uint16_t map_id_1 = rom.get_word(addr) & 0x3FF;
-        uint8_t extra_1 = (rom.get_byte(addr) & 0xFC) >> 2;
-        uint8_t pos_x_1 = rom.get_byte(addr+2);
-        uint8_t pos_y_1 = rom.get_byte(addr+3);
+        MapConnection connection;
 
-        uint16_t map_id_2 = rom.get_word(addr+4) & 0x3FF;
-        uint8_t extra_2 = (rom.get_byte(addr+4) & 0xFC) >> 2;
-        uint8_t pos_x_2 = rom.get_byte(addr+6);
-        uint8_t pos_y_2 = rom.get_byte(addr+7);
+        connection.map_id = rom.get_word(addr) & 0x3FF;
+        connection.extra_byte = (rom.get_byte(addr) & 0xFC) >> 2;
+        connection.pos_x = rom.get_byte(addr+2);
+        connection.pos_y = rom.get_byte(addr+3);
 
-        MapExit exit;
-        exit.pos_x = pos_x_1;
-        exit.pos_y = pos_y_1;
-        exit.extra_byte = extra_1;
-        exit.destination_map_id = map_id_2;
-        exit.destination_x = pos_x_2;
-        exit.destination_y = pos_y_2;
-        world.map(map_id_1)->exits().push_back(exit);
+        connection.destination_map_id = rom.get_word(addr+4) & 0x3FF;
+        connection.destination_extra_byte = (rom.get_byte(addr+4) & 0xFC) >> 2;
+        connection.destination_pos_x = rom.get_byte(addr+6);
+        connection.destination_pos_y = rom.get_byte(addr+7);
 
-        MapExit exit_reverse;
-        exit_reverse.pos_x = pos_x_2;
-        exit_reverse.pos_y = pos_y_2;
-        exit_reverse.extra_byte = extra_2;
-        exit_reverse.destination_map_id = map_id_1;
-        exit_reverse.destination_x = pos_x_1;
-        exit_reverse.destination_y = pos_y_1;
-        world.map(map_id_2)->exits().push_back(exit_reverse);
+        world.map_connections().push_back(connection);
     }
 }
 

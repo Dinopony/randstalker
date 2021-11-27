@@ -5,6 +5,7 @@
 #include "../model/world_path.json.hxx"
 #include "../model/world_node.hpp"
 #include "../model/map.hpp"
+#include "../model/map_connection.hpp"
 #include "../extlibs/json.hpp"
 #include "../world.hpp"
 #include "tools.hpp"
@@ -70,8 +71,8 @@ void output_maps_as_dot(const World& world, const std::string& path)
     
     for(auto& [map_id, map] : world.maps())
     {
-        for(const MapExit& exit : map->exits())
-            graphviz << "\t" << map->id() << " -> " << exit.destination_map_id << "\n";
+        for(const MapConnection& connection : world.map_connections())
+            graphviz << "\t" << connection.map_id << " -> " << connection.destination_map_id << "\n";
 
         if(map->fall_destination() != 0xFFFF)
             graphviz << "\t" << map->id() << " -> " << map->fall_destination() << "\n";

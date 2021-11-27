@@ -48,6 +48,7 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
 
     // Reading map entities might actually require items
     WorldReader::read_maps(*this, rom);
+    WorldReader::read_map_connections(*this, rom);
 
     // Require nodes, maps & entities
     this->init_item_sources();
@@ -829,4 +830,9 @@ void World::output_model()
     for(auto& [map_id, map] : _maps)
         maps_json[std::to_string(map_id)] = map->to_json(*this);
     tools::dump_json_to_file(maps_json, "./json_data/map.json");
+
+    Json map_connections_json = Json::array();
+    for(MapConnection& connection : _map_connections)
+        map_connections_json.push_back(connection.to_json());
+    tools::dump_json_to_file(map_connections_json, "./json_data/map_connection.json");
 }

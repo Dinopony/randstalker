@@ -27,7 +27,6 @@ Map::Map(const Map& map) :
     _fall_destination           (map._fall_destination),
     _climb_destination          (map._climb_destination),
     _parent_map                 (map._parent_map),
-    _exits                      (map._exits),
     _variants                   (map._variants),
     _global_entity_mask_flags   (map._global_entity_mask_flags)
 {
@@ -47,7 +46,6 @@ void Map::clear()
     _fall_destination = 0xFFFF;
     _climb_destination = 0xFFFF;
     _entities.clear();
-    _exits.clear();
     _variants.clear();
     _global_entity_mask_flags.clear();
     _speaker_ids.clear();
@@ -153,13 +151,6 @@ Json Map::to_json(const World& world) const
         json["fallDestination"] = _fall_destination;
     if(_climb_destination != 0xFFFF)
         json["climbDestination"] = _climb_destination;
-
-    if(!_exits.empty())
-    {
-        json["exits"] = Json::array();
-        for(const MapExit& exit : _exits)
-            json["exits"].push_back(exit.to_json());
-    }
 
     json["visitedFlag"] = _visited_flag.to_json();
 
