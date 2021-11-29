@@ -384,14 +384,6 @@
         "toId": "king_nole_labyrinth_post_door"
     },
     {
-        "fromId": "king_nole_labyrinth_pre_door",
-        "toId": "king_nole_labyrinth_post_door",
-        "twoWay": true,
-        "requiredItems": [
-            "Snow Spikes"
-        ]
-    },
-    {
         "fromId": "king_nole_labyrinth_post_door",
         "toId": "king_nole_labyrinth_sacred_tree",
         "requiredItems": [
