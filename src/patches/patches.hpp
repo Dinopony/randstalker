@@ -13,6 +13,8 @@ void patch_story_dependencies(md::ROM& rom, const RandomizerOptions& options, co
 
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom);
 
+void apply_kaizo_edits(World& world, md::ROM& rom);
+
 inline void apply_game_patches(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     patch_game_init(rom, options, world);

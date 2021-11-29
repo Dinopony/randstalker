@@ -185,6 +185,8 @@ void generate(const ArgumentDictionary& args)
 
     World world(*rom, options);
     apply_world_edits(world, options, *rom);
+    if(args.contains("kaizo"))
+        apply_kaizo_edits(world, *rom);
 
     display_options(options);
 

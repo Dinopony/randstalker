@@ -93,6 +93,7 @@ set(SOURCES
     "src/patches/rando_adaptations.cpp"
     "src/patches/story_dependencies.cpp"
     "src/patches/world_edits.cpp"
+    "src/patches/kaizo.cpp"
 
     "src/exceptions.hpp"
     "src/randomizer_options.hpp"
