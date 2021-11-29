@@ -4,28 +4,152 @@
 #include "../world.hpp"
 #include "../model/spawn_location.hpp"
 
+// Flag 1000
+constexpr uint8_t FLAG_NIGEL_AWOKEN_FROM_KNC_WATERFALL = 0x80;
+constexpr uint8_t FLAG_INTRO_FINISHED = 0x20;
+constexpr uint8_t FLAG_KEYDOOR_OPENED_IN_KNC = 0x10;
+constexpr uint8_t FLAG_FARA_KIDNAPPED = 0x01;
+
+// Flag 1002
+constexpr uint8_t FLAG_TALKED_WITH_HIDDEN_VILLAGER_RYUMA = 0x80;
+constexpr uint8_t FLAG_SPIED_ON_GUMI_RITUAL = 0x10;
+constexpr uint8_t FLAG_BRIDGE_TO_GUMI_REPAIRED = 0x04;
+constexpr uint8_t FLAG_MASSAN_VILLAGER_WARNED_BRIDGE_IS_BROKEN = 0x01;
+
+// Flag 1003
+constexpr uint8_t FLAG_FIRST_ENCOUNTER_WITH_DUKE = 0x80;
+constexpr uint8_t FLAG_SAW_FRIDAY_CUTSCENE_AT_MADAME_YARD = 0x40;
+constexpr uint8_t FLAG_ARTHUR_GAVE_ACCESS_TO_CASTLE = 0x20;
+
+// Flag 1004
+constexpr uint8_t FLAG_TALKED_WITH_MERCATOR_GUARDS_ASKING_GOLDS = 0x80;
+constexpr uint8_t FLAG_SAW_KAYLA_RAFT_CUTSCENE_AT_RYUMA = 0x40;
+constexpr uint8_t FLAG_ALLOWED_TO_GO_IN_THIEVES_HIDEOUT = 0x01;
+
+// Flag 1005
+constexpr uint8_t FLAG_TALKED_WITH_MADAME_YARD_GIRL_HINTING_FORTUNE_TELLER = 0x40;
+constexpr uint8_t FLAG_SAW_ARTHUR_AT_CASTLE_BACKDOOR = 0x20;
+
+constexpr uint8_t FLAG_ASSISTED_TO_MERCATOR_BANQUET = 0x10;
+constexpr uint8_t FLAG_TALKED_WITH_KITCHEN_WOMAN_BEFORE_BANQUET = 0x08;
+constexpr uint8_t FLAG_SERVANT_BORUGHT_US_TO_BEDROOM = 0x04;
+constexpr uint8_t FLAG_DUKE_LEFT_ROOM_AFTER_FIRST_ENCOUNTER = 0x02;
+
+constexpr uint8_t FLAG_COMPLETED_MERCATOR_JARS_SIDEQUEST_TWO_TIMES = 0x40;
+constexpr uint8_t FLAG_SAW_TRAPPED_KAYLA_CUTSCENE_IN_DUNGEON = 0x02;
+constexpr uint8_t FLAG_THREW_IN_DUNGEON_BY_DUKE = 0x01;
+
+constexpr uint8_t FLAG_SAW_KAYLA_LITHOGRAPH_CUTSCENE = 0x80;
+constexpr uint8_t FLAG_SLEPT_AT_MERCATOR_AFTER_BANQUET = 0x01;
+
+constexpr uint8_t FLAG_TOOK_PURPLE_JEWEL_IN_MIR_TOWER = 0x40;
+constexpr uint8_t FLAG_SAW_MIRO_CLOSE_KEYDOOR = 0x08;
+
+constexpr uint8_t FLAG_TALKED_WITH_ARTHUR_REVEALING_DUKE_ESCAPE = 0x40;         
+constexpr uint8_t FLAG_ZAK_FLEW_OFF_MERCATOR_DUNGEON = 0x20;
+constexpr uint8_t FLAG_SAW_PRINCESS_LARA_IN_MERCATOR_DUNGEON = 0x10;
+
+constexpr uint8_t FLAG_DEX_KILLED = 0x80;
+
+constexpr uint8_t FLAG_PRISONERS_OPENED_UNFINISHED_TUNNEL = 0x20;
+constexpr uint8_t FLAG_OPENED_MERCATOR_TELEPORTER_TO_KNC = 0x02;
+
+constexpr uint8_t FLAG_SAW_DUKE_MERCATOR_ON_RAFT_NEAR_DESTEL = 0x80;
+constexpr uint8_t FLAG_SAW_DEXTER_DIE_IN_CRYPT = 0x40;
+constexpr uint8_t FLAG_SAW_KAYLA_CUTSCENE_IN_GREENMAZE = 0x20;
+
+constexpr uint8_t FLAG_FRIDAY_TALKED_AFTER_GETTING_LANTERN = 0x40;
+
+constexpr uint8_t FLAG_SAW_ZAK_ON_BRIDGE = 0x80;
+constexpr uint8_t FLAG_SAW_DUKE_ENTERING_LAKE_SHRINE = 0x01;
+ 
+constexpr uint8_t FLAG_SAW_DUKE_TAUNTING_IN_SHELL_BREAST_ROOM = 0x80;
+constexpr uint8_t FLAG_SECOND_RAFT_PLACED_IN_KNL = 0x02;
+
 static void setup_story_flags(const RandomizerOptions& options, const World& world, std::vector<uint8_t>& out_flag_array)
 {
-    out_flag_array[0x00] = 0xB1;
-    out_flag_array[0x02] = 0x95;
-    out_flag_array[0x03] = 0xE0;
-    out_flag_array[0x04] = 0xC1;
-    out_flag_array[0x05] = 0x60;
-    out_flag_array[0x06] = 0x7C;
-    out_flag_array[0x07] = 0xB4;
-    out_flag_array[0x08] = 0xFE;
-    out_flag_array[0x09] = 0x7C;
-    out_flag_array[0x12] = 0x1E;
-    out_flag_array[0x13] = 0x43;
-    out_flag_array[0x14] = 0x81;
-    out_flag_array[0x17] = 0x48;
-    out_flag_array[0x20] = 0x70;
-    out_flag_array[0x26] = 0x80;
-    out_flag_array[0x27] = 0x22;
-    out_flag_array[0x28] = 0xE0;
-    out_flag_array[0x29] = 0x40;
-    out_flag_array[0x2A] = 0x81;
-    out_flag_array[0x2B] = 0x82;
+    out_flag_array[0x00] = FLAG_NIGEL_AWOKEN_FROM_KNC_WATERFALL 
+                         | FLAG_INTRO_FINISHED 
+                         | FLAG_KEYDOOR_OPENED_IN_KNC 
+                         | FLAG_FARA_KIDNAPPED;
+
+    out_flag_array[0x02] = FLAG_TALKED_WITH_HIDDEN_VILLAGER_RYUMA 
+                         | FLAG_SPIED_ON_GUMI_RITUAL 
+                         | FLAG_BRIDGE_TO_GUMI_REPAIRED
+                         | FLAG_MASSAN_VILLAGER_WARNED_BRIDGE_IS_BROKEN;
+    
+    out_flag_array[0x03] = FLAG_FIRST_ENCOUNTER_WITH_DUKE 
+                         | FLAG_SAW_FRIDAY_CUTSCENE_AT_MADAME_YARD 
+                         | FLAG_ARTHUR_GAVE_ACCESS_TO_CASTLE;
+
+    out_flag_array[0x04] = FLAG_TALKED_WITH_MERCATOR_GUARDS_ASKING_GOLDS 
+                         | FLAG_SAW_KAYLA_RAFT_CUTSCENE_AT_RYUMA 
+                         | FLAG_ALLOWED_TO_GO_IN_THIEVES_HIDEOUT;
+
+    out_flag_array[0x05] = FLAG_TALKED_WITH_MADAME_YARD_GIRL_HINTING_FORTUNE_TELLER 
+                         | FLAG_SAW_ARTHUR_AT_CASTLE_BACKDOOR;
+
+    // Various keydoors...
+    out_flag_array[0x06] = 0x40 
+                         | 0x20 
+                         | 0x10 
+                         | 0x08 
+                         | 0x04;
+    // Various keydoors...
+    out_flag_array[0x07] = 0x80 
+                         | 0x20 
+                         | 0x10 
+                         | 0x04;
+    // Various keydoors...
+    out_flag_array[0x08] = 0x80
+                         | 0x40
+                         | 0x20
+                         | 0x10
+                         | 0x08
+                         | 0x04
+                         | 0x02;
+    // Various keydoors...
+    out_flag_array[0x09] = 0x40 
+                         | 0x20 
+                         | 0x10 
+                         | 0x08 
+                         | 0x04;
+
+    out_flag_array[0x12] = FLAG_ASSISTED_TO_MERCATOR_BANQUET 
+                         | FLAG_TALKED_WITH_KITCHEN_WOMAN_BEFORE_BANQUET
+                         | FLAG_SERVANT_BORUGHT_US_TO_BEDROOM
+                         | FLAG_DUKE_LEFT_ROOM_AFTER_FIRST_ENCOUNTER;
+
+    out_flag_array[0x13] = FLAG_COMPLETED_MERCATOR_JARS_SIDEQUEST_TWO_TIMES 
+                         | FLAG_SAW_TRAPPED_KAYLA_CUTSCENE_IN_DUNGEON
+                         | FLAG_THREW_IN_DUNGEON_BY_DUKE;
+
+    out_flag_array[0x14] = FLAG_SAW_KAYLA_LITHOGRAPH_CUTSCENE
+                         | FLAG_SLEPT_AT_MERCATOR_AFTER_BANQUET;
+
+    out_flag_array[0x17] = FLAG_TOOK_PURPLE_JEWEL_IN_MIR_TOWER
+                         | FLAG_SAW_MIRO_CLOSE_KEYDOOR;
+
+    out_flag_array[0x20] = FLAG_TALKED_WITH_ARTHUR_REVEALING_DUKE_ESCAPE 
+                         | FLAG_ZAK_FLEW_OFF_MERCATOR_DUNGEON 
+                         | FLAG_SAW_PRINCESS_LARA_IN_MERCATOR_DUNGEON;
+    
+    out_flag_array[0x26] = FLAG_DEX_KILLED;
+    
+    out_flag_array[0x27] = FLAG_PRISONERS_OPENED_UNFINISHED_TUNNEL
+                         | FLAG_OPENED_MERCATOR_TELEPORTER_TO_KNC;
+
+    out_flag_array[0x28] = FLAG_SAW_DUKE_MERCATOR_ON_RAFT_NEAR_DESTEL 
+                         | FLAG_SAW_DEXTER_DIE_IN_CRYPT 
+                         | FLAG_SAW_KAYLA_CUTSCENE_IN_GREENMAZE;
+
+    out_flag_array[0x29] = FLAG_FRIDAY_TALKED_AFTER_GETTING_LANTERN;
+
+    out_flag_array[0x2A] = FLAG_SAW_ZAK_ON_BRIDGE
+                         | FLAG_SAW_DUKE_ENTERING_LAKE_SHRINE;
+
+    out_flag_array[0x2B] = FLAG_SAW_DUKE_TAUNTING_IN_SHELL_BREAST_ROOM
+                         | FLAG_SECOND_RAFT_PLACED_IN_KNL;
 
     // If trees are considered visited at start, set all flags related to entering teleport trees
     if(options.all_trees_visited_at_start())
