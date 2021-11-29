@@ -3,7 +3,8 @@
 
 #include "../exceptions.hpp"
 #include "../world.hpp"
-#include "../offsets.hpp"
+
+#include "../constants/offsets.hpp"
 
 Map::Map(uint16_t map_id) :
     _id                 (map_id),

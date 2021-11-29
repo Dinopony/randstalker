@@ -29,7 +29,7 @@
 #include "tools/tools.hpp"
 
 #include "exceptions.hpp"
-#include "offsets.hpp"
+#include "constants/offsets.hpp"
 #include "world.hpp"
 #include "world_writer.hpp"
 #include "world_randomizer.hpp"

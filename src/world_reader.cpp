@@ -9,8 +9,10 @@
 
 #include "tools/textbanks_encoder.hpp"
 #include "exceptions.hpp"
-#include "offsets.hpp"
 #include "world.hpp"
+
+#include "constants/offsets.hpp"
+#include "constants/entity_type_codes.hpp"
 
 void WorldReader::read_maps(World& world, const md::ROM& rom)
 {

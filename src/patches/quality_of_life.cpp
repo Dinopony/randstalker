@@ -3,10 +3,12 @@
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
 #include "../exceptions.hpp"
-#include "../offsets.hpp"
 #include "../assets/fixed_hud_tilemap.bin.hxx"
 #include "../model/item.hpp"
 #include "../tools/huffman/symbols.hpp"
+
+#include "../constants/offsets.hpp"
+#include "../constants/item_codes.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //      UI CHANGES

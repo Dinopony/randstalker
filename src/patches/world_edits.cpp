@@ -7,7 +7,8 @@
 #include "../model/map.hpp"
 #include "../model/entity.hpp"
 #include "../model/entity_type.hpp"
-#include "../model/map_codes.hpp"
+
+#include "../constants/map_codes.hpp"
 
 void handle_additionnal_jewels(World& world)
 {

@@ -10,6 +10,8 @@
 #include "model/hint_source.hpp"
 #include "model/world_teleport_tree.hpp"
 
+#include "constants/entity_type_codes.hpp"
+
 #include "exceptions.hpp"
 #include "world_solver.hpp"
 

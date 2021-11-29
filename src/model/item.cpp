@@ -1,5 +1,6 @@
 #include "item.hpp"
-#include "../offsets.hpp"
+
+#include "../constants/offsets.hpp"
 
 Json Item::to_json() const
 {

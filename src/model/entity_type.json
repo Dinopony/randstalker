@@ -346,7 +346,7 @@
         "type": "enemy"
     },
     "86": {
-        "name": "small_yellow_platform",
+        "name": "small_yellow_platform_alternate",
         "type": "entity"
     },
     "87": {
@@ -394,7 +394,7 @@
         "type": "entity"
     },
     "98": {
-        "name": "boulder",
+        "name": "rock",
         "type": "entity"
     },
     "99": {
@@ -576,7 +576,7 @@
         "type": "enemy"
     },
     "142": {
-        "name": "large_gray_spikeball",
+        "name": "large_green_spikeball",
         "type": "enemy"
     },
     "143": {

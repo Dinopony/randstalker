@@ -9,7 +9,9 @@
 
 #include "../model/item.hpp"
 #include "../model/map.hpp"
-#include "../offsets.hpp"
+
+#include "../constants/offsets.hpp"
+#include "../constants/item_codes.hpp"
 
 /**
  * The effect of Pawn Ticket fits very well one of a consumable item, but didn't

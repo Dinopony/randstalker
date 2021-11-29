@@ -33,6 +33,11 @@ add_compile_definitions(RELEASE="${PROJECT_VERSION}")
 add_compile_definitions(MAJOR_RELEASE="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
 set(SOURCES
+    "src/constants/entity_type_codes.hpp"
+    "src/constants/item_codes.hpp"
+    "src/constants/map_codes.hpp"
+    "src/constants/offsets.hpp"
+
     "src/extlibs/base64.hpp"
     "src/extlibs/base64.cpp"
     "src/extlibs/json.hpp"
@@ -90,7 +95,6 @@ set(SOURCES
     "src/patches/world_edits.cpp"
 
     "src/exceptions.hpp"
-    "src/offsets.hpp"
     "src/randomizer_options.hpp"
     "src/randomizer_options.cpp"
     "src/world.cpp"
@@ -107,4 +111,3 @@ set(SOURCES
 )
 
 add_executable(randstalker "${SOURCES}")
-

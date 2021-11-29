@@ -20,7 +20,7 @@
 #include "exceptions.hpp"
 #include "world_solver.hpp"
 #include "randomizer_options.hpp"
-#include "offsets.hpp"
+#include "constants/offsets.hpp"
 #include "world_reader.hpp"
 
 // Include headers automatically generated from model json files
