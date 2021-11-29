@@ -7,6 +7,7 @@
 #include "../model/map.hpp"
 #include "../model/entity.hpp"
 #include "../model/entity_type.hpp"
+#include "../model/map_codes.hpp"
 
 void handle_additionnal_jewels(World& world)
 {
@@ -103,7 +104,9 @@ void make_arthur_always_in_throne_room(World& world)
     world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entity(1)->mask_flags().clear();
 
     // Remove Arthur from the armory
-    world.map(MAP_MERCATOR_CASTLE_ARMORY_1F)->remove_entity(0);
+    world.map(MAP_MERCATOR_CASTLE_ARMORY_1F)->variants().clear();
+    world.map(MAP_MERCATOR_CASTLE_ARMORY_1F)->clear_entities();
+    world.map(MAP_MERCATOR_CASTLE_ARMORY_1F_VARIANT)->clear();
 }
 
 void make_mercator_docks_shop_always_open(World& world)
@@ -122,15 +125,15 @@ void make_mercator_docks_shop_always_open(World& world)
 void make_falling_ribbon_not_story_dependant(World& world)
 {
     // Remove use of map variant where the ribbon does not exist, and empty the now unused variant
-    world.map(MAP_MERCATOR_CASTLE_LEFT_COURT)->variants().clear();
-    world.map(MAP_MERCATOR_CASTLE_LEFT_COURT_RIBBONLESS_VARIANT)->clear();
+    world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->variants().clear();
+    world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT_RIBBONLESS_VARIANT)->clear();
 
     // Remove an entity mask preventing us from getting the ribbon once we get too far in the story
-    std::vector<EntityMaskFlag>& ribbon_masks = world.map(MAP_MERCATOR_CASTLE_LEFT_COURT)->entity(2)->mask_flags();
+    std::vector<EntityMaskFlag>& ribbon_masks = world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->entity(2)->mask_flags();
     ribbon_masks.erase(ribbon_masks.begin() + ribbon_masks.size()-1);
 
     // Remove the servant guarding the door
-    world.map(MAP_MERCATOR_CASTLE_LEFT_COURT)->remove_entity(0);
+    world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->remove_entity(0);
 }
 
 void replace_sick_merchant_by_chest(World& world)
@@ -327,14 +330,22 @@ void optimize_maps(World& world)
         MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_56,
         MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_57,
         MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_58,
-        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_59,
 
         MAP_MERCATOR_CASTLE_MAIN_HALL_61,
-        MAP_MERCATOR_CASTLE_MAIN_HALL_62
+        MAP_MERCATOR_CASTLE_MAIN_HALL_62,
+
+        MAP_MERCATOR_CASTLE_KAYLA_ROOM,
+        MAP_MERCATOR_CASTLE_KAYLA_BATHROOM_ENTRANCE,
+        MAP_MERCATOR_CASTLE_KAYLA_BATHROOM
     };
 
     for(uint16_t map_id : UNREACHABLE_MAPS)
-        world.map(map_id)->clear();
+    {
+        Map* map = world.map(map_id);
+        for(auto& [variant_map, flag] : map->variants())
+            variant_map->clear();
+        map->clear();
+    }
 }
 
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
