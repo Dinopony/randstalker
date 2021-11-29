@@ -5,6 +5,7 @@
 #include "../model/item.hpp"
 
 #include "../constants/item_codes.hpp"
+#include "../constants/offsets.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       RANDO ADAPTATIONS / ENHANCEMENTS
@@ -464,6 +465,24 @@ void normalize_bosses_hp_checks(md::ROM& rom)
     rom.set_byte(0x120C0, 0x0002);
 }
 
+/*
+void make_sacred_trees_persistence_flags_table_movable(md::ROM& rom)
+{
+    md::Code func_setup_address_registers;
+    func_setup_address_registers.lea(offsets::SACRED_TREES_PERSISTENCE_FLAGS_TABLE, reg_A0);
+    func_setup_address_registers.lea(0xFF1000, reg_A2);
+    func_setup_address_registers.rts();
+    uint32_t func_addr = rom.inject_code(func_setup_address_registers);
+
+    md::Code injection_pattern;
+    injection_pattern.jsr(func_addr);
+    injection_pattern.nop(2);
+
+    rom.set_code(0x1A510, injection_pattern);
+    rom.set_code(0x1A58C, injection_pattern);
+}
+*/
+
 void fix_crypt_soflocks(md::ROM& rom)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
@@ -515,8 +534,10 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
 
+    // Engine improvements
     improve_checks_before_kill(rom, options);
     normalize_bosses_hp_checks(rom);
+//    make_sacred_trees_persistence_flags_table_movable(rom);
 
     // Logic enforcing
     add_jewel_check_for_kazalt_teleporter(rom, options);
