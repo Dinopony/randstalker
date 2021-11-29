@@ -549,6 +549,56 @@ WorldRegion* World::region(const std::string& name) const
     return nullptr;
 }
 
+MapConnection& World::map_connection(uint16_t map_id_1, uint16_t map_id_2)
+{
+    for(MapConnection& connection : _map_connections)
+        if(connection.check_maps(map_id_1, map_id_2))
+            return connection;
+
+    throw RandomizerException("Could not find a map connection between maps " + std::to_string(map_id_1) + " and " + std::to_string(map_id_2));
+}
+
+void World::swap_map_connections(uint16_t map_id_1, uint16_t map_id_2, uint16_t map_id_3, uint16_t map_id_4)
+{
+    MapConnection& conn_1 = map_connection(map_id_1, map_id_2);
+    MapConnection& conn_2 = map_connection(map_id_3, map_id_4);
+
+    bool right_order = true;
+    if(conn_1.map_id_1() != map_id_1)
+        right_order = !right_order;
+    if(conn_2.map_id_1() != map_id_3)
+        right_order = !right_order;
+    
+    uint16_t stored_map_id = conn_1.map_id_1();
+    uint8_t stored_pos_x = conn_1.pos_x_1();
+    uint8_t stored_pos_y = conn_1.pos_y_1();
+    uint8_t stored_extra_byte = conn_1.extra_byte_1();
+
+    if(right_order)
+    {
+        conn_1.map_id_1(conn_2.map_id_1());
+        conn_1.pos_x_1(conn_2.pos_x_1()); 
+        conn_1.pos_y_1(conn_2.pos_y_1());
+        conn_1.extra_byte_1(conn_2.extra_byte_1());
+
+        conn_2.map_id_1(stored_map_id);
+        conn_2.pos_x_1(stored_pos_x); 
+        conn_2.pos_y_1(stored_pos_y);
+        conn_2.extra_byte_1(stored_extra_byte);
+    }
+    else
+    {
+        conn_1.map_id_1(conn_2.map_id_2());
+        conn_1.pos_x_1(conn_2.pos_x_2()); 
+        conn_1.pos_y_1(conn_2.pos_y_2());
+        conn_1.extra_byte_1(conn_2.extra_byte_2());
+
+        conn_2.map_id_2(stored_map_id);
+        conn_2.pos_x_2(stored_pos_x); 
+        conn_2.pos_y_2(stored_pos_y);
+        conn_2.extra_byte_2(stored_extra_byte);
+    }
+}
 
 Json World::to_json() const
 {

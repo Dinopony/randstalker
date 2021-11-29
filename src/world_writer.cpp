@@ -21,6 +21,7 @@ void WorldWriter::write_world_to_rom(md::ROM& rom, const World& world)
     write_dark_rooms(rom, world);
     write_tibor_tree_connections(rom, world);
     write_fahl_enemies(rom, world);
+    write_map_connections(rom, world);
     write_maps(rom, world);
 }
 
@@ -197,17 +198,17 @@ void WorldWriter::write_map_connections(md::ROM& rom, const World& world)
 
     for(const MapConnection& connection : world.map_connections())
     {
-        uint8_t byte_1 = (connection.map_id >> 8) & 0x03;
-        byte_1 |= (connection.extra_byte & 0xFC) << 2;
-        uint8_t byte_2 = connection.map_id & 0xFF;
-        uint8_t byte_3 = connection.pos_x;
-        uint8_t byte_4 = connection.pos_y;
+        uint8_t byte_1 = (connection.map_id_1() >> 8) & 0x03;
+        byte_1 |= (connection.extra_byte_1() << 2) & 0xFC;
+        uint8_t byte_2 = connection.map_id_1() & 0xFF;
+        uint8_t byte_3 = connection.pos_x_1();
+        uint8_t byte_4 = connection.pos_y_1();
 
-        uint8_t byte_5 = (connection.destination_map_id >> 8) & 0x03;
-        byte_5 |= (connection.destination_extra_byte & 0xFC) << 2;
-        uint8_t byte_6 = connection.destination_map_id & 0xFF;
-        uint8_t byte_7 = connection.destination_pos_x;
-        uint8_t byte_8 = connection.destination_pos_y;
+        uint8_t byte_5 = (connection.map_id_2() >> 8) & 0x03;
+        byte_5 |= (connection.extra_byte_2() << 2) & 0xFC;
+        uint8_t byte_6 = connection.map_id_2() & 0xFF;
+        uint8_t byte_7 = connection.pos_x_2();
+        uint8_t byte_8 = connection.pos_y_2();
 
         rom.set_bytes(addr, { byte_1, byte_2, byte_3, byte_4, byte_5, byte_6, byte_7, byte_8 });
         addr += 0x8;

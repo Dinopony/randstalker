@@ -98,7 +98,9 @@ public:
 
     const std::vector<MapConnection>& map_connections() const { return _map_connections; }
     std::vector<MapConnection>& map_connections() { return _map_connections; }
-
+    MapConnection& map_connection(uint16_t map_id_1, uint16_t map_id_2);
+    void swap_map_connections(uint16_t map_id_1, uint16_t map_id_2, uint16_t map_id_3, uint16_t map_id_4);
+    
     const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
     void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.push_back(enemy); }
 

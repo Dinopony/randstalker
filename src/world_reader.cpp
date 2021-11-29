@@ -98,15 +98,15 @@ void WorldReader::read_map_connections(World& world, const md::ROM& rom)
     {
         MapConnection connection;
 
-        connection.map_id = rom.get_word(addr) & 0x3FF;
-        connection.extra_byte = (rom.get_byte(addr) & 0xFC) >> 2;
-        connection.pos_x = rom.get_byte(addr+2);
-        connection.pos_y = rom.get_byte(addr+3);
+        connection.map_id_1(rom.get_word(addr) & 0x3FF);
+        connection.extra_byte_1((rom.get_byte(addr) & 0xFC) >> 2);
+        connection.pos_x_1(rom.get_byte(addr+2));
+        connection.pos_y_1(rom.get_byte(addr+3));
 
-        connection.destination_map_id = rom.get_word(addr+4) & 0x3FF;
-        connection.destination_extra_byte = (rom.get_byte(addr+4) & 0xFC) >> 2;
-        connection.destination_pos_x = rom.get_byte(addr+6);
-        connection.destination_pos_y = rom.get_byte(addr+7);
+        connection.map_id_2(rom.get_word(addr+4) & 0x3FF);
+        connection.extra_byte_2((rom.get_byte(addr+4) & 0xFC) >> 2);
+        connection.pos_x_2(rom.get_byte(addr+6));
+        connection.pos_y_2(rom.get_byte(addr+7));
 
         world.map_connections().push_back(connection);
     }

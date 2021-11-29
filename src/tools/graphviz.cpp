@@ -72,7 +72,7 @@ void output_maps_as_dot(const World& world, const std::string& path)
     for(auto& [map_id, map] : world.maps())
     {
         for(const MapConnection& connection : world.map_connections())
-            graphviz << "\t" << connection.map_id << " -> " << connection.destination_map_id << "\n";
+            graphviz << "\t" << connection.map_id_1() << " -> " << connection.map_id_2() << "\n";
 
         if(map->fall_destination() != 0xFFFF)
             graphviz << "\t" << map->id() << " -> " << map->fall_destination() << "\n";
