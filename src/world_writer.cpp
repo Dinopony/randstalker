@@ -527,3 +527,25 @@ void WorldWriter::write_maps_entity_persistence_flags(md::ROM& rom, const World&
 
     rom.set_word(addr, 0xFFFF);
     addr += 0x2;
+
+    // Write sacred trees persistence flags table
+    for(Entity* sacred_tree : sacred_trees_with_persistence)
+    {
+        uint8_t flag_byte = sacred_tree->persistence_flag().byte & 0xFF;
+        uint8_t flag_bit = sacred_tree->persistence_flag().bit;
+
+        rom.set_word(addr, sacred_tree->map()->id());
+        addr += 0x2;
+        rom.set_byte(addr, flag_byte);
+        addr += 0x1;
+        rom.set_byte(addr, flag_bit);
+        addr += 0x1;
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;
+
+    if(addr > offsets::PERSISTENCE_FLAGS_TABLE_END)
+        throw RandomizerException("Persistence flags table must not be bigger than the one from base game");
+    rom.mark_empty_chunk(addr, offsets::PERSISTENCE_FLAGS_TABLE_END);
+}
