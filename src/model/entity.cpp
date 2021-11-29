@@ -78,8 +78,8 @@ Entity::Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z) :
     _entity_to_use_tiles_from       (nullptr),
     _flag_unknown_2_3               (false),
     _flag_unknown_2_4               (false),
-    _flag_unknown_3_5               (false)
-
+    _flag_unknown_3_5               (false),
+    _persistence_flag               (0xFF, 0xFF)
 {
     if(DEFAULT_PALETTES.count(type_id))
         _palette = DEFAULT_PALETTES[type_id];
@@ -121,7 +121,8 @@ Entity::Entity(const Entity& entity) :
     _gravity_immune                     (entity._gravity_immune),
     _flag_unknown_2_3                   (entity._flag_unknown_2_3),
     _flag_unknown_2_4                   (entity._flag_unknown_2_4),
-    _flag_unknown_3_5                   (entity._flag_unknown_3_5)
+    _flag_unknown_3_5                   (entity._flag_unknown_3_5),
+    _persistence_flag                   (entity._persistence_flag)
 {}
 
 uint8_t Entity::entity_id() const 
@@ -158,6 +159,8 @@ Json Entity::to_json(const World& world) const
         json["dialogue"] = _dialogue;
 
     json["behaviorId"] = _behavior_id;
+    if(this->has_persistence_flag())
+        json["persistenceFlag"] = _persistence_flag.to_json();
 
     bool use_tiles_from_other_entity = (_entity_to_use_tiles_from != nullptr);
     json["useTilesFromOtherEntity"] = use_tiles_from_other_entity;

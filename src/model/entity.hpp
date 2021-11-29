@@ -78,6 +78,7 @@ private:
     bool _flag_unknown_3_5;
 
     std::vector<EntityMaskFlag> _mask_flags;
+    Flag _persistence_flag;
 
 public:
     Entity(uint8_t type_id = 0, uint8_t pos_x = 0, uint8_t pos_y = 0, uint8_t pos_z = 0);
@@ -158,6 +159,10 @@ public:
     
     const std::vector<EntityMaskFlag>& mask_flags() const { return _mask_flags; }
     std::vector<EntityMaskFlag>& mask_flags() { return _mask_flags; }
+
+    bool has_persistence_flag() const { return _persistence_flag.byte != 0xFF && _persistence_flag.bit <= 7; }
+    Flag persistence_flag() const { return _persistence_flag; }
+    void persistence_flag(Flag flag) { _persistence_flag = flag; }
 
     static Entity* from_rom(const md::ROM& rom, uint32_t addr, Map* map);
     std::vector<uint8_t> to_bytes() const;

@@ -22,6 +22,7 @@ void WorldReader::read_maps(World& world, const md::ROM& rom)
     read_maps_entity_masks(world, rom);
     read_maps_global_entity_masks(world, rom);
     read_maps_dialogue_table(world, rom);
+    read_persistence_flags(world, rom);
 }
 
 void WorldReader::read_maps_data(World& world, const md::ROM& rom)
@@ -188,5 +189,62 @@ void WorldReader::read_maps_dialogue_table(World& world, const md::ROM& rom)
 
         addr += (word_count + 1) * 2;
         header_word = rom.get_word(addr);
+    }
+}
+
+void WorldReader::read_persistence_flags(World& world, const md::ROM& rom)
+{
+    uint32_t addr = offsets::PERSISTENCE_FLAGS_TABLE;
+ 
+    // Read switches persistence flags table
+    while(rom.get_word(addr) != 0xFFFF)
+    {
+        uint16_t map_id = rom.get_word(addr);
+        uint8_t flag_byte = rom.get_byte(addr+2);
+
+        uint8_t byte_4 = rom.get_byte(addr+3);
+        uint8_t flag_bit = byte_4 >> 5;
+        uint8_t entity_id = byte_4 & 0x1F;
+
+        world.map(map_id)->entity(entity_id)->persistence_flag(Flag(flag_byte, flag_bit));
+        addr += 0x4;
+    }
+
+    addr += 0x2;
+
+    // Read sacred trees persistence flags table by building first a table of sacred trees per map
+    std::map<uint16_t, std::vector<Entity*>> sacred_trees_per_map;
+    for (auto& [map_id, map] : world.maps())
+    {
+        for (Entity* entity : map->entities())
+        {
+            if (entity->entity_type_id() == ENTITY_SACRED_TREE)
+                sacred_trees_per_map[map_id].push_back(entity);
+        }
+    }
+
+    std::map<uint16_t, uint8_t> current_id_per_map;
+    while(rom.get_word(addr) != 0xFFFF)
+    {
+        uint16_t map_id = rom.get_word(addr);
+        uint8_t flag_byte = rom.get_byte(addr+2);
+        uint8_t flag_bit = rom.get_byte(addr+3);
+        addr += 0x4;
+
+        if (!current_id_per_map.count(map_id))
+            current_id_per_map[map_id] = 0;
+        uint8_t sacred_tree_id = current_id_per_map[map_id]++;
+
+        try
+        {
+            Entity* sacred_tree = sacred_trees_per_map.at(map_id).at(sacred_tree_id);
+            sacred_tree->persistence_flag(Flag(flag_byte, flag_bit));
+        } 
+        catch (std::out_of_range&)
+        {
+            throw RandomizerException("Sacred tree persistence flag points on tree #"
+                + std::to_string(sacred_tree_id) + " of map #"
+                + std::to_string(map_id) + " which does not exist.");
+        }
     }
 }

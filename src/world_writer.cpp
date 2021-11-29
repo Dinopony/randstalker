@@ -233,6 +233,7 @@ void WorldWriter::write_maps(md::ROM& rom, const World& world)
     write_maps_entity_masks(rom, world);
     write_maps_dialogue_table(rom, world);
     write_maps_entities(rom, world);
+    write_maps_entity_persistence_flags(rom, world);
 }
 
 void WorldWriter::write_maps_data(md::ROM& rom, const World& world)
@@ -488,3 +489,39 @@ void WorldWriter::write_maps_entities(md::ROM& rom, const World& world)
         throw RandomizerException("Entities table must not be bigger than the one from base game");
     rom.mark_empty_chunk(offsets::MAP_ENTITIES_TABLE + cumulated_offset, offsets::MAP_ENTITIES_TABLE_END);
 }
+
+void WorldWriter::write_maps_entity_persistence_flags(md::ROM& rom, const World& world)
+{
+    uint32_t addr = offsets::PERSISTENCE_FLAGS_TABLE;
+    std::vector<Entity*> sacred_trees_with_persistence;
+
+    // Write switches persistence flags table
+    for(auto& [map_id, map] : world.maps())
+    {
+        for(Entity* entity : map->entities())
+        {
+            if(entity->has_persistence_flag())
+            {
+                if(entity->entity_type_id() != ENTITY_SACRED_TREE)
+                {
+                    uint8_t flag_byte = entity->persistence_flag().byte & 0xFF;
+                    uint8_t flag_bit = entity->persistence_flag().bit;
+                    uint8_t entity_id = entity->entity_id();
+
+                    rom.set_word(addr, entity->map()->id());
+                    addr += 0x2;
+                    rom.set_byte(addr, flag_byte);
+                    addr += 0x1;
+                    rom.set_byte(addr, (flag_bit << 5) | (entity_id & 0x1F));
+                    addr += 0x1;
+                }
+                else 
+                {
+                    sacred_trees_with_persistence.push_back(entity);
+                }
+            }
+        }
+    }
+
+    rom.set_word(addr, 0xFFFF);
+    addr += 0x2;

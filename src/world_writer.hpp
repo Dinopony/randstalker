@@ -26,6 +26,7 @@ private:
     static void write_maps_entity_masks(md::ROM& rom, const World& world);
     static void write_maps_dialogue_table(md::ROM& rom, const World& world);
     static void write_maps_entities(md::ROM& rom, const World& world);
+    static void write_maps_entity_persistence_flags(md::ROM& rom, const World& world);
 
     WorldWriter() {}
 };
