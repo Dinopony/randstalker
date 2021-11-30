@@ -163,6 +163,7 @@ public:
     bool has_persistence_flag() const { return _persistence_flag.byte != 0xFF && _persistence_flag.bit <= 7; }
     Flag persistence_flag() const { return _persistence_flag; }
     void persistence_flag(Flag flag) { _persistence_flag = flag; }
+    void clear_persistence_flag() { _persistence_flag = Flag(0xFF, 0xFF); }
 
     static Entity* from_rom(const md::ROM& rom, uint32_t addr, Map* map);
     std::vector<uint8_t> to_bytes() const;

@@ -23,6 +23,18 @@ constexpr uint8_t QUARTZ_SWORD_BLOCKER_TYPE = ENTITY_GOLD_GOLEM_STATUE;
 constexpr uint16_t BEHAVIOR_DISAPPEAR_ON_ALL_ENEMIES_BEATEN = 106;
 constexpr uint16_t BEHAVIOR_ALLOW_APPEAR_AFTER_PLAYER_MOVED_AWAY = 785;
 
+void empty_all_persistence_flags(World& world)
+{
+    for(auto& [map_id, map] : world.maps())
+    {
+        for(Entity* entity : map->entities())
+        {
+            if(entity->entity_type_id() != ENTITY_SACRED_TREE)
+                entity->clear_persistence_flag();
+        }
+    }
+}
+
 void add_boulder_blocking_thieves_hideout(World& world)
 {
     Map* map = world.map(MAP_RYUMA_EXTERIOR_VARIANT);
@@ -487,10 +499,14 @@ void edit_castle_kayla_bathroom(World& world)
     
     Entity* button = map->add_entity(new Entity(ENTITY_BUTTON, 0x0E, 0x0E, 2));
     button->behavior_id(533);
+    button->persistence_flag(Flag(0x0E, 7));
 }
 
 void apply_kaizo_edits(World& world, md::ROM& rom)
 {
+    // Engine work
+    empty_all_persistence_flags(world);
+
     add_boulder_blocking_thieves_hideout(world);
     edit_kado_climb_map(world);
     edit_kado_textlines(world);
