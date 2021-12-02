@@ -144,7 +144,7 @@ static void alter_lantern_handling(md::ROM& rom)
     func_change_map_palette.cmpb(addr_(0xFF112F), reg_D4);
     func_change_map_palette.beq(12);
         func_change_map_palette.moveb(reg_D4, addr_(0xFF112F));
-        func_change_map_palette.lea(0x11C926, reg_A0);
+        func_change_map_palette.movel(addr_(offsets::MAP_PALETTES_TABLE_POINTER), reg_A0);
         func_change_map_palette.mulu(bval_(0x1A), reg_D4);
         func_change_map_palette.adda(reg_D4, reg_A0);
         func_change_map_palette.lea(0xFF0084, reg_A1);
@@ -309,7 +309,7 @@ static void make_spell_book_warp_to_start(md::ROM& rom)
     rom.set_word(newPostUseTableAddr+4, 0x9BFF);
     newPostUseTableAddr += 6;
     // PostUseEinsteinWhistle
-    rom.set_long(newPostUseTableAddr, 0x00008BF2); 
+    rom.set_long(newPostUseTableAddr, 0x00008BF2);
     rom.set_word(newPostUseTableAddr+4, 0xA0FF);
     newPostUseTableAddr += 6;
     // PostUsePostUseGolasEye
