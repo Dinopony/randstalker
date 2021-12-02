@@ -322,6 +322,12 @@ void optimize_maps(World& world)
 
     // Clear unreachable maps
     const std::vector<uint16_t> UNREACHABLE_MAPS = { 
+        MAP_INTRO_139,
+        MAP_INTRO_140,
+        MAP_INTRO_141,
+        MAP_INTRO_142,
+        MAP_INTRO_143,
+
         MAP_THIEVES_HIDEOUT_TREASURE_ROOM_KAYLA_VARIANT,
 
         MAP_MERCATOR_CASTLE_THRONE_ROOM_52,
