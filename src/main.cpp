@@ -181,6 +181,7 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
+    rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
 
     World world(*rom, options);
     apply_world_edits(world, options, *rom);
