@@ -321,6 +321,22 @@ namespace md
         return *this;
     }
 
+    Code& Code::addi(const ImmediateValue& value, const Param& target, Size size)
+    {
+        uint16_t size_code = 0x0;
+        if (size == Size::WORD)
+            size_code = 0x1;
+        else if (size == Size::LONG)
+            size_code = 0x2;
+
+        uint16_t opcode = 0x0600 + (size_code << 6) + target.getMXn();
+        this->add_opcode(opcode);
+        this->add_bytes(value.getAdditionnalData());
+        this->add_bytes(target.getAdditionnalData());
+
+        return *this;
+    }
+
     Code& Code::subi(const ImmediateValue& value, const Param& target, Size size)
     {
         uint16_t size_code = 0x0;
@@ -332,6 +348,7 @@ namespace md
         uint16_t opcode = 0x0400 + (size_code << 6) + target.getMXn();
         this->add_opcode(opcode);
         this->add_bytes(value.getAdditionnalData());
+        this->add_bytes(target.getAdditionnalData());
 
         return *this;
     }

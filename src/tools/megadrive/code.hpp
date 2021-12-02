@@ -83,6 +83,11 @@ namespace md
         Code& btst(uint8_t bit_id, const Param& target);
         Code& btst(const DataRegister& dx, const Param& target);
 
+        Code& addi(const ImmediateValue& value, const Param& target, Size size);
+        Code& addib(uint8_t value, const Param& target) { return this->addi(ImmediateValue(value), target, Size::BYTE); }
+        Code& addiw(uint16_t value, const Param& target) { return this->addi(ImmediateValue(value), target, Size::WORD); }
+        Code& addil(uint32_t value, const Param& target) { return this->addi(ImmediateValue(value), target, Size::LONG); }
+
         Code& subi(const ImmediateValue& value, const Param& target, Size size);
         Code& subib(uint8_t value, const Param& target) { return this->subi(ImmediateValue(value), target, Size::BYTE); }
         Code& subiw(uint16_t value, const Param& target) { return this->subi(ImmediateValue(value), target, Size::WORD); }
