@@ -4,9 +4,11 @@
 #include "model/item.hpp"
 #include "model/item_source.hpp"
 #include "model/map.hpp"
+#include "model/map_palette.hpp"
 #include "model/world_teleport_tree.hpp"
 #include "model/world_region.hpp"
 
+#include "tools/byte_array.hpp"
 #include "tools/textbanks_encoder.hpp"
 #include "exceptions.hpp"
 #include "world.hpp"
@@ -24,6 +26,7 @@ void WorldWriter::write_world_to_rom(md::ROM& rom, const World& world)
     write_tibor_tree_connections(rom, world);
     write_fahl_enemies(rom, world);
     write_map_connections(rom, world);
+    write_map_palettes(rom, world);
     write_maps(rom, world);
 }
 
@@ -223,6 +226,22 @@ void WorldWriter::write_map_connections(md::ROM& rom, const World& world)
     rom.mark_empty_chunk(addr, offsets::MAP_CONNECTIONS_TABLE_END);
 }
 
+
+void WorldWriter::write_map_palettes(md::ROM& rom, const World& world)
+{
+    ByteArray palette_table_bytes;
+
+    for(const MapPalette* palette : world.map_palettes())
+    {
+        for(const MapPalette::Color& color : palette->colors())
+            palette_table_bytes.add_word(color.to_word());
+    }
+
+    rom.mark_empty_chunk(offsets::MAP_PALETTES_TABLE, offsets::MAP_PALETTES_TABLE_END);
+    uint32_t new_palette_table_addr = rom.inject_bytes(palette_table_bytes);
+    rom.set_long(offsets::MAP_PALETTES_TABLE_POINTER, new_palette_table_addr);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void WorldWriter::write_maps(md::ROM& rom, const World& world)
@@ -250,7 +269,7 @@ void WorldWriter::write_maps_data(md::ROM& rom, const World& world)
         byte4 |= (map->unknown_param_1() & 0x03) << 6;
         
         uint8_t byte5;
-        byte5 = map->palette_id() & 0x3F;
+        byte5 = world.map_palette_id(map->palette()) & 0x3F;
         byte5 |= (map->unknown_param_2() & 0x03) << 6;
         
         uint8_t byte7;

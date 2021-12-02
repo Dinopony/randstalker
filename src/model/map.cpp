@@ -1,5 +1,6 @@
 #include "map.hpp"
 #include "entity.hpp"
+#include "map_palette.hpp"
 
 #include "../exceptions.hpp"
 #include "../world.hpp"
@@ -10,7 +11,8 @@ Map::Map(uint16_t map_id) :
     _id                 (map_id),
     _fall_destination   (0xFFFF),
     _climb_destination  (0xFFFF),
-    _parent_map         (nullptr)
+    _parent_map         (nullptr),
+    _palette            (nullptr)
 {}
 
 Map::Map(const Map& map) :
@@ -19,7 +21,7 @@ Map::Map(const Map& map) :
     _tileset_id                 (map._tileset_id),
     _primary_big_tileset_id     (map._primary_big_tileset_id),
     _secondary_big_tileset_id   (map._secondary_big_tileset_id),
-    _palette_id                 (map._palette_id),
+    _palette                    (map._palette),
     _room_height                (map._room_height),
     _background_music           (map._background_music),
     _unknown_param_1            (map._unknown_param_1),
@@ -143,7 +145,7 @@ Json Map::to_json(const World& world) const
     json["primaryBigTilesetId"] = _primary_big_tileset_id;
     json["secondaryBigTilesetId"] = _secondary_big_tileset_id;
 
-    json["paletteId"] = _palette_id;
+    json["paletteId"] = world.map_palette_id(_palette);
     json["roomHeight"] = _room_height;
     json["backgroundMusic"] = _background_music;
     json["baseChestId"] = _base_chest_id;

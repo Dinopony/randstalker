@@ -6,6 +6,7 @@
 
 class Entity;
 class World;
+class MapPalette;
 
 struct GlobalEntityMaskFlag : public Flag
 {
@@ -52,7 +53,7 @@ private:
     uint8_t _primary_big_tileset_id;
     uint8_t _secondary_big_tileset_id;
 
-    uint8_t _palette_id;
+    MapPalette* _palette;
     uint8_t _room_height;
     uint8_t _background_music;
 
@@ -95,8 +96,8 @@ public:
     uint8_t secondary_big_tileset_id() const { return _secondary_big_tileset_id; }
     void secondary_big_tileset_id(uint8_t value) { _secondary_big_tileset_id = value; }
 
-    uint8_t palette_id() const { return _palette_id; }
-    void palette_id(uint8_t value) { _palette_id = value; }
+    MapPalette* palette() const { return _palette; }
+    void palette(MapPalette* palette) { _palette = palette; }
     uint8_t room_height() const { return _room_height; }
     void room_height(uint8_t value) { _room_height = value; }
     uint8_t background_music() const { return _background_music; }

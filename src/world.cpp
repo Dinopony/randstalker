@@ -10,6 +10,7 @@
 #include "model/item.hpp"
 #include "model/item_source.hpp"
 #include "model/map.hpp"
+#include "model/map_palette.hpp"
 #include "model/world_node.hpp"
 #include "model/world_path.hpp"
 #include "model/spawn_location.hpp"
@@ -22,6 +23,7 @@
 #include "randomizer_options.hpp"
 #include "constants/offsets.hpp"
 #include "world_reader.hpp"
+#include "world_writer.hpp"
 
 // Include headers automatically generated from model json files
 #include "model/entity_type.json.hxx"
@@ -47,6 +49,7 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     this->init_nodes();
 
     // Reading map entities might actually require items
+    WorldReader::read_map_palettes(*this, rom);
     WorldReader::read_maps(*this, rom);
     WorldReader::read_map_connections(*this, rom);
 
@@ -88,6 +91,14 @@ World::~World()
     }
     for (auto& [id, entity] : _entity_types)
         delete entity;
+    for (MapPalette* palette : _map_palettes)
+        delete palette;
+}
+
+void World::write_to_rom(md::ROM& rom)
+{
+    this->clean_unused_palettes();
+    WorldWriter::write_world_to_rom(rom, *this);
 }
 
 Item* World::item(const std::string& name) const
@@ -600,6 +611,33 @@ void World::swap_map_connections(uint16_t map_id_1, uint16_t map_id_2, uint16_t 
     }
 }
 
+uint8_t World::map_palette_id(MapPalette* palette) const
+{
+    for(uint8_t i=0 ; i<_map_palettes.size() ; ++i)
+        if(_map_palettes[i] == palette)
+            return i;
+
+    throw RandomizerException("Could not find id of MapPalette as it doesn't seem to be in world's map palette list");
+}
+
+void World::clean_unused_palettes()
+{
+   std::set<MapPalette*> used_palettes;
+    for(auto& [map_id, map] : _maps)
+        used_palettes.insert(map->palette());
+
+    for(auto it = _map_palettes.begin() ; it != _map_palettes.end() ; )
+    {
+        MapPalette* palette = *it;
+        if(!used_palettes.count(palette))
+        {
+            delete palette;
+            it = _map_palettes.erase(it);
+        }
+        else ++it;
+    }
+}
+
 Json World::to_json() const
 {
     Json json;
@@ -885,4 +923,9 @@ void World::output_model()
     for(MapConnection& connection : _map_connections)
         map_connections_json.push_back(connection.to_json());
     tools::dump_json_to_file(map_connections_json, "./json_data/map_connection.json");
+
+    Json map_palettes_json = Json::array();
+    for(MapPalette* palette : _map_palettes)
+        map_palettes_json.push_back(palette->to_json());
+    tools::dump_json_to_file(map_palettes_json, "./json_data/map_palette.json");
 }

@@ -4,6 +4,7 @@
 #include "model/item.hpp"
 #include "model/item_source.hpp"
 #include "model/map.hpp"
+#include "model/map_palette.hpp"
 #include "model/world_teleport_tree.hpp"
 #include "model/world_region.hpp"
 
@@ -42,7 +43,8 @@ void WorldReader::read_maps_data(World& world, const md::ROM& rom)
         map->primary_big_tileset_id((rom.get_byte(addr+4) >> 5) & 0x01);
         map->unknown_param_1((rom.get_byte(addr+4) >> 6));
 
-        map->palette_id(rom.get_byte(addr+5) & 0x3F);
+        uint8_t palette_id = rom.get_byte(addr+5) & 0x3F;
+        map->palette(world.map_palette(palette_id));
         map->unknown_param_2((rom.get_byte(addr+5) >> 6));
 
         map->room_height(rom.get_byte(addr+6));
@@ -92,26 +94,6 @@ void WorldReader::read_maps_entities(World& world, const md::ROM& rom)
             for(uint32_t addr = offsets::MAP_ENTITIES_TABLE + offset-1 ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
                 map->add_entity(Entity::from_rom(rom, addr, map));
         }
-    }
-}
-
-void WorldReader::read_map_connections(World& world, const md::ROM& rom)
-{
-    for(uint32_t addr = offsets::MAP_CONNECTIONS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
-    {
-        MapConnection connection;
-
-        connection.map_id_1(rom.get_word(addr) & 0x3FF);
-        connection.extra_byte_1((rom.get_byte(addr) & 0xFC) >> 2);
-        connection.pos_x_1(rom.get_byte(addr+2));
-        connection.pos_y_1(rom.get_byte(addr+3));
-
-        connection.map_id_2(rom.get_word(addr+4) & 0x3FF);
-        connection.extra_byte_2((rom.get_byte(addr+4) & 0xFC) >> 2);
-        connection.pos_x_2(rom.get_byte(addr+6));
-        connection.pos_y_2(rom.get_byte(addr+7));
-
-        world.map_connections().push_back(connection);
     }
 }
 
@@ -249,4 +231,41 @@ void WorldReader::read_persistence_flags(World& world, const md::ROM& rom)
                 + std::to_string(map_id) + " which does not exist.");
         }
     }
+}
+
+void WorldReader::read_map_connections(World& world, const md::ROM& rom)
+{
+    for(uint32_t addr = offsets::MAP_CONNECTIONS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x8)
+    {
+        MapConnection connection;
+
+        connection.map_id_1(rom.get_word(addr) & 0x3FF);
+        connection.extra_byte_1((rom.get_byte(addr) & 0xFC) >> 2);
+        connection.pos_x_1(rom.get_byte(addr+2));
+        connection.pos_y_1(rom.get_byte(addr+3));
+
+        connection.map_id_2(rom.get_word(addr+4) & 0x3FF);
+        connection.extra_byte_2((rom.get_byte(addr+4) & 0xFC) >> 2);
+        connection.pos_x_2(rom.get_byte(addr+6));
+        connection.pos_y_2(rom.get_byte(addr+7));
+
+        world.map_connections().push_back(connection);
+    }
+}
+
+void WorldReader::read_map_palettes(World& world, const md::ROM& rom)
+{
+    uint32_t addr = offsets::MAP_PALETTES_TABLE;
+
+    while(addr < offsets::MAP_PALETTES_TABLE_END)
+    {
+        std::array<uint16_t, 13> palette_data;
+        for(uint8_t i=0 ; i<13 ; ++i)
+        {
+            palette_data[i] = rom.get_word(addr);
+            addr += 0x2;
+        }
+
+        world.map_palettes().push_back(new MapPalette(palette_data));
+    }    
 }

@@ -20,6 +20,7 @@ class Item;
 class WorldTeleportTree;
 class EntityType;
 class Map;
+class MapPalette;
 
 class World
 {
@@ -36,6 +37,7 @@ private:
     std::map<uint8_t, EntityType*> _entity_types;
     std::map<uint16_t, Map*> _maps;
     std::vector<MapConnection> _map_connections;
+    std::vector<MapPalette*> _map_palettes;
     std::vector<EntityType*> _fahl_enemies;
 
     SpawnLocation* _active_spawn_location;
@@ -46,6 +48,8 @@ private:
 public:
     World(const md::ROM& rom, const RandomizerOptions& options);
     ~World();
+
+    void write_to_rom(md::ROM& rom);
 
     const std::map<uint8_t, Item*> items() const { return _items; }
     Item* item(uint8_t id) const { return _items.at(id); }
@@ -101,6 +105,11 @@ public:
     MapConnection& map_connection(uint16_t map_id_1, uint16_t map_id_2);
     void swap_map_connections(uint16_t map_id_1, uint16_t map_id_2, uint16_t map_id_3, uint16_t map_id_4);
     
+    const std::vector<MapPalette*>& map_palettes() const { return _map_palettes; }
+    std::vector<MapPalette*>& map_palettes() { return _map_palettes; }
+    MapPalette* map_palette(uint8_t id) { return _map_palettes.at(id); }
+    uint8_t map_palette_id(MapPalette* palette) const;
+
     const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
     void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.push_back(enemy); }
 
@@ -123,8 +132,6 @@ private:
     void init_teleport_trees();
     void init_game_strings(const md::ROM& rom);
     void init_entity_types(const md::ROM& rom);
-    void init_maps(const md::ROM& rom);
 
-    void write_items(md::ROM& rom);
-    void write_maps(md::ROM& rom);
+    void clean_unused_palettes();
 };

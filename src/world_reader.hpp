@@ -7,6 +7,7 @@ class WorldReader {
 public:
     static void read_maps(World& world, const md::ROM& rom);
     static void read_map_connections(World& world, const md::ROM& rom);
+    static void read_map_palettes(World& world, const md::ROM& rom);
 
 private:
     static void read_maps_data(World& world, const md::ROM& rom);
