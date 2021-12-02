@@ -97,7 +97,13 @@ set(SOURCES
     "src/patches/rando_adaptations.cpp"
     "src/patches/story_dependencies.cpp"
     "src/patches/world_edits.cpp"
-    "src/patches/kaizo.cpp"
+    
+    "src/patches/kaizo/kaizo.hpp"
+    "src/patches/kaizo/kaizo.cpp"
+    "src/patches/kaizo/00_engine.cpp"
+    "src/patches/kaizo/01_safety_pass_arc.cpp"
+    "src/patches/kaizo/02_mercator.cpp"
+    "src/patches/kaizo/03_mercator_castle.cpp"
 
     "src/exceptions.hpp"
     "src/randomizer_options.hpp"

@@ -17,6 +17,11 @@ struct GlobalEntityMaskFlag : public Flag
         first_entity_id(first_entity_id)
     {}
 
+    GlobalEntityMaskFlag(Flag flag, uint8_t first_entity_id) :
+        Flag(flag),
+        first_entity_id(first_entity_id)
+    {}
+
     uint16_t to_bytes() const
     {
         uint8_t msb = byte & 0xFF;

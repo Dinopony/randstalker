@@ -159,6 +159,8 @@ public:
     
     const std::vector<EntityMaskFlag>& mask_flags() const { return _mask_flags; }
     std::vector<EntityMaskFlag>& mask_flags() { return _mask_flags; }
+    void remove_when_flag_is_set(Flag flag) { _mask_flags.push_back(EntityMaskFlag(false, flag.byte & 0xFF, flag.bit)); }
+    void only_when_flag_is_set(Flag flag) { _mask_flags.push_back(EntityMaskFlag(true, flag.byte & 0xFF, flag.bit)); }
 
     bool has_persistence_flag() const { return _persistence_flag.byte != 0xFF && _persistence_flag.bit <= 7; }
     Flag persistence_flag() const { return _persistence_flag; }
