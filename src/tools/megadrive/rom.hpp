@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
 
 namespace md {
 
@@ -49,7 +50,7 @@ namespace md {
         void mark_empty_chunk(uint32_t begin, uint32_t end);
         uint32_t remaining_empty_bytes() const;
     
-        void save_as(const std::string& outputPath);
+        void write_to_file(std::ofstream& output_file);
 
     private:
         void update_checksum();

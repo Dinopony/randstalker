@@ -10,7 +10,7 @@
     {
         "fromId": "massan",
         "toId": "massan_after_swamp_shrine",
-        "requiredRegions": [
+        "requiredNodes": [
             "swamp_shrine"
         ]
     },
@@ -41,7 +41,7 @@
     {
         "fromId": "gumi",
         "toId": "gumi_after_swamp_shrine",
-        "requiredRegions": [
+        "requiredNodes": [
             "swamp_shrine"
         ]
     },
@@ -57,7 +57,7 @@
     {
         "fromId": "ryuma",
         "toId": "ryuma_after_thieves_hideout",
-        "requiredRegions": [
+        "requiredNodes": [
             "thieves_hideout_post_key"
         ]
     },
@@ -97,7 +97,7 @@
         "requiredItems": [
             "Einstein Whistle"
         ],
-        "requiredRegions": [
+        "requiredNodes": [
             "massan"
         ]
     },
@@ -209,7 +209,7 @@
     {
         "fromId": "mercator",
         "toId": "verla_shore",
-        "requiredRegions": [
+        "requiredNodes": [
             "ryuma_lighthouse_repaired"
         ]
     },
@@ -231,6 +231,14 @@
         "fromId": "verla_mines",
         "toId": "route_verla_destel",
         "twoWay": true
+    },
+    {
+        "fromId": "verla_mines",
+        "toId": "verla_mines_behind_lava",
+        "twoWay": true,
+        "requiredItems": [
+            "Fireproof"
+        ]
     },
     {
         "fromId": "route_verla_destel",
@@ -271,10 +279,15 @@
     },
     {
         "fromId": "mountainous_area",
-        "toId": "route_lake_shrine",
+        "toId": "route_lake_shrine_cliff",
+        "twoWay": true,
         "requiredItems": [
             "Axe Magic"
         ]
+    },
+    {
+        "fromId": "route_lake_shrine_cliff",
+        "toId": "route_lake_shrine"
     },
     {
         "fromId": "mountainous_area",
@@ -302,19 +315,51 @@
     },
     {
         "fromId": "kazalt",
-        "toId": "king_nole_labyrinth_pre_spikes",
+        "toId": "king_nole_labyrinth_pre_door",
         "twoWay": true
     },
     {
-        "fromId": "king_nole_labyrinth_pre_spikes",
-        "toId": "king_nole_labyrinth_post_spikes",
-        "twoWay": true,
+        "fromId": "king_nole_labyrinth_pre_door",
+        "toId": "king_nole_labyrinth_post_door",
+        "requiredItems": [
+            "Key"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_post_door",
+        "toId": "king_nole_labyrinth_pre_door"
+    },
+    {
+        "fromId": "king_nole_labyrinth_pre_door",
+        "toId": "king_nole_labyrinth_exterior",
+        "requiredItems": [
+            "Iron Boots"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_exterior",
+        "toId": "king_nole_labyrinth_fall_from_exterior",
+        "requiredItems": [
+            "Axe Magic"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_fall_from_exterior",
+        "toId": "king_nole_labyrinth_pre_door"
+    },
+    {
+        "fromId": "king_nole_labyrinth_post_door",
+        "toId": "king_nole_labyrinth_raft_entrance",
         "requiredItems": [
             "Snow Spikes"
         ]
     },
     {
-        "fromId": "king_nole_labyrinth_post_spikes",
+        "fromId": "king_nole_labyrinth_raft_entrance",
+        "toId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "fromId": "king_nole_labyrinth_raft_entrance",
         "toId": "king_nole_labyrinth_raft",
         "requiredItems": [
             "Logs"
@@ -325,10 +370,31 @@
     },
     {
         "fromId": "king_nole_labyrinth_raft",
-        "toId": "king_nole_labyrinth_post_spikes"
+        "toId": "king_nole_labyrinth_raft_entrance"
     },
     {
-        "fromId": "king_nole_labyrinth_post_spikes",
+        "fromId": "king_nole_labyrinth_post_door",
+        "toId": "king_nole_labyrinth_path_to_palace",
+        "requiredItems": [
+            "Snow Spikes"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_path_to_palace",
+        "toId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "fromId": "king_nole_labyrinth_post_door",
+        "toId": "king_nole_labyrinth_sacred_tree",
+        "requiredItems": [
+            "Axe Magic"
+        ],
+        "requiredNodes": [
+            "king_nole_labyrinth_raft_entrance"
+        ]
+    },
+    {
+        "fromId": "king_nole_labyrinth_path_to_palace",
         "toId": "king_nole_palace",
         "twoWay": true
     },

@@ -1,0 +1,31 @@
+{
+    "gameSettings": {
+        "jewelCount": 5,
+        "armorUpgrades": true,
+        "startingGold": 0,
+        "startingItems": {
+            "Spell Book": 1
+        },
+        "fixArmletSkip": true,
+        "fixTreeCuttingGlitch": true,
+        "consumableRecordBook": false,
+        "removeGumiBoulder": false,
+        "removeTiborRequirement": false,
+        "allTreesVisitedAtStart": false,
+        "enemiesDamageFactor": 100,
+        "enemiesHealthFactor": 100,
+        "enemiesArmorFactor": 100,
+        "enemiesGoldsFactor": 100,
+        "enemiesDropChanceFactor": 100
+    },
+    "randomizerSettings": {
+        "allowSpoilerLog": true,
+        "itemSourcesWindow": 30,
+        "spawnLocations": [
+            "massan", "gumi", "kado", "waterfall", "ryuma", "mercator", "verla", "greenmaze", "destel"
+        ],
+        "shuffleTrees": false,
+        "ghostJumpingInLogic": false,
+        "damageBoostingInLogic": false
+    }
+}

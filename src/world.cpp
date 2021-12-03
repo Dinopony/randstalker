@@ -1,22 +1,37 @@
 #include "world.hpp"
 
-#include "model/item.hpp"
-#include "model/item_source.hpp"
+#include <iostream>
 
 #include "tools/textbanks_decoder.hpp"
 #include "tools/textbanks_encoder.hpp"
 
+#include "model/entity_type.hpp"
+#include "model/map.hpp"
+#include "model/item.hpp"
+#include "model/item_source.hpp"
+#include "model/map.hpp"
+#include "model/world_node.hpp"
+#include "model/world_path.hpp"
+#include "model/spawn_location.hpp"
+#include "model/hint_source.hpp"
+#include "model/world_region.hpp"
+#include "model/world_teleport_tree.hpp"
+
 #include "exceptions.hpp"
 #include "world_solver.hpp"
+#include "randomizer_options.hpp"
+#include "offsets.hpp"
+#include "world_reader.hpp"
 
 // Include headers automatically generated from model json files
+#include "model/entity_type.json.hxx"
 #include "model/item.json.hxx"
-#include "model/world_region.json.hxx"
+#include "model/world_node.json.hxx"
 #include "model/world_path.json.hxx"
 #include "model/item_source.json.hxx"
 #include "model/spawn_location.json.hxx"
 #include "model/hint_source.json.hxx"
-#include "model/world_macro_region.json.hxx"
+#include "model/world_region.json.hxx"
 #include "model/world_teleport_tree.json.hxx"
 #include "assets/game_strings.json.hxx"
 
@@ -25,15 +40,27 @@ World::World(const md::ROM& rom, const RandomizerOptions& options) :
     _active_spawn_location  (nullptr),
     _dark_region            (nullptr)
 {
+    // No requirements
     this->init_items();
-    this->init_regions();
-    this->init_item_sources();
-    this->init_paths();
-    this->init_macro_regions();
-    this->init_spawn_locations();
-    this->init_tree_maps();
-    
     this->init_game_strings(rom);
+    this->init_entity_types(rom);
+    this->init_nodes();
+
+    // Reading map entities might actually require items
+    WorldReader::read_maps(*this, rom);
+
+    // Require nodes, maps & entities
+    this->init_item_sources();
+
+    // Require nodes & items
+    this->init_paths();
+
+    // Require nodes
+    this->init_regions();
+    this->init_spawn_locations();
+    this->init_teleport_trees();
+
+    // Requires nodes & game strings
     this->init_hint_sources();
 }
 
@@ -41,8 +68,8 @@ World::~World()
 {
     for (auto& [key, item] : _items)
         delete item;
-    for (auto& [key, region] : _regions)
-        delete region;
+    for (auto& [key, node] : _nodes)
+        delete node;
     for (auto& [key, path] : _paths)
         delete path;
     for (ItemSource* source : _item_sources)
@@ -51,13 +78,15 @@ World::~World()
         delete spawn_loc;
     for (auto& [key, hint_source] : _hint_sources)
         delete hint_source;
-    for (WorldMacroRegion* macro : _macro_regions)
-        delete macro;
+    for (WorldRegion* region : _regions)
+        delete region;
     for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
     {
         delete tree_1;
         delete tree_2;
     }
+    for (auto& [id, entity] : _entity_types)
+        delete entity;
 }
 
 Item* World::item(const std::string& name) const
@@ -70,6 +99,12 @@ Item* World::item(const std::string& name) const
             return item;
 
     return nullptr;
+}
+
+Item* World::add_item(Item* item)
+{ 
+    _items[item->id()] = item;
+    return item;
 }
 
 Item* World::add_gold_item(uint8_t worth)
@@ -100,29 +135,29 @@ std::vector<Item*> World::starting_inventory() const
     return starting_inventory;
 }
 
-WorldRegion* World::first_region_with_item(Item* item)
+WorldNode* World::first_node_with_item(Item* item)
 {
-    for (auto& [key, region] : _regions)
+    for (auto& [key, node] : _nodes)
     {
-        std::vector<ItemSource*> sources = region->item_sources();
+        std::vector<ItemSource*> sources = node->item_sources();
         for (ItemSource* source : sources)
             if (source->item() == item)
-                return region;
+                return node;
     }
 
     return nullptr;
 }
 
 
-WorldPath* World::path(WorldRegion* origin, WorldRegion* destination)
+WorldPath* World::path(WorldNode* origin, WorldNode* destination)
 {
     return _paths.at(std::make_pair(origin, destination));
 }
 
 WorldPath* World::path(const std::string& origin_name, const std::string& destination_name)
 {
-    WorldRegion* origin = _regions.at(origin_name);
-    WorldRegion* destination = _regions.at(destination_name);
+    WorldNode* origin = _nodes.at(origin_name);
+    WorldNode* destination = _nodes.at(destination_name);
     return this->path(origin, destination);
 }
 
@@ -136,9 +171,9 @@ std::vector<ItemSource*> World::item_sources_with_item(Item* item)
 {
     std::vector<ItemSource*> sources_with_item;
 
-    for (auto& [key, region] : _regions)
+    for (auto& [key, node] : _nodes)
     {
-        std::vector<ItemSource*> sources = region->item_sources();
+        std::vector<ItemSource*> sources = node->item_sources();
         for (ItemSource* source : sources)
             if (source->item() == item)
                 sources_with_item.push_back(source);
@@ -147,6 +182,10 @@ std::vector<ItemSource*> World::item_sources_with_item(Item* item)
     return sources_with_item;
 }
 
+void World::add_spawn_location(SpawnLocation* spawn)
+{
+    _spawn_locations[spawn->id()] = spawn;
+}
 
 void World::init_items()
 {
@@ -214,23 +253,39 @@ void World::init_item_sources()
     Json item_sources_json = Json::parse(ITEM_SOURCES_JSON);
     for(const Json& source_json : item_sources_json)
     {
-        _item_sources.push_back(ItemSource::from_json(source_json, _regions));
+        _item_sources.push_back(ItemSource::from_json(source_json, *this));
     }
     std::cout << _item_sources.size() << " item sources loaded." << std::endl;
 
     // The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
-    // 0x0E, 0x1E, 0x20, 0x25, 0x27, 0x28, 0x33, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0xA8, 0xBB, 0xBC, 0xBD, 0xBE, 0xC3
+    // 0x0E (14): Mercator Kitchen (variant?)
+    // 0x1E (30): King Nole's Cave spiral staircase (variant with enemies?) ---> 29 is the one used in rando
+    // 0x20 (32): Boulder chase hallway (variant with enemies?) ---> 31 is the one used in rando
+    // 0x25 (37): Thieves Hideout entrance (variant with water)
+    // 0x27 (39): Thieves Hideout entrance (waterless variant)
+    // 0x28 (40): Thieves Hideout entrance (waterless variant)
+    // 0x33 (51): Thieves Hideout second room (waterless variant)
+    // 0x3D (61): Thieves Hideout reward room (Kayla cutscene variant) 
+    // 0x3E (62): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0x3F (63): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0x40 (64): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0x41 (65): Thieves Hideout reward room (Kayla cutscene variant)
+    // 0xBB (187): Crypt (Larson. E room)
+    // 0xBC (188): Crypt (Larson. E room)
+    // 0xBD (189): Crypt (Larson. E room)
+    // 0xBE (190): Crypt (Larson. E room)
+    // 0xC3 (195): Map 712 / 0x2C8 ???
 }
 
-void World::init_regions()
+void World::init_nodes()
 {
-    Json regions_json = Json::parse(WORLD_REGIONS_JSON);
-    for(auto& [region_id, region_json] : regions_json.items())
+    Json nodes_json = Json::parse(WORLD_NODES_JSON);
+    for(auto& [node_id, node_json] : nodes_json.items())
     {
-        WorldRegion* new_region = WorldRegion::from_json(region_id, region_json);
-        _regions[region_id] = new_region;
+        WorldNode* new_node = WorldNode::from_json(node_id, node_json);
+        _nodes[node_id] = new_node;
     }
-    std::cout << _regions.size() << " regions loaded." << std::endl;
+    std::cout << _nodes.size() << " nodes loaded." << std::endl;
 }
 
 void World::init_paths()
@@ -238,14 +293,14 @@ void World::init_paths()
     Json paths_json = Json::parse(WORLD_PATHS_JSON);
     for(const Json& path_json : paths_json)
     {
-        this->add_path(WorldPath::from_json(path_json, _regions, _items));
+        this->add_path(WorldPath::from_json(path_json, _nodes, _items));
 
         if(path_json.contains("twoWay") && path_json.at("twoWay"))
         {
             Json inverted_json = path_json;
             inverted_json["fromId"] = path_json.at("toId");
             inverted_json["toId"] = path_json.at("fromId");
-            this->add_path(WorldPath::from_json(inverted_json, _regions, _items));
+            this->add_path(WorldPath::from_json(inverted_json, _nodes, _items));
         }
     }
     std::cout << _paths.size() << " paths loaded." << std::endl;   
@@ -272,24 +327,44 @@ void World::init_paths()
 
     if(_options.remove_gumi_boulder())
     {
-        this->add_path(new WorldPath(_regions.at("route_gumi_ryuma"), _regions.at("gumi")));
+        this->add_path(new WorldPath(_nodes.at("route_gumi_ryuma"), _nodes.at("gumi")));
     }
 
     // Handle paths related to specific tricks
     if(_options.handle_ghost_jumping_in_logic())
     {
-        WorldRegion* mountainous_area = _regions.at("mountainous_area");
-        WorldRegion* route_lake_shrine = _regions.at("route_lake_shrine");
-        this->add_path(new WorldPath(route_lake_shrine, mountainous_area, 1, { _items[ITEM_AXE_MAGIC] }));
+        this->add_path(new WorldPath(_nodes.at("route_lake_shrine"), _nodes.at("route_lake_shrine_cliff")));
+    }
+
+    // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements 
+    if(_options.handle_damage_boosting_in_logic())
+    {
+        for(auto& [pair, path] : _paths)
+        {
+            std::vector<Item*>& required_items = path->required_items();
+            
+            auto it = std::find(required_items.begin(), required_items.end(), this->item(ITEM_IRON_BOOTS));
+            if(it != required_items.end())
+                required_items.erase(it);
+                
+            it = std::find(required_items.begin(), required_items.end(), this->item(ITEM_FIREPROOF_BOOTS));
+            if(it != required_items.end())
+                required_items.erase(it);
+        }
     }
 }
 
-void World::init_macro_regions()
+void World::init_regions()
 {
-    Json macro_regions_json = Json::parse(WORLD_MACRO_REGIONS_JSON);
-    for(const Json& macro_region_json : macro_regions_json)
-        _macro_regions.push_back(WorldMacroRegion::from_json(macro_region_json, _regions));
-    std::cout << _macro_regions.size() << " macro regions loaded." << std::endl;
+    Json regions_json = Json::parse(WORLD_REGIONS_JSON);
+    for(const Json& region_json : regions_json)
+        _regions.push_back(WorldRegion::from_json(region_json, _nodes));
+
+    std::cout << _regions.size() << " regions loaded." << std::endl;
+
+    for(auto& [id, node] : _nodes)
+        if(node->region() == nullptr)
+            throw RandomizerException("Node '" + node->id() + "' doesn't belong to any region");
 }
 
 void World::init_spawn_locations()
@@ -297,7 +372,7 @@ void World::init_spawn_locations()
     // Load base model
     Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
     for(auto& [id, spawn_json] : spawns_json.items())
-        this->add_spawn_location(SpawnLocation::from_json(id, spawn_json, _regions));
+        this->add_spawn_location(SpawnLocation::from_json(id, spawn_json, _nodes));
     std::cout << _spawn_locations.size() << " spawn locations loaded." << std::endl;
 
     // Patch model if user specified a model patch
@@ -305,9 +380,9 @@ void World::init_spawn_locations()
     for(auto& [id, patch_json] : model_patch.items())
     {
         if(!_spawn_locations.count(id))
-            this->add_spawn_location(SpawnLocation::from_json(id, patch_json, _regions));
+            this->add_spawn_location(SpawnLocation::from_json(id, patch_json, _nodes));
         else
-            _spawn_locations.at(id)->apply_json(patch_json, _regions);
+            _spawn_locations.at(id)->apply_json(patch_json, _nodes);
     }
 }
 
@@ -316,19 +391,19 @@ void World::init_hint_sources()
     Json hint_sources_json = Json::parse(HINT_SOURCES_JSON, nullptr, true, true);
     for(const Json& hint_source_json : hint_sources_json)
     {
-        HintSource* new_source = HintSource::from_json(hint_source_json, _regions, _game_strings);
+        HintSource* new_source = HintSource::from_json(hint_source_json, _nodes, _game_strings);
         _hint_sources[new_source->description()] = new_source;
     }
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 }
 
-void World::init_tree_maps()
+void World::init_teleport_trees()
 {
     Json trees_json = Json::parse(WORLD_TELEPORT_TREES_JSON);
     for(const Json& tree_pair_json : trees_json)
     {
-        WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0], _regions);
-        WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1], _regions);
+        WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0], _nodes);
+        WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1], _nodes);
         _teleport_tree_pairs.push_back(std::make_pair(tree_1, tree_2));
     }
 
@@ -359,68 +434,126 @@ void World::init_game_strings(const md::ROM& rom)
         + std::to_string(_options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
+void World::init_entity_types(const md::ROM& rom)
+{
+    // Read item drop probabilities from a table in the ROM
+    std::vector<uint16_t> probability_table;
+    for(uint32_t addr = offsets::PROBABILITY_TABLE ; addr < offsets::PROBABILITY_TABLE_END ; addr += 0x2)
+        probability_table.push_back(rom.get_word(addr));
+
+    // Read enemy info from a table in the ROM
+    for(uint32_t addr = offsets::ENEMY_STATS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
+    {
+        uint8_t id = rom.get_byte(addr);
+        std::string name = "enemy_" + std::to_string(id);
+        
+        uint8_t health = rom.get_byte(addr+1);
+        uint8_t defence = rom.get_byte(addr+2);
+        uint8_t dropped_golds = rom.get_byte(addr+3);
+        uint8_t attack = rom.get_byte(addr+4) & 0x7F;
+        Item* dropped_item = _items.at(rom.get_byte(addr+5) & 0x3F);
+
+        // Use previously built probability table to know the real drop chances
+        uint8_t probability_id = ((rom.get_byte(addr+4) & 0x80) >> 5) | (rom.get_byte(addr+5) >> 6);
+        uint16_t drop_probability = probability_table.at(probability_id);
+
+        _entity_types[id] = new EntityEnemy(id, name, health, attack, defence, dropped_golds, dropped_item, drop_probability);  
+    }
+
+    // Init ground item entity types
+    for(auto& [item_id, item] : _items)
+    {
+        if(item_id > 0x3F)
+            continue;
+        uint8_t entity_id = item_id + 0xC0;
+        _entity_types[entity_id] = new EntityItemOnGround(entity_id, "ground_item (" + item->name() + ")", item);
+    }
+
+    // Apply the randomizer model changes to the model loaded from ROM
+    Json entities_json = Json::parse(ENTITIES_JSON);
+    for(auto& [id_string, entity_json] : entities_json.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        if(!_entity_types.count(id))
+            _entity_types[id] = EntityType::from_json(id, entity_json, *this);
+        else
+            _entity_types[id]->apply_json(entity_json, *this);
+    }
+
+    // Apply multiplicators from the settings
+    for (auto& [id, entity_type] : _entity_types)
+    {
+        if(entity_type->type_name() != "enemy")
+            continue;
+        EntityEnemy* enemy_type = reinterpret_cast<EntityEnemy*>(entity_type);
+
+        enemy_type->apply_damage_factor(_options.enemies_damage_factor());
+        enemy_type->apply_health_factor(_options.enemies_health_factor());
+        enemy_type->apply_armor_factor(_options.enemies_armor_factor());
+        enemy_type->apply_golds_factor(_options.enemies_golds_factor());
+        enemy_type->apply_drop_chance_factor(_options.enemies_drop_chance_factor());
+    }
+
+    std::cout << _entity_types.size()  << " entities loaded." << std::endl;
+}
+
+WorldNode* World::spawn_node() const 
+{ 
+    return (_active_spawn_location) ? _active_spawn_location->node() : nullptr;
+}
+
+WorldNode* World::end_node() const 
+{ 
+    return _nodes.at("end");
+} 
+
+EntityType* World::entity_type(const std::string& name) const
+{
+    for(auto& [id, enemy] : _entity_types)
+        if(enemy->name() == name)
+            return enemy;
+    return nullptr;
+}
+
+void World::set_map(uint16_t map_id, Map* map)
+{
+    if(_maps.count(map_id))
+        delete _maps[map_id];
+ 
+    map->id(map_id);
+    _maps[map_id] = map;
+}
+
 void World::add_tree_logic_paths()
 {
     if(_options.all_trees_visited_at_start())
     {
-        std::vector<WorldRegion*> required_regions;
+        std::vector<WorldNode*> required_nodes;
         if(!_options.remove_tibor_requirement())
-            required_regions = { _regions["tibor"] };
+            required_nodes = { _nodes["tibor"] };
 
         for(auto& pair : _teleport_tree_pairs)
         {
-            this->add_path(new WorldPath(pair.first->region(), pair.second->region(), 1, {}, required_regions));
-            this->add_path(new WorldPath(pair.second->region(), pair.first->region(), 1, {}, required_regions));
+            this->add_path(new WorldPath(pair.first->node(), pair.second->node(), 1, {}, required_nodes));
+            this->add_path(new WorldPath(pair.second->node(), pair.first->node(), 1, {}, required_nodes));
         }
     }
 }
 
-void World::write_to_rom(md::ROM& rom)
+WorldRegion* World::region(const std::string& name) const
 {
-    // Write a data block for gold values
-    uint8_t highest_item_id = _items.rbegin()->first;
-    uint8_t gold_items_count = (highest_item_id - ITEM_GOLDS_START) + 1;
-    uint32_t addr = rom.reserve_data_block(gold_items_count, "data_gold_values");
-    for(uint8_t item_id = ITEM_GOLDS_START ; item_id <= highest_item_id ; ++item_id, ++addr)
-        rom.set_byte(addr, static_cast<uint8_t>(_items.at(item_id)->gold_value()));
-
-    // Write item info
-    for (auto& [key, item] : _items)
-        item->write_to_rom(rom);
-
-    // Write item sources' contents
-    for (ItemSource* source : _item_sources)
-        source->write_to_rom(rom);
-
-    // Write all text lines into text banks
-    TextbanksEncoder encoder(rom, _game_strings);
-
-    // Inject dark rooms as a data block
-    const std::vector<uint16_t>& dark_map_ids = _dark_region->dark_map_ids();
-    uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
-    uint32_t dark_maps_address = rom.reserve_data_block(dark_maps_byte_count, "data_dark_rooms");
-    uint8_t i = 0;
-    for (uint16_t map_id : dark_map_ids)
-        rom.set_word(dark_maps_address + (i++) * 0x2, map_id);
-    rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
-
-    // Write Tibor tree map connections
-    for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
-    {
-        tree_1->write_to_rom(rom);
-        tree_2->write_to_rom(rom);
-    }
-
-    // Write Fahl enemies
-    for(uint8_t i=0 ; i<_fahl_enemies.size() && i<50 ; ++i)
-        rom.set_byte(0x12CE6 + i, _fahl_enemies[i]);
+    for(WorldRegion* region : _regions)
+        if(region->name() == name)
+            return region;
+    return nullptr;
 }
+
 
 Json World::to_json() const
 {
     Json json;
 
-    // Export dark region
+    // Export dark node
     json["spawnLocation"] = _active_spawn_location->id();
     json["darkRegion"] = _dark_region->name();
 
@@ -436,18 +569,22 @@ Json World::to_json() const
     }
 
     // Export item sources
-    for(auto& it : _regions)
+    for(WorldRegion* region : _regions)
     {
-        const WorldRegion& region = *it.second;
-        for(ItemSource* source : region.item_sources())
+        for(WorldNode* node : region->nodes())
         {
-            Item* item = _items.at(source->item_id());
-            json["itemSources"][region.name()][source->name()] = item->name();
+            for(ItemSource* source : node->item_sources())
+            {
+                Item* item = _items.at(source->item_id());
+                json["itemSources"][region->name()][source->name()] = item->name();
+            }
         }
     }
 
     // Fahl enemies
-    json["fahlEnemies"] = _fahl_enemies;
+    json["fahlEnemies"] = Json::array();
+    for(EntityType* enemy : _fahl_enemies)
+        json["fahlEnemies"].push_back(enemy->name());
 
     return json;
 }
@@ -456,20 +593,20 @@ void World::parse_json(const Json& json)
 {
     ////////// Item Sources ///////////////////////////////////////////
     const Json& item_sources_json = json.at("itemSources");
-    for(auto& it : _regions)
+    for(auto& it : _nodes)
     {
-        const WorldRegion& region = *it.second;
-        if(region.item_sources().empty())
+        const WorldNode& node = *it.second;
+        if(node.item_sources().empty())
             continue;
 
-        if(item_sources_json.contains(region.name()))
+        if(item_sources_json.contains(node.name()))
         {
-            const Json& region_json = item_sources_json.at(region.name());
-            for(ItemSource* source : region.item_sources())
+            const Json& node_json = item_sources_json.at(node.name());
+            for(ItemSource* source : node.item_sources())
             {
-                if(region_json.contains(source->name()))
+                if(node_json.contains(source->name()))
                 {
-                    std::string item_name = region_json.at(source->name());
+                    std::string item_name = node_json.at(source->name());
                     Item* item = this->parse_item_from_name(item_name);
                     if(item)
                     {
@@ -493,7 +630,7 @@ void World::parse_json(const Json& json)
         else
         {
             std::stringstream msg;
-            msg << "Region '" << region.name() << "' is missing from plando JSON.";
+            msg << "Node '" << node.name() << "' is missing from plando JSON.";
             throw JsonParsingException(msg.str());
         }
     }
@@ -537,6 +674,7 @@ void World::parse_json(const Json& json)
         }
     }
 
+    // Parse dark node
     if(json.contains("darkRegion"))
     {
         std::string dark_region_name = json.at("darkRegion");
@@ -549,6 +687,22 @@ void World::parse_json(const Json& json)
         }
     }
     else throw JsonParsingException("Darkened region is missing from plando JSON.");
+
+    // Parse Fahl enemies
+    if(json.contains("fahlEnemies"))
+    {
+        for(std::string enemy_name : json.at("fahlEnemies"))
+        {
+            EntityType* enemy = this->entity_type(enemy_name);
+            if(!enemy)
+            {
+                std::stringstream msg;
+                msg << "Fahl enemy name '" << enemy_name << "' is invalid in plando JSON.";
+                throw JsonParsingException(msg.str());
+            }
+            _fahl_enemies.push_back(enemy);
+        }            
+    }
 }
 
 Item* World::parse_item_from_name(const std::string& item_name)
@@ -576,10 +730,10 @@ Item* World::parse_item_from_name(const std::string& item_name)
     return nullptr;
 }
 
-bool World::is_macro_region_avoidable(WorldMacroRegion* macro_region) const
+bool World::is_region_avoidable(WorldRegion* region) const
 {
     WorldSolver solver(*this);
-    solver.forbid_taking_items_from_regions(macro_region->regions());
+    solver.forbid_taking_items_from_nodes(region->nodes());
     return solver.try_to_solve();
 }
 
@@ -607,20 +761,20 @@ void World::output_model()
         items_json[std::to_string(id)] = item->to_json();
     tools::dump_json_to_file(items_json, "./json_data/item.json");
 
-    Json macros_json = Json::array();
-    for(WorldMacroRegion* macro : _macro_regions)
-        macros_json.push_back(macro->to_json());
-    tools::dump_json_to_file(macros_json, "./json_data/world_macro_region.json");
+    Json regions_json = Json::array();
+    for(WorldRegion* region : _regions)
+        regions_json.push_back(region->to_json());
+    tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
 
     Json spawns_json;
     for(auto& [id, spawn] : _spawn_locations)
         spawns_json[id] = spawn->to_json();
-    tools::dump_json_to_file(spawns_json, "./json_data/world_macro_region.json");
+    tools::dump_json_to_file(spawns_json, "./json_data/world_spawns.json");
 
-    Json regions_json;
-    for(auto& [id, region] : _regions)
-        regions_json[id] = region->to_json();
-    tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
+    Json nodes_json;
+    for(auto& [id, node] : _nodes)
+        nodes_json[id] = node->to_json();
+    tools::dump_json_to_file(nodes_json, "./json_data/world_node.json");
 
     Json trees_json = Json::array();
     for(auto& [tree_1, tree_2] : _teleport_tree_pairs)
@@ -646,12 +800,12 @@ void World::output_model()
     while(!paths_copy.empty())
     {
         auto it = paths_copy.begin();
-        std::pair<WorldRegion*, WorldRegion*> region_pair = it->first;
+        std::pair<WorldNode*, WorldNode*> node_pair = it->first;
         WorldPath* path = it->second;
         paths_copy.erase(it);
 
         bool two_way = false;
-        std::pair<WorldRegion*, WorldRegion*> reverse_pair = std::make_pair(region_pair.second, region_pair.first);
+        std::pair<WorldNode*, WorldNode*> reverse_pair = std::make_pair(node_pair.second, node_pair.first);
         if(paths_copy.count(reverse_pair))
         {
             WorldPath* reverse_path = paths_copy.at(reverse_pair);
@@ -665,53 +819,14 @@ void World::output_model()
         paths_json.push_back(path->to_json(two_way));
     }
     tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
-}
 
-void World::output_graphviz()
-{
-    std::vector<std::string> colors = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
+    Json entity_types_json = Json::object();
+    for(auto& [id, entity_type] : _entity_types)
+        entity_types_json[std::to_string(id)] = entity_type->to_json();
+    tools::dump_json_to_file(entity_types_json, "./json_data/entity_type.json");
 
-    std::ofstream graphviz("./json_data/model.dot");
-    graphviz << "digraph {\n";
-
-    graphviz << "\tgraph [pad=0.5, nodesep=0.4, ranksep=1];\n";
-    graphviz << "\tnode[shape=rect];\n\n";
-
-    Json paths_json = Json::parse(WORLD_PATHS_JSON);
-    uint32_t path_i = 0;
-    for(const Json& json : paths_json)
-    {
-        const std::string& current_color = colors[path_i % colors.size()];
-
-        WorldRegion* from = region(json["fromId"]);
-        WorldRegion* to = region(json["toId"]);
-        graphviz << "\t" << from->id() << " -> " << to->id() << " [";
-        if(json.contains("twoWay") && json.at("twoWay"))
-            graphviz << "dir=both ";
-
-        std::vector<std::string> required_names;
-        if(json.contains("requiredItems"))
-            for(const std::string& item_name : json.at("requiredItems"))
-                required_names.push_back(item_name);
-            
-        if(json.contains("requiredRegions"))
-            for(const std::string& region_id : json.at("requiredRegions"))
-                required_names.push_back("Access to " + region(region_id)->name());
-
-        if(!required_names.empty())
-        {
-            graphviz << "color=" << current_color << " ";
-            graphviz << "fontcolor=" << current_color << " ";
-            graphviz << "label=\"" << tools::join(required_names, "\\n") << "\" ";
-        }
-
-        graphviz << "]\n";
-        path_i++;
-    }
-
-    graphviz << "\n";
-    for(auto& [id, region] : _regions)
-        graphviz << "\t" << id << " [label=\"" << region->name() << " [" << std::to_string(region->item_sources().size()) << "]\"]\n";
-
-    graphviz << "}\n"; 
+    Json maps_json = Json::object();
+    for(auto& [map_id, map] : _maps)
+        maps_json[std::to_string(map_id)] = map->to_json(*this);
+    tools::dump_json_to_file(maps_json, "./json_data/map.json");
 }

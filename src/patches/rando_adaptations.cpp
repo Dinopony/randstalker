@@ -2,7 +2,7 @@
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
-
+#include "../model/item.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       RANDO ADAPTATIONS / ENHANCEMENTS
@@ -100,34 +100,36 @@ void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom)
     rom.set_code(0x004E18, md::Code().clrw(reg_D0).jmp(proc_addr));
 }
 
+/**
+ * In default game, the function that sets the flag to indicate that a room has been visited
+ * is very limited in the number of addresses it can reach.
+ * We modify it to be able to set any game flag, which is especially useful in some cases
+ */
+void improve_visited_flag_setter(md::ROM& rom)
+{
+    rom.set_long(0x2954, 0xFF1000);
+}
+
 void make_ryuma_mayor_saveable(md::ROM& rom)
 {
-    // --------------- Fixes for thieves hideout treasure room ---------------
-    // Disable the cutscene when opening vanilla lithograph chest
+    // Disable the cutscene (CSA_0068) when opening vanilla lithograph chest
     rom.set_code(0x136BE, md::Code().rts());
 
-    // Disable Friday blocker in the treasure room by removing last entity from the map
-    rom.set_word(0x9BA62, 0xFEFE); // Why does that even work? I don't know...
+    // Shifts the boss cutscene right before to make room for one more instruction in mayor cutscene
+    rom.set_long(0x28362, rom.get_long(0x28364));
+    rom.set_word(0x2546A, rom.get_word(0x2546A) - 2);
 
-    // Set the "Mayor freed" flag to byte 10D6, bit 4 (which happens to be the "Visited treasure room with mayor variant" flag)
-    rom.set_word(0xA3F4, 0xD604);
+    // Set the bit 1 of flag 1004 as the first instruction in mayor's cutscene, and move starting
+    // offset of this cutscene accordingly
+    rom.set_word(0x28366, 0x1421);
+    rom.set_word(0x2546C, 0x2F39);
 
-    // Remove the "remove all NPCs on flag set" trigger in treasure room by putting it to an impossible flag
-    rom.set_byte(0x1A9C0, 0x01);
+    // Edit Friday blocker behavior in the treasure room
+    rom.set_word(0x9BA62, 0xFEFE);
+}
 
-    // Inject custom code "on map enter" to set the flag when it is convenient to do so
-    md::Code func_on_map_enter;
-    func_on_map_enter.lea(0xFF10C0, reg_A0); // Do the instruction that was replaced the hook call
-    // When entering the cavern where we save Ryuma's mayor, set the flag "mayor is saved"
-    func_on_map_enter.cmpib(0xE0, reg_D0);
-    func_on_map_enter.bne(2);
-        func_on_map_enter.bset(0x01, addr_(0xFF1004));
-    func_on_map_enter.rts();
-
-    uint32_t func_on_map_enter_addr = rom.inject_code(func_on_map_enter);
-    rom.set_code(0x2952, md::Code().jsr(func_on_map_enter_addr));
-
-    // --------------- Fixes for Ryuma's mayor reward ---------------
+void fix_ryuma_mayor_reward(md::ROM& rom)
+{
     // Change the second reward from "fixed 100 golds" to "item with ID located at 0x2837F"
     rom.set_byte(0x2837E, 0x00);
     rom.set_word(0x28380, 0x17E8);
@@ -140,28 +142,6 @@ void make_ryuma_mayor_saveable(md::ROM& rom)
     rom.set_code(0x26496, md::Code().rts());
     // Clear out the rest
     rom.set_long(0x26498, 0xFFFFFFFF);
-}
-
-void replace_sick_merchant_by_chest(md::ROM& rom)
-{
-    // Neutralize map variant triggers for both the shop and the backroom to remove the "sidequest complete" check.
-    // Either we forced them to be always true or always false
-    rom.set_word(0x0050B4, 0x0008);  // Before: 0x2A0C (bit 4 of 102A) | After: 0x0008 (bit 0 of 1000 - always true)
-    rom.set_word(0x00A568, 0x3F07);	// Before: 0x2A04 (bit 4 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
-    rom.set_word(0x00A56E, 0x3F07);	// Before: 0x2A03 (bit 3 of 102A) | After: 0x3F07 (bit 7 of 103F - always false)
-    rom.set_word(0x01A6F8, 0x3FE0);	// Before: 0x2A80 (bit 4 of 102A) | After: 0x3FE0 (bit 7 of 103F - always false)
-
-    // Set the index for added chest in map to "0E" instead of "C2"
-    rom.set_byte(0x09EA48, 0x0E);
-
-    // Transform the sick merchant into a chest
-    rom.set_word(0x021D0E, 0xCE92);  // First word: position, orientation and palette (CE16 => CE92)
-    rom.set_word(0x021D10, 0x0000);  // Second word: ??? (3000 => 0000)
-    rom.set_word(0x021D12, 0x0012);  // Third word: type (006D = sick merchant NPC => 0012 = chest)
-//	rom.set_word(0x021D14, 0x0000); 
-
-    // Move the kid to hide the fact that the bed looks broken af
-    rom.set_word(0x021D16, 0x5055);
 }
 
 /**
@@ -288,19 +268,6 @@ void handle_armor_upgrades(md::ROM& rom)
 //       LOGIC ENFORCING
 ///////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Add a door inside Mercator enforcing that Safety Pass is owned to allow exiting from the front gate
- */
-void add_reverse_mercator_gate(md::ROM& rom)
-{
-    // Alter map variants so that we are in map 0x27A while safety pass is not owned
-    rom.set_word(0xA50E, 0x5905); // Byte 1050 bit 5 is required to trigger map variant
-    rom.set_word(0xA514, 0x5905); // Byte 1050 bit 5 is required to trigger map variant
-
-    // Modify entities in map variant 0x27A to replace two NPCs by a door blocking the way out of Mercator
-    rom.set_bytes(0x2153A, { 0x70, 0x2A, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00, 0x70, 0x2C, 0x02, 0x00, 0x00, 0x67, 0x01, 0x00 });
-}
-
 void add_jewel_check_for_kazalt_teleporter(md::ROM& rom, const RandomizerOptions& options)
 {
     // ----------- Rejection textbox handling ------------
@@ -372,7 +339,7 @@ void add_jewel_check_for_kazalt_teleporter(md::ROM& rom, const RandomizerOptions
 
     uint32_t handle_jewels_addr = rom.inject_code(proc_handle_jewels_check);
 
-    // This adds the purple & red jewel as a requirement for the Kazalt teleporter to work correctly
+    // This adds the jewels as a requirement for the Kazalt teleporter to work correctly
     rom.set_code(0x62F4, md::Code().jmp(handle_jewels_addr));
 }
 
@@ -400,41 +367,30 @@ void make_sword_of_gaia_work_in_volcano(md::ROM& rom)
     rom.set_code(0x1611E, md::Code().jmp(proc_addr));
 }
 
-/**
- * There is a sailor NPC in the "dark" version of Mercator port who responds badly to story triggers, 
- * allowing us to sail to Verla even without having repaired the lighthouse. To prevent this from being exploited, 
- * we removed him altogether.
- */
-void remove_sailor_in_dark_port(md::ROM& rom)
-{
-    // 0x021646:
-        // Before:	23 EC
-        // After:	00 00
-    rom.set_word(0x021646, 0x0000);
-}
-
-/*
- * There is a guard staying in front of the Mercator castle backdoor to prevent you from using
- * Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
- * but we actually never want him to be there, so we delete him from existence by moving him away from the map.
- */
-void remove_mercator_castle_backdoor_guard(md::ROM& rom)
-{
-    // 0x0215A6:
-        // Before:	93 9D
-        // After:	00 00
-    rom.set_word(0x0215A6, 0x0000);
-}
-
 /*
  * Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
  */
 void fix_mir_tower_priest_room_items(md::ROM& rom)
 {
+    // TODO: Handle ShopScript
     // 0x024E5A:
         // Before:	0307
         // After:	7F7F
     rom.set_word(0x024E5A, 0x7F7F);
+}
+
+void prevent_hint_item_save_scumming(md::ROM& rom)
+{
+    md::Code func_save_on_buy;
+    // Redo instructions that were removed by injection
+    func_save_on_buy.movew(reg_D2, reg_D0);
+    func_save_on_buy.jsr(0x291D6); 
+    // Save game
+    func_save_on_buy.jsr(0x1592);
+    func_save_on_buy.rts();
+    uint32_t func_save_on_buy_addr = rom.inject_code(func_save_on_buy);
+
+    rom.set_code(0x24F3E, md::Code().jsr(func_save_on_buy_addr));
 }
 
 
@@ -443,33 +399,100 @@ void fix_mir_tower_priest_room_items(md::ROM& rom)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
+ * The original game has no way to make enemies unkillable, so it uses weird ultra high HP bosses
+ * which don't represent their real life pool. This injection modifies the way this works to improve
+ * this part of the engine by implementing a way to make them unkillable.
+ * If specified in the options, this function also adds the check to prevent sacred trees from being
+ * killed by feeding them money.
  */
-void fix_armlet_skip(md::ROM& rom)
+void improve_checks_before_kill(md::ROM& rom, const RandomizerOptions& options)
 {
-    // 0x02030C:
-        // Before:  0x82 (Tornado pos Y = 20)
-        // After:   0x85 (Tornado pos Y = 50)
-    rom.set_byte(0x02030C, 0x85);
-}
-
-void fix_tree_cutting_glitch(md::ROM& rom)
-{
+    constexpr uint32_t ADDR_JMP_KILL = 0x16284;
+    constexpr uint32_t ADDR_JMP_NO_KILL_YET = 0x16262;
+    constexpr uint32_t ADDR_JMP_NO_KILL = 0x1627C;
+    
     // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
-    md::Code func_fix_tree_cutting_glitch;
+    md::Code func_check_before_kill;
  
-    func_fix_tree_cutting_glitch.tstb(addr_(reg_A5, 0x36));  // tst.b ($36,A5) [4A2D 0036]
-    func_fix_tree_cutting_glitch.beq(4);
-        // Only allow the "killable because holding money" check if the enemy is not a tree
-        func_fix_tree_cutting_glitch.cmpiw(0x126, addr_(reg_A5, 0xA));
-        func_fix_tree_cutting_glitch.beq(2);
-            func_fix_tree_cutting_glitch.jmp(0x16284);
-    func_fix_tree_cutting_glitch.rts();
+    // If enemy doesn't hold money, no kill yet
+    func_check_before_kill.tstb(addr_(reg_A5, 0x36));
+    if(options.fix_tree_cutting_glitch())
+    {
+        func_check_before_kill.beq(4);
+            // Only allow the "killable because holding money" check if the enemy is not a tree
+            func_check_before_kill.cmpiw(0x126, addr_(reg_A5, 0xA));
+            func_check_before_kill.beq(2);
+                func_check_before_kill.jmp(ADDR_JMP_KILL);
+    }
+    else
+    {
+        func_check_before_kill.beq(2);
+            func_check_before_kill.jmp(ADDR_JMP_KILL);
+    }
+    // If enemy has "empty item" as a drop, make it unkillable
+    func_check_before_kill.cmpib(0x3F, addr_(reg_A5, 0x77));
+    func_check_before_kill.bne(3);
+        func_check_before_kill.movew(0x0001, addr_(reg_A5, 0x3E));
+        func_check_before_kill.rts();
+    func_check_before_kill.jmp(ADDR_JMP_NO_KILL_YET);
 
-    uint32_t func_addr = rom.inject_code(func_fix_tree_cutting_glitch);
+    uint32_t func_addr = rom.inject_code(func_check_before_kill);
 
     // Call the injected function when killing an enemy
-    rom.set_code(0x01625C, md::Code().jsr(func_addr));
+    rom.set_code(0x01625C, md::Code().jmp(func_addr));
+}
+
+/**
+ * In original game, bosses have way higher HP than their real HP pool, and the game checks regularly
+ * if their health goes below 0x100 to trigger a death cutscene. In an effort to normalize bosses HP
+ * and allow us to make them have bigger HP pools, we lower all of those checks to verify that health
+ * goes below 0x002
+ */
+void normalize_bosses_hp_checks(md::ROM& rom)
+{
+    // 1* Make the HP check below 0x0002 instead of below 0x6400
+    // 2* Make the corresponding boss have 100 less HP
+    // 3* Make the corresponding boss unkillable to ensure cutscene is played
+    rom.set_byte(0x118DC, 0x0002);
+    rom.set_byte(0x118EC, 0x0002);
+    rom.set_word(0x11D38, 0x0002);
+    rom.set_byte(0x11D80, 0x0002);
+    rom.set_byte(0x11F8A, 0x0002);
+    rom.set_byte(0x11FAA, 0x0002);
+    rom.set_byte(0x12072, 0x0002);
+    rom.set_byte(0x120C0, 0x0002);
+}
+
+void fix_crypt_soflocks(md::ROM& rom)
+{
+    // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
+    // 0x019DF6:
+        // Before:	0839 0006 00FF1014 (btst bit 6 in FF1014) ; 66 14 (bne $19E14)
+        // After:	4EB9 00019E14 (jsr $19E14; 4E71 4E71 (nop nop)
+    rom.set_code(0x19DF6, md::Code().nop(5));
+
+    // 2) Change the room exit check and shadow mummy appearance from "if armlet is owned" to "chest was opened"
+    // 0x0117E8:
+        // Before:	103C 001F ; 4EB9 00022ED0 ; 4A41 ; 6B00 F75C (bmi $10F52)
+        // After:	0839 0002 00FF1097 (btst 2 FF1097)	; 6700 F75C (bne $10F52)
+    md::Code inject_change_crypt_exit_check;
+    inject_change_crypt_exit_check.btst(0x2, addr_(0xFF1097));
+    inject_change_crypt_exit_check.nop(2);
+    inject_change_crypt_exit_check.beq(); // beq $10F52
+    rom.set_code(0x117E8, inject_change_crypt_exit_check);
+}
+
+/**
+ * Change the rafts logic so we can take them several times in a row, preventing from getting softlocked by missing chests
+ */
+void alter_labyrinth_rafts(md::ROM& rom)
+{
+    // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene while discarding the "raft already taken" state 
+    // as early as the player moves to another map.
+    rom.set_word(0x09E031, 0x0100);
+    rom.set_word(0x09E034, 0x0100);
+    rom.set_word(0x09E04E, 0x0100);
+    rom.set_word(0x09E051, 0x0100);
 }
 
 
@@ -483,27 +506,25 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_fahl_challenge(rom, world);
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
+    improve_visited_flag_setter(rom);
     make_ryuma_mayor_saveable(rom);
-    replace_sick_merchant_by_chest(rom);
+    fix_ryuma_mayor_reward(rom);
     if (options.remove_tibor_requirement())
         remove_tibor_requirement_to_use_trees(rom);
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
 
+    improve_checks_before_kill(rom, options);
+    normalize_bosses_hp_checks(rom);
+
     // Logic enforcing
-    add_reverse_mercator_gate(rom);
     add_jewel_check_for_kazalt_teleporter(rom, options);
 
     // Fix randomizer-related bugs
     make_sword_of_gaia_work_in_volcano(rom);
-    remove_sailor_in_dark_port(rom);
-    remove_mercator_castle_backdoor_guard(rom);
     fix_mir_tower_priest_room_items(rom);
-
-    // Fix original game bugs
-    if(options.fix_armlet_skip())
-        fix_armlet_skip(rom);
-    if(options.fix_tree_cutting_glitch())
-        fix_tree_cutting_glitch(rom);
+    prevent_hint_item_save_scumming(rom);
+    fix_crypt_soflocks(rom);
+    alter_labyrinth_rafts(rom);
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../tools/megadrive/rom.hpp"
 #include "../extlibs/json.hpp"
 #include <sstream>
 
@@ -15,13 +14,20 @@ private:
     bool        _allowed_on_ground;
 
 public:
-    Item() {}
+    Item() :
+        _id(0xFF),
+        _name(),
+        _max_quantity(0),
+        _starting_quantity(0),
+        _gold_value(0),
+        _allowed_on_ground(false)
+    {}
 
-    Item(uint8_t id, const std::string& name, uint8_t max_quantity, uint16_t gold_value, bool allowed_on_ground = true) :
+    Item(uint8_t id, const std::string& name, uint8_t max_quantity, uint8_t starting_quantity, uint16_t gold_value, bool allowed_on_ground = true) :
         _id                 (id),
         _name               (name),
         _max_quantity       (max_quantity),
-        _starting_quantity  (0),
+        _starting_quantity  (starting_quantity),
         _gold_value         (gold_value),
         _allowed_on_ground  (allowed_on_ground)
     {}
@@ -43,8 +49,6 @@ public:
 
     bool allowed_on_ground() const { return _allowed_on_ground; }
     void allowed_on_ground(bool allowed) { _allowed_on_ground = allowed; }
-
-    virtual void write_to_rom(md::ROM& rom) const;
 
     Json to_json() const;
     static Item* from_json(uint8_t id, const Json& json);
@@ -71,12 +75,6 @@ public:
         name(new_name.str());
 
         return *this;
-    }
-
-    virtual void write_to_rom(md::ROM& rom) const
-    {
-        // Do nothing, since it is not a real item
-        return;
     }
 };
 

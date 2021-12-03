@@ -144,7 +144,7 @@
         "maxQuantity": 9,
         "startingQuantity": 0,
         "goldValue": 200,
-        "allowedOnGround": false
+        "allowedOnGround": true
     },
     "21": {
         "name": "Mind Repair",

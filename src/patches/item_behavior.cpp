@@ -7,6 +7,10 @@
 #include "../assets/green_jewel.bin.hxx"
 #include "../assets/yellow_jewel.bin.hxx"
 
+#include "../model/item.hpp"
+#include "../model/map.hpp"
+#include "../offsets.hpp"
+
 /**
  * The effect of Pawn Ticket fits very well one of a consumable item, but didn't
  * work this way in the original game. Instead, a story flag was set that prevented
@@ -166,10 +170,8 @@ static void alter_lantern_handling(md::ROM& rom)
 
     // ----------------------------------------
     // Replace the "dark room" palette from King Nole's Labyrinth by the lit room palette
-    constexpr uint32_t LIT_ROOM_PALETTE_ADDR = 0x11CD1C;
-    constexpr uint32_t DARK_ROOM_PALETTE_ADDR = 0x11CD36;
     for (uint8_t i = 0; i < 0x1A; ++i)
-        rom.set_byte(DARK_ROOM_PALETTE_ADDR + i, rom.get_byte(LIT_ROOM_PALETTE_ADDR + i));
+        rom.set_byte(offsets::KNL_DARK_ROOM_PALETTE + i, rom.get_byte(offsets::KNL_LIT_ROOM_PALETTE + i));
 }
 
 /**
@@ -187,44 +189,25 @@ static void handle_additional_jewels(md::ROM& rom, const RandomizerOptions& opti
     // If we are in "Kazalt jewel" mode, don't do anything
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
         return;
-
-    constexpr uint32_t ITEM_SPRITES_TABLE_ADDR = 0x121578;
     
     if(options.jewel_count() >= 3)
     {
         // Add a sprite for green jewel and make the item use it
         uint32_t green_jewel_sprite_addr = rom.inject_bytes(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE);
-        rom.set_long(ITEM_SPRITES_TABLE_ADDR + (ITEM_GREEN_JEWEL * 0x4), green_jewel_sprite_addr); // 0x121648
+        rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_GREEN_JEWEL * 0x4), green_jewel_sprite_addr); // 0x121648
     }
     if(options.jewel_count() >= 4)
     {
         // Add a sprite for blue jewel and make the item use it
         uint32_t blue_jewel_sprite_addr = rom.inject_bytes(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE);
-        rom.set_long(ITEM_SPRITES_TABLE_ADDR + (ITEM_BLUE_JEWEL * 0x4), blue_jewel_sprite_addr);
+        rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_BLUE_JEWEL * 0x4), blue_jewel_sprite_addr);
     }
     if(options.jewel_count() >= 5)
     {
         // Add a sprite for green jewel and make the item use it
         uint32_t yellow_jewel_sprite_addr = rom.inject_bytes(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE);
-        rom.set_long(ITEM_SPRITES_TABLE_ADDR + (ITEM_YELLOW_JEWEL * 0x4), yellow_jewel_sprite_addr);
+        rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_YELLOW_JEWEL * 0x4), yellow_jewel_sprite_addr);
     }
-
-    // Remove jewels replaced from book IDs from priest stands
-    constexpr uint8_t emptyItem = ITEM_NONE + 0xC0;
-    rom.set_byte(0x21037, emptyItem); // Massan Blue Jewel
-    rom.set_byte(0x2103F, emptyItem); // Massan Yellow Jewel
-    rom.set_byte(0x21193, emptyItem); // Gumi Blue Jewel
-    rom.set_byte(0x2119B, emptyItem); // Gumi Yellow Jewel
-    rom.set_byte(0x21287, emptyItem); // Ryuma Blue Jewel
-    rom.set_byte(0x2128F, emptyItem); // Ryuma Yellow Jewel
-    rom.set_byte(0x21D77, emptyItem); // Mercator Blue Jewel
-    rom.set_byte(0x21D6F, emptyItem); // Mercator Yellow Jewel
-    rom.set_byte(0x21F79, emptyItem); // Verla Blue Jewel
-    rom.set_byte(0x21F71, emptyItem); // Verla Yellow Jewel
-    rom.set_byte(0x22099, emptyItem); // Destel Blue Jewel
-    rom.set_byte(0x220A1, emptyItem); // Destel Yellow Jewel
-    rom.set_byte(0x22137, emptyItem); // Kazalt Blue Jewel
-    rom.set_byte(0x2213F, emptyItem); // Kazalt Yellow Jewel
 
     // Make the Awakening Book (the only one remaining in churches) heal all status conditions
     rom.set_code(0x24F6C, md::Code().nop(6));

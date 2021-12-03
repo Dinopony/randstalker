@@ -1,5 +1,6 @@
 #include "spawn_location.hpp"
 #include "../exceptions.hpp"
+#include "../tools/tools.hpp"
 #include <unordered_map>
 
 const std::map<std::string, SpawnLocation>& getAllSpawnLocations()
@@ -30,7 +31,7 @@ const SpawnLocation& getSpawnLocationFromName(const std::string& name)
     } 
     catch(std::out_of_range&)
     {
-        std::string msg = std::string("Unknown spawn location '") + name + "'";
+        std::string msg = "Unknown spawn location '" + name + "'";
         throw RandomizerException(msg);
     }
 }

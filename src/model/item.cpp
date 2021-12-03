@@ -1,19 +1,5 @@
 #include "item.hpp"
-
-void Item::write_to_rom(md::ROM& rom) const
-{
-    constexpr uint32_t ITEM_TABLE_BASE_ADDR = 0x029304;
-    uint32_t item_base_addr = ITEM_TABLE_BASE_ADDR + _id * 0x04;
-
-    // Set the max quantity
-    uint8_t verb_and_max_qty = rom.get_byte(item_base_addr);
-    verb_and_max_qty &= 0xF0; // Keep the verb but erase the default quantity
-    verb_and_max_qty += _max_quantity;
-    rom.set_byte(item_base_addr, verb_and_max_qty);
-
-    // Set gold value
-    rom.set_word(item_base_addr + 0x2, _gold_value);
-}
+#include "../offsets.hpp"
 
 Json Item::to_json() const
 {
@@ -34,7 +20,7 @@ Item* Item::from_json(uint8_t id, const Json& json)
     uint16_t gold_value = json.value("goldValue", 0);
     bool allowed_on_ground = json.value("allowedOnGround", true);
 
-    return new Item(id, name, max_quantity, gold_value, allowed_on_ground);
+    return new Item(id, name, max_quantity, starting_quantity, gold_value, allowed_on_ground);
 }
 
 void Item::apply_json(const Json& json)

@@ -204,7 +204,7 @@ public:
         while (nodeBits.size() % 8 != 0)
             nodeBits.add(0);
 
-        return nodeBits.toValues();
+        return nodeBits.to_bytes();
     }
 
 private:

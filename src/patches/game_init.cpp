@@ -2,6 +2,7 @@
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
+#include "../model/spawn_location.hpp"
 
 static void setup_story_flags(const RandomizerOptions& options, const World& world, std::vector<uint8_t>& out_flag_array)
 {
@@ -13,7 +14,7 @@ static void setup_story_flags(const RandomizerOptions& options, const World& wor
     out_flag_array[0x06] = 0x7C;
     out_flag_array[0x07] = 0xB4;
     out_flag_array[0x08] = 0xFE;
-    out_flag_array[0x09] = 0x7E;
+    out_flag_array[0x09] = 0x7C;
     out_flag_array[0x12] = 0x1E;
     out_flag_array[0x13] = 0x43;
     out_flag_array[0x14] = 0x81;
@@ -63,7 +64,7 @@ static void setup_starting_items(const World& world, std::vector<uint8_t>& out_f
 
 static void setup_ingame_tracker(std::vector<uint8_t>& out_flag_array)
 {
-    // The ingame-tracker consists in putting in "greyed-out" key items in the inventory,
+    // The ingame-tracker consists in putting in "grayed-out" key items in the inventory,
     // as if they were already obtained but lost (like lithograph in OG)
     out_flag_array[0x4B] |= 0x10;
     out_flag_array[0x4C] |= 0x10;
@@ -169,6 +170,6 @@ void patch_game_init(md::ROM& rom, const RandomizerOptions& options, const World
     // Remove a blocking cutscene flag to be allowed to play
     remove_cutscene_flag_on_game_start(rom);
 
-    // Remove region check on game boot
+    // Remove node check on game boot
     disable_region_check(rom);
 }

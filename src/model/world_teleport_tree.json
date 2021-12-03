@@ -5,14 +5,14 @@
             "leftEntranceAddress": 1170518,
             "rightEntranceAddress": 1170534,
             "treeMapId": 512,
-            "regionId": "route_massan_gumi"
+            "nodeId": "route_massan_gumi"
         },
         {
             "name": "Tibor sector",
             "leftEntranceAddress": 1170846,
             "rightEntranceAddress": 1170854,
             "treeMapId": 534,
-            "regionId": "route_gumi_ryuma"
+            "nodeId": "route_gumi_ryuma"
         }
     ],
     [
@@ -21,14 +21,14 @@
             "leftEntranceAddress": 1170902,
             "rightEntranceAddress": 1170910,
             "treeMapId": 539,
-            "regionId": "route_gumi_ryuma"
+            "nodeId": "route_gumi_ryuma"
         },
         {
             "name": "Verla shore",
             "leftEntranceAddress": 1171110,
             "rightEntranceAddress": 1171118,
             "treeMapId": 537,
-            "regionId": "verla_shore"
+            "nodeId": "verla_shore"
         }
     ],
     [
@@ -37,14 +37,14 @@
             "leftEntranceAddress": 1171366,
             "rightEntranceAddress": 1171374,
             "treeMapId": 536,
-            "regionId": "route_after_destel"
+            "nodeId": "route_after_destel"
         },
         {
             "name": "Lake Shrine sector",
             "leftEntranceAddress": 1171430,
             "rightEntranceAddress": 1171438,
             "treeMapId": 513,
-            "regionId": "route_lake_shrine"
+            "nodeId": "route_lake_shrine"
         }
     ],
     [
@@ -53,14 +53,14 @@
             "leftEntranceAddress": 1170950,
             "rightEntranceAddress": 1170958,
             "treeMapId": 538,
-            "regionId": "mir_tower_sector"
+            "nodeId": "mir_tower_sector"
         },
         {
             "name": "Mountainous area",
             "leftEntranceAddress": 1171262,
             "rightEntranceAddress": 1171270,
             "treeMapId": 535,
-            "regionId": "mountainous_area"
+            "nodeId": "mountainous_area"
         }
     ],
     [
@@ -69,14 +69,14 @@
             "leftEntranceAddress": 1171934,
             "rightEntranceAddress": 1171942,
             "treeMapId": 511,
-            "regionId": "greenmaze_pre_whistle"
+            "nodeId": "greenmaze_pre_whistle"
         },
         {
             "name": "Greenmaze exit",
             "leftEntranceAddress": 1172062,
             "rightEntranceAddress": 1172070,
             "treeMapId": 510,
-            "regionId": "greenmaze_post_whistle"
+            "nodeId": "greenmaze_post_whistle"
         }
     ]
 ]

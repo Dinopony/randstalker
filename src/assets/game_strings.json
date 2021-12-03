@@ -1,18 +1,16 @@
 {
     "emptiedIndices": [
-        "19", 
-        "1d", "1e", "1f", "20", "21", 
+        // Debug menu strings
+        "1d", "1e", "1f", "20",
         "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f", 
               "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", 
               "3c", "3d", "3e", "3f", "40", "41", "42", "43", "44", "45", "46", "47", 
               "48", "49", "4a", "4b", "4c", "4d", 
-        "101", "102", "103", "104", 
-        "134", 
-        "139", "13a", "140", "141", "142", "143", "144", 
         // Unreachable Massan elder dialogues
         "148", "149",
         // Unreachable Fara dialogues
         "14f", "150",
+        // Pockets boulder dialogue
         "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "18a", "18b", 
         "18c", "18d",
         // Unreachable Prospero dialogues
@@ -20,33 +18,48 @@
                "1d2", "1d3", "1d4", "1d5", "1d6", "1d7", "1d8", "1d9",
         // Arthur gift cutscene
         "497", "498", "499", "49a", "49b",
+        // Fara discovering Nigel fallen from waterfall cutscene
         "52e", "52f", "530", "531", "532", "533", "534", 
-        "572", "573", "574", "575", "576", "577", "578", "579", "57a", "57b", "57c", "57d", 
-               "57e", "57f", "580", "581", "582", "583", "584", "585", "586", "587", "588", 
-               "589", "58a", "58b", "58c", "58d", "58e", "58f", "590", "591", "592", 
-        "5a0", "5a1", "5a2", "5a3", "5a4", "5a5", "5a6", "5a7", "5a8", "5a9", 
-        "51a",
+        // Kayla raft cutscene
+        "572", "573", "574", "575", "576", "577", "578", 
+        // Lithograph cutscene
+        "579", "57a", "57b", "57c", "57d", "57e", "57f", "580", "581", "582", "583", "584", "585", 
+               "586", "587", "588", "589", "58a", "58b", "58c", "58d", "58e", "58f", "590", "591", 
+               "592", 
+        // Mercator gate guards
+        "5a0", "5a1", "5a2", "5a3", "5a4", "5a5", "5a6", "5a7", "5a8", "5a9",
+        // Fahl intermediary dialogues
         "5b6", "5b7", "5b8", "5b9", "5ba", "5bb", "5bc", "5bd", "5be", "5bf", "5c0", "5c1", 
-               "5c2", "5c3", 
+               "5c2", "5c3",
+        // Mercator castle backdoor cutscene
         "5e1", "5e2", "5e3", "5e4", "5e5", "5e6", "5e7", "5e8", "5e9", "5ea", "5eb", "5ec", "5ed", 
+        // Mercator cutscenes (Madame Yard & castle)
         "5f6", "5f7", "5f8", "5f9", "5fa", "5fb", "5fc", "5fd", "5fe", "5ff", "600", "601", "602", 
                "603", "604", "605", "606", "607", "608", "609", "60a", "60b", "60c", "60d", "60e", 
                "60f", "610", "611", "612", "613", "614", "615", "616", "617", "618", "619", "61a", 
-               "61b", "61c", "61d", "61e", "61f", "620", "621", 
+               "61b", "61c", "61d", "61e", "61f", "620", "621",
+        // Mercator duke banquet cutscene
         "631", "632", "633", "634", "635", "636", "637", "638", "639", "63a", "63b", "63c", "63d", 
                "63e", "63f", "640", "641", "642", "643", "644", "645", "646", "647", "648", "649", 
                "64a", "64b", "64c", "64d", "64e", "64f", "650", "651", "652", "653", "654", "655", 
                "656", "657", "658", "659", "65a", 
+        // Mercator duke cutscene after Mir Tower
         "6a5", "6a6", "6a7", "6a8", "6a9", "6aa", "6ab", "6ac", "6ad", "6ae", "6af", "6b0", "6b1", 
                "6b2", "6b3", "6b4", "6b5", "6b6", "6b7", "6b8", "6b9", "6ba", "6bb", 
+        // Princess kidnapping by Zak cutscene
         "6cb", "6cc", "6cd", "6ce", "6cf", "6d0", "6d1", "6d2", "6d3", "6d4", "6d5", "6d6", "6d7", 
-        "770", "771", "772", "773", "774", "775", "776", "777", "778", 
-        "787", "788", "789", "78a", "78b", "78c", "78d", "78e", 
-        "790", "791", "792", "793", 
+        // Duke taunting on raft
+        "770", "771", "772", "773", "774", "775", "776", "777", "778",
+        // Mir cutscene after Lake Shrine
+        "787", "788", "789", 
+        // Zak bridge cutscene
+        "78a", "78b", "78c", "78d", "78e", "78f", "790", "791", "792", "793", 
+        // Kazalt teleporter cutscene
         "7a3", "7a4", "7a5", "7a6", "7a7", "7a8", "7a9", "7aa", "7ab", "7ac", "7ad", "7ae", "7af", 
                "7b0", "7b1", "7b2", "7b3", "7b4", "7b5", "7b6", "7b7", "7b8", "7b9", "7ba", "7bb", 
                "7bc", "7bd", "7be", "7bf", "7c0", "7c1", "7c2", "7c3", "7c4", "7c5", "7c6", "7c7", 
                "7c8", "7c9", "7ca", 
+        // Game intro
         "7df", "7e0", "7e1", "7e2", "7e3", "7e4", "7e5", "7e6", "7e7", "7e8", "7e9", "7ea", "7eb", 
                "7ec", "7ed", "7ee", "7ef", "7f0", "7f1", "7f2", "7f3", "7f4", "7f5", "7f6", "7f7", 
                "7f8", "7f9", "7fa", "7fb", "7fc", "7fd", "7fe", "7ff", "800", "801", "802", "803", "804"
@@ -55,7 +68,10 @@
     "patches":
     {
     //    "19_old": "You have finished \u001b%\nof this island...\u001e\nspoke the Oracle Stone.\u001e",
-        "19": "",
+        "19": "The stone looks blurry. It looks like it won't be of any use...",
+
+    //    "21_old": "MAP MENU",
+        "21": "This tablet seems of no use...",
 
     //    "22_old": "MASSAN",
         "22": "Only the bearers of the 5 jewels\n are worthy of entering\n King Nole's domain...\u001e",
@@ -73,17 +89,16 @@
     //      ROAD SIGNS DEFAULT MESSAGES
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////    
         "101": "This sign is severely damaged\nand cannot be read.\u0003",
-        "102": "This sign is severely damaged\nand cannot be read.\u0003",
+        "102": "This sign shows uninteresting\ndirections on the area.\u0003",
         "103": "This sign is severely damaged\nand cannot be read.\u0003",
-        "104": "This sign is severely damaged\nand cannot be read.\u0003",
+        "104": "This sign shows uninteresting\ndirections on the area.\u0003",
         "134": "This sign is severely damaged\nand cannot be read.\u0003",
-        "139": "This sign is severely damaged\nand cannot be read.\u0003",
+        "139": "This sign shows uninteresting\ndirections on the area.\u0003",
         "13a": "This sign is severely damaged\nand cannot be read.\u0003",
-        "140": "This sign is severely damaged\nand cannot be read.\u0003",
+        "140": "This sign shows uninteresting\ndirections on the area.\u0003",
         "141": "This sign is severely damaged\nand cannot be read.\u0003",
-        "142": "This sign is severely damaged\nand cannot be read.\u0003",
+        "142": "This sign shows uninteresting\ndirections on the area.\u0003",
         "143": "This sign is severely damaged\nand cannot be read.\u0003",
-        "144": "This sign is severely damaged\nand cannot be read.\u0003",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MASSAN ELDER REWARD DIALOGUE
@@ -98,8 +113,8 @@
     //    "1c4_old": "\u001cIs it true that Fara\nhas been kidnapped?\nUnbelievable...\u001e",
     //    "1c5_old": "\u001cI think the Gumi tribe is\ncontrolled by the Orcs!\nFara must be in danger...\u001e",
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////      
-        "0x1c4": "\u001cI've studied the books here\nfor quite some time, and\nit brought me to one conclusion:\u001e",
-        "0x1c5": "\u001cNole made his treasure\nextremely hard to find...\u001e",
+        "1c4": "\u001cI've studied the books here\nfor quite some time, and\nit brought me to one conclusion:\u001e",
+        "1c5": "\u001cNole made his treasure\nextremely hard to find...\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MERCATOR FORTUNE TELLER DIALOGUE
@@ -108,7 +123,7 @@
     //    "28e_old": "\u001cNow, where was I?.....\u0003",
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         "28d": "\u001cHello dear, let me look at\nwhat your future is made of...\u001e",
-        "28e": "",
+        "28e": "\u001cI see... \u001aI see... \u001a\nI see nothing.\u0003",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      ARTHUR DIALOGUE
@@ -131,6 +146,17 @@
         "517": "\u001cI've found a scroll that looks\nlike a map to an ancient\ntreasure. It says:\u001e",
         "518": "\u001cFollow the path of the dragon.\u0003",
         "519": "\u001cQuite mysterious, don't you think?\u001e",
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //      NON-FITTING TEXTLINES MENTIONING ITEMS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //    "570_old": "\u001cYou can get into\nMercator with it.\u0003",
+    //    "5c5_old": "\u001cI'll give you this\n\u001d.  It's the most\nprecious thing I own.\u001e",
+    //    "71f_old": "\u001cNigel, look!\nI can see something shining\nover there! The \u001d!\u001e",
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        "570": "\u001cThanks again for saving\n me from a certain death.\u0003",
+        "5c5": "\u001cI'll give you this, it's\nthe most precious thing I own.\u001e",
+        "71f": "\u001cNigel, look!\nI can see something shining\nover there!\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MIR INTRO CUTSCENE

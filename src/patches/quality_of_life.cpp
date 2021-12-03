@@ -3,35 +3,42 @@
 #include "../randomizer_options.hpp"
 #include "../world.hpp"
 #include "../exceptions.hpp"
+#include "../offsets.hpp"
+#include "../assets/fixed_hud_tilemap.bin.hxx"
+#include "../model/item.hpp"
+#include "../tools/huffman/symbols.hpp"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//      UI CHANGES
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void alter_item_order_in_menu(md::ROM& rom)
 {
     std::vector<uint8_t> itemOrder = {
-        ITEM_EKEEKE,        ITEM_RECORD_BOOK,
-        ITEM_DAHL,          ITEM_RESTORATION,
+        ITEM_RECORD_BOOK,   ITEM_SPELL_BOOK,
+        ITEM_EKEEKE,        ITEM_DAHL,
         ITEM_GOLDEN_STATUE, ITEM_GAIA_STATUE,
-        ITEM_DETOX_GRASS,   ITEM_MIND_REPAIR,
-        ITEM_ANTI_PARALYZE, ITEM_ORACLE_STONE,
-        ITEM_KEY,           ITEM_GARLIC,
-        ITEM_LOGS,          ITEM_IDOL_STONE,
+        ITEM_RESTORATION,   ITEM_DETOX_GRASS,
+        ITEM_MIND_REPAIR,   ITEM_ANTI_PARALYZE,
+        ITEM_KEY,           ITEM_IDOL_STONE,
+        ITEM_GARLIC,        ITEM_LOGS,
         ITEM_GOLA_EYE,      ITEM_GOLA_NAIL,
         ITEM_GOLA_HORN,     ITEM_GOLA_FANG,
-        ITEM_DEATH_STATUE,  ITEM_STATUE_JYPTA,
+        ITEM_DEATH_STATUE,  ITEM_CASINO_TICKET,
         ITEM_SHORT_CAKE,    ITEM_PAWN_TICKET,
-        ITEM_CASINO_TICKET, ITEM_LITHOGRAPH,
-        ITEM_LANTERN,       ITEM_BELL,
-        ITEM_SAFETY_PASS,   ITEM_ARMLET,
-        ITEM_SUN_STONE,     ITEM_BUYER_CARD,
-        ITEM_AXE_MAGIC,     ITEM_EINSTEIN_WHISTLE,
+        ITEM_ORACLE_STONE,  ITEM_LITHOGRAPH,
         ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
         ITEM_GREEN_JEWEL,   ITEM_BLUE_JEWEL,
-        ITEM_YELLOW_JEWEL,  ITEM_SPELL_BOOK,
+        ITEM_YELLOW_JEWEL,  ITEM_SAFETY_PASS,
+        ITEM_AXE_MAGIC,     ITEM_ARMLET,
+        ITEM_SUN_STONE,     ITEM_BUYER_CARD,
+        ITEM_LANTERN,       ITEM_EINSTEIN_WHISTLE,
+        ITEM_STATUE_JYPTA,  ITEM_BELL,
         ITEM_BLUE_RIBBON,   0xFF
     };
 
-    constexpr uint32_t base_addr = 0x00D55C;
-    for (int i = 0; base_addr + i < 0x00D584; ++i)
-        rom.set_byte(base_addr + i, itemOrder[i]);
+    for (int i = 0; offsets::MENU_ITEM_ORDER_TABLE + i < offsets::MENU_ITEM_ORDER_TABLE_END; ++i)
+        rom.set_byte(offsets::MENU_ITEM_ORDER_TABLE + i, itemOrder[i]);
 }
 
 void rename_items(md::ROM& rom, const RandomizerOptions& options)
@@ -81,8 +88,8 @@ void rename_items(md::ROM& rom, const RandomizerOptions& options)
         addr += stringSize;
     }
 
-    constexpr uint16_t initialSize = 0x29A0A - 0x29732;
-
+    constexpr uint16_t initialSize = offsets::ITEM_NAMES_TABLE_END - offsets::ITEM_NAMES_TABLE;
+    
     item_name_bytes.clear();
     for(const std::vector<uint8_t>& itemName : item_names)
     {
@@ -93,7 +100,7 @@ void rename_items(md::ROM& rom, const RandomizerOptions& options)
 
     if(item_name_bytes.size() > initialSize)
         throw new RandomizerException("Item names size is above initial game size");
-    rom.set_bytes(0x29732, item_name_bytes);
+    rom.set_bytes(offsets::ITEM_NAMES_TABLE, item_name_bytes);
 }
 
 void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
@@ -122,20 +129,18 @@ void change_hud_color(md::ROM& rom, const RandomizerOptions& options)
 
 void alter_credits(md::ROM& rom)
 {
-    constexpr uint32_t credits_text_base_addr = 0x9ED1A;
-
     // Change "LANDSTALKER" to "RANDSTALKER"
-    rom.set_byte(credits_text_base_addr + 0x2, 0x13);
+    rom.set_byte(offsets::CREDITS_TEXT + 0x2, 0x13);
 
-    rom.set_bytes(credits_text_base_addr + 0x14, { 
+    rom.set_bytes(offsets::CREDITS_TEXT + 0x14, { 
         0x27, 0x1C, 0x29, 0x1F, 0x2E, 0x2F, 0x1C, 0x27, 0x26, 0x20, 0x2D, 0x80, // "landstalker "
         0x2D, 0x1C, 0x29, 0x1F, 0x2A, 0x28, 0x24, 0x35, 0x20, 0x2D              // "randomizer"
     });
 
     // Widen the space between the end of the cast and the beginning of the rando staff
-    rom.set_byte(credits_text_base_addr + 0x5C, 0x0F);
+    rom.set_byte(offsets::CREDITS_TEXT + 0x5C, 0x0F);
 
-    rom.set_bytes(credits_text_base_addr + 0x75, { 
+    rom.set_bytes(offsets::CREDITS_TEXT + 0x75, { 
         // RANDOMIZER
         0x08, 0xFF, 0x82, 
         0x80, 0x13, 0x80, 0x02, 0x80, 0x0F, 0x80, 0x05, 0x80, 0x10, 0x80, 0x0E, 0x80, 0x0A, 0x80, 0x1B, 0x80, 0x06, 0x80, 0x13, 0x80, 0x00, 
@@ -172,11 +177,25 @@ void alter_credits(md::ROM& rom)
     });
 
     std::vector<uint8_t> rest;
-    rom.data_chunk(credits_text_base_addr + 0x1D2, credits_text_base_addr + 0x929, rest);
-    rom.set_bytes(credits_text_base_addr + 0xF5, rest);
-    for(uint32_t addr = credits_text_base_addr + 0xF5 + (uint32_t)rest.size() ; addr <= credits_text_base_addr + 0x929 ; ++addr)
+    rom.data_chunk(offsets::CREDITS_TEXT + 0x1D2, offsets::CREDITS_TEXT + 0x929, rest);
+    rom.set_bytes(offsets::CREDITS_TEXT + 0xF5, rest);
+    for(uint32_t addr = offsets::CREDITS_TEXT + 0xF5 + (uint32_t)rest.size() ; addr <= offsets::CREDITS_TEXT + 0x929 ; ++addr)
         rom.set_byte(addr, 0x00);
 }
+
+/**
+ * In the original game, the HUD tilemap has a problem on the zero character, which is the only one not having a shadow.
+ * This is fixed in this edited version of the HUD tilemap.
+ */
+void fix_hud_tilemap(md::ROM& rom)
+{
+    for(uint32_t i=0 ; i<FIXED_HUD_TILEMAP_SIZE ; ++i)
+        rom.set_byte(offsets::HUD_TILEMAP+i, FIXED_HUD_TILEMAP[i]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//      OTHER QOL CHANGES
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void shorten_mir_death_cutscene(md::ROM& rom)
 {
@@ -227,6 +246,40 @@ void alter_destel_boatmaker_dialogues(md::ROM& rom)
     rom.set_byte(0x28276, 0xE4);
 }
 
+/**
+ * Replace "Copy" behavior in menu by an injected function showing seed hash
+ */
+void replace_copy_save_by_show_hash(md::ROM& rom, const RandomizerOptions& options)
+{
+    md::Code show_hash_func;
+    show_hash_func.cmpib(1, reg_D0);
+    show_hash_func.bne(9);
+        show_hash_func.jsr(0xF5F4); // ClearTextBuffer
+        show_hash_func.movew(0x4D, reg_D1);
+        show_hash_func.jsr(0xF618); // j_j_LoadUncompressedString
+        show_hash_func.jsr(0xB5E); // WaitUntilVBlank
+        show_hash_func.jsr(0xF5DC); // DMACopyTextBuffer
+        show_hash_func.moveb(0x00, addr_(0xFF0556));
+        show_hash_func.jsr(0x10C6); // WaitForNextButtonPress
+        show_hash_func.jmp(0x00EEF6);
+    show_hash_func.add_bytes({ 0x3D, 0x7C, 0xFF, 0xFF, 0xFF, 0xFC });
+    show_hash_func.jmp(0x00EF00);
+
+    uint32_t addr = rom.inject_code(show_hash_func);
+    rom.set_code(0xEEFA, md::Code().jmp(addr));
+
+    // Replace "Copy" string by "Hash"
+    rom.set_bytes(0x29A20, Symbols::bytes_for_symbols("Hash"));
+
+    // Replace "Massan" by an empty string, and make this string the one shown for every map in the game
+    rom.set_word(0x29A4B, 0x0100);
+    rom.set_word(0x294E8, 0xFFFF);
+
+    // Put hash sentence as string 4D
+    rom.set_byte(0x29A4D, (uint8_t)options.hash_sentence().size());
+    rom.set_bytes(0x29A4E, Symbols::bytes_for_symbols(options.hash_sentence()));
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -236,6 +289,8 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     rename_items(rom, options);
     change_hud_color(rom, options);
     alter_credits(rom);
+    fix_hud_tilemap(rom);
+    replace_copy_save_by_show_hash(rom, options);
 
     // Other QoL changes
     shorten_mir_death_cutscene(rom);

@@ -8,6 +8,11 @@ class Bitfield
 {
 public:
     Bitfield() : _values(), _size(0)
+    {
+        _values.reserve(4);
+    }
+
+    Bitfield(const std::vector<uint8_t>& values, uint8_t size) : _values(values), _size(size)
     {}
 
     void add(bool bit)
@@ -18,7 +23,7 @@ public:
         }
         else
         {
-            uint8_t& value = *_values.rbegin();
+            uint8_t& value = _values[_values.size()-1];
             value <<= 1;
             if (bit)
                 value += 1;
@@ -40,7 +45,7 @@ public:
         return (byte >> (7 - (bit_id % 8))) & 0x1;
     }
 
-    std::vector<uint8_t> toValues() const
+    std::vector<uint8_t> to_bytes() const
     {
         return _values;
     }
@@ -67,7 +72,8 @@ public:
 
     Bitfield& operator+=(const Bitfield& other)
     {
-        *this = *this + other;
+        for (uint32_t i = 0; i < other._size; ++i)
+            this->add(other.get(i));
         return *this;
     }
 
@@ -102,7 +108,7 @@ public:
         return true;
     }
 
-    std::string toString() const
+    std::string to_string() const
     {
         std::ostringstream oss;
         oss << "[";

@@ -4,26 +4,32 @@
 #include "extlibs/base64.hpp"
 #include "tools/tools.hpp"
 #include "exceptions.hpp"
+#include "tools/bitpack.hpp"
 
 RandomizerOptions::RandomizerOptions() :
     _jewel_count                    (2),
     _use_armor_upgrades             (true),
-    _dungeonSignHints               (false),
     _startingLife                   (0),
     _startingGold                   (0),
-    _starting_items                 ({{"Record Book",1}}),
+    _starting_items                 (),
     _fix_armlet_skip                (true),
     _fix_tree_cutting_glitch        (true),
     _consumable_record_book         (false),
     _remove_gumi_boulder            (false),
     _remove_tibor_requirement       (false),
     _all_trees_visited_at_start     (false),
+    _enemies_damage_factor          (100),
+    _enemies_health_factor          (100),
+    _enemies_armor_factor           (100),
+    _enemies_golds_factor           (100),
+    _enemies_drop_chance_factor     (100),
 
     _seed                           (0),
     _allow_spoiler_log              (true),
-    _fillingRate                    (0.20),
+    _item_sources_window            (30),
     _shuffle_tibor_trees            (false), 
     _ghost_jumping_in_logic         (false),
+    _damage_boosting_in_logic       (false),
     _mandatory_items                (nullptr),
     _filler_items                   (nullptr),
 
@@ -112,10 +118,10 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("jewelcount"))           _jewel_count = args.get_integer("jewelcount");
     if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
-    if(args.contains("dungeonsignhints"))     _dungeonSignHints = args.get_boolean("dungeonsignhints");
+    if(args.contains("nospellbook"))          _starting_items["Spell Book"] = 0;
     if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
 
-    if(args.contains("fillingrate"))          _fillingRate = args.get_double("fillingrate");
+    if(args.contains("itemsourceswindow"))    _item_sources_window = args.get_integer("itemsourceswindow");
     if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
     if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
@@ -134,7 +140,6 @@ Json RandomizerOptions::to_json() const
     // Game settings 
     json["gameSettings"]["jewelCount"] = _jewel_count;
     json["gameSettings"]["armorUpgrades"] = _use_armor_upgrades;
-    json["gameSettings"]["dungeonSignHints"] = _dungeonSignHints;
     json["gameSettings"]["startingGold"] = _startingGold;
     json["gameSettings"]["startingItems"] = _starting_items;
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
@@ -143,15 +148,21 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
+    json["gameSettings"]["enemiesDamageFactor"] = _enemies_damage_factor;
+    json["gameSettings"]["enemiesHealthFactor"] = _enemies_health_factor;
+    json["gameSettings"]["enemiesArmorFactor"] = _enemies_armor_factor;
+    json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
+    json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
-    json["randomizerSettings"]["fillingRate"] = _fillingRate;
+    json["randomizerSettings"]["itemSourcesWindow"] = _item_sources_window;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
     json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
+    json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
 
     if(_mandatory_items)
         json["randomizerSettings"]["mandatoryItems"] = *_mandatory_items;
@@ -176,8 +187,6 @@ void RandomizerOptions::parse_json(const Json& json)
             _jewel_count = game_settings_json.at("jewelCount");
         if(game_settings_json.contains("armorUpgrades"))
             _use_armor_upgrades = game_settings_json.at("armorUpgrades");
-        if(game_settings_json.contains("dungeonSignHints"))
-            _dungeonSignHints = game_settings_json.at("dungeonSignHints");
         if(game_settings_json.contains("startingLife"))
             _startingLife = game_settings_json.at("startingLife");
         if(game_settings_json.contains("startingGold"))
@@ -194,6 +203,16 @@ void RandomizerOptions::parse_json(const Json& json)
             _remove_tibor_requirement = game_settings_json.at("removeTiborRequirement");
         if(game_settings_json.contains("allTreesVisitedAtStart"))
             _all_trees_visited_at_start = game_settings_json.at("allTreesVisitedAtStart");
+        if(game_settings_json.contains("enemiesDamageFactor"))
+            _enemies_damage_factor = game_settings_json.at("enemiesDamageFactor");
+        if(game_settings_json.contains("enemiesHealthFactor"))
+            _enemies_health_factor = game_settings_json.at("enemiesHealthFactor");
+        if(game_settings_json.contains("enemiesArmorFactor"))
+            _enemies_armor_factor = game_settings_json.at("enemiesArmorFactor");
+        if(game_settings_json.contains("enemiesGoldsFactor"))
+            _enemies_golds_factor = game_settings_json.at("enemiesGoldsFactor");
+        if(game_settings_json.contains("enemiesDropChanceFactor"))    
+            _enemies_drop_chance_factor = game_settings_json.at("enemiesDropChanceFactor");
 
         if(game_settings_json.contains("startingItems"))
         {
@@ -209,8 +228,8 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("allowSpoilerLog"))
             _allow_spoiler_log = randomizer_settings_json.at("allowSpoilerLog");
-        if(randomizer_settings_json.contains("fillingRate"))
-            _fillingRate = randomizer_settings_json.at("fillingRate");
+        if(randomizer_settings_json.contains("itemSourcesWindow"))
+            _item_sources_window = randomizer_settings_json.at("itemSourcesWindow");
 
         if(randomizer_settings_json.contains("spawnLocations"))
             randomizer_settings_json.at("spawnLocations").get_to(_possible_spawn_locations);
@@ -221,17 +240,28 @@ void RandomizerOptions::parse_json(const Json& json)
             _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
         if(randomizer_settings_json.contains("ghostJumpingInLogic"))
             _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
+        if(randomizer_settings_json.contains("damageBoostingInLogic"))
+            _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
 
         if(randomizer_settings_json.contains("mandatoryItems"))
         {
-            _mandatory_items = new std::map<std::string, uint16_t>();
-            *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
+            try {            
+                _mandatory_items = new std::map<std::string, uint16_t>();
+                *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
+            } 
+            catch(Json::exception) { 
+                throw RandomizerException("Error while parsing mandatory items from preset");
+            }
         }
 
         if(randomizer_settings_json.contains("fillerItems"))
         {
-            _filler_items = new std::map<std::string, uint16_t>();
-            *(_filler_items) = randomizer_settings_json.at("fillerItems");
+            try {
+                _filler_items = new std::map<std::string, uint16_t>();
+                *(_filler_items) = randomizer_settings_json.at("fillerItems");
+            } catch (Json::exception) {
+                throw RandomizerException("Error while parsing filler items from preset");
+            }
         }
     }
 
@@ -267,17 +297,24 @@ void RandomizerOptions::validate()
 
 std::vector<std::string> RandomizerOptions::hash_words() const
 {
-    std::vector<std::string> words = {
-        "EkeEke", "Nail", "Horn", "Fang", "Magic", "Ice", "Thunder", "Gaia", "Fireproof", "Iron", "Spikes", "Healing", "Snow",
-        "Mars", "Moon", "Saturn", "Venus", "Detox", "Statue", "Golden", "Mind", "Repair", "Casino", "Ticket", "Axe", "Ribbon",
-        "Card", "Lantern", "Garlic", "Paralyze", "Chicken", "Death", "Jypta", "Sun", "Armlet", "Einstein", "Whistle", "Spell",
-        "Book", "Lithograph", "Red", "Purple", "Jewel", "Pawn", "Ticket", "Gola", "Nole", "King", "Dragon", "Dahl", "Restoration",
-        "Logs", "Oracle", "Stone", "Idol", "Key", "Safety", "Pass", "Bell", "Short", "Cake", "Life", "Stock", "Zak", "Duke",
-        "Massan", "Gumi", "Ryuma", "Mercator", "Verla", "Destel", "Kazalt", "Greedly", "Dex", "Slasher", "Marley", "Nigel", "Friday",
-        "Mir", "Miro", "Prospero", "Fara", "Orc", "Mushroom", "Slime", "Cyclops", "Ninja", "Ghost", "Tibor", "Knight", "Pockets",
-        "Kado", "Kan", "Well", "Dungeon", "Loria", "Kayla", "Wally", "Ink", "Arthur", "Crypt", "Mummy", "Poison", "Labyrinth",
-        "Palace", "Gold", "Waterfall", "Shrine", "Swamp", "Hideout", "Greenmaze", "Mines", "Lake", "Volcano", "Crate", "Jar", 
-        "Helga", "Fahl", "Yard", "Twinkle", "Firedemon", "Spinner", "Golem", "Boulder"
+    std::vector<std::string> words = { 
+        "EkeEke",   "Nail",        "Horn",       "Fang",      "Magic",      "Ice",       "Thunder",    "Gaia",
+        "Mars",     "Moon",        "Saturn",     "Venus",     "Detox",      "Statue",    "Golden",     "Mind",
+        "Card",     "Lantern",     "Garlic",     "Paralyze",  "Chicken",    "Death",     "Jypta",      "Sun",
+        "Book",     "Lithograph",  "Red",        "Purple",    "Jewel",      "Pawn",      "Gola",       "Nole",
+        "Logs",     "Oracle",      "Stone",      "Idol",      "Key",        "Safety",    "Pass",       "Bell",
+        "Massan",   "Gumi",        "Ryuma",      "Mercator",  "Verla",      "Destel",    "Kazalt",     "Greedly",
+        "Mir",      "Miro",        "Prospero",   "Fara",      "Orc",        "Mushroom",  "Slime",      "Cyclops",
+        "Kado",     "Kan",         "Well",       "Dungeon",   "Loria",      "Kayla",     "Wally",      "Ink",
+        "Palace",   "Gold",        "Waterfall",  "Shrine",    "Swamp",      "Hideout",   "Greenmaze",  "Mines",
+        "Helga",    "Fahl",        "Yard",       "Twinkle",   "Firedemon",  "Spinner",   "Golem",      "Boulder",
+        "Kindly",   "Route",       "Shop",       "Green",     "Yellow",     "Blue",      "Fireproof",  "Iron",
+        "Spikes",   "Healing",     "Snow",       "Repair",    "Casino",     "Ticket",    "Axe",        "Ribbon",
+        "Armlet",   "Einstein",    "Whistle",    "Spell",     "King",       "Dragon",    "Dahl",       "Restoration", 
+        "Friday",   "Short",       "Cake",       "Life",      "Stock",      "Zak",       "Duke",       "Dex", 
+        "Slasher",  "Marley",      "Nigel",      "Ninja",     "Ghost",      "Tibor",     "Knight",     "Pockets", 
+        "Arthur",   "Crypt",       "Mummy",      "Poison",    "Labyrinth",  "Lake",      "Volcano",    "Crate", 
+        "Jar",      "Mayor",       "Dexter",     "Treasure",  "Chest"
     };
 
     std::mt19937 rng(_seed);
@@ -287,53 +324,96 @@ std::vector<std::string> RandomizerOptions::hash_words() const
 
 std::string RandomizerOptions::permalink() const
 {
-    RandomizerOptions default_options;
-    Json defaultJson = default_options.to_json();
+    Bitpack bitpack;
+
+    bitpack.pack(std::string(MAJOR_RELEASE));
     
-    Json json_patch = Json::diff(defaultJson, this->to_json());
-    Json permalink_json;
+    bitpack.pack(_jewel_count);
+    bitpack.pack(_startingLife);
+    bitpack.pack(_startingGold);
+    bitpack.pack(_enemies_damage_factor);
+    bitpack.pack(_enemies_health_factor);
+    bitpack.pack(_enemies_armor_factor);
+    bitpack.pack(_enemies_golds_factor);
+    bitpack.pack(_enemies_drop_chance_factor);
 
-    // Apply patch on an empty JSON
-    for (Json& patch_piece : json_patch)
-    {
-        Json* current_json = &permalink_json;
+    bitpack.pack(_seed);
+    bitpack.pack(_item_sources_window);
 
-        const std::string& path = patch_piece["path"];
-        std::vector<std::string> path_parts = tools::split(path, "/");
-        for (size_t i=1 ; i < path_parts.size(); ++i)
-        {
-            if (i < path_parts.size() - 1)
-            {
-                if(!current_json->contains(path_parts[i]))
-                    (*current_json)[path_parts[i]] = Json();
-                current_json = &(current_json->at(path_parts[i]));
-            }
-            else if(path_parts[i] == "-")
-                (*current_json).push_back(patch_piece["value"]);
-            else
-                (*current_json)[path_parts[i]] = patch_piece["value"];
-        }
-    }
+    bitpack.pack(_use_armor_upgrades);
+    bitpack.pack(_fix_armlet_skip);
+    bitpack.pack(_fix_tree_cutting_glitch);
+    bitpack.pack(_consumable_record_book);
+    bitpack.pack(_remove_gumi_boulder);
+    bitpack.pack(_remove_tibor_requirement);
+    bitpack.pack(_all_trees_visited_at_start);
+    bitpack.pack(_allow_spoiler_log);
+    bitpack.pack(_shuffle_tibor_trees);
+    bitpack.pack(_ghost_jumping_in_logic);
+    bitpack.pack(_damage_boosting_in_logic);
 
-    permalink_json["version"] = MAJOR_RELEASE;
-    permalink_json["seed"] = _seed;
-
-    return "L" + base64_encode(Json::to_msgpack(permalink_json)) + "S";
+    bitpack.pack_vector(_possible_spawn_locations);
+    bitpack.pack(_mandatory_items ? Json(*_mandatory_items) : Json());
+    bitpack.pack(_filler_items ? Json(*_filler_items) : Json());
+    bitpack.pack_map(_starting_items);
+    bitpack.pack(_model_patch_items);
+    bitpack.pack(_model_patch_spawns);
+    
+    return "l" + base64_encode(bitpack.to_bytes()) + "s";
 }
 
 void RandomizerOptions::parse_permalink(const std::string& permalink)
 {
-    try {
-        Json permalink_json = Json::from_msgpack(base64_decode(permalink.substr(1, permalink.size()-2)));
+    std::vector<uint8_t> bytes = base64_decode(permalink.substr(1, permalink.size() - 2));
+    Bitpack bitpack(bytes);
 
-        std::string version = permalink_json.at("version");
-        if(version != MAJOR_RELEASE) {
-            throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + version + ").");
-        }
+    std::string version = bitpack.unpack<std::string>();
+    if(version != MAJOR_RELEASE)
+        throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + version + ").");
+    
+    _jewel_count = bitpack.unpack<uint8_t>();
+    _startingLife = bitpack.unpack<uint8_t>();
+    _startingGold = bitpack.unpack<uint16_t>();
+    _enemies_damage_factor = bitpack.unpack<uint16_t>();
+    _enemies_health_factor = bitpack.unpack<uint16_t>();
+    _enemies_armor_factor = bitpack.unpack<uint16_t>();
+    _enemies_golds_factor = bitpack.unpack<uint16_t>();
+    _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
 
-        this->parse_json(permalink_json);
+    _seed = bitpack.unpack<uint32_t>();
+    _item_sources_window = bitpack.unpack<uint16_t>();
+
+    _use_armor_upgrades = bitpack.unpack<bool>();
+    _fix_armlet_skip = bitpack.unpack<bool>();
+    _fix_tree_cutting_glitch = bitpack.unpack<bool>();
+    _consumable_record_book = bitpack.unpack<bool>();
+    _remove_gumi_boulder = bitpack.unpack<bool>();
+    _remove_tibor_requirement = bitpack.unpack<bool>();
+    _all_trees_visited_at_start = bitpack.unpack<bool>();
+    _allow_spoiler_log = bitpack.unpack<bool>();
+    _shuffle_tibor_trees = bitpack.unpack<bool>();
+    _ghost_jumping_in_logic = bitpack.unpack<bool>();
+    _damage_boosting_in_logic = bitpack.unpack<bool>();
+
+    _possible_spawn_locations = bitpack.unpack_vector<std::string>();
+
+    Json mandatory_items_json = bitpack.unpack<Json>();
+    if(!mandatory_items_json.is_null())
+    {
+        _mandatory_items = new std::map<std::string, uint16_t>();
+        mandatory_items_json.get_to(*_mandatory_items);
     }
-    catch(std::exception&) {
-        throw RandomizerException("Invalid permalink given.");
+    else _mandatory_items = nullptr;
+
+    Json filler_items_json = bitpack.unpack<Json>();
+    if(!filler_items_json.is_null())
+    {
+        _filler_items = new std::map<std::string, uint16_t>();
+        filler_items_json.get_to(*_filler_items); 
     }
+    else _filler_items = nullptr;
+
+    _starting_items = bitpack.unpack_map<std::string, uint8_t>();
+    _model_patch_items = bitpack.unpack<Json>();
+    _model_patch_spawns = bitpack.unpack<Json>();
 }

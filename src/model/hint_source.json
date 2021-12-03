@@ -34,84 +34,84 @@
         "textIds": [
             257
         ],
-        "regionId": "route_massan_gumi"
+        "nodeId": "route_massan_gumi"
     },
     {
         "description": "Swamp Shrine crossroad sign",
         "textIds": [
             258
         ],
-        "regionId": "route_massan_gumi"
+        "nodeId": "route_massan_gumi"
     },
     {
         "description": "Tibor crossroad sign",
         "textIds": [
             259
         ],
-        "regionId": "route_gumi_ryuma"
+        "nodeId": "route_gumi_ryuma"
     },
     {
         "description": "Mir Tower sector crossroad sign",
         "textIds": [
             260
         ],
-        "regionId": "mir_tower_sector"
+        "nodeId": "mir_tower_sector"
     },
     {
         "description": "Mir Tower exterior sign",
         "textIds": [
             308
         ],
-        "regionId": "mir_tower_sector"
+        "nodeId": "mir_tower_sector"
     },
     {
         "description": "Verla crossroad sign",
         "textIds": [
             323
         ],
-        "regionId": "verla_shore"
+        "nodeId": "verla_shore"
     },
     {
         "description": "Destel crossroad sign",
         "textIds": [
             322
         ],
-        "regionId": "route_verla_destel"
+        "nodeId": "route_verla_destel"
     },
     {
         "description": "Lake Shrine / Mountainous crossroad sign",
         "textIds": [
             321
         ],
-        "regionId": "route_lake_shrine"
+        "nodeId": "route_lake_shrine"
     },
     {
         "description": "Greenmaze / Mountainous crossroad sign",
         "textIds": [
             320
         ],
-        "regionId": "greenmaze_pre_whistle"
+        "nodeId": "greenmaze_pre_whistle"
     },
     {
         "description": "Center of Greenmaze sign",
         "textIds": [
             313
         ],
-        "regionId": "greenmaze_pre_whistle"
+        "nodeId": "greenmaze_pre_whistle"
     },
     {
         "description": "Greenmaze / Massan shortcut tunnel sign",
         "textIds": [
             314
         ],
-        "regionId": "greenmaze_post_whistle"
+        "nodeId": "greenmaze_post_whistle"
     },
     {
         "description": "Volcano sign",
         "textIds": [
             324
         ],
-        "regionId": "lake_shrine"
+        "nodeId": "lake_shrine"
     }
 /*
     {
@@ -119,21 +119,21 @@
         "textIds": [
             254
         ],
-        "regionId": "thieves_hideout_pre_key"
+        "nodeId": "thieves_hideout_pre_key"
     },
     {
         "description": "Thieves' Hideout second room sign",
         "textIds": [
             255
         ],
-        "regionId": "thieves_hideout_pre_key"
+        "nodeId": "thieves_hideout_pre_key"
     },
     {
         "description": "Thieves' Hideout boss path sign",
         "textIds": [
             256
         ],
-        "regionId": "thieves_hideout_post_key"
+        "nodeId": "thieves_hideout_post_key"
     },
     {
         "description": "Mir Tower sign before bridge room",
@@ -142,14 +142,14 @@
             301,
             302
         ],
-        "regionId": "mir_tower_pre_garlic"
+        "nodeId": "mir_tower_pre_garlic"
     },
     {
         "description": "Mir Tower bridge room sign",
         "textIds": [
             303
         ],
-        "regionId": "mir_tower_pre_garlic"
+        "nodeId": "mir_tower_pre_garlic"
     },
     {
         "description": "Mir Tower library sign",
@@ -157,7 +157,7 @@
             304,
             305
         ],
-        "regionId": "mir_tower_post_garlic"
+        "nodeId": "mir_tower_post_garlic"
     },
     {
         "description": "Mir Tower sign before library",
@@ -165,7 +165,7 @@
             306,
             307
         ],
-        "regionId": "mir_tower_post_garlic"
+        "nodeId": "mir_tower_post_garlic"
     }
 */
 ]
