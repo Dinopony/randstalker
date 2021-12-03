@@ -160,11 +160,22 @@ namespace md
             output.push_back(this->get_long(addr));
     }
 
+    std::vector<uint8_t> ROM::data_chunk(uint32_t begin, uint32_t end) const
+    {
+        std::vector<uint8_t> output;
+        for (uint32_t addr = begin; addr < end; ++addr)
+            output.push_back(this->get_byte(addr));
+        return output;
+    }
+
     void ROM::mark_empty_chunk(uint32_t begin, uint32_t end)
     {
         // Don't allow an empty chunk to begin with an odd address
         if(begin % 2 != 0)
             begin++;
+
+        if(begin >= end)
+            return;
 
         for(auto& pair : _empty_chunks)
         {

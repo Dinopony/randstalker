@@ -110,6 +110,12 @@ namespace md
         Code& andib(uint8_t value, const Param& target) { return this->andi(ImmediateValue(value), target, Size::BYTE); }
         Code& andiw(uint16_t value, const Param& target) { return this->andi(ImmediateValue(value), target, Size::WORD); }
         Code& andil(uint32_t value, const Param& target) { return this->andi(ImmediateValue(value), target, Size::LONG); }
+
+        Code& ori(const ImmediateValue& value, const Param& target, Size size);
+        Code& orib(uint8_t value, const Param& target) { return this->ori(ImmediateValue(value), target, Size::BYTE); }
+        Code& oriw(uint16_t value, const Param& target) { return this->ori(ImmediateValue(value), target, Size::WORD); }
+        Code& oril(uint32_t value, const Param& target) { return this->ori(ImmediateValue(value), target, Size::LONG); }
+
         Code& ori_to_ccr(uint8_t value);
 
         Code& rts();
@@ -118,6 +124,7 @@ namespace md
 
         void label(const std::string& label) { _labels[label] = static_cast<uint32_t>(_bytes.size()); }
         const std::vector<uint8_t>& get_bytes() const { return _bytes; }
+        uint32_t size() const { return (uint32_t)_bytes.size(); }
 
     private:
         void resolve_branches();

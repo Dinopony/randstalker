@@ -46,6 +46,7 @@ namespace md {
         void data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output) const;
         void data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output) const;
         void data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output) const;
+        std::vector<uint8_t> data_chunk(uint32_t begin, uint32_t end) const;
 
         void mark_empty_chunk(uint32_t begin, uint32_t end);
         uint32_t remaining_empty_bytes() const;
