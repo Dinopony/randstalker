@@ -118,8 +118,9 @@ void make_ryuma_mayor_saveable(md::ROM& rom)
     // Disable the cutscene (CSA_0068) when opening vanilla lithograph chest
     rom.set_code(0x136BE, md::Code().rts());
 
-    // Shorten the boss cutscene right before to make room for one more instruction in mayor cutscene
-    rom.set_word(0x28364, 0xE51D);
+    // Shifts the boss cutscene right before to make room for one more instruction in mayor cutscene
+    rom.set_long(0x28362, rom.get_long(0x28364));
+    rom.set_word(0x2546A, rom.get_word(0x2546A) - 2);
 
     // Set the bit 1 of flag 1004 as the first instruction in mayor's cutscene, and move starting
     // offset of this cutscene accordingly
