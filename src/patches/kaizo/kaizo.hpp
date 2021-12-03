@@ -22,6 +22,10 @@ void edit_safety_pass_arc(World& world, md::ROM& rom);
 void edit_mercator(World& world, md::ROM& rom);
 void edit_mercator_castle(World& world, md::ROM& rom);
 
+////// KAIZO SPECIFIC EDIT TOOLS ///////////////////////////////////////////////////////////////////
+
+void batch_add_entities(Map* map, const std::vector<Position>& positions, Entity::Attributes base_attributes,  bool use_tiles_from_first = true);
+
 ////// ENTITY TYPE ALIASES ///////////////////////////////////////////////////////////////////
 
 constexpr uint8_t POWER_GLOVE_BLOCKER_TYPE = ENTITY_LARGE_BLUE_BOULDER;

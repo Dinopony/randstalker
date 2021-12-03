@@ -9,6 +9,7 @@
 #include "../model/entity_type.hpp"
 
 #include "../constants/map_codes.hpp"
+#include "../constants/entity_type_codes.hpp"
 
 void handle_additionnal_jewels(World& world)
 {
@@ -74,7 +75,7 @@ void make_gumi_boulder_push_not_story_dependant(World& world)
     Entity* last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
     last_boulder->entity_type_id(world.entity_type("large_thin_yellow_platform")->id());
     last_boulder->entity_to_use_tiles_from(nullptr);
-    last_boulder->half_tile_z(true);
+    last_boulder->position().half_z = true;
     last_boulder->palette(0);
 
     // Always remove Pockets from Gumi boulder map
@@ -146,15 +147,15 @@ void replace_sick_merchant_by_chest(World& world)
     world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->remove_entity(0);
 
     // Add a chest
-    Entity* new_chest = new Entity();
-    new_chest->entity_type_id(0x12);
-    new_chest->position(14, 18, 0);
-    new_chest->orientation(ENTITY_ORIENTATION_NW);
-    new_chest->palette(2);
-    world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->add_entity(new_chest);
+    world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->add_entity(new Entity({
+        .type_id = ENTITY_CHEST,
+        .position = Position(14, 18, 0),
+        .orientation = ENTITY_ORIENTATION_NW,
+        .palette = 2
+    }));
 
     // Move the kid to hide the fact that the bed looks broken af
-    world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->entity(0)->pos_y(21);
+    world.map(MAP_MERCATOR_SPECIAL_SHOP_BACKROOM)->entity(0)->position().y = 21;
 
 //   Bed tile GFX swap?
 //   rom.set_word(0x0050B4, 0x0008); // Before: 0x2A0C (bit 4 of 102A) | After: 0x0008 (bit 0 of 1000 - always true)
@@ -194,17 +195,18 @@ void add_reverse_mercator_gate(World& world)
     variant_2_flag.bit = 5;
 
     // Add doors in the non-safety pass variant blocking the way out of Mercator
-    Entity* door1 = new Entity();
-    door1->entity_type_id(0x67);
-    door1->position(48, 41, 1);
-    door1->half_tile_y(true);
-    door1->orientation(ENTITY_ORIENTATION_SE);
-    world.map(MAP_MERCATOR_EXTERIOR_1)->add_entity(door1);
+    Entity* door = world.map(MAP_MERCATOR_EXTERIOR_1)->add_entity(new Entity({
+        .type_id = ENTITY_GATE_SOUTH,
+        .position = Position(48, 41, 1, false, true, false),
+        .orientation = ENTITY_ORIENTATION_SE
+    }));
 
-    Entity* door2 = new Entity(*door1);
-    door2->pos_y(door1->pos_y()+2);
-    door2->entity_to_use_tiles_from(door1);
-    world.map(MAP_MERCATOR_EXTERIOR_1)->add_entity(door2);
+    world.map(MAP_MERCATOR_EXTERIOR_1)->add_entity(new Entity({
+        .type_id = ENTITY_GATE_SOUTH,
+        .position = Position(48, 43, 1, false, true, false),
+        .orientation = ENTITY_ORIENTATION_SE,
+        .entity_to_use_tiles_from = door
+    }));
 }
 
 /**

@@ -9,6 +9,7 @@
 
 static std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
     { ENTITY_SMALL_YELLOW_PLATFORM, 2 },
+    { ENTITY_SMALL_YELLOW_PLATFORM_ALTERNATE, 2 },
     { ENTITY_SMALL_THIN_YELLOW_PLATFORM, 2 },
     { ENTITY_LARGE_THIN_YELLOW_PLATFORM, 2 },
     { ENTITY_SMALL_GREEN_PLATFORM, 2 },
@@ -18,7 +19,8 @@ static std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
     { ENEMY_SKELETON_1, 2 },
     { ENTITY_LARGE_BLUE_BOULDER, 2 },
     { ENTITY_CHEST, 2 },
-    { ENTITY_VASE, 2 }
+    { ENTITY_VASE, 2 },
+    { ENTITY_CRATE, 2 }
 };
 
 static std::set<uint8_t> LIFTABLE_TYPES = {
@@ -59,74 +61,37 @@ static std::set<uint8_t> ENEMY_TYPES = {
     ENEMY_NOLE, ENEMY_GOLA,
 };
 
-Entity::Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z) :
-    _map                            (nullptr),
-    _entity_type_id                 (type_id),
-    _pos_x                          (pos_x),
-    _pos_y                          (pos_y),
-    _pos_z                          (pos_z),
-    _half_tile_x                    (false),
-    _half_tile_y                    (false),
-    _half_tile_z                    (false),
-    _orientation                    (0),
-    _palette                        (1),
-    _speed                          (0),
-    _fightable                      (false),
-    _liftable                       (false),
-    _can_pass_through               (false),
-    _appear_after_player_moved_away (false),
-    _gravity_immune                 (false),
-    _talkable                       (false),
-    _dialogue                       (0),
-    _behavior_id                    (0),
-    _entity_to_use_tiles_from       (nullptr),
-    _flag_unknown_2_3               (false),
-    _flag_unknown_2_4               (false),
-    _flag_unknown_3_5               (false),
-    _persistence_flag               (0xFF, 0xFF)
+Entity::Entity(Attributes attrs) :
+    _attrs  (attrs),
+    _map    (nullptr)
 {
-    if(DEFAULT_PALETTES.count(type_id))
-        _palette = DEFAULT_PALETTES[type_id];
+    if(DEFAULT_PALETTES.count(_attrs.type_id))
+        _attrs.palette = DEFAULT_PALETTES[_attrs.type_id];
 
-    if(LIFTABLE_TYPES.count(type_id))
-        _liftable = true;
+    if(LIFTABLE_TYPES.count(_attrs.type_id))
+        _attrs.liftable = true;
 
-    if(FIGHTABLE_TYPES.count(type_id))
-        _fightable = true;
+    if(FIGHTABLE_TYPES.count(_attrs.type_id))
+        _attrs.fightable = true;
 
-    if(ENEMY_TYPES.count(type_id))
+    if(ENEMY_TYPES.count(_attrs.type_id))
     {
-        _fightable = true;
-        _speed = 1;
-        _behavior_id = 1;
+        _attrs.fightable = true;
+        _attrs.speed = 1;
+        _attrs.behavior_id = 1;
     }
 }
 
+Entity::Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z) :
+    Entity({ 
+        .type_id = type_id,
+        .position = Position(pos_x, pos_y, pos_z)
+    })
+{}
+
 Entity::Entity(const Entity& entity) :
-    _map                                (entity._map),
-    _entity_type_id                     (entity._entity_type_id),
-    _pos_x                              (entity._pos_x),
-    _pos_y                              (entity._pos_y),
-    _pos_z                              (entity._pos_z),
-    _half_tile_x                        (entity._half_tile_x),
-    _half_tile_y                        (entity._half_tile_y),
-    _half_tile_z                        (entity._half_tile_z),
-    _orientation                        (entity._orientation),
-    _palette                            (entity._palette),
-    _speed                              (entity._speed),
-    _entity_to_use_tiles_from           (entity._entity_to_use_tiles_from),
-    _fightable                          (entity._fightable),
-    _liftable                           (entity._liftable),
-    _can_pass_through                   (entity._can_pass_through),
-    _appear_after_player_moved_away     (entity._appear_after_player_moved_away),
-    _talkable                           (entity._talkable),
-    _dialogue                           (entity._dialogue),
-    _behavior_id                        (entity._behavior_id),
-    _gravity_immune                     (entity._gravity_immune),
-    _flag_unknown_2_3                   (entity._flag_unknown_2_3),
-    _flag_unknown_2_4                   (entity._flag_unknown_2_4),
-    _flag_unknown_3_5                   (entity._flag_unknown_3_5),
-    _persistence_flag                   (entity._persistence_flag)
+    _map      (entity._map),
+    _attrs    (entity._attrs)
 {}
 
 uint8_t Entity::entity_id() const 
@@ -138,47 +103,47 @@ Json Entity::to_json(const World& world) const
 {
     Json json;
 
-    json["entityType"] = world.entity_type(_entity_type_id)->name();
+    json["entityType"] = world.entity_type(_attrs.type_id)->name();
 
-    json["posX"] = _pos_x;
-    json["posY"] = _pos_y;
-    json["posZ"] = _pos_z;
+    json["posX"] = _attrs.position.x;
+    json["posY"] = _attrs.position.y;
+    json["posZ"] = _attrs.position.z;
 
-    json["halfTileX"] = _half_tile_x;
-    json["halfTileY"] = _half_tile_y;
-    json["halfTileZ"] = _half_tile_z;
+    json["halfTileX"] = _attrs.position.half_x;
+    json["halfTileY"] = _attrs.position.half_y;
+    json["halfTileZ"] = _attrs.position.half_z;
 
-    json["orientation"] = _orientation;
-    json["palette"] = _palette;
-    json["speed"] = _speed;
+    json["orientation"] = _attrs.orientation;
+    json["palette"] = _attrs.palette;
+    json["speed"] = _attrs.speed;
 
-    json["fightable"] = _fightable;
-    json["liftable"] = _liftable;
-    json["canPassThrough"] = _can_pass_through;
-    json["appearAfterPlayerMovedAway"] = _appear_after_player_moved_away;
-    json["gravityImmune"] = _gravity_immune;
+    json["fightable"] = _attrs.fightable;
+    json["liftable"] = _attrs.liftable;
+    json["canPassThrough"] = _attrs.can_pass_through;
+    json["appearAfterPlayerMovedAway"] = _attrs.appear_after_player_moved_away;
+    json["gravityImmune"] = _attrs.gravity_immune;
 
-    json["talkable"] = _talkable;
-    if(_talkable)
-        json["dialogue"] = _dialogue;
+    json["talkable"] = _attrs.talkable;
+    if(_attrs.talkable)
+        json["dialogue"] = _attrs.dialogue;
 
-    json["behaviorId"] = _behavior_id;
+    json["behaviorId"] = _attrs.behavior_id;
     if(this->has_persistence_flag())
-        json["persistenceFlag"] = _persistence_flag.to_json();
+        json["persistenceFlag"] = _attrs.persistence_flag.to_json();
 
-    bool use_tiles_from_other_entity = (_entity_to_use_tiles_from != nullptr);
+    bool use_tiles_from_other_entity = (_attrs.entity_to_use_tiles_from != nullptr);
     json["useTilesFromOtherEntity"] = use_tiles_from_other_entity;
     if(use_tiles_from_other_entity)
-        json["entityIdToUseTilesFrom"] = _entity_to_use_tiles_from->entity_id();
+        json["entityIdToUseTilesFrom"] = _attrs.entity_to_use_tiles_from->entity_id();
 
-    json["flagUnknown_2_3"] = _flag_unknown_2_3;
-    json["flagUnknown_2_4"] = _flag_unknown_2_4;
-//    json["flagUnknown_3_5"] = _flag_unknown_3_5;
+    json["flagUnknown_2_3"] = _attrs.flag_unknown_2_3;
+    json["flagUnknown_2_4"] = _attrs.flag_unknown_2_4;
+//    json["flagUnknown_3_5"] = _attrs.flag_unknown_3_5;
 
-    if(!_mask_flags.empty())
+    if(!_attrs.mask_flags.empty())
     {
         json["maskFlags"] = Json::array();
-        for(const EntityMaskFlag& mask : _mask_flags)
+        for(const EntityMaskFlag& mask : _attrs.mask_flags)
             json["maskFlags"].push_back(mask.to_json());
     }
 
@@ -187,116 +152,118 @@ Json Entity::to_json(const World& world) const
 
 Entity* Entity::from_json(const Json& json, Map* map, const World& world)
 {
-    Entity* entity = new Entity();
+    Attributes attrs {
+        .type_id = world.entity_type((std::string)json.at("entityType"))->id(),
 
-    entity->_map = map;
+        .position = Position(
+            json.at("posX"), json.at("posY"), json.at("posZ"),
+            json.at("halfTileX"), json.at("halfTileY"), json.at("halfTileZ")
+        ),
 
-    entity->_entity_type_id = world.entity_type((std::string)json.at("entityType"))->id();
+        .orientation = json.at("orientation"),
+        .palette = json.at("palette"),
+        .speed = json.at("speed"),
 
-    entity->_pos_x = json.at("posX");
-    entity->_pos_y = json.at("posY");
-    entity->_pos_z = json.at("posZ");
+        .fightable = json.at("fightable"),
+        .liftable = json.at("liftable"),
+        .can_pass_through = json.at("canPassThrough"),
+        .appear_after_player_moved_away = json.at("appearAfterPlayerMovedAway"),
+        .gravity_immune = json.at("gravityImmune"),
 
-    entity->_half_tile_x = json.at("halfTileX");
-    entity->_half_tile_y = json.at("halfTileY");
-    entity->_half_tile_z = json.at("halfTileZ");
+        .talkable = json.at("talkable"),
+        .dialogue = json.value<uint8_t>("dialogue", 0),
 
-    entity->_orientation = json.at("orientation");
-    entity->_palette = json.at("palette");
-    entity->_speed = json.at("speed");
+        .behavior_id = json.at("behaviorId"),
 
-    entity->_fightable = json.at("fightable");
-    entity->_liftable = json.at("liftable");
-    entity->_can_pass_through = json.at("canPassThrough");
-    entity->_appear_after_player_moved_away = json.at("appearAfterPlayerMovedAway");
-    entity->_gravity_immune = json.at("gravityImmune");
-
-    entity->_talkable = json.at("talkable");
-    entity->_dialogue = json.value("dialogue", 0);
-
-    entity->_behavior_id = json.at("behaviorId");
+        .flag_unknown_2_3 = json.at("flagUnknown_2_3"),
+        .flag_unknown_2_4 = json.at("flagUnknown_2_4"),
+        .flag_unknown_3_5 = json.at("flagUnknown_3_5"),
+    };
 
     bool use_tiles_from_other_entity = json.at("useTilesFromOtherEntity");
     if(use_tiles_from_other_entity)
     {
         uint8_t entity_id_to_use_tiles_from = json.at("entityIdToUseTilesFrom");
-        entity->_entity_to_use_tiles_from = map->entity(entity_id_to_use_tiles_from);
+        attrs.entity_to_use_tiles_from = map->entity(entity_id_to_use_tiles_from);
     }
 
-    entity->_flag_unknown_2_3 = json.at("flagUnknown_2_3");
-    entity->_flag_unknown_2_4 = json.at("flagUnknown_2_4");
-//    entity->_flag_unknown_3_5 = json.at("flagUnknown_3_5");
-    
     if(json.contains("maskFlags"))
     {
         for(const Json& j : json.at("maskFlags"))
-            entity->_mask_flags.push_back(EntityMaskFlag::from_json(j));
+            attrs.mask_flags.push_back(EntityMaskFlag::from_json(j));
     }
+
+    Entity* entity = new Entity(attrs);
+    entity->_map = map;
 
     return entity;
 }
 
 Entity* Entity::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
 {
-    Entity* entity = new Entity();
-
-    entity->_map = map;
+    Attributes attrs;
 
     // Byte 0
     uint8_t byte0 = rom.get_byte(addr);
-    entity->_orientation = (byte0 & 0xC0) >> 6;
-    entity->_pos_x = byte0 & 0x3F;
+    attrs.orientation = (byte0 & 0xC0) >> 6;
+    attrs.position.x = byte0 & 0x3F;
 
     // Byte 1
     uint8_t byte1 = rom.get_byte(addr+1);
-    entity->_palette = (byte1 & 0xC0) >> 6;
-    entity->_pos_y = byte1 & 0x3F;
+    attrs.palette = (byte1 & 0xC0) >> 6;
+    attrs.position.y = byte1 & 0x3F;
 
     // Byte 2
     uint8_t byte2 = rom.get_byte(addr+2);
-    entity->_fightable = byte2 & 0x80;
-    entity->_liftable = byte2 & 0x40;
-    entity->_talkable = byte2 & 0x20;
-    entity->_flag_unknown_2_4 = byte2 & 0x10;
-    entity->_flag_unknown_2_3 = byte2 & 0x08;
-    entity->_speed = byte2 & 0x07;
+    attrs.fightable = byte2 & 0x80;
+    attrs.liftable = byte2 & 0x40;
+    attrs.talkable = byte2 & 0x20;
+    attrs.flag_unknown_2_4 = byte2 & 0x10;
+    attrs.flag_unknown_2_3 = byte2 & 0x08;
+    attrs.speed = byte2 & 0x07;
 
     // Byte 3
     uint8_t byte3 = rom.get_byte(addr+3);
-    entity->_half_tile_x = byte3 & 0x80;
-    entity->_half_tile_y = byte3 & 0x40;
-    entity->_flag_unknown_3_5 = byte3 & 0x20;
+    attrs.position.half_x = byte3 & 0x80;
+    attrs.position.half_y = byte3 & 0x40;
+    attrs.flag_unknown_3_5 = byte3 & 0x20;
     
     bool use_tiles_from_other_entity = byte3 & 0x10;
+    bool points_at_itself = false;
     if(use_tiles_from_other_entity)
     {
         uint8_t entity_id_to_use_tiles_from = byte3 & 0x0F;
         // There are a few occurences in the game where an entity points at itself on this property...
         if(entity_id_to_use_tiles_from == map->entities().size())
-            entity->_entity_to_use_tiles_from = entity;
+            points_at_itself = true;
         else
-            entity->_entity_to_use_tiles_from = map->entity(entity_id_to_use_tiles_from);
+            attrs.entity_to_use_tiles_from = map->entity(entity_id_to_use_tiles_from);
     }
 
     // Byte 4
     uint8_t byte4 = rom.get_byte(addr+4);
-    entity->_dialogue = (byte4 & 0xFC) >> 2;
+    attrs.dialogue = (byte4 & 0xFC) >> 2;
 
     // Byte 5
-    entity->_entity_type_id = rom.get_byte(addr+5);
+    attrs.type_id = rom.get_byte(addr+5);
 
     // Byte 6
     uint8_t byte6 = rom.get_byte(addr+6);
-    entity->_pos_z = byte6 & 0x0F;
-    entity->_can_pass_through = byte6 & 0x10;
-    entity->_appear_after_player_moved_away = byte6 & 0x20;
-    entity->_half_tile_z = byte6 & 0x40;
-    entity->_gravity_immune = byte6 & 0x80;
+    attrs.position.z = byte6 & 0x0F;
+    attrs.can_pass_through = byte6 & 0x10;
+    attrs.appear_after_player_moved_away = byte6 & 0x20;
+    attrs.position.half_z = byte6 & 0x40;
+    attrs.gravity_immune = byte6 & 0x80;
 
     // Byte 7
     uint8_t byte7 = rom.get_byte(addr+7);
-    entity->_behavior_id = byte7;
-    entity->_behavior_id |= (byte4 & 0x03) << 8;
+    attrs.behavior_id = byte7;
+    attrs.behavior_id |= (byte4 & 0x03) << 8;
+
+    Entity* entity = new Entity(attrs);
+    entity->_map = map;
+    if(points_at_itself)
+        entity->entity_to_use_tiles_from(entity);
 
     return entity;
 }
@@ -304,49 +271,49 @@ Entity* Entity::from_rom(const md::ROM& rom, uint32_t addr, Map* map)
 std::vector<uint8_t> Entity::to_bytes() const
 {
     // Byte 0
-    uint8_t byte0 = _pos_x & 0x3F;
-    byte0 |= (_orientation & 0x3) << 6;
+    uint8_t byte0 = _attrs.position.x & 0x3F;
+    byte0 |= (_attrs.orientation & 0x3) << 6;
 
     // Byte 1
-    uint8_t byte1 = _pos_y & 0x3F;
-    byte1 |= ((_palette & 0x3) << 6);
+    uint8_t byte1 = _attrs.position.y & 0x3F;
+    byte1 |= ((_attrs.palette & 0x3) << 6);
 
     // Byte 2
-    uint8_t byte2 = _speed & 0x07;
-    if(_fightable)          byte2 |= 0x80;
-    if(_liftable)           byte2 |= 0x40;
-    if(_talkable)           byte2 |= 0x20;
-    if(_flag_unknown_2_4)   byte2 |= 0x10;
-    if(_flag_unknown_2_3)   byte2 |= 0x08;
+    uint8_t byte2 = _attrs.speed & 0x07;
+    if(_attrs.fightable)          byte2 |= 0x80;
+    if(_attrs.liftable)           byte2 |= 0x40;
+    if(_attrs.talkable)           byte2 |= 0x20;
+    if(_attrs.flag_unknown_2_4)   byte2 |= 0x10;
+    if(_attrs.flag_unknown_2_3)   byte2 |= 0x08;
 
     // Byte 3
-    bool use_tiles_from_other_entity = (_entity_to_use_tiles_from != nullptr);
+    bool use_tiles_from_other_entity = (_attrs.entity_to_use_tiles_from != nullptr);
     uint8_t entity_id_to_use_tiles_from = 0;
-    if(_entity_to_use_tiles_from)
-        entity_id_to_use_tiles_from = _entity_to_use_tiles_from->entity_id();
+    if(_attrs.entity_to_use_tiles_from)
+        entity_id_to_use_tiles_from = _attrs.entity_to_use_tiles_from->entity_id();
 
     uint8_t byte3 = entity_id_to_use_tiles_from & 0x0F;
-    if(_half_tile_x)                 byte3 |= 0x80;
-    if(_half_tile_y)                 byte3 |= 0x40;
-    if(_flag_unknown_3_5)            byte3 |= 0x20;
+    if(_attrs.position.half_x)                 byte3 |= 0x80;
+    if(_attrs.position.half_y)                 byte3 |= 0x40;
+    if(_attrs.flag_unknown_3_5)            byte3 |= 0x20;
     if(use_tiles_from_other_entity)  byte3 |= 0x10;
 
     // Byte 4
-    uint8_t byte4 = (_dialogue & 0x3F) << 2;
-    byte4 |= (_behavior_id >> 8) & 0x3;
+    uint8_t byte4 = (_attrs.dialogue & 0x3F) << 2;
+    byte4 |= (_attrs.behavior_id >> 8) & 0x3;
 
     // Byte 5
-    uint8_t byte5 = _entity_type_id;
+    uint8_t byte5 = _attrs.type_id;
 
     // Byte 6
-    uint8_t byte6 = _pos_z & 0x0F;
-    if(_can_pass_through)   byte6 |= 0x10;
-    if(_appear_after_player_moved_away)   byte6 |= 0x20;
-    if(_half_tile_z)        byte6 |= 0x40;
-    if(_gravity_immune)   byte6 |= 0x80;
+    uint8_t byte6 = _attrs.position.z & 0x0F;
+    if(_attrs.can_pass_through)   byte6 |= 0x10;
+    if(_attrs.appear_after_player_moved_away)   byte6 |= 0x20;
+    if(_attrs.position.half_z)        byte6 |= 0x40;
+    if(_attrs.gravity_immune)   byte6 |= 0x80;
 
     // Byte 7
-    uint8_t byte7 = _behavior_id & 0x00FF;
+    uint8_t byte7 = _attrs.behavior_id & 0x00FF;
 
     return { byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7 };
 }

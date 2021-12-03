@@ -61,7 +61,7 @@ void edit_castle_passage_to_dungeon(World& world)
     map->entity(0)->liftable(true);
     map->entity(1)->liftable(true);
     map->entity(2)->liftable(true);
-    map->add_entity(new Entity(ENTITY_LARGE_GRAY_SPIKEBALL, 0x14, 0x18, 2))->half_tile_x(true);
+    map->add_entity(new Entity(ENTITY_LARGE_GRAY_SPIKEBALL, 0x14, 0x18, 2))->position().half_x = true;
 }
 
 void edit_castle_big_library(World& world)
@@ -72,7 +72,7 @@ void edit_castle_big_library(World& world)
     
     Entity* ekeeke = map->add_entity(new Entity(0xC0, 0x18, 0x13, 2));
     ekeeke->liftable(true);
-    ekeeke->half_tile_x(true);
+    ekeeke->position().half_x = true;
 
     // TODO: Put proper base_chest_id on map
     map->add_entity(new Entity(ENTITY_CHEST, 0x1C, 0x1E, 2));
@@ -96,12 +96,12 @@ void edit_castle_small_library(World& world)
     map->add_entity(new Entity(ENTITY_CHEST, 0x16, 0x1A, 5))->orientation(ENTITY_ORIENTATION_NW);
 
     Entity* first_gate = map->add_entity(new Entity(ENTITY_GATE_NORTH, 0x17, 0x18, 0));
-    first_gate->half_tile_x(true);
+    first_gate->position().half_x = true;
     first_gate->behavior_id(BEHAVIOR_DISAPPEAR_ON_ALL_ENEMIES_BEATEN);
     first_gate->palette(2);
 
     Entity* gate = map->add_entity(new Entity(ENTITY_GATE_NORTH, 0x1B, 0x10, 5));
-    gate->half_tile_x(true);
+    gate->position().half_x = true;
     gate->entity_to_use_tiles_from(first_gate);
     gate->behavior_id(BEHAVIOR_DISAPPEAR_ON_ALL_ENEMIES_BEATEN);
     gate->palette(2);
@@ -112,8 +112,8 @@ void edit_castle_right_aisle_bedroom(World& world)
     Map* map = world.map(MAP_MERCATOR_CASTLE_RIGHT_AISLE_BEDROOM);
 
     Entity* vase = map->add_entity(new Entity(ENTITY_VASE, 0x18, 0x0E, 2));
-    vase->half_tile_x(true);
-    vase->half_tile_y(true);
+    vase->position().half_x = true;
+    vase->position().half_y = true;
 
     Entity* gate = map->add_entity(new Entity(ENTITY_GATE_SOUTH, 0x14, 0x1B, 1));
     gate->palette(2);
@@ -173,13 +173,13 @@ void edit_castle_2f_hallway(World& world)
     kayla_room_gate->behavior_id(BEHAVIOR_DISAPPEAR_ON_ALL_ENEMIES_BEATEN);
 
     Entity* nigel_room_blocker = map->add_entity(new Entity(QUARTZ_SWORD_BLOCKER_TYPE, 0x0E, 0x25, 2));
-    nigel_room_blocker->half_tile_x(true);
-    nigel_room_blocker->half_tile_y(true);
+    nigel_room_blocker->position().half_x = true;
+    nigel_room_blocker->position().half_y = true;
     nigel_room_blocker->orientation(ENTITY_ORIENTATION_SE);
 
     Entity* nigel_room_blocker_anticheese = map->add_entity(new Entity(ENTITY_INVISIBLE_CUBE, 0x0E, 0x25, 5));
-    nigel_room_blocker_anticheese->half_tile_x(true);
-    nigel_room_blocker_anticheese->half_tile_y(true);
+    nigel_room_blocker_anticheese->position().half_x = true;
+    nigel_room_blocker_anticheese->position().half_y = true;
 
     Entity* mummy = map->add_entity(new Entity(ENEMY_MUMMY_1, 0x12, 0x1F, 2));
     mummy->palette(0);
@@ -243,8 +243,8 @@ void edit_castle_dexter_room(World& world)
     map->add_entity(new Entity(ENTITY_CHEST, 0x18, 0x0E, 0));
 
     Entity* button = map->add_entity(new Entity(ENTITY_BUTTON, 0x10, 0x17, 0));
-    button->half_tile_x(true);
-    button->half_tile_y(true);
+    button->position().half_x = true;
+    button->position().half_y = true;
     button->behavior_id(BEHAVIOR_BUTTON_SET_PERSISTENCE_FLAG);
     button->persistence_flag(FLAG_DEXTER_ROOM_BUTTON_PRESSED);
 }
@@ -259,29 +259,34 @@ void edit_castle_zak_room(World& world)
 
     Entity* first_platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x17, 0x16, 1));
     first_platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
-    
+    first_platform->palette(3);
+
     Entity* platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x17, 0x18, 2));
     platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
     platform->entity_to_use_tiles_from(first_platform);
-    
+    platform->palette(3);
+
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x15, 0x18, 3));
     platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
     platform->entity_to_use_tiles_from(first_platform);
-    
+    platform->palette(3);
+
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x13, 0x18, 4));
     platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
     platform->entity_to_use_tiles_from(first_platform);
+    platform->palette(3);
 
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x11, 0x18, 5));
     platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
     platform->entity_to_use_tiles_from(first_platform);
+    platform->palette(3);
 
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x0F, 0x18, 6));
     platform->entity_to_use_tiles_from(first_platform);
 
     Entity* button = map->add_entity(new Entity(ENTITY_BUTTON, 0x0F, 0x18, 7));
-    button->half_tile_x(true);
-    button->half_tile_y(true);
+    button->position().half_x = true;
+    button->position().half_y = true;
     button->behavior_id(BEHAVIOR_BUTTON_SET_PERSISTENCE_FLAG);
     button->persistence_flag(FLAG_ZAK_ROOM_BUTTON_PRESSED);
 

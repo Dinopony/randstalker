@@ -88,6 +88,7 @@ uint8_t Map::entity_id(const Entity* entity) const
 void Map::remove_entity(uint8_t entity_id, bool delete_pointer) 
 { 
     Entity* erased_entity = _entities.at(entity_id);
+    erased_entity->map(nullptr);
     _entities.erase(_entities.begin() + entity_id);
 
     // If any other entity were using tiles from this entity, clear that

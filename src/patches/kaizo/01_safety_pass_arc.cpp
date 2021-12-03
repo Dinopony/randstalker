@@ -13,9 +13,9 @@ void edit_kado_climb_map(World& world)
     Entity* chest = map->entity(8);
     chest->entity_type_id(ENTITY_CRATE); // Turn chest into a crate
     chest->liftable(true);
-    map->entity(4)->half_tile_y(true); // Move slightly a platform towards SW to make a jump possible
-    map->entity(5)->half_tile_z(true); // Move slightly a platform up to make a jump possible
-    map->entity(9)->pos_z(7); // Raise a platform to serve as a place where to put the crate
+    map->entity(4)->position().half_y = true; // Move slightly a platform towards SW to make a jump possible
+    map->entity(5)->position().half_z = true; // Move slightly a platform up to make a jump possible
+    map->entity(9)->position().z = 7; // Raise a platform to serve as a place where to put the crate
     map->remove_entity(13); // Remove the spikeball
     map->remove_entity(12); // Remove the final platform
     map->remove_entity(10); // Remove the platform right before the chest
@@ -37,13 +37,13 @@ void edit_helga_swamp_map(World& world)
     Map* map = world.map(MAP_ROUTE_GUMI_RYUMA_HELGA_SWAMP);
     map->clear_entities();
     map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x16, 0x27, 4));
-    map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x17, 0x27, 4))->half_tile_x(true);
+    map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x17, 0x27, 4))->position().half_x = true;
 
     map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x1B, 0x27, 4));
-    map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x1B, 0x25, 4))->half_tile_y(true);
+    map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x1B, 0x25, 4))->position().half_y = true;
 
     map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x1B, 0x21, 4));
-    map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x1B, 0x1F, 4))->half_tile_y(true);
+    map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x1B, 0x1F, 4))->position().half_y = true;
 
     map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x18, 0x1F, 4));
     map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x18, 0x1C, 4));
@@ -72,10 +72,10 @@ void edit_helga_swamp_map_2(World& world)
     map->add_entity(new Entity(ENTITY_LARGE_GRAY_SPIKEBALL, 0x22, 0x28, 1))->palette(2);
     map->add_entity(new Entity(ENTITY_LARGE_THIN_YELLOW_PLATFORM, 0x22, 0x27, 4));
     map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x25, 0x27, 2));
-    map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x25, 0x25, 0))->half_tile_z(true);
+    map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x25, 0x25, 0))->position().half_z = true;
 
-    map->add_entity(new Entity(ENTITY_SACRED_TREE, 0x19, 0x23, 5))->half_tile_x(true);
-    map->add_entity(new Entity(ENTITY_SACRED_TREE, 0x1A, 0x23, 5))->half_tile_x(true);
+    map->add_entity(new Entity(ENTITY_SACRED_TREE, 0x19, 0x23, 5))->position().half_x = true;
+    map->add_entity(new Entity(ENTITY_SACRED_TREE, 0x1A, 0x23, 5))->position().half_x = true;
 
     map->add_entity(new Entity(ENTITY_SMALL_THIN_YELLOW_PLATFORM, 0x1F, 0x1A, 4));
     map->add_entity(new Entity(ENTITY_SMALL_THIN_YELLOW_PLATFORM, 0x22, 0x1A, 6));
@@ -141,7 +141,7 @@ void add_ultra_worm_to_gumi_boulder_map(World& world)
     ultra_worm_stats->health(150);
 
     // Make the platform replacing the boulder slightly higher to prevent caging the snake in the boulder hole
-    map->entity(6)->half_tile_z(true);
+    map->entity(6)->position().half_z = true;
 }
 
 void edit_safety_pass_arc(World& world, md::ROM& rom)

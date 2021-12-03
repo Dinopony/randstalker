@@ -164,11 +164,11 @@ static void alter_lantern_handling(md::ROM& rom)
     md::Code ext_init_palette;
 
     ext_init_palette.movew(0x0CCC, addr_(0xFF00A2));
-    ext_init_palette.jsr(0x1A4414);
+    ext_init_palette.add_bytes(rom.data_chunk(0x19520, 0x19526)); // Add the jsr that was removed for injection
     ext_init_palette.jsr(0x87BE);
     ext_init_palette.rts();
-
-    rom.set_long(0x19522, rom.inject_code(ext_init_palette));
+    uint32_t addr = rom.inject_code(ext_init_palette);
+    rom.set_code(0x19520, md::Code().jsr(addr));
 
     // ----------------------------------------
     // Replace the "dark room" palette from King Nole's Labyrinth by the lit room palette

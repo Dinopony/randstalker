@@ -5,16 +5,30 @@
 void setup_mercator_maps(World& world)
 {
     const std::vector<uint16_t> maps_to_empty = {
-        MAP_MERCATOR_EXTERIOR_1, MAP_MERCATOR_EXTERIOR_2, MAP_MERCATOR_FOUNTAIN,
+        MAP_MERCATOR_EXTERIOR_1,  
         MAP_MERCATOR_MENAGERIE, MAP_MERCATOR_COUPLE_HOUSE, MAP_MERCATOR_CELLO_HOUSE, MAP_MERCATOR_SHOP,
         MAP_MERCATOR_MADAME_YARD_ENTRANCE, MAP_MERCATOR_MADAME_YARD_HALLWAY, MAP_MERCATOR_MADAME_YARD_ROOM_1, MAP_MERCATOR_MADAME_YARD_ROOM_2,
         MAP_MERCATOR_HOTEL,
+        
+        MAP_MERCATOR_EXTERIOR_2,
         MAP_MERCATOR_BALCONY_INN_FIRST_FLOOR, MAP_MERCATOR_BALCONY_INN_SECOND_FLOOR,
         MAP_MERCATOR_HOUSE_NEAR_WELL_FIRST_FLOOR, MAP_MERCATOR_HOUSE_NEAR_WELL_SECOND_FLOOR,
-        MAP_MERCATOR_CASTLE_BACKDOOR_COURT
+        MAP_MERCATOR_MIDDLE_HOUSE, 
+        MAP_MERCATOR_HOUSE_NEAR_CASTLE_ENTRANCE, MAP_MERCATOR_HOUSE_NEAR_CASTLE_BEDROOM,
+        MAP_MERCATOR_JARS_GRANDMA_HOUSE_0F, MAP_MERCATOR_JARS_GRANDMA_HOUSE_1F,
+        
+        MAP_MERCATOR_FOUNTAIN, MAP_MERCATOR_CASTLE_BACKDOOR_COURT,
+        MAP_MERCATOR_ROCKY_ARCH_OVER_RIVER, MAP_MERCATOR_NORTH_GATE, MAP_MERCATOR_DOCKS,
+        MAP_MERCATOR_PIER, MAP_MERCATOR_PIER_2
     };
 
-    MapPalette* exterior_palette = world.map(MAP_MERCATOR_EXTERIOR_1)->palette();
+    const std::vector<uint16_t> exterior_maps_to_repalette = {
+        MAP_MERCATOR_EXTERIOR_1, MAP_MERCATOR_EXTERIOR_2, MAP_MERCATOR_FOUNTAIN,
+        MAP_MERCATOR_CASTLE_BACKDOOR_COURT, MAP_MERCATOR_ROCKY_ARCH_OVER_RIVER, MAP_MERCATOR_NORTH_GATE,
+        MAP_MERCATOR_DOCKS, MAP_MERCATOR_PIER, MAP_MERCATOR_PIER_2
+    };
+
+    MapPalette* exterior_palette = world.map(exterior_maps_to_repalette[0])->palette();
     MapPalette* exterior_palette_altered = new MapPalette(*exterior_palette);
     for(uint8_t i=4 ; i<6 ; ++i)
     {
@@ -33,10 +47,8 @@ void setup_mercator_maps(World& world)
     exterior_palette_altered->apply_factor(0.9f);
 
     world.map_palettes().push_back(exterior_palette_altered);
-    world.map(MAP_MERCATOR_EXTERIOR_1)->palette(exterior_palette_altered);
-    world.map(MAP_MERCATOR_EXTERIOR_2)->palette(exterior_palette_altered);
-    world.map(MAP_MERCATOR_FOUNTAIN)->palette(exterior_palette_altered);
-    world.map(MAP_MERCATOR_CASTLE_BACKDOOR_COURT)->palette(exterior_palette_altered);
+    for(uint16_t map_id_to_repalette : exterior_maps_to_repalette)
+        world.map(map_id_to_repalette)->palette(exterior_palette_altered);
 
     for(uint16_t map_id : maps_to_empty)
     {
@@ -67,20 +79,13 @@ void edit_mercator_map_1(World& world)
 
     map->add_entity(new Entity(ENTITY_INJURED_DOG, 0x23, 0x39, 1));
     
-    const std::vector<std::pair<uint8_t, uint8_t>> boulder_coordinates = {
-        { 0x22, 0x28 }, { 0x26, 0x24 }, { 0x16, 0x2C }, { 0x15, 0x2A }, { 0x17, 0x28 }
-    };
-    Entity* first_boulder = nullptr;
-    for(auto& coords : boulder_coordinates)
-    {
-        Entity* boulder = map->add_entity(new Entity(ENTITY_ROCK, coords.first, coords.second, 1));
-        boulder->palette(0);
-
-        if(first_boulder)
-            boulder->entity_to_use_tiles_from(first_boulder);
-        else
-            first_boulder = boulder;  
-    }
+    batch_add_entities(map, {
+        Position(0x22, 0x28, 1), Position(0x26, 0x24, 1),  Position(0x16, 0x2C, 1), 
+        Position(0x15, 0x2A, 1), Position(0x17, 0x28, 1)
+    }, {
+        .type_id = ENTITY_ROCK,
+        .palette = 0
+    });
 
     map->add_entity(new Entity(ENTITY_DEAD_BODY, 0x25, 0x25, 1))->orientation(ENTITY_ORIENTATION_NW);
     map->add_entity(new Entity(ENTITY_DEAD_BODY, 0x22, 0x35, 1));
@@ -105,15 +110,18 @@ void edit_madame_yard_building(World& world)
     Map* entrance_map = world.map(MAP_MERCATOR_MADAME_YARD_ENTRANCE);
 
     entrance_map->add_entity(new Entity(ENTITY_CHEST, 0x14, 0x12, 0))->orientation(ENTITY_ORIENTATION_NW);
+    entrance_map->add_entity(new Entity(ENTITY_NPC_MAN_2, 0x15, 0x13, 1))->orientation(ENTITY_ORIENTATION_SW);
+    entrance_map->add_entity(new Entity(ENTITY_NPC_WOMAN_2, 0x14, 0x16, 0))->orientation(ENTITY_ORIENTATION_SE);
+
+    entrance_map->add_entity(new Entity(ENTITY_NPC_SOLDIER, 0x1C, 0x18, 0))->orientation(ENTITY_ORIENTATION_NE);
+    entrance_map->add_entity(new Entity(ENTITY_NPC_SOLDIER, 0x1C, 0x14, 0))->orientation(ENTITY_ORIENTATION_SW);
 
     ////////////////////////////////
     Map* hallway_map = world.map(MAP_MERCATOR_MADAME_YARD_HALLWAY);
     
-    Entity* miniaturizer_blocker = hallway_map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x12, 0x14, 2));
-    miniaturizer_blocker->half_tile_z(true);
-    miniaturizer_blocker->palette(2);
-
-    // TODO: Could also be miniaturizer if implemented
+    Entity* morph_blocker = hallway_map->add_entity(new Entity(ENTITY_SMALL_GRAY_SPIKEBALL, 0x12, 0x14, 2));
+    morph_blocker->position().half_z = true;
+    morph_blocker->palette(2);
 
     ////////////////////////////////
     Map* room_1_map = world.map(MAP_MERCATOR_MADAME_YARD_ROOM_1);
@@ -130,38 +138,22 @@ void edit_mercator_map_2(World& world)
 {
     Map* map = world.map(MAP_MERCATOR_EXTERIOR_2);
 
-    Entity* first_ball = map->add_entity(new Entity(POWER_GLOVE_BLOCKER_TYPE, 0x35, 0x21, 1));
-    first_ball->half_tile_x(true);
-    Entity* second_ball = map->add_entity(new Entity(POWER_GLOVE_BLOCKER_TYPE, 0x2C, 0x3A, 1));
-    second_ball->half_tile_y(true);
-    second_ball->entity_to_use_tiles_from(first_ball);
-
-    const std::vector<std::pair<uint8_t, uint8_t>> boulder_coordinates = {
-        { 0x2B, 0x29 }, { 0x30, 0x26 }, { 0x36, 0x2D }, 
-        { 0x25, 0x36 }, { 0x14, 0x3B }, { 0x15, 0x28 }
-    };
-
-    Entity* first_boulder = nullptr;
-    for(auto& coords : boulder_coordinates)
-    {
-        Entity* boulder = map->add_entity(new Entity(ENTITY_ROCK, coords.first, coords.second, 1));
-        boulder->palette(0);
-
-        if(first_boulder)
-            boulder->entity_to_use_tiles_from(first_boulder);
-        else
-            first_boulder = boulder;
-    }
-
-    Entity* boulder = map->add_entity(new Entity(ENTITY_ROCK, 0x15, 0x21, 1));
-    boulder->palette(0);
-    boulder->half_tile_z(true);
-    boulder->entity_to_use_tiles_from(first_boulder);
+    batch_add_entities(map, {
+        Position(0x2B, 0x29, 1), Position(0x30, 0x26, 1), Position(0x36, 0x2D, 1), 
+        Position(0x25, 0x36, 1), Position(0x14, 0x3B, 1), Position(0x25, 0x3E, 1), 
+        Position(0x15, 0x21, 1, false, false, true), Position(0x35, 0x21, 1, true, false, false),
+        Position(0x2C, 0x3A, 1, false, true, false)
+    }, {
+        .type_id = ENTITY_ROCK,
+        .palette = 0
+    });
 
     map->add_entity(new Entity(ENTITY_SMALL_YELLOW_PLATFORM, 0x14, 0x21, 1));
 
-    Entity* first_gate = map->add_entity(new Entity(ENTITY_GATE_NORTH, 0x25, 0x0C, 1));
-    map->add_entity(new Entity(ENTITY_GATE_NORTH, 0x27, 0x0C, 1))->entity_to_use_tiles_from(first_gate);
+    batch_add_entities(map, 
+        { Position(0x25, 0x0C, 1), Position(0x27, 0x0C, 1) },
+        { .type_id = ENTITY_GATE_NORTH }
+    );
 }
 
 void open_castle_backdoor(md::ROM& rom)
@@ -180,6 +172,19 @@ void change_castle_backdoor_connections(World& world)
                                 MAP_MERCATOR_DUNGEON_STAIRWAY_ACCESS_TO_CASTLE, MAP_MERCATOR_CASTLE_PASSAGE_TO_DUNGEON);
 }
 
+void edit_mercator_north_gate(World& world)
+{
+    Map* map = world.map(MAP_MERCATOR_NORTH_GATE);
+
+    batch_add_entities(map, {
+        Position(0x0F, 0x22, 2), Position(0x0F, 0x24, 3),  
+        Position(0x0F, 0x26, 2), Position(0x1B, 0x1F, 2, true, false, false)
+    }, {
+        .type_id = ENTITY_ROCK,
+        .palette = 0
+    });
+}
+
 void edit_mercator(World& world, md::ROM& rom)
 {
     setup_mercator_maps(world);
@@ -188,5 +193,6 @@ void edit_mercator(World& world, md::ROM& rom)
     edit_madame_yard_building(world);
     edit_mercator_map_2(world);
     open_castle_backdoor(rom);
+    edit_mercator_north_gate(world);
     change_castle_backdoor_connections(world);
 }

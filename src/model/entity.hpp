@@ -39,49 +39,65 @@ struct EntityMaskFlag : public Flag
     }
 };
 
+struct Position {
+
+    Position()
+    {}
+
+    Position(uint8_t ix, uint8_t iy, uint8_t iz, bool ihalf_x = false, bool ihalf_y = false, bool ihalf_z = false) :
+        x(ix), y(iy), z(iz),
+        half_x(ihalf_x), half_y(ihalf_y), half_z(ihalf_z)
+    {}
+
+    uint8_t x = 0;
+    uint8_t y = 0;
+    uint8_t z = 0;
+
+    bool half_x = false;
+    bool half_y = false;
+    bool half_z = false;
+};
+
 class Entity
 {
+public:
+    struct Attributes {
+        uint8_t type_id = 0;
+
+        Position position = Position();
+
+        uint8_t orientation = ENTITY_ORIENTATION_NE;
+        uint8_t palette = 1;
+        uint8_t speed = 0;
+
+        bool fightable = false;
+        bool liftable = false;
+        bool can_pass_through = false;
+        bool appear_after_player_moved_away = false;
+        bool gravity_immune = false;
+
+        bool talkable = false;
+        uint8_t dialogue = 0;
+
+        uint16_t behavior_id = 0;
+
+        Entity* entity_to_use_tiles_from = nullptr;
+
+        std::vector<EntityMaskFlag> mask_flags;
+        Flag persistence_flag = Flag(0xFF, 0xFF);
+
+        bool flag_unknown_2_3 = false;
+        bool flag_unknown_2_4 = false;
+        bool flag_unknown_3_5 = false;
+    };
+
 private:
+    Attributes _attrs;
     Map* _map;
-    uint8_t _entity_type_id;
-
-    uint8_t _pos_x;
-    uint8_t _pos_y;
-    uint8_t _pos_z;
-    bool _half_tile_x;
-    bool _half_tile_y;
-    bool _half_tile_z;
-
-    uint8_t _orientation;
-    uint8_t _palette;
-    uint8_t _speed;
-
-    bool _fightable;
-    bool _liftable;
-    bool _can_pass_through;
-    bool _appear_after_player_moved_away;
-    bool _gravity_immune;
-
-    bool _talkable;
-    uint8_t _dialogue;
-
-    /// Changing it for enemies change their default AI (0 makes an orc frozen at first, then moves normally once spotted)
-    /// 106 => disappears when all enemies are killed in the room
-    /// 113 => Mir wall barrier 1
-    /// 114 => Mir wall barrier 2
-    uint16_t _behavior_id;
-
-    Entity* _entity_to_use_tiles_from;
-
-    bool _flag_unknown_2_3;
-    bool _flag_unknown_2_4;
-    bool _flag_unknown_3_5;
-
-    std::vector<EntityMaskFlag> _mask_flags;
-    Flag _persistence_flag;
 
 public:
-    Entity(uint8_t type_id = 0, uint8_t pos_x = 0, uint8_t pos_y = 0, uint8_t pos_z = 0);
+    Entity(Attributes attrs);
+    Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z);
     Entity(const Entity& entity);
 
     void map(Map* map) { _map = map; }
@@ -89,83 +105,68 @@ public:
 
     uint8_t entity_id() const;
 
-    uint8_t entity_type_id() const { return _entity_type_id; }
-    void entity_type_id(uint8_t entity_type) { _entity_type_id = entity_type; }
+    uint8_t entity_type_id() const { return _attrs.type_id; }
+    void entity_type_id(uint8_t entity_type) { _attrs.type_id = entity_type; }
 
-    uint8_t pos_x() const { return _pos_x; }
-    void pos_x(uint8_t pos_x) { _pos_x = pos_x; }
+    const Position& position() const { return _attrs.position; }
+    Position& position() { return _attrs.position; }
+    void position(const Position& pos) { _attrs.position = pos; }
+    void position(uint8_t x, uint8_t y, uint8_t z) { _attrs.position.x = x; _attrs.position.y = y; _attrs.position.z = z; }
 
-    uint8_t pos_y() const { return _pos_y; }
-    void pos_y(uint8_t pos_y) { _pos_y = pos_y; }
+    uint8_t orientation() const { return _attrs.orientation; }
+    void orientation(uint8_t orientation) { _attrs.orientation = orientation; }
 
-    uint8_t pos_z() const { return _pos_z; }
-    void pos_z(uint8_t pos_z) { _pos_z = pos_z; }
+    uint8_t palette() const { return _attrs.palette; }
+    void palette(uint8_t palette) { _attrs.palette = palette; }
 
-    void position(uint8_t x, uint8_t y, uint8_t z) { pos_x(x); pos_y(y); pos_z(z); }
+    uint8_t speed() const { return _attrs.speed; }
+    void speed(uint8_t speed) { _attrs.speed = speed; }
 
-    bool half_tile_x() const { return _half_tile_x; }
-    void half_tile_x(bool half_tile_x) { _half_tile_x = half_tile_x; }
+    bool fightable() const { return _attrs.fightable; }
+    void fightable(bool fightable) { _attrs.fightable = fightable; }
 
-    bool half_tile_y() const { return _half_tile_y; }
-    void half_tile_y(bool half_tile_y) { _half_tile_y = half_tile_y; }
+    bool liftable() const { return _attrs.liftable; }
+    void liftable(bool liftable) { _attrs.liftable = liftable; }
 
-    bool half_tile_z() const { return _half_tile_z; }
-    void half_tile_z(bool half_tile_z) { _half_tile_z = half_tile_z; }
+    bool can_pass_through() const { return _attrs.can_pass_through; }
+    void can_pass_through(bool can_pass_through) { _attrs.can_pass_through = can_pass_through; }
 
-    uint8_t orientation() const { return _orientation; }
-    void orientation(uint8_t orientation) { _orientation = orientation; }
+    bool gravity_immune() const { return _attrs.gravity_immune; }
+    void gravity_immune(bool value) { _attrs.gravity_immune = value; }
 
-    uint8_t palette() const { return _palette; }
-    void palette(uint8_t palette) { _palette = palette; }
+    bool appear_after_player_moved_away() const { return _attrs.appear_after_player_moved_away; }
+    void appear_after_player_moved_away(bool appear_after_player_moved_away) { _attrs.appear_after_player_moved_away = appear_after_player_moved_away; }
 
-    uint8_t speed() const { return _speed; }
-    void speed(uint8_t speed) { _speed = speed; }
+    bool talkable() const { return _attrs.talkable; }
+    void talkable(bool talkable) { _attrs.talkable = talkable; }
 
-    bool fightable() const { return _fightable; }
-    void fightable(bool fightable) { _fightable = fightable; }
+    uint8_t dialogue() const { return _attrs.dialogue; }
+    void dialogue(uint8_t dialogue) { _attrs.dialogue = dialogue; }
 
-    bool liftable() const { return _liftable; }
-    void liftable(bool liftable) { _liftable = liftable; }
-
-    bool can_pass_through() const { return _can_pass_through; }
-    void can_pass_through(bool can_pass_through) { _can_pass_through = can_pass_through; }
-
-    bool gravity_immune() const { return _gravity_immune; }
-    void gravity_immune(bool value) { _gravity_immune = value; }
-
-    bool appear_after_player_moved_away() const { return _appear_after_player_moved_away; }
-    void appear_after_player_moved_away(bool appear_after_player_moved_away) { _appear_after_player_moved_away = appear_after_player_moved_away; }
-
-    bool talkable() const { return _talkable; }
-    void talkable(bool talkable) { _talkable = talkable; }
-
-    uint8_t dialogue() const { return _dialogue; }
-    void dialogue(uint8_t dialogue) { _dialogue = dialogue; }
-
-    uint16_t behavior_id() const { return _behavior_id; }
-    void behavior_id(uint16_t behavior_id) { _behavior_id = behavior_id; }
+    uint16_t behavior_id() const { return _attrs.behavior_id; }
+    void behavior_id(uint16_t behavior_id) { _attrs.behavior_id = behavior_id; }
     
-    Entity* entity_to_use_tiles_from() const { return _entity_to_use_tiles_from; }
-    void entity_to_use_tiles_from(Entity* entity) { _entity_to_use_tiles_from = entity; }
+    Entity* entity_to_use_tiles_from() const { return _attrs.entity_to_use_tiles_from; }
+    void entity_to_use_tiles_from(Entity* entity) { _attrs.entity_to_use_tiles_from = entity; }
 
-    bool flag_unknown_2_3() const { return _flag_unknown_2_3; }
-    void flag_unknown_2_3(bool value) { _flag_unknown_2_3 = value; }
+    bool flag_unknown_2_3() const { return _attrs.flag_unknown_2_3; }
+    void flag_unknown_2_3(bool value) { _attrs.flag_unknown_2_3 = value; }
 
-    bool flag_unknown_2_4() const { return _flag_unknown_2_4; }
-    void flag_unknown_2_4(bool value) { _flag_unknown_2_4 = value; }
+    bool flag_unknown_2_4() const { return _attrs.flag_unknown_2_4; }
+    void flag_unknown_2_4(bool value) { _attrs.flag_unknown_2_4 = value; }
 
-    bool flag_unknown_3_5() const { return _flag_unknown_3_5; }
-    void flag_unknown_3_5(bool value) { _flag_unknown_3_5 = value; }
+    bool flag_unknown_3_5() const { return _attrs.flag_unknown_3_5; }
+    void flag_unknown_3_5(bool value) { _attrs.flag_unknown_3_5 = value; }
     
-    const std::vector<EntityMaskFlag>& mask_flags() const { return _mask_flags; }
-    std::vector<EntityMaskFlag>& mask_flags() { return _mask_flags; }
-    void remove_when_flag_is_set(Flag flag) { _mask_flags.push_back(EntityMaskFlag(false, flag.byte & 0xFF, flag.bit)); }
-    void only_when_flag_is_set(Flag flag) { _mask_flags.push_back(EntityMaskFlag(true, flag.byte & 0xFF, flag.bit)); }
+    const std::vector<EntityMaskFlag>& mask_flags() const { return _attrs.mask_flags; }
+    std::vector<EntityMaskFlag>& mask_flags() { return _attrs.mask_flags; }
+    void remove_when_flag_is_set(Flag flag) { _attrs.mask_flags.push_back(EntityMaskFlag(false, flag.byte & 0xFF, flag.bit)); }
+    void only_when_flag_is_set(Flag flag) { _attrs.mask_flags.push_back(EntityMaskFlag(true, flag.byte & 0xFF, flag.bit)); }
 
-    bool has_persistence_flag() const { return _persistence_flag.byte != 0xFF && _persistence_flag.bit <= 7; }
-    Flag persistence_flag() const { return _persistence_flag; }
-    void persistence_flag(Flag flag) { _persistence_flag = flag; }
-    void clear_persistence_flag() { _persistence_flag = Flag(0xFF, 0xFF); }
+    bool has_persistence_flag() const { return _attrs.persistence_flag.byte != 0xFF && _attrs.persistence_flag.bit <= 7; }
+    Flag persistence_flag() const { return _attrs.persistence_flag; }
+    void persistence_flag(Flag flag) { _attrs.persistence_flag = flag; }
+    void clear_persistence_flag() { _attrs.persistence_flag = Flag(0xFF, 0xFF); }
 
     static Entity* from_rom(const md::ROM& rom, uint32_t addr, Map* map);
     std::vector<uint8_t> to_bytes() const;

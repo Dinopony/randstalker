@@ -4,7 +4,7 @@ include("CMakeFunctions.txt")
 
 project(randstalker VERSION 1.5.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
