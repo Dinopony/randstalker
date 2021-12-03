@@ -307,46 +307,39 @@ void optimize_maps(World& world)
     // Remove a useless Miro from a map in Swamp Shrine
     world.map(MAP_SWAMP_SHRINE_0)->remove_entity(7);
     
-    // Remove Mercator castle throne room variants
+    // Make the Arthur variant of throne room the standard
     world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->variants().clear();
     for(Entity* entity : world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entities())
         world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->add_entity(new Entity(*entity));
 
-    // Remove Mercator castle entrance hallway variants
-    world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->variants().clear();
+    // Empty Mercator castle entrance hallway
     world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->clear_entities();
 
-    // Remove Mercator castle main hall variants
-    world.map(MAP_MERCATOR_CASTLE_MAIN_HALL)->variants().clear();
+    // Clear unreachable variants and prevent them from triggering
+    const std::vector<uint16_t> MAPS_TO_REMOVE_VARIANTS_FROM = { 
+        MAP_THIEVES_HIDEOUT_TREASURE_ROOM,
+        MAP_MERCATOR_CASTLE_THRONE_ROOM,
+        MAP_MERCATOR_CASTLE_MAIN_HALL,
+        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY
+    };
+
+    for(uint16_t map_id : MAPS_TO_REMOVE_VARIANTS_FROM)
+    {
+        Map* map = world.map(map_id);
+        for(auto& [variant_map, flag] : map->variants())
+            variant_map->clear();
+        map->variants().clear();
+    }
 
     // Clear unreachable maps
     const std::vector<uint16_t> UNREACHABLE_MAPS = { 
-        MAP_THIEVES_HIDEOUT_TREASURE_ROOM_KAYLA_VARIANT,
-
-        MAP_MERCATOR_CASTLE_THRONE_ROOM_52,
-        MAP_MERCATOR_CASTLE_THRONE_ROOM_53,
-        MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT,
-
-        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_56,
-        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_57,
-        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY_58,
-
-        MAP_MERCATOR_CASTLE_MAIN_HALL_61,
-        MAP_MERCATOR_CASTLE_MAIN_HALL_62,
-
         MAP_MERCATOR_CASTLE_KAYLA_ROOM,
         MAP_MERCATOR_CASTLE_KAYLA_BATHROOM_ENTRANCE,
         MAP_MERCATOR_CASTLE_KAYLA_BATHROOM
     };
 
     for(uint16_t map_id : UNREACHABLE_MAPS)
-    {
-        Map* map = world.map(map_id);
-        for(auto& [variant_map, flag] : map->variants())
-            variant_map->clear();
-        map->clear();
-    }
+        world.map(map_id)->clear();
 }
 
 void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
