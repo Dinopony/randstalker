@@ -186,7 +186,8 @@ void generate(const ArgumentDictionary& args)
 
     World world(*rom, options);
     apply_world_edits(world, options, *rom);
-    if(args.contains("kaizo"))
+    bool kaizo = args.contains("kaizo");
+    if(kaizo)
         apply_kaizo_edits(world, *rom);
 
     display_options(options);
@@ -196,7 +197,7 @@ void generate(const ArgumentDictionary& args)
     {
         spoiler_json = plandomize(world, options, args);
     }
-    else
+    else if(!kaizo)
     {
         spoiler_json = randomize(world, options, args);
     }
@@ -217,6 +218,7 @@ void generate(const ArgumentDictionary& args)
 
         rom->write_to_file(output_rom_file);
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
+        std::cout << (rom->remaining_empty_bytes()/1000) << "Ko remaining of empty data" << std::endl;
     }
 
     // Output current world model if requested

@@ -37,6 +37,8 @@ void setup_mercator_castle_maps(World& world)
     for(uint16_t map_id : maps_to_setup)
     {
         Map* map = world.map(map_id);
+        wipe_map_variants(map);
+
         map->background_music(1); // Set dungeon music
 
         if(!maps_keeping_entities.count(map_id))
@@ -44,14 +46,6 @@ void setup_mercator_castle_maps(World& world)
 
         if(map->palette() == castle_palette)
             map->palette(castle_palette_darkened);
-
-        std::map<Map*, Flag>& variants = map->variants();
-        for(auto& [variant_map, flag] : variants)
-        {
-            std::cout << "Freeing map #" << variant_map->id() << std::endl;
-            variant_map->clear();
-        }
-        variants.clear();
     }
 }
 
@@ -258,26 +252,26 @@ void edit_castle_zak_room(World& world)
     gate->orientation(ENTITY_ORIENTATION_SE);
 
     Entity* first_platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x17, 0x16, 1));
-    first_platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
+    make_entity_visible_with_golas_eye(first_platform);
     first_platform->palette(3);
 
     Entity* platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x17, 0x18, 2));
-    platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
+    make_entity_visible_with_golas_eye(platform);
     platform->entity_to_use_tiles_from(first_platform);
     platform->palette(3);
 
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x15, 0x18, 3));
-    platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
+    make_entity_visible_with_golas_eye(platform);
     platform->entity_to_use_tiles_from(first_platform);
     platform->palette(3);
 
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x13, 0x18, 4));
-    platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
+    make_entity_visible_with_golas_eye(platform);
     platform->entity_to_use_tiles_from(first_platform);
     platform->palette(3);
 
     platform = map->add_entity(new Entity(ENTITY_LARGE_DARK_PLATFORM, 0x11, 0x18, 5));
-    platform->behavior_id(BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE);
+    make_entity_visible_with_golas_eye(platform);
     platform->entity_to_use_tiles_from(first_platform);
     platform->palette(3);
 
@@ -315,7 +309,7 @@ void edit_castle_upper_main_hall(World& world)
 
 void edit_castle_left_court(World& world, md::ROM& rom)
 {
-
+    0x20D;
 }
 
 void edit_mercator_castle(World& world, md::ROM& rom)

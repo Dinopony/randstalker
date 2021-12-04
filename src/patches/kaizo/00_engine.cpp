@@ -1,9 +1,29 @@
 #include "kaizo.hpp"
 
+void clear_item_sources(World& world)
+{
+    std::vector<ItemSource*> kept_item_sources;    
+    for(ItemSource* source : world.item_sources())
+    {
+        if(source->type_name() == "shop")
+            kept_item_sources.push_back(source);
+        else
+            delete source;
+    }
+    world.item_sources().clear();
+    world.item_sources().insert(world.item_sources().end(), kept_item_sources.begin(), kept_item_sources.end());
+}
+
 void neutralize_one_time_events(md::ROM& rom)
 {
     rom.set_word(0x1A974, 0xFFFF);
     rom.mark_empty_chunk(0x1A976, 0x1A9BE);
+}
+
+void neutralize_custom_room_actions(md::ROM& rom)
+{
+    rom.set_code(0x19B62, md::Code().rts());
+    rom.mark_empty_chunk(0x19B64, 0x1A30A);
 }
 
 void empty_all_persistence_flags(World& world)
@@ -166,12 +186,54 @@ void handle_morpher(md::ROM& rom)
     rom.set_byte(0x17841, 0x0E);
 }
 
+void make_damage_independant_from_lifestocks(md::ROM& rom)
+{
+    md::Code func_get_base_damage;
+    func_get_base_damage.moveb(addr_(0xFF1BF1), reg_D6);
+    func_get_base_damage.bne(3);
+        // Sword 0
+        func_get_base_damage.movew(SWORD_0_BASE_POWER * 0x100, reg_D0);
+        func_get_base_damage.rts();
+    func_get_base_damage.cmpib(0x2, reg_D6);
+    func_get_base_damage.bgt(6);
+    func_get_base_damage.beq(3);
+        // Sword 1
+        func_get_base_damage.movew(SWORD_1_BASE_POWER * 0x100, reg_D0);
+        func_get_base_damage.rts();  
+        // Sword 2
+        func_get_base_damage.movew(SWORD_2_BASE_POWER * 0x100, reg_D0);
+        func_get_base_damage.rts();
+    func_get_base_damage.cmpib(0x3, reg_D6); 
+    func_get_base_damage.bne(3);
+        // Sword 3
+        func_get_base_damage.movew(SWORD_3_BASE_POWER * 0x100, reg_D0);
+        func_get_base_damage.rts();
+    // Sword 4
+    func_get_base_damage.movew(SWORD_4_BASE_POWER * 0x100, reg_D0);
+    func_get_base_damage.rts();
+
+    uint32_t func_addr = rom.inject_code(func_get_base_damage);
+    rom.set_code(0x16584, md::Code().jsr(func_addr));
+}
+
+void make_lifestocks_give_double_health(md::ROM& rom)
+{
+    constexpr uint16_t health_gained_on_lifestock = 0x0200;
+    rom.set_word(0x291E2, health_gained_on_lifestock);
+    rom.set_word(0x291F2, health_gained_on_lifestock);
+    rom.set_word(0x7178, health_gained_on_lifestock);
+    rom.set_word(0x7188, health_gained_on_lifestock);
+}
 
 void patch_engine_for_kaizo(World& world, md::ROM& rom)
 {
+    clear_item_sources(world);
     neutralize_one_time_events(rom);
+    neutralize_custom_room_actions(rom);
     empty_all_persistence_flags(world);
     add_set_persistence_flag_behavior_operand(rom);
     add_invisible_behavior(rom);
     handle_morpher(rom);
+    make_damage_independant_from_lifestocks(rom);
+    make_lifestocks_give_double_health(rom);
 }

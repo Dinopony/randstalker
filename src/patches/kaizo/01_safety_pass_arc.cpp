@@ -1,11 +1,95 @@
 #include "kaizo.hpp"
 
-void add_boulder_blocking_thieves_hideout(World& world)
+void setup_ryuma_maps(World& world)
 {
-    Map* map = world.map(MAP_RYUMA_EXTERIOR_VARIANT);
-    map->add_entity(new Entity(POWER_GLOVE_BLOCKER_TYPE, 0x35, 0x1E, 1));
-    map->remove_entity(4); // Remove dog to prevent cheesing boulder by jumping over
+    wipe_map_variants(world, {
+        MAP_RYUMA_EXTERIOR,
+        MAP_RYUMA_MIDDLE_HOUSE,
+        MAP_RYUMA_LIGHTHOUSE
+    });
+
 }
+
+void edit_ryuma_spawn_house(World& world)
+{
+    SpawnLocation* spawnLocation = new SpawnLocation("kaizo", MAP_RYUMA_MIDDLE_HOUSE, 16, 16, ENTITY_ORIENTATION_SE, nullptr, 10);
+    world.active_spawn_location(spawnLocation);
+
+    Map* map = world.map(MAP_RYUMA_MIDDLE_HOUSE);
+    map->clear_entities();
+}
+
+void edit_ryuma_exterior(World& world)
+{
+    Map* map = world.map(MAP_RYUMA_EXTERIOR);
+    wipe_map_variants(map);
+
+    map->add_entity(new Entity({ 
+        .type_id = ENTITY_CHEST,
+        .position = Position(0x2F, 0x35, 1),
+        .orientation = ENTITY_ORIENTATION_NW
+    }));
+    map->base_chest_id(0);
+    ItemSource* source = new ItemSourceChest(0, "");
+    source->item(world.item(ITEM_EKEEKE));
+    world.item_sources().push_back(source);
+}
+
+void edit_ryuma_pier(World& world)
+{
+    Map* map = world.map(MAP_RYUMA_RAFT_PIER);
+    map->clear_entities();
+
+
+    map->add_entity(new Entity({ 
+        .type_id = ENTITY_CHEST,
+        .position = Position(0x27, 0x27, 1)
+    }));
+    map->base_chest_id(1);
+    ItemSource* source = new ItemSourceChest(1, "");
+    source->item(world.item(ITEM_EKEEKE));
+    world.item_sources().push_back(source);
+
+    batch_add_entities(map, 
+        { Position(0x27, 0x26, 3), Position(0x27, 0x26, 5, false, false, true) }, 
+        { .type_id = ENTITY_INVISIBLE_CUBE });
+}
+
+void edit_route_to_ryuma_2(World& world)
+{
+    Map* map = world.map(MAP_ROUTE_TO_RYUMA_2);
+
+    Map* base_map = world.map(MAP_ROUTE_AFTER_DESTEL_1);
+    map->address(base_map->address());
+    map->tileset_id(base_map->tileset_id());
+    map->primary_big_tileset_id(base_map->primary_big_tileset_id());
+    map->secondary_big_tileset_id(base_map->secondary_big_tileset_id());
+
+    MapConnection& connection_sw = world.map_connection(MAP_RYUMA_EXTERIOR, MAP_ROUTE_TO_RYUMA_2);
+    connection_sw.pos_x_2(28);
+    connection_sw.pos_y_2(62);
+
+    MapConnection& connection_ne = world.map_connection(MAP_ROUTE_TO_RYUMA_2, MAP_ROUTE_TO_RYUMA_1);
+    connection_ne.pos_x_1(33);
+    connection_ne.pos_y_1(14);
+
+    map->clear_entities();
+}
+
+//void edit_route_to_ryuma_1(World& world)
+//{
+//    Map* map = world.map(MAP_ROUTE_TO_RYUMA_1);
+//
+//    MapPalette* original_green_palette = world.map(MAP_ROUTE_TO_RYUMA_1)->palette();
+//
+//    MapPalette* snowy_palette = new MapPalette(*original_green_palette);
+//    snowy_palette->color(3) = MapPalette::Color(0xA, 0xA, 0xC);
+//    snowy_palette->color(4) = MapPalette::Color(0xC, 0xC, 0xE);
+//    snowy_palette->color(5) = MapPalette::Color(0xE, 0xE, 0xE);
+//    world.map_palettes().push_back(snowy_palette);
+//    
+//    map->palette(snowy_palette);
+//}
 
 void edit_kado_climb_map(World& world)
 {
@@ -86,7 +170,17 @@ void edit_helga_swamp_map_2(World& world)
     map->remove_entity(0);
 }
 
-void edit_alter_helga_dialogue(World& world, md::ROM& rom)
+void fix_helga_hut_palette(World& world)
+{
+    std::array<uint16_t, 13> helga_palette_words = { 0x0204, 0x0426, 0x086A, 0x0222, 0x0444, 0x0888, 
+                                                     0x000A, 0x04AA, 0x024A, 0x0028, 0x0066, 0x0A46, 0x0060 };
+
+    MapPalette* palette = new MapPalette(helga_palette_words);
+    world.map_palettes().push_back(palette);
+    world.map(MAP_HELGAS_HUT)->palette(palette);
+}
+
+void edit_helga_dialogue(World& world, md::ROM& rom)
 {
     world.game_strings()[0x497] = "\x1cYou want to find a lost\nitem... Let me take a look...\nOh... I can feel it...\x03"
                                   "\nWhat you are looking for\nhas been eaten by a blue worm.\nIt's not far away from here.\x03"
@@ -146,11 +240,17 @@ void add_ultra_worm_to_gumi_boulder_map(World& world)
 
 void edit_safety_pass_arc(World& world, md::ROM& rom)
 {
-    add_boulder_blocking_thieves_hideout(world);
+    setup_ryuma_maps(world);
+    edit_ryuma_spawn_house(world);
+    edit_ryuma_exterior(world);
+    edit_ryuma_pier(world);
+    edit_route_to_ryuma_2(world);
+    edit_route_to_ryuma_1(world);
     edit_kado_climb_map(world);
     edit_kado_textlines(world);
     edit_helga_swamp_map(world);
     edit_helga_swamp_map_2(world);
-    edit_alter_helga_dialogue(world, rom);
+    fix_helga_hut_palette(world);
+    edit_helga_dialogue(world, rom);
     add_ultra_worm_to_gumi_boulder_map(world);
 }

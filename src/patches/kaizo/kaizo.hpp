@@ -9,6 +9,7 @@
 #include "../../model/map_palette.hpp"
 #include "../../model/entity.hpp"
 #include "../../model/entity_type.hpp"
+#include "../../model/spawn_location.hpp"
 
 #include "../../constants/entity_type_codes.hpp"
 #include "../../constants/map_codes.hpp"
@@ -25,6 +26,17 @@ void edit_mercator_castle(World& world, md::ROM& rom);
 ////// KAIZO SPECIFIC EDIT TOOLS ///////////////////////////////////////////////////////////////////
 
 void batch_add_entities(Map* map, const std::vector<Position>& positions, Entity::Attributes base_attributes,  bool use_tiles_from_first = true);
+void wipe_map_variants(Map* map);
+void wipe_map_variants(World& world, const std::vector<uint16_t>& map_ids);
+void make_entity_visible_with_golas_eye(Entity* entity);
+
+////// KAIZO CONSTANT VALUES ///////////////////////////////////////////////////////////////////
+
+constexpr uint16_t SWORD_0_BASE_POWER = 20;
+constexpr uint16_t SWORD_1_BASE_POWER = 25;
+constexpr uint16_t SWORD_2_BASE_POWER = 30;
+constexpr uint16_t SWORD_3_BASE_POWER = 35;
+constexpr uint16_t SWORD_4_BASE_POWER = 40;
 
 ////// ENTITY TYPE ALIASES ///////////////////////////////////////////////////////////////////
 

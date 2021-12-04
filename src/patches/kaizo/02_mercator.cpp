@@ -54,15 +54,8 @@ void setup_mercator_maps(World& world)
     {
         Map* map = world.map(map_id);
         map->clear_entities();
+        wipe_map_variants(map);
         map->background_music(12); // Set sad music
-
-        std::map<Map*, Flag>& variants = map->variants();
-        for(auto& [variant_map, flag] : variants)
-        {
-            std::cout << "Freeing map #" << variant_map->id() << std::endl;
-            variant_map->clear();
-        }
-        variants.clear();
     }
 }
 
