@@ -26,15 +26,15 @@
 #include "world_writer.hpp"
 
 // Include headers automatically generated from model json files
-#include "model/entity_type.json.hxx"
-#include "model/item.json.hxx"
-#include "model/world_node.json.hxx"
-#include "model/world_path.json.hxx"
-#include "model/item_source.json.hxx"
-#include "model/spawn_location.json.hxx"
-#include "model/hint_source.json.hxx"
-#include "model/world_region.json.hxx"
-#include "model/world_teleport_tree.json.hxx"
+#include "model/data/entity_type.json.hxx"
+#include "model/data/item.json.hxx"
+#include "model/data/world_node.json.hxx"
+#include "model/data/world_path.json.hxx"
+#include "model/data/item_source.json.hxx"
+#include "model/data/spawn_location.json.hxx"
+#include "model/data/hint_source.json.hxx"
+#include "model/data/world_region.json.hxx"
+#include "model/data/world_teleport_tree.json.hxx"
 #include "assets/game_strings.json.hxx"
 
 World::World(const md::ROM& rom, const RandomizerOptions& options) :

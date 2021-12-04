@@ -10,10 +10,11 @@
 ItemSource::ItemSource(const std::string& name, WorldNode* node, const std::vector<std::string>& hints) :
     _name   (name),
     _item   (nullptr),
-    _node (node),
+    _node   (node),
     _hints  (hints)
 {
-    _node->add_item_source(this);
+    if(_node)
+        _node->add_item_source(this);
 }
 
 Json ItemSource::to_json() const

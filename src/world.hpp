@@ -26,12 +26,7 @@ class World
 {
 private:
     std::map<uint8_t, Item*> _items;
-    std::map<std::string, WorldNode*> _nodes;
-    std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*> _paths;
     std::vector<ItemSource*> _item_sources;
-    std::map<std::string, SpawnLocation*> _spawn_locations;
-    std::map<std::string, HintSource*> _hint_sources;
-    std::vector<WorldRegion*> _regions;
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<std::string> _game_strings;
     std::map<uint8_t, EntityType*> _entity_types;
@@ -43,6 +38,12 @@ private:
     SpawnLocation* _active_spawn_location;
     WorldRegion* _dark_region;
 
+    // Logic / rando specific
+    std::map<std::string, WorldNode*> _nodes;
+    std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*> _paths;
+    std::vector<WorldRegion*> _regions;
+    std::map<std::string, HintSource*> _hint_sources;
+    std::map<std::string, SpawnLocation*> _spawn_locations;
     const RandomizerOptions& _options;
 
 public:
@@ -68,6 +69,7 @@ public:
     void add_path(WorldPath* path);
 
     const std::vector<ItemSource*>& item_sources() const { return _item_sources; }
+    std::vector<ItemSource*>& item_sources() { return _item_sources; }
     std::vector<ItemSource*> item_sources_with_item(Item* item);
 
     const std::map<std::string, SpawnLocation*>& spawn_locations() const { return _spawn_locations; }

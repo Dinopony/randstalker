@@ -167,13 +167,16 @@ void WorldWriter::write_game_strings(md::ROM& rom, const World& world)
 void WorldWriter::write_dark_rooms(md::ROM& rom, const World& world)
 {
     // Inject dark rooms as a data block
-    const std::vector<uint16_t>& dark_map_ids = world.dark_region()->dark_map_ids();
-    uint16_t dark_maps_byte_count = static_cast<uint16_t>(dark_map_ids.size() + 1) * 0x02;
-    uint32_t dark_maps_address = rom.reserve_data_block(dark_maps_byte_count, "data_dark_rooms");
-    uint8_t i = 0;
+    std::vector<uint16_t> dark_map_ids;
+    if(world.dark_region())
+        dark_map_ids = world.dark_region()->dark_map_ids();
+
+    ByteArray bytes;
     for (uint16_t map_id : dark_map_ids)
-        rom.set_word(dark_maps_address + (i++) * 0x2, map_id);
-    rom.set_word(dark_maps_address + i * 0x2, 0xFFFF);
+        bytes.add_word(map_id);
+    bytes.add_word(0xFFFF);
+
+    rom.inject_bytes(bytes, "data_dark_rooms");
 }
 
 void WorldWriter::write_tibor_tree_connections(md::ROM& rom, const World& world)

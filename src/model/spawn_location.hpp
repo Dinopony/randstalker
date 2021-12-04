@@ -19,7 +19,7 @@ public:
         _pos_x          (pos_x),
         _pos_y          (pos_y),
         _orientation    (orientation),
-        _node         (node),
+        _node           (node),
         _starting_life  (starting_life)
     {}
 
@@ -33,14 +33,14 @@ public:
 
     Json to_json() const
     {
-        Json json;
-        json["mapID"] = _map_id;
-        json["posX"] = _pos_x;
-        json["posY"] = _pos_y;
-        json["orientation"] = _orientation;
-        json["nodeId"] = _node->id();
-        json["startingLife"] = _starting_life;
-        return json;
+        return Json {
+            { "mapId", _map_id },
+            { "posX", _pos_x },
+            { "posY", _pos_y },
+            { "orientation", _orientation },
+            { "nodeId", _node->id() },
+            { "startingLife", _starting_life }
+        };
     }
 
     static SpawnLocation* from_json(const std::string& id, const Json& json, const std::map<std::string, WorldNode*>& nodes)

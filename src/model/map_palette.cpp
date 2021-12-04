@@ -5,6 +5,9 @@
 MapPalette::Color::Color() : r(0), g(0), b(0)
 {}
 
+MapPalette::Color::Color(uint8_t ir, uint8_t ig, uint8_t ib) : r(ir), g(ig), b(ib)
+{}
+
 MapPalette::Color::Color(uint16_t color_word)
 {
     r = color_word & 0xF;

@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <fstream>
-#include "../model/world_path.json.hxx"
+#include "../model/data/world_path.json.hxx"
 #include "../model/world_node.hpp"
 #include "../model/map.hpp"
 #include "../model/map_connection.hpp"
