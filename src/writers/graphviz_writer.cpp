@@ -4,7 +4,7 @@
 #include <fstream>
 #include "../tools/tools.hpp"
 
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 #include "../world_model/map.hpp"
 #include "../world_model/map_connection.hpp"

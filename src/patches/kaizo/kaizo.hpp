@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../../tools/megadrive/rom.hpp"
-#include "../../tools/megadrive/code.hpp"
+#include <md_tools.hpp>
 
 #include "../../world_model/world.hpp"
 #include "../../world_model/map.hpp"
@@ -29,6 +28,7 @@ void batch_add_entities(Map* map, const std::vector<Position>& positions, Entity
 void wipe_map_variants(Map* map);
 void wipe_map_variants(World& world, const std::vector<uint16_t>& map_ids);
 void make_entity_visible_with_golas_eye(Entity* entity);
+void create_chest_item_source(World& world, uint8_t chest_id, uint8_t item_id);
 
 ////// KAIZO CONSTANT VALUES ///////////////////////////////////////////////////////////////////
 
@@ -52,10 +52,31 @@ constexpr uint16_t BEHAVIOR_INVISIBLE_REVEALABLE_BY_GOLAS_EYE = 531;
 
 ////// FLAGS /////////////////////////////////////////////////////////////////// 
 
-static const Flag FLAG_ALWAYS_TRUE                      = Flag(0x00, 0);
-static const Flag FLAG_HELGA_TALKED_ABOUT_WORM          = Flag(0x04, 4);
-static const Flag FLAG_KAYLA_BATHROOM_BUTTON_PRESSED    = Flag(0x06, 0);
-static const Flag FLAG_DEXTER_ROOM_BUTTON_PRESSED       = Flag(0x06, 1);
-static const Flag FLAG_ZAK_ROOM_BUTTON_PRESSED          = Flag(0x06, 2);
+constexpr Flag FLAG_ALWAYS_TRUE                      = Flag(0x00, 0);
+constexpr Flag FLAG_HELGA_TALKED_ABOUT_WORM          = Flag(0x04, 4);
+constexpr Flag FLAG_KAYLA_BATHROOM_BUTTON_PRESSED    = Flag(0x06, 0);
+constexpr Flag FLAG_DEXTER_ROOM_BUTTON_PRESSED       = Flag(0x06, 1);
+constexpr Flag FLAG_ZAK_ROOM_BUTTON_PRESSED          = Flag(0x06, 2);
+constexpr Flag FLAG_SAFETY_PASS_OWNED                = Flag(0x59, 5);
 
-static const Flag FLAG_SAFETY_PASS_OWNED                = Flag(0x59, 5);
+////// CHESTS /////////////////////////////////////////////////////////////////// 
+
+constexpr uint8_t CHEST_RYUMA_EXTERIOR = 0;
+constexpr uint8_t CHEST_RYUMA_PIER = 1;
+constexpr uint8_t CHEST_RYUMA_MAYOR_HOUSE = 2; // TODO
+constexpr uint8_t CHEST_ROUTE_TO_RYUMA_2 = 3;
+constexpr uint8_t CHEST_HELGAS_SWAMP_1 = 4; // TODO
+constexpr uint8_t CHEST_HELGAS_SWAMP_2 = 5; // TODO
+constexpr uint8_t CHEST_HELGAS_HUT_EXTERIOR = 6;
+constexpr uint8_t CHEST_MERCATOR_MENAGERIE = 7;
+constexpr uint8_t CHEST_MERCATOR_MADAME_YARD_COUNTER = 8;
+constexpr uint8_t CHEST_MERCATOR_MADAME_YARD_ROOM_1 = 9;
+constexpr uint8_t CHEST_MERCATOR_MADAME_YARD_ROOM_2 = 10; // TODO
+constexpr uint8_t CHEST_MERCATOR_CASTLE_BIG_LIBRARY = 11;
+constexpr uint8_t CHEST_MERCATOR_CASTLE_SMALL_LIBRARY_1 = 12;
+constexpr uint8_t CHEST_MERCATOR_CASTLE_SMALL_LIBRARY_2 = 13;
+constexpr uint8_t CHEST_MERCATOR_CASTLE_DEXTER_ROOM = 14;
+constexpr uint8_t CHEST_MERCATOR_CASTLE_1F_HALLWAY = 15;
+
+// TODO: Einstein whistle allows passing through
+// TODO: CHEST_HELGAS_SWAMP_2 already open?

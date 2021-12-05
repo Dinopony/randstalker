@@ -6,7 +6,7 @@
 #include <chrono>
 #include <fstream>
 
-#include "extlibs/json.hpp"
+#include <json.hpp>
 
 #include "tools/tools.hpp"
 #include "tools/argument_dictionary.hpp"
@@ -64,7 +64,7 @@ public:
 
     // Personal options 
     bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
-    const std::string hud_color() const { return _hud_color; }
+    uint16_t hud_color() const { return _hud_color; }
 
     std::vector<std::string> hash_words() const;
     std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
@@ -113,7 +113,7 @@ private:
     // ------------- Personal settings -------------
     // (not included in permalink nor presets)
     bool _add_ingame_item_tracker;
-    std::string _hud_color;
+    uint16_t _hud_color;
 
     // Plando-specific arguments
     bool _plando_enabled;

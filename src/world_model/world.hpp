@@ -1,15 +1,13 @@
 #pragma once
 
-#include "../extlibs/json.hpp"
-#include "../tools/megadrive/rom.hpp"
+#include <json.hpp>
+#include <md_tools.hpp>
 #include <map>
 #include <vector>
 
 #include "spawn_location.hpp"
 #include "map_connection.hpp"
 #include "../tools/flag.h"
-
-constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
 
 class WorldNode;
 class WorldPath;

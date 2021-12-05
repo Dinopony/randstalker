@@ -68,7 +68,7 @@ void edit_mercator_map_1(World& world)
     soldier->orientation(ENTITY_ORIENTATION_SW);
     soldier->talkable(true);
     world.game_strings()[0x37E] = "\u001cThis is a disaster...\nWe got raided by monsters,\nand nothing is left from\u001e\nour once glorious town...\nYou don't seem to understand,\nI'm the only one still alive!\u001e";
-    world.game_strings()[0x37F] = "\u001cI've seen all of my\nfriends fall one by one...\u001e\nI'm gonna make them\nPAY FOR THIS!\u0003";
+    world.game_strings()[0x37F] = "\u001cI've seen all of my\nfriends fall one by one...\u001e\nWhat am I gonna do now?\u0003";
 
     map->add_entity(new Entity(ENTITY_INJURED_DOG, 0x23, 0x39, 1));
     
@@ -92,7 +92,8 @@ void edit_mercator_menagerie(World& world)
     Map* map = world.map(MAP_MERCATOR_MENAGERIE);
 
     map->add_entity(new Entity(ENTITY_CHEST, 0x16, 0x10, 4))->orientation(ENTITY_ORIENTATION_NW);
-    map->base_chest_id(0x00); // TODO: Set proper chest ID!
+    map->base_chest_id(CHEST_MERCATOR_MENAGERIE);
+    create_chest_item_source(world, CHEST_MERCATOR_MENAGERIE, ITEM_EKEEKE);
 
     map->add_entity(new Entity(ENEMY_SKELETON_1, 0x14, 0x18, 2))->orientation(ENTITY_ORIENTATION_NW);
     map->add_entity(new Entity(ENEMY_SKELETON_1, 0x18, 0x14, 2))->orientation(ENTITY_ORIENTATION_SW);
@@ -103,6 +104,9 @@ void edit_madame_yard_building(World& world)
     Map* entrance_map = world.map(MAP_MERCATOR_MADAME_YARD_ENTRANCE);
 
     entrance_map->add_entity(new Entity(ENTITY_CHEST, 0x14, 0x12, 0))->orientation(ENTITY_ORIENTATION_NW);
+    entrance_map->base_chest_id(CHEST_MERCATOR_MADAME_YARD_COUNTER);
+    create_chest_item_source(world, CHEST_MERCATOR_MADAME_YARD_COUNTER, ITEM_LIFESTOCK);
+
     entrance_map->add_entity(new Entity(ENTITY_NPC_MAN_2, 0x15, 0x13, 1))->orientation(ENTITY_ORIENTATION_SW);
     entrance_map->add_entity(new Entity(ENTITY_NPC_WOMAN_2, 0x14, 0x16, 0))->orientation(ENTITY_ORIENTATION_SE);
 
@@ -120,11 +124,12 @@ void edit_madame_yard_building(World& world)
     Map* room_1_map = world.map(MAP_MERCATOR_MADAME_YARD_ROOM_1);
     
     room_1_map->add_entity(new Entity(ENTITY_CHEST, 0x14, 0x10, 1));
+    room_1_map->base_chest_id(CHEST_MERCATOR_MADAME_YARD_ROOM_1);
+    create_chest_item_source(world, CHEST_MERCATOR_MADAME_YARD_ROOM_1, ITEM_EKEEKE);
 
     ////////////////////////////////
     Map* room_2_map = world.map(MAP_MERCATOR_MADAME_YARD_ROOM_2);
     
-    // TODO: Once quartz sword is obtained
 }
 
 void edit_mercator_map_2(World& world)

@@ -1,7 +1,8 @@
 #include "randomizer_options.hpp"
 
 #include <iostream>
-#include "extlibs/base64.hpp"
+#include <base64.hpp>
+
 #include "tools/tools.hpp"
 #include "exceptions.hpp"
 #include "tools/bitpack.hpp"
@@ -34,7 +35,7 @@ RandomizerOptions::RandomizerOptions() :
     _filler_items                   (nullptr),
 
     _add_ingame_item_tracker        (false),
-    _hud_color                      ("default"),
+    _hud_color                      (0x824),
 
     _plando_enabled                 (false),
     _plando_json                    ()
@@ -130,7 +131,28 @@ void RandomizerOptions::parse_personal_settings(const ArgumentDictionary& args)
 {
     // Personal options (not included in permalink)
     if(args.contains("ingametracker"))   _add_ingame_item_tracker = args.get_boolean("ingametracker");    
-    if(args.contains("hudcolor"))        _hud_color = args.get_string("hudcolor");
+    if(args.contains("hudcolor"))
+    {
+        std::string hud_color_as_string = args.get_string("hudcolor");
+        
+        try {
+            _hud_color = (uint16_t)std::stoul(hud_color_as_string);
+        } 
+        catch(std::invalid_argument)
+        {
+            tools::to_lower(hud_color_as_string);
+
+            if (hud_color_as_string == "red")              _hud_color = 0x228;
+            else if (hud_color_as_string == "darkred")     _hud_color = 0x226;
+            else if (hud_color_as_string == "green")       _hud_color = 0x262;
+            else if (hud_color_as_string == "blue")        _hud_color = 0x842;
+            else if (hud_color_as_string == "brown")       _hud_color = 0x248;
+            else if (hud_color_as_string == "darkpurple")  _hud_color = 0x424;
+            else if (hud_color_as_string == "darkgray")    _hud_color = 0x222;
+            else if (hud_color_as_string == "gray")        _hud_color = 0x444;
+            else if (hud_color_as_string == "lightgray")   _hud_color = 0x666;
+        }
+    }        
 }
 
 Json RandomizerOptions::to_json() const

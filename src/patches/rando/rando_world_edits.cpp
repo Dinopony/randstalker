@@ -1,34 +1,14 @@
-#include "../world_model/world.hpp"
+#include <md_tools.hpp>
 
-#include "../tools/megadrive/rom.hpp"
-#include "../tools/megadrive/code.hpp"
+#include "../../world_model/world.hpp"
+#include "../../world_model/map.hpp"
+#include "../../world_model/entity.hpp"
+#include "../../world_model/entity_type.hpp"
 
-#include "../randomizer_options.hpp"
-#include "../world_model/map.hpp"
-#include "../world_model/entity.hpp"
-#include "../world_model/entity_type.hpp"
+#include "../../constants/map_codes.hpp"
+#include "../../constants/entity_type_codes.hpp"
 
-#include "../constants/map_codes.hpp"
-#include "../constants/entity_type_codes.hpp"
 
-void handle_additionnal_jewels(World& world)
-{
-    // Remove jewels replaced from book IDs from priest stands
-    world.map(MAP_MASSAN_CHURCH)->remove_entity(3);
-    world.map(MAP_MASSAN_CHURCH)->remove_entity(2);
-    world.map(MAP_GUMI_CHURCH)->remove_entity(2);
-    world.map(MAP_GUMI_CHURCH)->remove_entity(1);
-    world.map(MAP_RYUMA_CHURCH)->remove_entity(4);
-    world.map(MAP_RYUMA_CHURCH)->remove_entity(3);
-    world.map(MAP_MERCATOR_CHURCH_VARIANT)->remove_entity(3);
-    world.map(MAP_MERCATOR_CHURCH_VARIANT)->remove_entity(2);
-    world.map(MAP_VERLA_CHURCH)->remove_entity(3);
-    world.map(MAP_VERLA_CHURCH)->remove_entity(2);
-    world.map(MAP_DESTEL_CHURCH)->remove_entity(3);
-    world.map(MAP_DESTEL_CHURCH)->remove_entity(2);
-    world.map(MAP_KAZALT_CHURCH)->remove_entity(3);
-    world.map(MAP_KAZALT_CHURCH)->remove_entity(2);
-}
 
 void put_orcs_back_in_room_before_boss_swamp_shrine(World& world)
 {
@@ -69,26 +49,6 @@ void fix_fara_arena_chest_softlock(World& world, md::ROM& rom)
     rom.set_code(0x019BE0, md::Code().jsr(addr).nop());
 }
 
-void make_gumi_boulder_push_not_story_dependant(World& world)
-{
-    // Turn the last boulder into a platform to prevent any softlock
-    Entity* last_boulder = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(6);
-    last_boulder->entity_type_id(world.entity_type("large_thin_yellow_platform")->id());
-    last_boulder->entity_to_use_tiles_from(nullptr);
-    last_boulder->position().half_z = true;
-    last_boulder->palette(0);
-
-    // Always remove Pockets from Gumi boulder map
-    world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->remove_entity(4);
-
-    // Erase the first entity mask for each bear which makes them only appear under a specific scenario requirement
-    std::vector<EntityMaskFlag>& first_bear_masks = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(2)->mask_flags();
-    first_bear_masks.erase(first_bear_masks.begin());
-    
-    std::vector<EntityMaskFlag>& second_bear_masks = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER)->entity(3)->mask_flags();
-    second_bear_masks.erase(second_bear_masks.begin());
-}
-
 /**
  * In the original game, coming back to Mir room after Lake Shrine would softlock you because Mir
  * would not be there. This check is removed to prevent any softlock and allow fighting Mir after having
@@ -119,24 +79,7 @@ void make_mercator_docks_shop_always_open(World& world)
     world.map(MAP_MERCATOR_DOCKS_LIGHTHOUSE_FIXED_VARIANT)->global_entity_mask_flags().clear();
 }
 
-/**
- * The "falling ribbon" item source in Mercator castle court is pretty dependant on story flags. In the original game,
- * the timeframe in the story where we can get it is tight. We get rid of any condition here, apart from checking
- * if item has already been obtained.
- */
-void make_falling_ribbon_not_story_dependant(World& world)
-{
-    // Remove use of map variant where the ribbon does not exist, and empty the now unused variant
-    world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->variants().clear();
-    world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT_RIBBONLESS_VARIANT)->clear();
 
-    // Remove an entity mask preventing us from getting the ribbon once we get too far in the story
-    std::vector<EntityMaskFlag>& ribbon_masks = world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->entity(2)->mask_flags();
-    ribbon_masks.erase(ribbon_masks.begin() + ribbon_masks.size()-1);
-
-    // Remove the servant guarding the door
-    world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->remove_entity(0);
-}
 
 void replace_sick_merchant_by_chest(World& world)
 {
@@ -241,7 +184,7 @@ void fix_reverse_greenmaze_fountain_softlock(World& world)
 /**
  * Fix armlet skip by putting the tornado way higher, preventing any kind of buffer-jumping on it
  */
-void fix_armlet_skip(World& world)
+void prevent_armlet_skip(World& world)
 {
     // Make Mir Tower magic barrier non-colliding
     world.map(MAP_MIR_TOWER_EXTERIOR)->entity(9)->can_pass_through(true);
@@ -350,18 +293,13 @@ void optimize_maps(World& world)
         world.map(map_id)->clear();
 }
 
-void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& rom)
+void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
 {
-    if(options.jewel_count() <= MAX_INDIVIDUAL_JEWELS)
-        handle_additionnal_jewels(world);
-
     put_orcs_back_in_room_before_boss_swamp_shrine(world);
     fix_fara_arena_chest_softlock(world, rom);
-    make_gumi_boulder_push_not_story_dependant(world);
     fix_mir_after_lake_shrine_softlock(world);
     make_arthur_always_in_throne_room(world);
     make_mercator_docks_shop_always_open(world);
-    make_falling_ribbon_not_story_dependant(world);
     replace_sick_merchant_by_chest(world);
     alter_mercator_special_shop_check(world);
     add_reverse_mercator_gate(world);
@@ -376,6 +314,6 @@ void apply_world_edits(World& world, const RandomizerOptions& options, md::ROM& 
     put_back_giants_in_verla_mines_keydoor_map(world);
     optimize_maps(world);
     
-    if(options.fix_armlet_skip())
-        fix_armlet_skip(world);
+    if(fix_armlet_skip)
+        prevent_armlet_skip(world);
 }

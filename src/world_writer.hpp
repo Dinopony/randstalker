@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tools/megadrive/rom.hpp"
+#include <md_tools.hpp>
 class World;
 
 class WorldWriter {

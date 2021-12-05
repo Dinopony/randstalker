@@ -24,25 +24,33 @@ wrap_file(SOURCE_FILE "src/logic_model/data/world_region.json" VARIABLE_NAME "WO
 wrap_file(SOURCE_FILE "src/logic_model/data/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON" TEXT_FILE)
 
 # Wrap assets files into automated .hxx headers
-wrap_file(SOURCE_FILE "src/assets/fixed_hud_tilemap.bin" VARIABLE_NAME "FIXED_HUD_TILEMAP")
-wrap_file(SOURCE_FILE "src/assets/blue_jewel.bin" VARIABLE_NAME "BLUE_JEWEL_SPRITE" SPRITE_FILE)
-wrap_file(SOURCE_FILE "src/assets/green_jewel.bin" VARIABLE_NAME "GREEN_JEWEL_SPRITE" SPRITE_FILE)
-wrap_file(SOURCE_FILE "src/assets/yellow_jewel.bin" VARIABLE_NAME "YELLOW_JEWEL_SPRITE" SPRITE_FILE)
+wrap_file(SOURCE_FILE "src/patches/global/assets/fixed_hud_tilemap.bin" VARIABLE_NAME "FIXED_HUD_TILEMAP")
+wrap_file(SOURCE_FILE "src/patches/global/assets/blue_jewel.bin" VARIABLE_NAME "BLUE_JEWEL_SPRITE" SPRITE_FILE)
+wrap_file(SOURCE_FILE "src/patches/global/assets/green_jewel.bin" VARIABLE_NAME "GREEN_JEWEL_SPRITE" SPRITE_FILE)
+wrap_file(SOURCE_FILE "src/patches/global/assets/yellow_jewel.bin" VARIABLE_NAME "YELLOW_JEWEL_SPRITE" SPRITE_FILE)
 wrap_file(SOURCE_FILE "src/assets/game_strings.json" VARIABLE_NAME "GAME_STRINGS_JSON" TEXT_FILE)
 
 add_compile_definitions(RELEASE="${PROJECT_VERSION}")
 add_compile_definitions(MAJOR_RELEASE="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
+include_directories("extlibs/")
+
 set(SOURCES
+    "extlibs/base64.hpp"
+    "extlibs/base64.cpp"
+    "extlibs/json.hpp"
+    "extlibs/md_tools/code.hpp"
+    "extlibs/md_tools/code.cpp"
+    "extlibs/md_tools/rom.hpp"
+    "extlibs/md_tools/rom.cpp"
+    "extlibs/md_tools/types.hpp"
+
     "src/constants/entity_type_codes.hpp"
     "src/constants/item_codes.hpp"
     "src/constants/map_codes.hpp"
     "src/constants/offsets.hpp"
+    "src/constants/values.hpp"
 
-    "src/extlibs/base64.hpp"
-    "src/extlibs/base64.cpp"
-    "src/extlibs/json.hpp"
-   
     "src/tools/argument_dictionary.hpp"
     "src/tools/bitfield.hpp"
     "src/tools/bitpack.hpp"
@@ -59,12 +67,6 @@ set(SOURCES
         "src/tools/huffman/tree.hpp"
         "src/tools/huffman/tree_node.hpp"
         "src/tools/huffman/symbols.hpp"
-
-        "src/tools/megadrive/code.hpp"
-        "src/tools/megadrive/code.cpp"
-        "src/tools/megadrive/rom.hpp"
-        "src/tools/megadrive/rom.cpp"
-        "src/tools/megadrive/types.hpp"
 
     "src/world_model/entity_type.hpp"
     "src/world_model/entity_type.cpp"
@@ -94,14 +96,28 @@ set(SOURCES
     "src/logic_model/world_logic.hpp"
     "src/logic_model/world_logic.cpp"
 
+    "src/patches/global/add_function_to_items_on_use.cpp"
+    "src/patches/global/add_statue_of_jypta_effect.cpp"
+    "src/patches/global/alter_gold_rewards_handling.cpp"
+    "src/patches/global/alter_items_consumability.cpp"
+    "src/patches/global/alter_lantern_handling.cpp"
+    "src/patches/global/alter_ui_color.cpp"
+    "src/patches/global/fix_hud_tilemap.cpp"
+    "src/patches/global/fix_item_checks.cpp"
+    "src/patches/global/game_init.cpp"
+    "src/patches/global/handle_additional_jewels.cpp"
+    "src/patches/global/quality_of_life.cpp"
+    "src/patches/global/story_dependencies.cpp"
+
+    "src/patches/rando/alter_hint_provider_dialogues.cpp"
+    "src/patches/rando/alter_randomizer_credits.cpp"
+    "src/patches/rando/apply_rando_options_to_world.cpp"
+    "src/patches/rando/rando_world_edits.cpp"
+    "src/patches/rando/replace_copy_by_hash.cpp"
+    "src/patches/rando/shorten_cutscenes.cpp"
+
     "src/patches/patches.hpp"
-    "src/patches/game_init.cpp"
-    "src/patches/item_behavior.cpp"
-    "src/patches/lantern.cpp"
-    "src/patches/quality_of_life.cpp"
     "src/patches/rando_adaptations.cpp"
-    "src/patches/story_dependencies.cpp"
-    "src/patches/world_edits.cpp"
     
     "src/patches/kaizo/kaizo.hpp"
     "src/patches/kaizo/kaizo.cpp"
@@ -118,7 +134,6 @@ set(SOURCES
     "src/exceptions.hpp"
     "src/randomizer_options.hpp"
     "src/randomizer_options.cpp"
-    "src/randomizer_patches_extern.cpp"
     "src/world_randomizer.hpp"
     "src/world_randomizer.cpp"
     "src/world_reader.hpp"

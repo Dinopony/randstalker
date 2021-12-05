@@ -10,7 +10,7 @@
 
 #include "huffman/tree.hpp"
 #include "huffman/symbols.hpp"
-#include "megadrive/rom.hpp"
+#include <md_tools.hpp>
 
 class TextbanksEncoder 
 {

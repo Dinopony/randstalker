@@ -1,121 +1,8 @@
-#include "../tools/megadrive/rom.hpp"
-#include "../tools/megadrive/code.hpp"
-#include "../randomizer_options.hpp"
+#include <md_tools.hpp>
 
-#include "../assets/blue_jewel.bin.hxx"
-#include "../assets/green_jewel.bin.hxx"
-#include "../assets/yellow_jewel.bin.hxx"
+#include "../../constants/item_codes.hpp"
 
-#include "../world_model/world.hpp"
-#include "../world_model/item.hpp"
-#include "../world_model/map.hpp"
-
-#include "../constants/offsets.hpp"
-#include "../constants/item_codes.hpp"
-
-/**
- * The effect of Pawn Ticket fits very well one of a consumable item, but didn't
- * work this way in the original game. Instead, a story flag was set that prevented
- * to use the item again, but it was still in inventory.
- * This function changes this.
- */
-void make_pawn_ticket_consumable(md::ROM& rom)
-{
-    md::Code proc_consume_pawn_ticket;
-    proc_consume_pawn_ticket.jsr(0x8B98); // ConsumeItem
-    proc_consume_pawn_ticket.nop(3);
-    rom.set_code(0x88D2, proc_consume_pawn_ticket);
-}
-
-/**
- * This function makes the key not consumed on use, since it is now a unique item
- * that needs to be used to open several doors.
- */
-void make_key_not_consumed_on_use(md::ROM& rom)
-{
-    rom.set_code(0x8B34, md::Code().nop());
-}
-
-/**
- * Add a "golds over time" effect to the statue of Jypta, granting golds
- * by walking (just like the Healing Boots grant life).
- */
-void add_statue_of_jypta_effect(md::ROM& rom)
-{
-    constexpr uint16_t GOLDS_PER_CYCLE = 0x0001;
-
-    // ============== Function to handle walk abilities (healing boots, jypta statue...) ==============
-    md::Code func_handle_walk_abilities;
-
-    // If Statue of Jypta is owned, gain gold over time
-    func_handle_walk_abilities.btst(0x5, addr_(0xFF104E));
-    func_handle_walk_abilities.beq(3);
-    func_handle_walk_abilities.movew(GOLDS_PER_CYCLE, reg_D0);
-    func_handle_walk_abilities.jsr(0x177DC);   // rom.stored_address("func_earn_gold");
-
-    // If Healing boots are equipped, gain life over time
-    func_handle_walk_abilities.cmpib(0x7, addr_(0xFF1150));
-    func_handle_walk_abilities.bne(4);
-    func_handle_walk_abilities.movew(0x100, reg_D0);
-    func_handle_walk_abilities.lea(0xFF5400, reg_A5);
-    func_handle_walk_abilities.jsr(0x1780E);   // rom.stored_address("func_heal_hp");
-
-    func_handle_walk_abilities.rts();
-
-    uint32_t func_addr = rom.inject_code(func_handle_walk_abilities);
-
-    // ============== Hook the function inside game code ==============
-    rom.set_code(0x16696, md::Code().nop(5));
-    rom.set_code(0x166D0, md::Code().jsr(func_addr).nop(4));
-}
-
-
-
-/**
- * The randomizer has an option to handle more jewels than the good old Red and Purple ones.
- * It can handle up to 9 jewels, but we only can afford having 5 unique jewel items.
- * This means there are two modes:
- *      - Unique jewels mode (1-5 jewels): each jewel has its own ID, name and sprite
- *      - Kazalt jewels mode (6+ jewels): jewels are one generic item that can be stacked up to 9 times
- *
- * This function handles the "unique jewels mode" by replacing useless items (priest books), injecting
- * new sprites and taking care of everything for this to happen.
- */
-static void handle_additional_jewels(md::ROM& rom, const RandomizerOptions& options)
-{
-    // If we are in "Kazalt jewel" mode, don't do anything
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-        return;
-    
-    if(options.jewel_count() >= 3)
-    {
-        // Add a sprite for green jewel and make the item use it
-        uint32_t green_jewel_sprite_addr = rom.inject_bytes(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE);
-        rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_GREEN_JEWEL * 0x4), green_jewel_sprite_addr); // 0x121648
-    }
-    if(options.jewel_count() >= 4)
-    {
-        // Add a sprite for blue jewel and make the item use it
-        uint32_t blue_jewel_sprite_addr = rom.inject_bytes(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE);
-        rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_BLUE_JEWEL * 0x4), blue_jewel_sprite_addr);
-    }
-    if(options.jewel_count() >= 5)
-    {
-        // Add a sprite for green jewel and make the item use it
-        uint32_t yellow_jewel_sprite_addr = rom.inject_bytes(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE);
-        rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_YELLOW_JEWEL * 0x4), yellow_jewel_sprite_addr);
-    }
-
-    // Make the Awakening Book (the only one remaining in churches) heal all status conditions
-    rom.set_code(0x24F6C, md::Code().nop(6));
-    rom.set_code(0x24FB8, md::Code().moveb(0xFF, reg_D0));
-
-    // Change the behavior of AntiCurse and Detox books (now Yellow and Blue jewels) in shops
-    rom.set_byte(0x24C40, 0x40);
-    rom.set_byte(0x24C58, 0x40);
-}
-
-static uint32_t make_record_book_save_on_use(md::ROM& rom, const RandomizerOptions& options)
+static uint32_t make_record_book_save_on_use(md::ROM& rom, bool consumable_record_book)
 {
     constexpr uint32_t MAP_ENTRANCE_POSITION_ADDRESS = 0xFF0018;
 
@@ -148,7 +35,7 @@ static uint32_t make_record_book_save_on_use(md::ROM& rom, const RandomizerOptio
     md::Code func_use_record_book;
     func_use_record_book.movem_to_stack({ reg_D0, reg_D1 }, {});
 
-    if(options.consumable_record_book())
+    if(consumable_record_book)
     {
         func_use_record_book.moveb(reg_D0, addr_(0xFF1152));
         func_use_record_book.jsr(0x8B98); // ConsumeItem
@@ -257,10 +144,10 @@ static void make_spell_book_warp_to_start(md::ROM& rom)
     rom.set_long(0x88C6, 0x600002EA); // bra loc_8BB2 >>> Mark used item as "has post use effect"
 }
 
-static void add_functions_to_items_on_use(md::ROM& rom, const RandomizerOptions& options)
+void add_functions_to_items_on_use(md::ROM& rom, bool consumable_record_book)
 {
     make_spell_book_warp_to_start(rom);
-    uint32_t func_use_record_book_addr = make_record_book_save_on_use(rom, options);
+    uint32_t func_use_record_book_addr = make_record_book_save_on_use(rom, consumable_record_book);
 
     // ------------- Extended item handling function -------------
 
@@ -291,15 +178,4 @@ static void add_functions_to_items_on_use(md::ROM& rom, const RandomizerOptions&
     rom.set_byte(0x008642, 0x23);
     // Same for Lithograph (0x27) remplacing Lantern (0x1A)
     rom.set_word(0x008647, 0x6627);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void patch_item_behavior(md::ROM& rom, const RandomizerOptions& options, const World& world)
-{
-    make_pawn_ticket_consumable(rom);
-    make_key_not_consumed_on_use(rom);
-    add_statue_of_jypta_effect(rom);
-    handle_additional_jewels(rom, options);
-    add_functions_to_items_on_use(rom, options);
 }

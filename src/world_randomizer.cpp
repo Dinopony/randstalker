@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "constants/entity_type_codes.hpp"
+#include "constants/values.hpp"
 
 #include "tools/tools.hpp"
 #include "tools/game_text.hpp"

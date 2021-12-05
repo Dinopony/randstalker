@@ -1,6 +1,6 @@
 #include "kaizo.hpp"
 
-void setup_ryuma_maps(World& world)
+static void setup_ryuma_maps(World& world)
 {
     wipe_map_variants(world, {
         MAP_RYUMA_EXTERIOR,
@@ -10,7 +10,7 @@ void setup_ryuma_maps(World& world)
 
 }
 
-void edit_ryuma_spawn_house(World& world)
+static void edit_ryuma_spawn_house(World& world)
 {
     world.spawn_location(SpawnLocation("kaizo", MAP_RYUMA_MIDDLE_HOUSE, 16, 16, ENTITY_ORIENTATION_SE, 10));
 
@@ -18,7 +18,7 @@ void edit_ryuma_spawn_house(World& world)
     map->clear_entities();
 }
 
-void edit_ryuma_exterior(World& world)
+static void edit_ryuma_exterior(World& world)
 {
     Map* map = world.map(MAP_RYUMA_EXTERIOR);
     wipe_map_variants(map);
@@ -28,33 +28,28 @@ void edit_ryuma_exterior(World& world)
         .position = Position(0x2F, 0x35, 1),
         .orientation = ENTITY_ORIENTATION_NW
     }));
-    map->base_chest_id(0);
-    ItemSource* source = new ItemSourceChest(0, "");
-    source->item(world.item(ITEM_EKEEKE));
-    world.item_sources().push_back(source);
+    map->base_chest_id(CHEST_RYUMA_EXTERIOR);
+    create_chest_item_source(world, CHEST_RYUMA_EXTERIOR, ITEM_EKEEKE);
 }
 
-void edit_ryuma_pier(World& world)
+static void edit_ryuma_pier(World& world)
 {
     Map* map = world.map(MAP_RYUMA_RAFT_PIER);
     map->clear_entities();
-
 
     map->add_entity(new Entity({ 
         .type_id = ENTITY_CHEST,
         .position = Position(0x27, 0x27, 1)
     }));
-    map->base_chest_id(1);
-    ItemSource* source = new ItemSourceChest(1, "");
-    source->item(world.item(ITEM_EKEEKE));
-    world.item_sources().push_back(source);
+    map->base_chest_id(CHEST_RYUMA_PIER);
+    create_chest_item_source(world, CHEST_RYUMA_PIER, ITEM_EKEEKE);
 
     batch_add_entities(map, 
         { Position(0x27, 0x26, 3), Position(0x27, 0x26, 5, false, false, true) }, 
         { .type_id = ENTITY_INVISIBLE_CUBE });
 }
 
-void edit_route_to_ryuma_2(World& world)
+static void edit_route_to_ryuma_2(World& world)
 {
     Map* map = world.map(MAP_ROUTE_TO_RYUMA_2);
 
@@ -73,24 +68,69 @@ void edit_route_to_ryuma_2(World& world)
     connection_ne.pos_y_1(14);
 
     map->clear_entities();
+
+    map->add_entity(new Entity({
+        .type_id = ENEMY_ORC_1,
+        .position = Position(0x1D, 0x32, 1),
+        .orientation = ENTITY_ORIENTATION_SW,
+        .palette = 3
+    }));
+
+    map->add_entity(new Entity({
+        .type_id = ENEMY_ORC_1,
+        .position = Position(0x1A, 0x21, 1),
+        .orientation = ENTITY_ORIENTATION_SE,
+        .palette = 3
+    }));
+
+    map->add_entity(new Entity({
+        .type_id = ENEMY_ORC_1,
+        .position = Position(0x25, 0x17, 1),
+        .orientation = ENTITY_ORIENTATION_NW,
+        .palette = 3
+    }));
+
+    map->add_entity(new Entity({
+        .type_id = ENEMY_SLIME_1,
+        .position = Position(0x21, 0x29, 1)
+    }));
+
+    map->add_entity(new Entity({
+        .type_id = ENEMY_SLIME_1,
+        .position = Position(0x21, 0x14, 1)
+    }));
+
+    map->add_entity(new Entity({
+        .type_id = ENTITY_SACRED_TREE,
+        .position = Position(0x19, 0x25, 1)
+    }));
+
+    map->add_entity(new Entity({
+        .type_id = ENTITY_CHEST,
+        .position = Position(0x26, 0x1C, 2)
+    }));
+    map->base_chest_id(CHEST_ROUTE_TO_RYUMA_2);
+    create_chest_item_source(world, CHEST_ROUTE_TO_RYUMA_2, ITEM_LIFESTOCK);
+
+    map->add_entity(new Entity(ENTITY_INVISIBLE_CUBE, 0x17, 0x1D, 3));
 }
 
-//void edit_route_to_ryuma_1(World& world)
-//{
-//    Map* map = world.map(MAP_ROUTE_TO_RYUMA_1);
-//
-//    MapPalette* original_green_palette = world.map(MAP_ROUTE_TO_RYUMA_1)->palette();
-//
-//    MapPalette* snowy_palette = new MapPalette(*original_green_palette);
-//    snowy_palette->color(3) = MapPalette::Color(0xA, 0xA, 0xC);
-//    snowy_palette->color(4) = MapPalette::Color(0xC, 0xC, 0xE);
-//    snowy_palette->color(5) = MapPalette::Color(0xE, 0xE, 0xE);
-//    world.map_palettes().push_back(snowy_palette);
-//    
-//    map->palette(snowy_palette);
-//}
+static void edit_route_to_ryuma_1(World& world)
+{
+    Map* map = world.map(MAP_ROUTE_TO_RYUMA_1);
 
-void edit_kado_climb_map(World& world)
+    MapPalette* original_green_palette = world.map(MAP_ROUTE_TO_RYUMA_1)->palette();
+
+    MapPalette* snowy_palette = new MapPalette(*original_green_palette);
+    snowy_palette->color(3) = MapPalette::Color(0xA, 0xA, 0xC);
+    snowy_palette->color(4) = MapPalette::Color(0xC, 0xC, 0xE);
+    snowy_palette->color(5) = MapPalette::Color(0xE, 0xE, 0xE);
+    world.map_palettes().push_back(snowy_palette);
+    
+    map->palette(snowy_palette);
+}
+
+static void edit_kado_climb_map(World& world)
 {
     Map* map = world.map(MAP_ROUTE_GUMI_RYUMA_KADO_CLIMB);
     Entity* chest = map->entity(8);
@@ -107,7 +147,7 @@ void edit_kado_climb_map(World& world)
     map->remove_entity(2); // Remove an intermediate platform
 }
 
-void edit_kado_textlines(World& world)
+static void edit_kado_textlines(World& world)
 {
     world.game_strings()[0x736] = "\x1cMy name is Kado.\nI lost my Safety Pass\non the route yesterday.\x1e";
     world.game_strings()[0x737] = "\x1cI think witch Helga would\nbe able to locate it magically,\nbut I'm too old to go there.\x1e";
@@ -169,17 +209,31 @@ void edit_helga_swamp_map_2(World& world)
     map->remove_entity(0);
 }
 
-void fix_helga_hut_palette(World& world)
+static void edit_helga_hut_exterior(World& world)
 {
-    std::array<uint16_t, 13> helga_palette_words = { 0x0204, 0x0426, 0x086A, 0x0222, 0x0444, 0x0888, 
-                                                     0x000A, 0x04AA, 0x024A, 0x0028, 0x0066, 0x0A46, 0x0060 };
+    Map* map = world.map(MAP_HELGAS_HUT_EXTERIOR);
 
-    MapPalette* palette = new MapPalette(helga_palette_words);
-    world.map_palettes().push_back(palette);
-    world.map(MAP_HELGAS_HUT)->palette(palette);
+    map->add_entity(new Entity(ENTITY_CHEST, 0x18, 0x12, 2));
+    map->base_chest_id(CHEST_HELGAS_HUT_EXTERIOR);
+    create_chest_item_source(world, CHEST_HELGAS_HUT_EXTERIOR, ITEM_EKEEKE);
 }
 
-void edit_helga_dialogue(World& world, md::ROM& rom)
+static void edit_helga_hut_interior(World& world)
+{
+    Map* map = world.map(MAP_HELGAS_HUT);
+
+    // Fix palette which is usually built using a CustomRoomAction
+    std::array<uint16_t, 13> helga_palette_words = { 0x0204, 0x0426, 0x086A, 0x0222, 0x0444, 0x0888, 
+                                                     0x000A, 0x04AA, 0x024A, 0x0028, 0x0066, 0x0A46, 0x0060 };
+    MapPalette* palette = new MapPalette(helga_palette_words);
+    world.map_palettes().push_back(palette);
+    map->palette(palette);
+
+    // Change the music
+    map->background_music(world.map(MAP_TIBOR)->background_music());
+}
+
+static void edit_helga_dialogue(World& world, md::ROM& rom)
 {
     world.game_strings()[0x497] = "\x1cYou want to find a lost\nitem... Let me take a look...\nOh... I can feel it...\x03"
                                   "\nWhat you are looking for\nhas been eaten by a blue worm.\nIt's not far away from here.\x03"
@@ -218,7 +272,7 @@ void edit_helga_dialogue(World& world, md::ROM& rom)
     rom.set_code(0x2731A, md::Code().jmp(addr));
 }
 
-void add_ultra_worm_to_gumi_boulder_map(World& world)
+static void add_ultra_worm_to_gumi_boulder_map(World& world)
 {
     Map* map = world.map(MAP_ROUTE_GUMI_RYUMA_BOULDER);
     auto ultra_worm = map->add_entity(new Entity(ENEMY_WORM_3, 0x18, 0x1D, 1));
@@ -231,7 +285,7 @@ void add_ultra_worm_to_gumi_boulder_map(World& world)
     EntityEnemy* ultra_worm_stats = reinterpret_cast<EntityEnemy*>(world.entity_type(ENEMY_WORM_3));
     ultra_worm_stats->dropped_item(world.item(ITEM_SAFETY_PASS));
     ultra_worm_stats->drop_probability(1);
-    ultra_worm_stats->health(150);
+    ultra_worm_stats->health(100);
 
     // Make the platform replacing the boulder slightly higher to prevent caging the snake in the boulder hole
     map->entity(6)->position().half_z = true;
@@ -244,11 +298,13 @@ void edit_safety_pass_arc(World& world, md::ROM& rom)
     edit_ryuma_exterior(world);
     edit_ryuma_pier(world);
     edit_route_to_ryuma_2(world);
+    edit_route_to_ryuma_1(world);
     edit_kado_climb_map(world);
     edit_kado_textlines(world);
     edit_helga_swamp_map(world);
     edit_helga_swamp_map_2(world);
-    fix_helga_hut_palette(world);
+    edit_helga_hut_exterior(world);
+    edit_helga_hut_interior(world);
     edit_helga_dialogue(world, rom);
     add_ultra_worm_to_gumi_boulder_map(world);
 }

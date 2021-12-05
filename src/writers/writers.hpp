@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 #include <string>
 
 class World;

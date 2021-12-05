@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 #include "world_node.hpp"
 
 class HintSource 

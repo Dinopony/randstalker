@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "../tools/megadrive/rom.hpp"
+#include <md_tools.hpp>
 #include "huffman/tree.hpp"
 
 class TextbanksDecoder

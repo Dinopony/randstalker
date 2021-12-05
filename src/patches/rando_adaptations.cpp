@@ -1,5 +1,5 @@
-#include "../tools/megadrive/rom.hpp"
-#include "../tools/megadrive/code.hpp"
+#include <md_tools.hpp>
+
 #include "../randomizer_options.hpp"
 #include "../world_model/world.hpp"
 #include "../world_model/item.hpp"
@@ -11,35 +11,7 @@
 //       RANDO ADAPTATIONS / ENHANCEMENTS
 ///////////////////////////////////////////////////////////////////////////////////
 
-/**
- * In the original game, only 3 item IDs are reserved for gold rewards (3A, 3B, 3C)
- * Here, we moved the table of gold rewards to the end of the ROM so that we can handle 64 rewards up to 255 golds each.
- * In the new system, all item IDs after the "empty item" one (0x40 and above) are now gold rewards.
- */
-void alter_gold_rewards_handling(md::ROM& rom)
-{
-    rom.set_byte(0x0070DF, ITEM_GOLDS_START); // cmpi 3A, D0 >>> cmpi 40, D0
-    rom.set_byte(0x0070E5, ITEM_GOLDS_START); // subi 3A, D0 >>> subi 40, D0
 
-    // ------------- Function to put gold reward value in D0 ----------------
-    // Input: D0 = gold reward ID (offset from 0x40)
-    // Output: D0 = gold reward value
-
-    md::Code func_get_gold_reward;
-
-    func_get_gold_reward.movem_to_stack({}, { reg_A0 });
-    func_get_gold_reward.lea(rom.stored_address("data_gold_values"), reg_A0);
-    func_get_gold_reward.moveb(addr_(reg_A0, reg_D0, md::Size::WORD), reg_D0);  // move.b (A0, D0.w), D0 : 1030 0000
-    func_get_gold_reward.movem_from_stack({}, { reg_A0 });
-    func_get_gold_reward.rts();
-
-    uint32_t func_addr = rom.inject_code(func_get_gold_reward);
-
-    // Set the call to the injected function
-    // Before:      add D0,D0   ;   move.w (PC, D0, 42), D0
-    // After:       jsr to injected function
-    rom.set_code(0x0070E8, md::Code().jsr(func_addr));
-}
 
 void alter_lifestock_handling_in_shops(md::ROM& rom)
 {
@@ -271,80 +243,7 @@ void handle_armor_upgrades(md::ROM& rom)
 //       LOGIC ENFORCING
 ///////////////////////////////////////////////////////////////////////////////////
 
-void add_jewel_check_for_kazalt_teleporter(md::ROM& rom, const RandomizerOptions& options)
-{
-    // ----------- Rejection textbox handling ------------
-    md::Code func_reject_kazalt_tp;
 
-    func_reject_kazalt_tp.jsr(0x22EE8); // open textbox
-    func_reject_kazalt_tp.movew(0x22, reg_D0);
-    func_reject_kazalt_tp.jsr(0x28FD8); // display text 
-    func_reject_kazalt_tp.jsr(0x22EA0); // close textbox
-    func_reject_kazalt_tp.rts();
-
-    uint32_t func_reject_kazalt_tp_addr = rom.inject_code(func_reject_kazalt_tp);
-
-    // ----------- Jewel checks handling ------------
-    md::Code proc_handle_jewels_check;
-
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-    {
-        proc_handle_jewels_check.movem_to_stack({reg_D1},{});
-        proc_handle_jewels_check.moveb(addr_(0xFF1054), reg_D1);
-        proc_handle_jewels_check.andib(0x0F, reg_D1);
-        proc_handle_jewels_check.cmpib(options.jewel_count(), reg_D1); // Test if red jewel is owned
-        proc_handle_jewels_check.movem_from_stack({reg_D1},{});
-        proc_handle_jewels_check.bgt(3);
-            proc_handle_jewels_check.jsr(func_reject_kazalt_tp_addr);
-            proc_handle_jewels_check.rts();
-    }
-    else
-    {
-        if(options.jewel_count() >= 1)
-        {
-            proc_handle_jewels_check.btst(0x1, addr_(0xFF1054)); // Test if red jewel is owned
-            proc_handle_jewels_check.bne(3);
-                proc_handle_jewels_check.jsr(func_reject_kazalt_tp_addr);
-                proc_handle_jewels_check.rts();
-        }
-        if(options.jewel_count() >= 2)
-        {
-            proc_handle_jewels_check.btst(0x1, addr_(0xFF1055)); // Test if purple jewel is owned
-            proc_handle_jewels_check.bne(3);
-                proc_handle_jewels_check.jsr(func_reject_kazalt_tp_addr);
-                proc_handle_jewels_check.rts();
-        }
-        if(options.jewel_count() >= 3)
-        {
-            proc_handle_jewels_check.btst(0x1, addr_(0xFF105A)); // Test if green jewel is owned
-            proc_handle_jewels_check.bne(3);
-                proc_handle_jewels_check.jsr(func_reject_kazalt_tp_addr);
-                proc_handle_jewels_check.rts();
-        }
-        if(options.jewel_count() >= 4)
-        {
-            proc_handle_jewels_check.btst(0x5, addr_(0xFF1050)); // Test if blue jewel is owned
-            proc_handle_jewels_check.bne(3);
-                proc_handle_jewels_check.jsr(func_reject_kazalt_tp_addr);
-                proc_handle_jewels_check.rts();
-        }
-        if(options.jewel_count() >= 5)
-        {
-            proc_handle_jewels_check.btst(0x1, addr_(0xFF1051)); // Test if yellow jewel is owned
-            proc_handle_jewels_check.bne(3);
-                proc_handle_jewels_check.jsr(func_reject_kazalt_tp_addr);
-                proc_handle_jewels_check.rts();
-        }
-    }
-    proc_handle_jewels_check.moveq(0x7, reg_D0);
-    proc_handle_jewels_check.jsr(0xE110);  // "func_teleport_kazalt"
-    proc_handle_jewels_check.jmp(0x62FA);
-
-    uint32_t handle_jewels_addr = rom.inject_code(proc_handle_jewels_check);
-
-    // This adds the jewels as a requirement for the Kazalt teleporter to work correctly
-    rom.set_code(0x62F4, md::Code().jmp(handle_jewels_addr));
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -466,24 +365,6 @@ void normalize_bosses_hp_checks(md::ROM& rom)
     rom.set_byte(0x120C0, 0x0002);
 }
 
-/*
-void make_sacred_trees_persistence_flags_table_movable(md::ROM& rom)
-{
-    md::Code func_setup_address_registers;
-    func_setup_address_registers.lea(offsets::SACRED_TREES_PERSISTENCE_FLAGS_TABLE, reg_A0);
-    func_setup_address_registers.lea(0xFF1000, reg_A2);
-    func_setup_address_registers.rts();
-    uint32_t func_addr = rom.inject_code(func_setup_address_registers);
-
-    md::Code injection_pattern;
-    injection_pattern.jsr(func_addr);
-    injection_pattern.nop(2);
-
-    rom.set_code(0x1A510, injection_pattern);
-    rom.set_code(0x1A58C, injection_pattern);
-}
-*/
-
 void fix_crypt_soflocks(md::ROM& rom)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
@@ -522,7 +403,6 @@ void alter_labyrinth_rafts(md::ROM& rom)
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     // Rando adaptations / enhancements
-    alter_gold_rewards_handling(rom);
     alter_lifestock_handling_in_shops(rom);
     alter_fahl_challenge(rom, world);
     alter_waterfall_shrine_secret_stairs_check(rom);
@@ -538,10 +418,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     // Engine improvements
     improve_checks_before_kill(rom, options);
     normalize_bosses_hp_checks(rom);
-//    make_sacred_trees_persistence_flags_table_movable(rom);
-
-    // Logic enforcing
-    add_jewel_check_for_kazalt_teleporter(rom, options);
 
     // Fix randomizer-related bugs
     make_sword_of_gaia_work_in_volcano(rom);

@@ -1,12 +1,12 @@
-#include "../tools/megadrive/rom.hpp"
-#include "../tools/megadrive/code.hpp"
-#include "../randomizer_options.hpp"
+#include <md_tools.hpp>
 
-#include "../world_model/world.hpp"
-#include "../world_model/spawn_location.hpp"
-#include "../world_model/item.hpp"
+#include "../../randomizer_options.hpp"
 
-#include "../constants/item_codes.hpp"
+#include "../../world_model/world.hpp"
+#include "../../world_model/spawn_location.hpp"
+#include "../../world_model/item.hpp"
+
+#include "../../constants/item_codes.hpp"
 
 static void handle_spawn_position(md::ROM& rom, const World& world)
 {
@@ -124,16 +124,10 @@ void disable_region_check(md::ROM& rom)
 
 void patch_game_init(md::ROM& rom, const World& world, bool add_ingame_tracker)
 {
-    // Inject a function to setup flags and properties on game init
-    inject_func_init_game(rom, world, add_ingame_tracker);
+    disable_region_check(rom);
 
-    // Handle a few more properties
+    inject_func_init_game(rom, world, add_ingame_tracker);
+    remove_cutscene_flag_on_game_start(rom);
     handle_spawn_position(rom, world);
     handle_custom_starting_life(rom, world);
-
-    // Remove a blocking cutscene flag to be allowed to play
-    remove_cutscene_flag_on_game_start(rom);
-
-    // Remove node check on game boot
-    disable_region_check(rom);
 }

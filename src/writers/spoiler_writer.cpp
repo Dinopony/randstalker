@@ -1,6 +1,6 @@
 #include "writers.hpp"
 
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 #include "../world_model/world.hpp"
 #include "../world_randomizer.hpp"

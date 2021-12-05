@@ -1,12 +1,12 @@
-#include "randomizer_options.hpp"
-#include "world_model/world.hpp"
-#include "world_model/item.hpp"
-#include "world_model/entity_type.hpp"
+#include "../../randomizer_options.hpp"
+#include "../../world_model/world.hpp"
+#include "../../world_model/item.hpp"
+#include "../../world_model/entity_type.hpp"
 
-#include "constants/item_codes.hpp"
-#include "constants/flags.hpp"
+#include "../../constants/item_codes.hpp"
+#include "../../constants/flags.hpp"
 
-#include "exceptions.hpp"
+#include "../../exceptions.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
 {
@@ -125,14 +125,6 @@ static void patch_items(World& world, const RandomizerOptions& options)
         world.item(ITEM_RECORD_BOOK)->max_quantity(9);
         uint16_t currentPrice = world.item(ITEM_RECORD_BOOK)->gold_value();
         world.item(ITEM_RECORD_BOOK)->gold_value(currentPrice / 5);
-    }
-
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-    {
-        Item* red_jewel = world.item(ITEM_RED_JEWEL);
-        red_jewel->name("Kazalt Jewel");
-        red_jewel->allowed_on_ground(false);
-        red_jewel->max_quantity(options.jewel_count());
     }
 }
 

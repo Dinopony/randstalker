@@ -17,18 +17,17 @@
 #include <string>
 #include <iostream>
 
-#include "extlibs/base64.hpp"
-#include "extlibs/json.hpp"
+#include <base64.hpp>
+#include <json.hpp>
 
 #include "patches/patches.hpp"
 
-#include "tools/megadrive/rom.hpp"
+#include <md_tools.hpp>
 #include "tools/argument_dictionary.hpp"
 #include "tools/tools.hpp"
 
 #include "exceptions.hpp"
 #include "constants/offsets.hpp"
-#include "randomizer_patches_extern.hpp"
 #include "world_model/world.hpp"
 #include "logic_model/world_logic.hpp"
 #include "world_randomizer.hpp"
@@ -84,7 +83,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
         spoiler_log_path += options.hash_sentence() + ".json";
 }
 
-Json randomize(World& world, RandomizerOptions& options, const ArgumentDictionary& args)
+Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const ArgumentDictionary& args)
 {
     Json spoiler_json;
 
@@ -95,9 +94,14 @@ Json randomize(World& world, RandomizerOptions& options, const ArgumentDictionar
     std::cout << "Permalink: " << options.permalink() << "\n\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
+    WorldLogic logic(world, options);
+
+    // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
+    std::cout << "Applying game patches...\n\n";
+    apply_randomizer_patches(rom, world, logic, options);
+    
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
     std::cout << "Randomizing world...\n";
-    WorldLogic logic(world, options);
     WorldRandomizer randomizer(world, logic, options);
     randomizer.randomize();
 
@@ -213,23 +217,20 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
 
     World world(*rom);
-    apply_rando_options_to_world(options, world);
-    apply_world_edits(world, options, *rom);
- 
-    bool kaizo = args.contains("kaizo");
-    if(kaizo)
-        apply_kaizo_edits(world, *rom);
-
-    display_options(options);
 
     Json spoiler_json;
-    if(options.is_plando())
+    if(args.contains("kaizo"))
+    {
+        apply_kaizo_edits(world, *rom);
+    }
+    else if(options.is_plando())
     {
         spoiler_json = plandomize(world, options, args);
     }
-    else if(!kaizo)
+    else
     {
-        spoiler_json = randomize(world, options, args);
+        display_options(options);
+        spoiler_json = randomize(*rom, world, options, args);
     }
     
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
@@ -237,10 +238,6 @@ void generate(const ArgumentDictionary& args)
     {
         std::cout << "Writing world to ROM...\n";
         world.write_to_rom(*rom);
-
-        // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-        std::cout << "Applying game patches...\n\n";
-        apply_game_patches(*rom, options, world);
 
         std::ofstream output_rom_file(output_rom_path, std::ios::binary);
         if(!output_rom_file)

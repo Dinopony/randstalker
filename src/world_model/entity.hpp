@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "../tools/megadrive/rom.hpp"
-#include "../extlibs/json.hpp"
+#include <md_tools.hpp>
+#include <json.hpp>
 #include "../tools/flag.h"
 
 class World;

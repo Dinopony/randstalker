@@ -2,7 +2,7 @@
 
 #include <array>
 #include <cstdint>
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 constexpr size_t COLOR_COUNT = 13;
 

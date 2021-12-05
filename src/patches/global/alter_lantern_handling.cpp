@@ -1,6 +1,6 @@
-#include "../tools/megadrive/rom.hpp"
-#include "../tools/megadrive/code.hpp"
-#include "../constants/offsets.hpp"
+#include <md_tools.hpp>
+
+#include "../../constants/offsets.hpp"
 
 uint32_t inject_function_darken_palette(md::ROM& rom)
 {

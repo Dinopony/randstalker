@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 #define ORIENTATION_NE 0x08
 #define ORIENTATION_SE 0x48

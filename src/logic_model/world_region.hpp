@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 class WorldNode;
 

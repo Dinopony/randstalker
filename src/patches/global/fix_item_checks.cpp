@@ -1,9 +1,4 @@
-#include "../tools/megadrive/rom.hpp"
-#include "../tools/megadrive/code.hpp"
-#include "../randomizer_options.hpp"
-#include "../world_model/world.hpp"
-#include "../world_model/map.hpp"
-#include "../world_model/entity.hpp"
+#include <md_tools.hpp>
 
 /**
  * Usually, when trying to cut trees, the game checks if you have seen the
@@ -103,87 +98,12 @@ static void alter_casino_ticket_handling(md::ROM& rom)
     rom.set_code(0x26BBA, md::Code().nop(5));
 }
 
-void make_massan_elder_reward_not_story_dependant(md::ROM& rom)
+void fix_item_checks(md::ROM& rom)
 {
-    // This item source writes its contents at this specific address, as specified
-    // by the model files
-    uint8_t reward_item_id = rom.get_byte(0x25F9E);
-
-    md::Code elder_dialogue;
-    elder_dialogue.btst(5, addr_(0xFF1002));
-    elder_dialogue.bne(3);
-        elder_dialogue.trap(0x01, { 0x00, 0x05 });
-        elder_dialogue.rts();
-        elder_dialogue.add_bytes({ 0xE0, 0xFD });
-    elder_dialogue.btst(2, addr_(0xFF1004));
-    elder_dialogue.bne(3);
-        elder_dialogue.trap(0x01, { 0x00, 0x05 });
-        elder_dialogue.rts();
-        elder_dialogue.add_bytes({ 0x14, 0x22, 
-                                   0x80, 0xFE, 
-                                   0x80, 0xFF, 
-                                   0x81, 0x00, 
-                                   0x00, reward_item_id, 
-                                   0x17, 0xE8, 
-                                   0x18, 0x00, 
-                                   0xE1, 0x01 });
-    elder_dialogue.trap(0x01, { 0x00, 0x05 });
-    elder_dialogue.rts();
-    elder_dialogue.add_bytes({ 0xE1, 0x01 });
-
-    uint32_t addr = rom.inject_code(elder_dialogue);
-
-    rom.set_code(0x25F98, md::Code().jmp(addr).rts());
-
-    rom.mark_empty_chunk(0x25FA0, 0x25FB1);
-}
-
-void make_lumberjack_reward_not_story_dependant(md::ROM& rom)
-{
-    rom.set_word(0x272C4, 0xEAFA); // Change from HandleProgressDependentDialogue to SetFlagBitOnTalking
-    rom.set_word(0x272C6, 0x0124); // bit 4 of 1024
-    rom.set_word(0x272C8, 0x0EF7); // Flag clear: Einstein whistle gift cutscene
-    rom.set_word(0x272CA, 0x15D3); // Flag set: Thanks
-    rom.set_word(0x272CC, 0x4E75); // rts
-
-    // Shorten the cutscene by removing all references to the whistle (which we most likely won't get here)
-    rom.set_word(0x28888, 0x0);
-    rom.set_word(0x2888A, 0x0);
-    rom.set_word(0x28890, 0x0);
-    rom.set_word(0x28890, 0x0);
-    rom.set_word(0x28892, 0x0);
-    rom.set_word(0x28894, 0x0);
-
-    // Remove Nigel turning around during the cutscene
-    rom.set_code(0x14102, md::Code().nop(12));
-}
-
-void change_falling_ribbon_position(md::ROM& rom)
-{
-    // Change falling item position from 1F to 20 to ensure it is taken by Nigel whatever its original position is
-    rom.set_byte(0x09C59E, 0x20);
-}
-
-void make_tibor_always_open(md::ROM& rom)
-{
-    // Make Tibor open without saving the mayor
-    rom.set_byte(0x501D, 0x10);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void patch_story_dependencies(md::ROM& rom, const RandomizerOptions& options, const World& world)
-{
-    // Flag-reading changes (from story flag reading to inventory reading)
     fix_axe_magic_check(rom);
     fix_safety_pass_check(rom);
     fix_armlet_check(rom);
     fix_sunstone_check(rom);
     fix_dog_talking_check(rom);
     alter_casino_ticket_handling(rom);
-
-    make_massan_elder_reward_not_story_dependant(rom);
-    make_lumberjack_reward_not_story_dependant(rom);
-    change_falling_ribbon_position(rom);
-    make_tibor_always_open(rom);
 }

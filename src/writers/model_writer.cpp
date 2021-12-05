@@ -1,6 +1,6 @@
 #include "writers.hpp"
 
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 #include "../world_model/item_source.hpp"
 #include "../world_model/item.hpp"

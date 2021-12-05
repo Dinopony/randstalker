@@ -53,8 +53,11 @@ void edit_castle_passage_to_dungeon(World& world)
 {
     Map* map = world.map(MAP_MERCATOR_CASTLE_PASSAGE_TO_DUNGEON);
     map->entity(0)->liftable(true);
+    map->entity(0)->position(Position(0x11, 0x1B, 0));
     map->entity(1)->liftable(true);
+    map->entity(1)->position(Position(0x10, 0x1A, 0));
     map->entity(2)->liftable(true);
+    map->entity(2)->position(Position(0x13, 0x1A, 0));
     map->add_entity(new Entity(ENTITY_LARGE_GRAY_SPIKEBALL, 0x14, 0x18, 2))->position().half_x = true;
 }
 
@@ -68,8 +71,9 @@ void edit_castle_big_library(World& world)
     ekeeke->liftable(true);
     ekeeke->position().half_x = true;
 
-    // TODO: Put proper base_chest_id on map
     map->add_entity(new Entity(ENTITY_CHEST, 0x1C, 0x1E, 2));
+    map->base_chest_id(CHEST_MERCATOR_CASTLE_BIG_LIBRARY);
+    create_chest_item_source(world, CHEST_MERCATOR_CASTLE_BIG_LIBRARY, ITEM_DAHL);
 
     Entity* gate = map->add_entity(new Entity(ENTITY_GATE_SOUTH, 0x19, 0x21, 1));
     gate->behavior_id(BEHAVIOR_DISAPPEAR_ON_ALL_ENEMIES_BEATEN);
@@ -85,9 +89,11 @@ void edit_castle_small_library(World& world)
     map->add_entity(new Entity(ENEMY_MUMMY_1, 0x16, 0x1C, 0))->palette(0);
     map->add_entity(new Entity(ENEMY_MUMMY_1, 0x13, 0x1D, 0))->palette(0);
     
-    // TODO: Put proper base_chest_id on map
     map->add_entity(new Entity(ENTITY_CHEST, 0x1A, 0x1A, 1));
     map->add_entity(new Entity(ENTITY_CHEST, 0x16, 0x1A, 5))->orientation(ENTITY_ORIENTATION_NW);
+    map->base_chest_id(CHEST_MERCATOR_CASTLE_SMALL_LIBRARY_1);
+    create_chest_item_source(world, CHEST_MERCATOR_CASTLE_SMALL_LIBRARY_1, ITEM_NONE);
+    create_chest_item_source(world, CHEST_MERCATOR_CASTLE_SMALL_LIBRARY_2, ITEM_LIFESTOCK);
 
     Entity* first_gate = map->add_entity(new Entity(ENTITY_GATE_NORTH, 0x17, 0x18, 0));
     first_gate->position().half_x = true;
@@ -144,6 +150,8 @@ void edit_castle_1f_hallway(World& world)
     gate->remove_when_flag_is_set(FLAG_ZAK_ROOM_BUTTON_PRESSED);
 
     map->add_entity(new Entity(ENTITY_CHEST, 0x0D, 0x1E, 0))->orientation(ENTITY_ORIENTATION_NW);
+    map->base_chest_id(CHEST_MERCATOR_CASTLE_1F_HALLWAY);
+    create_chest_item_source(world, CHEST_MERCATOR_CASTLE_1F_HALLWAY, ITEM_EKEEKE);
 }
 
 void edit_castle_2f_hallway(World& world)
@@ -234,7 +242,8 @@ void edit_castle_dexter_room(World& world)
     map->add_entity(new Entity(ENTITY_LARGE_GRAY_SPIKEBALL, 0x11, 0x18, 0))->entity_to_use_tiles_from(first_spikeball);
 
     map->add_entity(new Entity(ENTITY_CHEST, 0x0E, 0x0D, 5));
-    map->add_entity(new Entity(ENTITY_CHEST, 0x18, 0x0E, 0));
+    map->base_chest_id(CHEST_MERCATOR_CASTLE_DEXTER_ROOM);
+    create_chest_item_source(world, CHEST_MERCATOR_CASTLE_DEXTER_ROOM, ITEM_GOLDEN_STATUE);
 
     Entity* button = map->add_entity(new Entity(ENTITY_BUTTON, 0x10, 0x17, 0));
     button->position().half_x = true;

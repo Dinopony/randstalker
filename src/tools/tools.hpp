@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 namespace tools 
 {

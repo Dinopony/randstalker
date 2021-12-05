@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "tools/unsorted_set.hpp"
-#include "extlibs/json.hpp"
+#include <json.hpp>
 #include "world_model/world.hpp"
 #include "logic_model/world_logic.hpp"
 

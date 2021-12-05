@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../extlibs/json.hpp"
+#include <json.hpp>
 
 struct Flag
 {
