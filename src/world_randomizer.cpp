@@ -137,7 +137,6 @@ void WorldRandomizer::randomize_dark_rooms()
             if(path->origin()->region() != _dark_region)
                 path->add_required_item(_world.item(ITEM_LANTERN));
     }
-
 }
 
 void WorldRandomizer::randomize_tibor_trees()

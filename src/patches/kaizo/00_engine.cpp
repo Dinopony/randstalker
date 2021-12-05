@@ -3,16 +3,12 @@
 
 void clear_item_sources(World& world)
 {
-    std::vector<ItemSource*> kept_item_sources;    
+//    std::vector<ItemSource*> kept_item_sources;    
     for(ItemSource* source : world.item_sources())
-    {
-        if(source->type_name() == "shop")
-            kept_item_sources.push_back(source);
-        else
-            delete source;
-    }
+        delete source;
+    
     world.item_sources().clear();
-    world.item_sources().insert(world.item_sources().end(), kept_item_sources.begin(), kept_item_sources.end());
+//    world.item_sources().insert(world.item_sources().end(), kept_item_sources.begin(), kept_item_sources.end());
 }
 
 void neutralize_one_time_events(md::ROM& rom)

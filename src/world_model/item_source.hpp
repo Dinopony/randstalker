@@ -87,9 +87,6 @@ public:
     {
         if(add_hint)
             this->add_hint("lying on the ground, waiting for someone to pick it up");
-
-        for (Entity* entity : _entities)
-            entity->entity_type_id(this->item_id() + 0xC0);
     }
 
     const std::vector<Entity*>& entities() const { return _entities; }

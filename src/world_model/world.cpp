@@ -15,7 +15,6 @@
 #include "world_teleport_tree.hpp"
 
 #include "../exceptions.hpp"
-#include "../randomizer_options.hpp"
 #include "../constants/offsets.hpp"
 #include "../world_reader.hpp"
 #include "../world_writer.hpp"
@@ -27,7 +26,7 @@
 #include "data/world_teleport_tree.json.hxx"
 #include "../assets/game_strings.json.hxx"
 
-World::World(const md::ROM& rom, const RandomizerOptions& options)
+World::World(const md::ROM& rom)
 {
     // No requirements
     this->init_items();
@@ -247,7 +246,12 @@ void World::init_entity_types(const md::ROM& rom)
     std::cout << _entity_types.size()  << " entities loaded." << std::endl;
 }
 
-
+uint8_t World::starting_life() const
+{
+    if(_custom_starting_life)
+        return _custom_starting_life;
+    return _spawn_location.starting_life();
+}
 
 EntityType* World::entity_type(const std::string& name) const
 {

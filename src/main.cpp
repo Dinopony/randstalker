@@ -212,11 +212,8 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
 
-    World world(*rom, options);
-    
-    patch_items(world, options);
-    patch_entity_types(world, options);
-    patch_game_strings(world, options);
+    World world(*rom);
+    apply_rando_options_to_world(options, world);
     apply_world_edits(world, options, *rom);
  
     bool kaizo = args.contains("kaizo");

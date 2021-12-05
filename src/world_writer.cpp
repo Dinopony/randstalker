@@ -76,8 +76,14 @@ void WorldWriter::write_item_sources(md::ROM& rom, const World& world)
             uint32_t address_in_rom = reinterpret_cast<ItemSourceReward*>(source)->address_in_rom();
             rom.set_byte(address_in_rom, source->item_id());
         }
-        // Ground & shop item sources are tied to map entities that are updated as their contents change.
-        // Therefore those types of item sources will effectively be written when map entities are written.
+        else
+        {
+            // Ground & shop item sources are tied to map entities that are updated as their contents change.
+            // Therefore those types of item sources will effectively be written when map entities are written.
+            ItemSourceOnGround* ground_source = reinterpret_cast<ItemSourceOnGround*>(source);
+            for (Entity* entity : ground_source->entities())
+                entity->entity_type_id(ground_source->item_id() + 0xC0);
+        }
     }
 }
 

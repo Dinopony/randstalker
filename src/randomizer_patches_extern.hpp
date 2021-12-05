@@ -3,6 +3,4 @@
 class World;
 class RandomizerOptions;
 
-void patch_items(World& world, const RandomizerOptions& options);
-void patch_entity_types(World& world, const RandomizerOptions& options);
-void patch_game_strings(World& world, const RandomizerOptions& options);
+void apply_rando_options_to_world(const RandomizerOptions& options, World& world);

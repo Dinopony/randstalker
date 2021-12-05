@@ -70,14 +70,6 @@ namespace tools
     }
 
     template<typename T>
-    std::string stringify(const T& value)
-    {
-        std::ostringstream oss;
-        oss << value;
-        return oss.str();
-    }
-
-    template<typename T>
     static std::string hexify(const T& val)
     {
         std::ostringstream oss;

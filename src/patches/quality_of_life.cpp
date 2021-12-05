@@ -282,6 +282,18 @@ void replace_copy_save_by_show_hash(md::ROM& rom, const RandomizerOptions& optio
     rom.set_bytes(0x29A4E, Symbols::bytes_for_symbols(options.hash_sentence()));
 }
 
+/**
+ * Make the effect of Statue of Gaia and Sword of Gaia way faster, because reasons.
+ */
+static void quicken_gaia_effect(md::ROM& rom)
+{
+    constexpr uint8_t SPEEDUP_FACTOR = 3;
+
+    rom.set_word(0x1686C, rom.get_word(0x1686C) * SPEEDUP_FACTOR);
+    rom.set_word(0x16878, rom.get_word(0x16878) * SPEEDUP_FACTOR);
+    rom.set_word(0x16884, rom.get_word(0x16884) * SPEEDUP_FACTOR);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -300,4 +312,5 @@ void patch_quality_of_life(md::ROM& rom, const RandomizerOptions& options, const
     shorten_arthur_dialogue(rom);
     alter_prospero_dialogues(rom);
     alter_destel_boatmaker_dialogues(rom);
+    quicken_gaia_effect(rom);
 }

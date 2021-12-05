@@ -7,10 +7,10 @@
 
 #include "spawn_location.hpp"
 #include "map_connection.hpp"
+#include "../tools/flag.h"
 
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
 
-class RandomizerOptions;
 class WorldNode;
 class WorldPath;
 class WorldRegion;
@@ -35,12 +35,14 @@ private:
     std::vector<MapConnection> _map_connections;
     std::vector<MapPalette*> _map_palettes;
     std::vector<EntityType*> _fahl_enemies;
-
-    SpawnLocation _spawn_location;
     std::vector<uint16_t> _dark_maps;
+    SpawnLocation _spawn_location;
+    std::vector<Flag> _starting_flags;
+    uint16_t _starting_golds = 0;
+    uint8_t _custom_starting_life = 0;
 
 public:
-    World(const md::ROM& rom, const RandomizerOptions& options);
+    World(const md::ROM& rom);
     ~World();
 
     void write_to_rom(md::ROM& rom);
@@ -63,11 +65,21 @@ public:
     const std::vector<std::string>& game_strings() const { return _game_strings; }
     std::vector<std::string>& game_strings() { return _game_strings; }
 
+    const std::vector<uint16_t>& dark_maps() const { return _dark_maps; }
+    void dark_maps(const std::vector<uint16_t>& dark_maps) { _dark_maps = dark_maps; }
+
     void spawn_location(const SpawnLocation& spawn) { _spawn_location = spawn; }
     const SpawnLocation& spawn_location() const { return _spawn_location; }
 
-    const std::vector<uint16_t>& dark_maps() const { return _dark_maps; }
-    void dark_maps(const std::vector<uint16_t>& dark_maps) { _dark_maps = dark_maps; }
+    const std::vector<Flag>& starting_flags() const { return _starting_flags; }
+    std::vector<Flag>& starting_flags() { return _starting_flags; }
+
+    uint16_t starting_golds() const { return _starting_golds; }
+    void starting_golds(uint16_t golds) { _starting_golds = golds; }
+
+    uint8_t starting_life() const;
+    uint8_t custom_starting_life() const { return _custom_starting_life; }
+    void custom_starting_life(uint8_t life) { _custom_starting_life = life; }
 
     const std::map<uint8_t, EntityType*>& entity_types() const { return _entity_types; }
     EntityType* entity_type(uint8_t id) const { return _entity_types.at(id); }

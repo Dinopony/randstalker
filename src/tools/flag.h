@@ -11,7 +11,7 @@ struct Flag
     Flag() : byte(0), bit(0)
     {}
 
-    Flag(uint16_t byte, uint8_t bit) : byte(byte), bit(bit)
+    constexpr Flag(uint16_t byte, uint8_t bit) : byte(byte), bit(bit)
     {}
 
     Json to_json() const

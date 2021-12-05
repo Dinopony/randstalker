@@ -97,6 +97,7 @@ set(SOURCES
     "src/patches/patches.hpp"
     "src/patches/game_init.cpp"
     "src/patches/item_behavior.cpp"
+    "src/patches/lantern.cpp"
     "src/patches/quality_of_life.cpp"
     "src/patches/rando_adaptations.cpp"
     "src/patches/story_dependencies.cpp"
