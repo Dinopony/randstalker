@@ -1,28 +1,24 @@
 #include "item_source.hpp"
-#include "world_node.hpp"
 #include "entity.hpp"
 #include "entity_type.hpp"
 #include "map.hpp"
+#include "world.hpp"
+
 #include "../exceptions.hpp"
-#include "../world.hpp"
 
-
-ItemSource::ItemSource(const std::string& name, WorldNode* node, const std::vector<std::string>& hints) :
-    _name   (name),
-    _item   (nullptr),
-    _node   (node),
-    _hints  (hints)
-{
-    if(_node)
-        _node->add_item_source(this);
-}
+ItemSource::ItemSource(const std::string& name, const std::string& node_id, const std::vector<std::string>& hints) :
+    _name       (name),
+    _item       (nullptr),
+    _node_id    (node_id),
+    _hints      (hints)
+{}
 
 Json ItemSource::to_json() const
 {
     Json json;
     json["name"] = _name;
     json["type"] = type_name();
-    json["nodeId"] = _node->id();
+    json["nodeId"] = _node_id;
     if(!_hints.empty())
         json["hints"] = _hints;
     return json;
@@ -32,9 +28,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
 {
     const std::string& name = json.at("name");
     const std::string& type = json.at("type");
-
-    const std::string& nodeId = json.at("nodeId");
-    WorldNode* node = world.nodes().at(nodeId);
+    const std::string& node_id = json.at("nodeId");
 
     std::vector<std::string> hints;
     if(json.contains("hints")) 
@@ -43,7 +37,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
     if(type == "chest")
     {
         uint8_t chest_id = json.at("chestId");
-        return new ItemSourceChest(chest_id, name, node, hints);
+        return new ItemSourceChest(chest_id, name, node_id, hints);
     }
     else if(type == "ground" || type == "shop")
     {
@@ -69,15 +63,15 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
         }
 
         if(type == "shop")
-            return new ItemSourceShop(name, entities, node, hints);
+            return new ItemSourceShop(name, entities, node_id, hints);
 
         bool cannot_be_taken_repeatedly = json.value("cannotBeTakenRepeatedly", false);
-        return new ItemSourceOnGround(name, entities, node, hints, cannot_be_taken_repeatedly); 
+        return new ItemSourceOnGround(name, entities, node_id, hints, cannot_be_taken_repeatedly); 
     }
     else if(type == "reward")
     {
         uint32_t address_in_rom = json.at("address");
-        return new ItemSourceReward(address_in_rom, name, node, hints);        
+        return new ItemSourceReward(address_in_rom, name, node_id, hints);        
     }
 
     std::stringstream msg;
@@ -132,12 +126,6 @@ bool ItemSourceShop::is_item_compatible(Item* item) const
     if (item->id() == ITEM_NONE)
         return false;
 
-    // If another shop source in the same node contains the same item, deny item placement
-    const std::vector<ItemSource*> sources_in_node = node()->item_sources();
-    for(ItemSource* source : sources_in_node)
-        if(source->type_name() == "shop" && source->item() == item)
-            return false;
-    
     return true;
 }
 

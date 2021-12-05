@@ -1,5 +1,5 @@
 #include "entity_type.hpp"
-#include "../world.hpp"
+#include "world.hpp"
 
 EntityType* EntityType::from_json(uint8_t id, const Json& json, const World& world)
 {

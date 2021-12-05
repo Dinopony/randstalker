@@ -3,7 +3,7 @@
 #include "map_palette.hpp"
 
 #include "../exceptions.hpp"
-#include "../world.hpp"
+#include "../world_model/world.hpp"
 
 #include "../constants/offsets.hpp"
 

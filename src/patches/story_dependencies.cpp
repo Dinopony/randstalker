@@ -1,9 +1,9 @@
 #include "../tools/megadrive/rom.hpp"
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
-#include "../world.hpp"
-#include "../model/map.hpp"
-#include "../model/entity.hpp"
+#include "../world_model/world.hpp"
+#include "../world_model/map.hpp"
+#include "../world_model/entity.hpp"
 
 /**
  * Usually, when trying to cut trees, the game checks if you have seen the

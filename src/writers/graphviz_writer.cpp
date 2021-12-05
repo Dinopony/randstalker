@@ -1,21 +1,25 @@
-#include "graphviz.hpp"
+#include "writers.hpp"
 
 #include <vector>
 #include <fstream>
-#include "../model/data/world_path.json.hxx"
-#include "../model/world_node.hpp"
-#include "../model/map.hpp"
-#include "../model/map_connection.hpp"
+#include "../tools/tools.hpp"
+
 #include "../extlibs/json.hpp"
-#include "../world.hpp"
-#include "tools.hpp"
+
+#include "../world_model/map.hpp"
+#include "../world_model/map_connection.hpp"
+#include "../world_model/world.hpp"
+
+#include "../logic_model/data/world_path.json.hxx"
+#include "../logic_model/world_node.hpp"
+#include "../logic_model/world_logic.hpp"
 
 namespace graphviz {
 
 constexpr const char* COLORS[] = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
 size_t COLORS_SIZE = 7;
 
-void output_logic_as_dot(const World& world, const std::string& path)
+void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
 {
     std::ofstream graphviz(path);
     graphviz << "digraph {\n";
@@ -27,8 +31,8 @@ void output_logic_as_dot(const World& world, const std::string& path)
     uint32_t path_i = 0;
     for(const Json& json : paths_json)
     {
-        WorldNode* from = world.node(json["fromId"]);
-        WorldNode* to = world.node(json["toId"]);
+        WorldNode* from = logic.node(json["fromId"]);
+        WorldNode* to = logic.node(json["toId"]);
         graphviz << "\t" << from->id() << " -> " << to->id() << " [";
         if(json.contains("twoWay") && json.at("twoWay"))
             graphviz << "dir=both ";
@@ -40,7 +44,7 @@ void output_logic_as_dot(const World& world, const std::string& path)
             
         if(json.contains("requiredNodes"))
             for(const std::string& node_id : json.at("requiredNodes"))
-                required_names.push_back("Access to " + world.node(node_id)->name());
+                required_names.push_back("Access to " + logic.node(node_id)->name());
 
         if(!required_names.empty())
         {
@@ -55,7 +59,7 @@ void output_logic_as_dot(const World& world, const std::string& path)
     }
 
     graphviz << "\n";
-    for(auto& [id, node] : world.nodes())
+    for(auto& [id, node] : logic.nodes())
         graphviz << "\t" << id << " [label=\"" << node->name() << " [" << std::to_string(node->item_sources().size()) << "]\"]\n";
 
     graphviz << "}\n"; 

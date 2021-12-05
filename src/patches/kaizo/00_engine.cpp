@@ -1,4 +1,5 @@
 #include "kaizo.hpp"
+#include "../../world_model/item_source.hpp"
 
 void clear_item_sources(World& world)
 {

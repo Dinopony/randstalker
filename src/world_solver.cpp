@@ -2,10 +2,16 @@
 
 #include <fstream>
 
-#include "model/world_node.hpp"
-#include "model/item_source.hpp"
+#include "logic_model/world_node.hpp"
+#include "world_model/item_source.hpp"
 
 #include "exceptions.hpp"
+
+WorldSolver::WorldSolver(const WorldLogic& logic) :
+    _logic              (logic),
+    _start_node         (nullptr),
+    _end_node           (nullptr)
+{}
 
 void WorldSolver::forbid_item_instances(const std::vector<Item*>& forbidden_item_instances)
 { 
@@ -26,23 +32,23 @@ void WorldSolver::setup(WorldNode* start_node, WorldNode* end_node, const std::v
 {
     _start_node = start_node;
     _end_node = end_node;
-    _nodes_to_explore = { start_node };
+    _nodes_to_explore = { _start_node };
+    _starting_inventory = starting_inventory;
 
-    if(!starting_inventory.empty())
-        _starting_inventory = starting_inventory;
-
-    _explored_nodes.clear(); 
+    _explored_nodes.clear();
     _blocked_paths.clear();
     _reachable_item_sources.clear();
     _relevant_items.clear();
+    _starting_inventory.clear();
     _inventory.clear();
-    _debug_log.clear();
-
     _step_count = 0;
+    
+    _debug_log.clear();
 }
 
-bool WorldSolver::try_to_solve()
+bool WorldSolver::try_to_solve(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory)
 {
+    this->setup(start_node, end_node, starting_inventory);
     this->run_until_blocked();
     return this->reached_end();
 }
@@ -158,7 +164,7 @@ void WorldSolver::update_current_inventory()
     for(ItemSource* source : _reachable_item_sources)
     {
         // If item is located in forbidden node, don't take it
-        if(_forbidden_nodes_to_pick_items.contains(source->node()))
+        if(_forbidden_nodes_to_pick_items.contains(_logic.node(source->node_id())))
             continue;
 
         Item* item = source->item();
@@ -247,13 +253,10 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
 {
     if(!this->reached_end())
     {
-        if (!this->try_to_solve())
-        {
-            std::ofstream dump_file("./crash_dump.json");
-            dump_file << _debug_log.dump(4);
-            dump_file.close();
-            throw RandomizerException("Tried to find minimal inventory on an uncompletable WorldSolver");
-        }
+        std::ofstream dump_file("./crash_dump.json");
+        dump_file << _debug_log.dump(4);
+        dump_file.close();
+        throw RandomizerException("Tried to find minimal inventory on an incomplete WorldSolver");
     }
 
     std::vector<Item*> minimal_inventory;
@@ -268,9 +271,9 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
         std::vector<Item*> forbidden_items_plus_one = forbidden_items;
         forbidden_items_plus_one.push_back(item);
         
-        WorldSolver solver(_start_node, _end_node);
+        WorldSolver solver(_logic);
         solver.forbid_item_instances(forbidden_items_plus_one);
-        if(solver.try_to_solve())
+        if(solver.try_to_solve(_start_node, _end_node, _starting_inventory))
         {
             // Item can be freely removed: keep it removed for further solves
             forbidden_items = forbidden_items_plus_one;

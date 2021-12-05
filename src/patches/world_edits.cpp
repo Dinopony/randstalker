@@ -1,12 +1,12 @@
-#include "../world.hpp"
+#include "../world_model/world.hpp"
 
 #include "../tools/megadrive/rom.hpp"
 #include "../tools/megadrive/code.hpp"
 
 #include "../randomizer_options.hpp"
-#include "../model/map.hpp"
-#include "../model/entity.hpp"
-#include "../model/entity_type.hpp"
+#include "../world_model/map.hpp"
+#include "../world_model/entity.hpp"
+#include "../world_model/entity_type.hpp"
 
 #include "../constants/map_codes.hpp"
 #include "../constants/entity_type_codes.hpp"

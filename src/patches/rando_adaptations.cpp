@@ -1,8 +1,8 @@
 #include "../tools/megadrive/rom.hpp"
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
-#include "../world.hpp"
-#include "../model/item.hpp"
+#include "../world_model/world.hpp"
+#include "../world_model/item.hpp"
 
 #include "../constants/item_codes.hpp"
 #include "../constants/offsets.hpp"

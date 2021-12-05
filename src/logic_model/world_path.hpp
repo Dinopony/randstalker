@@ -1,6 +1,6 @@
 #pragma once
 
-#include "item.hpp"
+#include "../world_model/item.hpp"
 #include "../tools/unsorted_set.hpp"
 
 class WorldNode;

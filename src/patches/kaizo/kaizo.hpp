@@ -3,13 +3,13 @@
 #include "../../tools/megadrive/rom.hpp"
 #include "../../tools/megadrive/code.hpp"
 
-#include "../../world.hpp"
-
-#include "../../model/map.hpp"
-#include "../../model/map_palette.hpp"
-#include "../../model/entity.hpp"
-#include "../../model/entity_type.hpp"
-#include "../../model/spawn_location.hpp"
+#include "../../world_model/world.hpp"
+#include "../../world_model/map.hpp"
+#include "../../world_model/map_palette.hpp"
+#include "../../world_model/entity.hpp"
+#include "../../world_model/entity_type.hpp"
+#include "../../world_model/spawn_location.hpp"
+#include "../../world_model/item_source.hpp"
 
 #include "../../constants/entity_type_codes.hpp"
 #include "../../constants/map_codes.hpp"

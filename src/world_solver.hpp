@@ -3,7 +3,8 @@
 #include <vector>
 #include "tools/unsorted_set.hpp"
 #include "extlibs/json.hpp"
-#include "world.hpp"
+#include "world_model/world.hpp"
+#include "logic_model/world_logic.hpp"
 
 class WorldNode;
 class ItemSource;
@@ -22,6 +23,8 @@ class WorldPath;
 class WorldSolver
 {
 private:
+    const WorldLogic& _logic;
+
     WorldNode* _start_node;
     WorldNode* _end_node;
     std::vector<Item*> _forbidden_item_instances;
@@ -43,30 +46,14 @@ private:
     Json _debug_log;
 
 public:
-    WorldSolver()
-    {}
-
-    WorldSolver(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory = {})
-    {
-        this->setup(start_node, end_node, starting_inventory);
-    }
-
-    WorldSolver(const World& world)
-    {
-        this->setup(world);
-    }
-
-    void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory = {});
-    void setup(const World& world)
-    { 
-        this->setup(world.spawn_node(), world.end_node(), world.starting_inventory());
-    }
+    WorldSolver(const WorldLogic& logic);
 
     void forbid_item_instances(const std::vector<Item*>& forbidden_item_instances);
     void forbid_item_types(const std::vector<Item*>& forbidden_item_types);
     void forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes);
 
-    bool try_to_solve();
+    void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
+    bool try_to_solve(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
     bool run_until_blocked();
 
     const std::vector<Item*>& starting_inventory() const { return _starting_inventory; }

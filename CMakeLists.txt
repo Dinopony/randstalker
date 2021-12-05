@@ -12,15 +12,16 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
 endif()
 
 # Wrap JSON model files into automated .hxx headers
-wrap_file(SOURCE_FILE "src/model/data/entity_type.json" VARIABLE_NAME "ENTITIES_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/item.json" VARIABLE_NAME "ITEMS_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/world_node.json" VARIABLE_NAME "WORLD_NODES_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/world_path.json" VARIABLE_NAME "WORLD_PATHS_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/item_source.json" VARIABLE_NAME "ITEM_SOURCES_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/spawn_location.json" VARIABLE_NAME "SPAWN_LOCATIONS_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
-wrap_file(SOURCE_FILE "src/model/data/world_teleport_tree.json" VARIABLE_NAME "WORLD_TELEPORT_TREES_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/world_model/data/entity_type.json" VARIABLE_NAME "ENTITIES_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/world_model/data/item.json" VARIABLE_NAME "ITEMS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/world_model/data/item_source.json" VARIABLE_NAME "ITEM_SOURCES_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/world_model/data/spawn_location.json" VARIABLE_NAME "SPAWN_LOCATIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/world_model/data/world_teleport_tree.json" VARIABLE_NAME "WORLD_TELEPORT_TREES_JSON" TEXT_FILE)
+
+wrap_file(SOURCE_FILE "src/logic_model/data/world_node.json" VARIABLE_NAME "WORLD_NODES_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/logic_model/data/world_path.json" VARIABLE_NAME "WORLD_PATHS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/logic_model/data/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/logic_model/data/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON" TEXT_FILE)
 
 # Wrap assets files into automated .hxx headers
 wrap_file(SOURCE_FILE "src/assets/fixed_hud_tilemap.bin" VARIABLE_NAME "FIXED_HUD_TILEMAP")
@@ -48,8 +49,6 @@ set(SOURCES
     "src/tools/byte_array.hpp"
     "src/tools/game_text.hpp"
     "src/tools/game_text.cpp"
-    "src/tools/graphviz.hpp"
-    "src/tools/graphviz.cpp"
     "src/tools/unsorted_set.hpp"
     "src/tools/tools.hpp"
     "src/tools/textbanks_decoder.hpp"
@@ -67,28 +66,33 @@ set(SOURCES
         "src/tools/megadrive/rom.cpp"
         "src/tools/megadrive/types.hpp"
 
-    "src/model/entity_type.hpp"
-    "src/model/entity_type.cpp"
-    "src/model/entity.hpp"
-    "src/model/entity.cpp"
-    "src/model/hint_source.hpp"
-    "src/model/hint_source.cpp"
-    "src/model/item_source.hpp"
-    "src/model/item_source.cpp"
-    "src/model/item.hpp"
-    "src/model/item.cpp"
-    "src/model/map_connection.hpp"
-    "src/model/map_palette.hpp"
-    "src/model/map_palette.cpp"
-    "src/model/map.hpp"
-    "src/model/map.cpp"
-    "src/model/spawn_location.hpp"
-    "src/model/world_node.hpp"
-    "src/model/world_path.hpp"
-    "src/model/world_path.cpp"
-    "src/model/world_region.hpp"
-    "src/model/world_region.cpp"
-    "src/model/world_teleport_tree.hpp"
+    "src/world_model/entity_type.hpp"
+    "src/world_model/entity_type.cpp"
+    "src/world_model/entity.hpp"
+    "src/world_model/entity.cpp"
+    "src/world_model/item_source.hpp"
+    "src/world_model/item_source.cpp"
+    "src/world_model/item.hpp"
+    "src/world_model/item.cpp"
+    "src/world_model/map_connection.hpp"
+    "src/world_model/map_palette.hpp"
+    "src/world_model/map_palette.cpp"
+    "src/world_model/map.hpp"
+    "src/world_model/map.cpp"
+    "src/world_model/spawn_location.hpp"
+    "src/world_model/world_teleport_tree.hpp"
+    "src/world_model/world.cpp"
+    "src/world_model/world.hpp"
+
+    "src/logic_model/hint_source.hpp"
+    "src/logic_model/hint_source.cpp"
+    "src/logic_model/world_node.hpp"
+    "src/logic_model/world_path.hpp"
+    "src/logic_model/world_path.cpp"
+    "src/logic_model/world_region.hpp"
+    "src/logic_model/world_region.cpp"
+    "src/logic_model/world_logic.hpp"
+    "src/logic_model/world_logic.cpp"
 
     "src/patches/patches.hpp"
     "src/patches/game_init.cpp"
@@ -105,11 +109,15 @@ set(SOURCES
     "src/patches/kaizo/02_mercator.cpp"
     "src/patches/kaizo/03_mercator_castle.cpp"
 
+    "src/writers/graphviz_writer.cpp"
+    "src/writers/model_writer.cpp"
+    "src/writers/spoiler_writer.cpp"
+    "src/writers/writers.hpp"
+
     "src/exceptions.hpp"
     "src/randomizer_options.hpp"
     "src/randomizer_options.cpp"
-    "src/world.cpp"
-    "src/world.hpp"
+    "src/randomizer_patches_extern.cpp"
     "src/world_randomizer.hpp"
     "src/world_randomizer.cpp"
     "src/world_reader.hpp"
@@ -118,6 +126,7 @@ set(SOURCES
     "src/world_solver.cpp"
     "src/world_writer.hpp"
     "src/world_writer.cpp"
+
     "src/main.cpp"
 )
 

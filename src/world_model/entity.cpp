@@ -1,6 +1,6 @@
 #include "entity.hpp"
 
-#include "../world.hpp"
+#include "world.hpp"
 #include "map.hpp"
 #include "entity_type.hpp"
 #include <set>

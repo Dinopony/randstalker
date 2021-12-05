@@ -1,9 +1,11 @@
 #pragma once
 
 #include <vector>
+
 #include "../tools/unsorted_set.hpp"
+#include "../world_model/item_source.hpp"
+
 #include "world_path.hpp"
-#include "item_source.hpp"
 
 class WorldRegion;
 

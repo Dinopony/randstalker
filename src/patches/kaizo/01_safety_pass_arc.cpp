@@ -12,8 +12,7 @@ void setup_ryuma_maps(World& world)
 
 void edit_ryuma_spawn_house(World& world)
 {
-    SpawnLocation* spawnLocation = new SpawnLocation("kaizo", MAP_RYUMA_MIDDLE_HOUSE, 16, 16, ENTITY_ORIENTATION_SE, nullptr, 10);
-    world.active_spawn_location(spawnLocation);
+    world.spawn_location(SpawnLocation("kaizo", MAP_RYUMA_MIDDLE_HOUSE, 16, 16, ENTITY_ORIENTATION_SE, 10));
 
     Map* map = world.map(MAP_RYUMA_MIDDLE_HOUSE);
     map->clear_entities();
@@ -245,7 +244,6 @@ void edit_safety_pass_arc(World& world, md::ROM& rom)
     edit_ryuma_exterior(world);
     edit_ryuma_pier(world);
     edit_route_to_ryuma_2(world);
-    edit_route_to_ryuma_1(world);
     edit_kado_climb_map(world);
     edit_kado_textlines(world);
     edit_helga_swamp_map(world);

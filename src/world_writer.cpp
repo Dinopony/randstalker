@@ -1,17 +1,16 @@
 #include "world_writer.hpp"
 
-#include "model/entity_type.hpp"
-#include "model/item.hpp"
-#include "model/item_source.hpp"
-#include "model/map.hpp"
-#include "model/map_palette.hpp"
-#include "model/world_teleport_tree.hpp"
-#include "model/world_region.hpp"
+#include "world_model/entity_type.hpp"
+#include "world_model/item.hpp"
+#include "world_model/item_source.hpp"
+#include "world_model/map.hpp"
+#include "world_model/map_palette.hpp"
+#include "world_model/world_teleport_tree.hpp"
+#include "world_model/world.hpp"
 
 #include "tools/byte_array.hpp"
 #include "tools/textbanks_encoder.hpp"
 #include "exceptions.hpp"
-#include "world.hpp"
 
 #include "constants/offsets.hpp"
 #include "constants/entity_type_codes.hpp"
@@ -167,12 +166,8 @@ void WorldWriter::write_game_strings(md::ROM& rom, const World& world)
 void WorldWriter::write_dark_rooms(md::ROM& rom, const World& world)
 {
     // Inject dark rooms as a data block
-    std::vector<uint16_t> dark_map_ids;
-    if(world.dark_region())
-        dark_map_ids = world.dark_region()->dark_map_ids();
-
     ByteArray bytes;
-    for (uint16_t map_id : dark_map_ids)
+    for (uint16_t map_id : world.dark_maps())
         bytes.add_word(map_id);
     bytes.add_word(0xFFFF);
 

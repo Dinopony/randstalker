@@ -1,8 +1,12 @@
 #include "../tools/megadrive/rom.hpp"
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
-#include "../world.hpp"
-#include "../model/spawn_location.hpp"
+
+#include "../world_model/world.hpp"
+#include "../world_model/spawn_location.hpp"
+#include "../world_model/item.hpp"
+
+#include "../constants/item_codes.hpp"
 
 // Flag 1000
 constexpr uint8_t FLAG_NIGEL_AWOKEN_FROM_KNC_WATERFALL = 0x80;
@@ -159,7 +163,7 @@ static void setup_story_flags(const RandomizerOptions& options, const World& wor
     }
 
     // Clear Verla soldiers if spawning in Verla
-    if(world.active_spawn_location()->id() == "verla")
+    if(world.spawn_location().id() == "verla")
         out_flag_array[0x26] += 0x18;
 
     // Mark the boulder as already removed at game start
@@ -205,16 +209,16 @@ static void setup_ingame_tracker(std::vector<uint8_t>& out_flag_array)
 
 static void handle_spawn_position(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
-    rom.set_word(0x0027F4, world.active_spawn_location()->map_id());
-    rom.set_byte(0x0027FD, world.active_spawn_location()->position_x());
-    rom.set_byte(0x002805, world.active_spawn_location()->position_y());
+    rom.set_word(0x0027F4, world.spawn_location().map_id());
+    rom.set_byte(0x0027FD, world.spawn_location().position_x());
+    rom.set_byte(0x002805, world.spawn_location().position_y());
 }
 
 static void handle_custom_starting_life(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
     uint8_t starting_life = options.starting_life();
     if(!starting_life)
-        starting_life = world.active_spawn_location()->starting_life();
+        starting_life = world.spawn_location().starting_life();
     rom.set_byte(0x0027B4, starting_life-1);
     rom.set_byte(0x0027BC, starting_life-1);
 }
@@ -236,7 +240,7 @@ static void inject_func_init_game(md::ROM& rom, const RandomizerOptions& options
     }
 
     // Set the orientation byte of Nigel depending on spawn location on game start
-    func_init_game.moveb(world.active_spawn_location()->orientation(), addr_(0xFF5404));
+    func_init_game.moveb(world.spawn_location().orientation(), addr_(0xFF5404));
     // Set the appropriate starting golds
     func_init_game.movew(options.starting_gold(), addr_(0xFF120E));
 

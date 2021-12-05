@@ -1,5 +1,5 @@
 #include "map_palette.hpp"
-#include "../world.hpp"
+#include "../world_model/world.hpp"
 #include "../exceptions.hpp"
 
 MapPalette::Color::Color() : r(0), g(0), b(0)

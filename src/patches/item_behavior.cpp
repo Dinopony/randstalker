@@ -1,14 +1,14 @@
 #include "../tools/megadrive/rom.hpp"
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
-#include "../world.hpp"
 
 #include "../assets/blue_jewel.bin.hxx"
 #include "../assets/green_jewel.bin.hxx"
 #include "../assets/yellow_jewel.bin.hxx"
 
-#include "../model/item.hpp"
-#include "../model/map.hpp"
+#include "../world_model/world.hpp"
+#include "../world_model/item.hpp"
+#include "../world_model/map.hpp"
 
 #include "../constants/offsets.hpp"
 #include "../constants/item_codes.hpp"

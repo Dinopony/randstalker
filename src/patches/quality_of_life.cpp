@@ -1,10 +1,10 @@
 #include "../tools/megadrive/rom.hpp"
 #include "../tools/megadrive/code.hpp"
 #include "../randomizer_options.hpp"
-#include "../world.hpp"
+#include "../world_model/world.hpp"
 #include "../exceptions.hpp"
 #include "../assets/fixed_hud_tilemap.bin.hxx"
-#include "../model/item.hpp"
+#include "../world_model/item.hpp"
 #include "../tools/huffman/symbols.hpp"
 
 #include "../constants/offsets.hpp"

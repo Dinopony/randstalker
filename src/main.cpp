@@ -18,9 +18,7 @@
 #include <iostream>
 
 #include "extlibs/base64.hpp"
-
-#include "model/world_node.hpp"
-#include "model/item_source.hpp"
+#include "extlibs/json.hpp"
 
 #include "patches/patches.hpp"
 
@@ -30,8 +28,11 @@
 
 #include "exceptions.hpp"
 #include "constants/offsets.hpp"
-#include "world.hpp"
+#include "randomizer_patches_extern.hpp"
+#include "world_model/world.hpp"
+#include "logic_model/world_logic.hpp"
 #include "world_randomizer.hpp"
+#include "writers/writers.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {
@@ -87,17 +88,17 @@ Json randomize(World& world, RandomizerOptions& options, const ArgumentDictionar
 {
     Json spoiler_json;
 
-    std::string permalink = options.permalink();
-    spoiler_json["permalink"] = permalink;
+    spoiler_json["permalink"] = options.permalink();
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
-    std::cout << "Permalink: " << permalink << "\n\n";
+    std::cout << "Permalink: " << options.permalink() << "\n\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
     std::cout << "Randomizing world...\n";
-    WorldRandomizer randomizer(world, options);
+    WorldLogic logic(world, options);
+    WorldRandomizer randomizer(world, logic, options);
     randomizer.randomize();
 
     std::string debug_log_path = args.get_string("debuglog");
@@ -108,8 +109,22 @@ Json randomize(World& world, RandomizerOptions& options, const ArgumentDictionar
         debug_log_file.close();
     }
 
-    spoiler_json.merge_patch(world.to_json());
+    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, randomizer, logic, options));
     spoiler_json["playthrough"] = randomizer.playthrough_as_json();
+
+    // Output model if requested
+    if(args.get_boolean("dumpmodel"))
+    {
+        if(options.allow_spoiler_log())
+        {
+            ModelWriter::write_world_model(world);
+            ModelWriter::write_logic_model(logic);
+            ModelWriter::write_randomizer_model(randomizer);
+            std::cout << "Model dumped to './json_data/'" << std::endl;
+        }
+        else
+            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
+    }
 
     return spoiler_json;
 }
@@ -122,10 +137,11 @@ Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictiona
     // In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
     // The software will act as a simple ROM patcher, without verifying the game is actually completable.
 
-    world.parse_json(options.input_plando_json());
+//  TODO: Make it functional again
+//    world.parse_json(options.input_plando_json());
 
     spoiler_json.merge_patch(options.to_json());
-    spoiler_json.merge_patch(world.to_json());
+//    spoiler_json.merge_patch(world.to_json());
 
     // If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
     if (args.get_boolean("encodeplando") && options.is_plando())
@@ -138,6 +154,18 @@ Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictiona
 
         std::cout << "Plando encoded to './encoded_plando.json'" << std::endl;
         exit(0);
+    }
+
+    // Output model if requested
+    if(args.get_boolean("dumpmodel"))
+    {
+        if(options.allow_spoiler_log())
+        {
+            ModelWriter::write_world_model(world);
+            std::cout << "Model dumped to './json_data/'" << std::endl;
+        }
+        else
+            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
 
     return spoiler_json;
@@ -185,7 +213,12 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
 
     World world(*rom, options);
+    
+    patch_items(world, options);
+    patch_entity_types(world, options);
+    patch_game_strings(world, options);
     apply_world_edits(world, options, *rom);
+ 
     bool kaizo = args.contains("kaizo");
     if(kaizo)
         apply_kaizo_edits(world, *rom);
@@ -219,18 +252,6 @@ void generate(const ArgumentDictionary& args)
         rom->write_to_file(output_rom_file);
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
         std::cout << (rom->remaining_empty_bytes()/1000) << "Ko remaining of empty data" << std::endl;
-    }
-
-    // Output current world model if requested
-    if (args.get_boolean("dumpmodel"))
-    {
-        if(options.allow_spoiler_log())
-        {
-            world.output_model();
-            std::cout << "Model dumped to './json_data/'" << std::endl;
-        }
-        else
-            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
 
     // Write a spoiler log to help the player
