@@ -5,6 +5,8 @@
 #include "../randomizer_options.hpp"
 #include "../world_model/world.hpp"
 
+class WorldLogic;
+
 // Global patches
 void add_functions_to_items_on_use(md::ROM& rom, bool consumable_record_book);
 void add_statue_of_jypta_effect(md::ROM& rom);
