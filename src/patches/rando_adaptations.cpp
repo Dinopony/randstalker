@@ -5,7 +5,6 @@
 #include "../world_model/item.hpp"
 
 #include "../constants/item_codes.hpp"
-#include "../constants/offsets.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       RANDO ADAPTATIONS / ENHANCEMENTS
@@ -338,7 +337,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
         handle_armor_upgrades(rom);
 
     // Fix randomizer-related bugs
-//    make_sword_of_gaia_work_in_volcano(rom);
     fix_mir_tower_priest_room_items(rom);
     prevent_hint_item_save_scumming(rom);
     fix_crypt_soflocks(rom);

@@ -13,7 +13,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#include <cstdint>
 #include <string>
 #include <iostream>
 
@@ -31,7 +30,10 @@
 #include "world_model/world.hpp"
 #include "logic_model/world_logic.hpp"
 #include "world_randomizer.hpp"
-#include "writers/writers.hpp"
+#include "io/writers.hpp"
+
+// TODO: Dark room patches need to be done AFTER randomization
+// TODO: Logic editing patches need to be done BEFORE randomization
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {
@@ -222,6 +224,7 @@ void generate(const ArgumentDictionary& args)
     if(args.contains("kaizo"))
     {
         apply_kaizo_edits(world, *rom);
+        apply_kaizo_patches(*rom, world);
     }
     else if(options.is_plando())
     {

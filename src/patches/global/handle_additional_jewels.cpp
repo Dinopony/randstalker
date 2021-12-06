@@ -99,13 +99,6 @@ static void rename_jewels(md::ROM& rom, World& world, uint8_t jewel_count)
     // In that case, we only use one generic jewel item type which can be obtained several times, and check against this
     // item's count instead of checking if every jewel type is owned at Kazalt teleporter
     bool kazalt_jewel_mode = (jewel_count > MAX_INDIVIDUAL_JEWELS);
-    if(kazalt_jewel_mode)
-    {
-        Item* red_jewel = world.item(ITEM_RED_JEWEL);
-        red_jewel->name("Kazalt Jewel");
-        red_jewel->allowed_on_ground(false);
-        red_jewel->max_quantity(jewel_count);
-    }
 
     // Read item names
     uint32_t addr = 0;
@@ -224,34 +217,10 @@ static void add_additional_jewel_sprites(md::ROM& rom, uint8_t jewel_count)
     }
 }
 
-static void patch_logic_with_jewels(WorldLogic& logic, World& world, uint8_t jewel_count)
-{
-    // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
-    WorldPath* path_to_kazalt = logic.path("king_nole_cave", "kazalt");
-    if(jewel_count > MAX_INDIVIDUAL_JEWELS)
-    {
-        for(int i=0; i<jewel_count ; ++i)
-            path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
-    }
-    else if(jewel_count >= 1)
-    {
-        path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
-        if(jewel_count >= 2)
-            path_to_kazalt->add_required_item(world.item(ITEM_PURPLE_JEWEL));
-        if(jewel_count >= 3)
-            path_to_kazalt->add_required_item(world.item(ITEM_GREEN_JEWEL));
-        if(jewel_count >= 4)
-            path_to_kazalt->add_required_item(world.item(ITEM_BLUE_JEWEL));
-        if(jewel_count >= 5)
-            path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
-    }
-}
-
-void handle_additional_jewels(md::ROM& rom, World& world, WorldLogic& logic, uint8_t jewel_count)
+void handle_additional_jewels(md::ROM& rom, World& world, uint8_t jewel_count)
 {
     add_jewel_check_for_kazalt_teleporter(rom, jewel_count);
     rename_jewels(rom, world, jewel_count);
     remove_books_replaced_by_jewels(rom, world, jewel_count);
     add_additional_jewel_sprites(rom, jewel_count);
-    patch_logic_with_jewels(logic, world, jewel_count);
 }

@@ -4,6 +4,8 @@
 #include "world_path.hpp"
 #include "world_region.hpp"
 
+#include "../constants/values.hpp"
+
 #include "../world_model/item_source.hpp"
 #include "../world_model/item.hpp"
 #include "../world_model/world_teleport_tree.hpp"
@@ -101,6 +103,27 @@ void WorldLogic::init_paths(const World& world, const RandomizerOptions& options
                 required_items.erase(it);
         }
     }
+
+    // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
+    WorldPath* path_to_kazalt = this->path("king_nole_cave", "kazalt");
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
+    {
+        for(int i=0; i<options.jewel_count() ; ++i)
+            path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
+    }
+    else if(options.jewel_count() >= 1)
+    {
+        path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
+        if(options.jewel_count() >= 2)
+            path_to_kazalt->add_required_item(world.item(ITEM_PURPLE_JEWEL));
+        if(options.jewel_count() >= 3)
+            path_to_kazalt->add_required_item(world.item(ITEM_GREEN_JEWEL));
+        if(options.jewel_count() >= 4)
+            path_to_kazalt->add_required_item(world.item(ITEM_BLUE_JEWEL));
+        if(options.jewel_count() >= 5)
+            path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
+    }
+
     if(options.all_trees_visited_at_start())
     {
         std::vector<WorldNode*> required_nodes;
@@ -128,19 +151,6 @@ void WorldLogic::init_regions()
     for(auto& [id, node] : _nodes)
         if(node->region() == nullptr)
             throw RandomizerException("Node '" + node->id() + "' doesn't belong to any region");
-}
-
-WorldNode* WorldLogic::first_node_with_item(Item* item)
-{
-    for (auto& [key, node] : _nodes)
-    {
-        std::vector<ItemSource*> sources = node->item_sources();
-        for (ItemSource* source : sources)
-            if (source->item() == item)
-                return node;
-    }
-
-    return nullptr;
 }
 
 WorldPath* WorldLogic::path(WorldNode* origin, WorldNode* destination)

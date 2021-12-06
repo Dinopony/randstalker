@@ -5,6 +5,7 @@
 
 #include "../../constants/item_codes.hpp"
 #include "../../constants/flags.hpp"
+#include "../../constants/values.hpp"
 
 #include "../../exceptions.hpp"
 
@@ -156,7 +157,15 @@ void apply_rando_options_to_world(const RandomizerOptions& options, World& world
 {
     world.starting_golds(options.starting_gold());
     world.custom_starting_life(options.starting_life());
-    
+
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
+    {
+        Item* red_jewel = world.item(ITEM_RED_JEWEL);
+        red_jewel->name("Kazalt Jewel");
+        red_jewel->allowed_on_ground(false);
+        red_jewel->max_quantity(options.jewel_count());
+    }
+
     patch_starting_flags(world, options);
     patch_items(world, options);
     patch_entity_types(world, options);

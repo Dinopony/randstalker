@@ -1,8 +1,10 @@
 #include <md_tools.hpp>
 
+#include "../../world_model/world.hpp"
 #include "../../constants/offsets.hpp"
+#include "../../tools/byte_array.hpp"
 
-uint32_t inject_function_darken_palette(md::ROM& rom)
+static uint32_t inject_function_darken_palette(md::ROM& rom)
 {
     // ----------------------------------------
     // Function to darken the color palette currently used to draw the map
@@ -24,14 +26,25 @@ uint32_t inject_function_darken_palette(md::ROM& rom)
     return rom.inject_code(func_darken_palette);
 }
 
-void replace_function_check_lantern(md::ROM& rom, uint32_t darken_palette)
+static uint32_t inject_dark_rooms_table(md::ROM& rom, const World& world)
+{
+    // Inject dark rooms as a data block
+    ByteArray bytes;
+    for (uint16_t map_id : world.dark_maps())
+        bytes.add_word(map_id);
+    bytes.add_word(0xFFFF);
+
+    return rom.inject_bytes(bytes);
+}
+
+static void replace_function_check_lantern(md::ROM& rom, uint32_t darken_palette, uint32_t dark_rooms_table)
 {
     // ----------------------------------------
     // Function to check if the current room is supposed to be dark, and process differently 
     // depending on whether or not we own the lantern
     md::Code func_check_lantern;
 
-    func_check_lantern.lea(rom.stored_address("data_dark_rooms"), reg_A0);
+    func_check_lantern.lea(dark_rooms_table, reg_A0);
     func_check_lantern.label("loop_start");
     func_check_lantern.movew(addr_(reg_A0), reg_D0);
     func_check_lantern.bmi(14);
@@ -58,7 +71,7 @@ void replace_function_check_lantern(md::ROM& rom, uint32_t darken_palette)
     rom.set_code(0x87BE, func_check_lantern);
 }
 
-void replace_function_change_map_palette(md::ROM& rom)
+static void replace_function_change_map_palette(md::ROM& rom)
 {
     // ----------------------------------------
     // Function to change the palette used on map transition (already exist in OG, slightly modified)
@@ -86,10 +99,11 @@ void replace_function_change_map_palette(md::ROM& rom)
  * Make the lantern a flexible item, by actually being able to impact a predefined
  * table of "dark maps" and turning screen to pitch black if it's not owned.
  */
-void alter_lantern_handling(md::ROM& rom)
+void alter_lantern_handling(md::ROM& rom, const World& world)
 {
+    uint32_t dark_rooms_table = inject_dark_rooms_table(rom, world);
     uint32_t darken_palette = inject_function_darken_palette(rom);
-    replace_function_check_lantern(rom, darken_palette);
+    replace_function_check_lantern(rom, darken_palette, dark_rooms_table);
     replace_function_change_map_palette(rom);
 
     // ----------------------------------------

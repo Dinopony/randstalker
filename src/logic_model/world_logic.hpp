@@ -30,8 +30,6 @@ public:
     WorldNode* spawn_node() const { return _spawn_node; }
     WorldNode* end_node() const { return _nodes.at("end"); }
 
-    WorldNode* first_node_with_item(Item* item);
-
     const std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*>& paths() const { return _paths; }
     WorldPath* path(WorldNode* origin, WorldNode* destination);
     WorldPath* path(const std::string& origin_name, const std::string& destination_name);

@@ -21,7 +21,6 @@ void WorldWriter::write_world_to_rom(md::ROM& rom, const World& world)
     write_item_sources(rom, world);
     write_entity_types(rom, world);
     write_game_strings(rom, world);
-    write_dark_rooms(rom, world);
     write_tibor_tree_connections(rom, world);
     write_fahl_enemies(rom, world);
     write_map_connections(rom, world);
@@ -167,17 +166,6 @@ void WorldWriter::write_game_strings(md::ROM& rom, const World& world)
 {
     TextbanksEncoder encoder(rom, world.game_strings());
     encoder.write_to_rom(rom);
-}
-
-void WorldWriter::write_dark_rooms(md::ROM& rom, const World& world)
-{
-    // Inject dark rooms as a data block
-    ByteArray bytes;
-    for (uint16_t map_id : world.dark_maps())
-        bytes.add_word(map_id);
-    bytes.add_word(0xFFFF);
-
-    rom.inject_bytes(bytes, "data_dark_rooms");
 }
 
 void WorldWriter::write_tibor_tree_connections(md::ROM& rom, const World& world)

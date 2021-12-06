@@ -40,7 +40,7 @@ namespace tools
     inline std::vector<std::string> split(const std::string& str, const std::string& delim)
     {
         std::vector<std::string> tokens;
-        size_t prev = 0, pos = 0;
+        size_t prev = 0, pos;
         do {
             pos = str.find(delim, prev);
             if (pos == std::string::npos)
@@ -67,14 +67,6 @@ namespace tools
         }
 
         return ret;
-    }
-
-    template<typename T>
-    static std::string hexify(const T& val)
-    {
-        std::ostringstream oss;
-        oss << std::uppercase << std::hex << val;
-        return oss.str();
     }
 
     // trim from start (in place)
