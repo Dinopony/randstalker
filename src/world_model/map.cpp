@@ -59,7 +59,7 @@ void Map::clear()
 Entity* Map::add_entity(Entity* entity) 
 {
     entity->map(this);
-    _entities.push_back(entity);
+    _entities.emplace_back(entity);
     return entity;
 }
 
@@ -175,7 +175,7 @@ Json Map::to_json(const World& world) const
     {
         json["globalEntityMaskFlags"] = Json::array();
         for(const GlobalEntityMaskFlag& global_mask_flag : _global_entity_mask_flags)
-            json["globalEntityMaskFlags"].push_back(global_mask_flag.to_json());
+            json["globalEntityMaskFlags"].emplace_back(global_mask_flag.to_json());
     }
 
     if(!_entities.empty())
@@ -187,7 +187,7 @@ Json Map::to_json(const World& world) const
             Json entity_json = entity->to_json(world);
             if(entity_json.at("entityType") == "chest")
                 entity_json["chestId"] = chest_id++;
-            json["entities"].push_back(entity_json);
+            json["entities"].emplace_back(entity_json);
         }
     }
     

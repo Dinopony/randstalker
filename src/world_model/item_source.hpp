@@ -23,6 +23,7 @@ private:
 
 public:
     ItemSource(const std::string& name, const std::string& node_id, const std::vector<std::string>& hints);
+    virtual ~ItemSource() = default;
 
     virtual std::string type_name() const = 0;
     bool is_chest() { return this->type_name() == ITEM_SOURCE_TYPE_CHEST; }
@@ -42,7 +43,7 @@ public:
     void node_id(const std::string& node_id) { _node_id = node_id; }
 
     const std::vector<std::string>& hints() const { return _hints; }
-    void add_hint(const std::string& hint) { _hints.push_back(hint); }
+    void add_hint(const std::string& hint) { _hints.emplace_back(hint); }
     
     virtual bool is_item_compatible(Item* item) const = 0;
 

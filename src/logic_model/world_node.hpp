@@ -35,16 +35,16 @@ public:
     WorldNode& name(const std::string& name) { _name = name; return *this;}
 
     const std::vector<ItemSource*>& item_sources() const { return _item_sources; }
-    void add_item_source(ItemSource* source) {  _item_sources.push_back(source); }
+    void add_item_source(ItemSource* source) {  _item_sources.emplace_back(source); }
 
     const std::vector<WorldPath*>& outgoing_paths() const { return _outgoing_paths; }
-    void add_outgoing_path(WorldPath* path) { _outgoing_paths.push_back(path); }
+    void add_outgoing_path(WorldPath* path) { _outgoing_paths.emplace_back(path); }
 
     const std::vector<WorldPath*>& ingoing_paths() const { return _ingoing_paths; }
-    void add_ingoing_path(WorldPath* path) { _ingoing_paths.push_back(path); }
+    void add_ingoing_path(WorldPath* path) { _ingoing_paths.emplace_back(path); }
 
     const std::vector<std::string>& hints() const { return _hints; }
-    void add_hint(const std::string& hint) { _hints.push_back(hint); }
+    void add_hint(const std::string& hint) { _hints.emplace_back(hint); }
 
     WorldRegion* region() const { return _region; }
     void region(WorldRegion* region) { _region = region; }

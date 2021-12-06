@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # CMake related
-build/
+build_debug/
 build_release_win64/
 build_release_win32/
 

@@ -28,11 +28,11 @@ public:
         }
     }
 
-    bool contains(const std::string& name) const {
+    [[nodiscard]] bool contains(const std::string& name) const {
         return _args_map.count(name) || _args_map.count("no" + name);
     }
 
-    std::string get_string(const std::string& name, const std::string& default_value = "") const
+    [[nodiscard]] std::string get_string(const std::string& name, const std::string& default_value = "") const
     {
         try {
             return _args_map.at(name);
@@ -41,7 +41,7 @@ public:
         }
     }
 
-    int get_integer(const std::string& name, int default_value = 0) const
+    [[nodiscard]] int get_integer(const std::string& name, int default_value = 0) const
     {
         try {
             return std::stoi(_args_map.at(name));
@@ -52,7 +52,7 @@ public:
         return default_value;
     }
 
-    double get_double(const std::string& name, double default_value = 0.0) const
+    [[nodiscard]] double get_double(const std::string& name, double default_value = 0.0) const
     {
         try {
             return std::stod(_args_map.at(name));
@@ -63,7 +63,7 @@ public:
         return default_value;
     }
 
-    bool get_boolean(const std::string& name, bool default_value = false) const
+    [[nodiscard]] bool get_boolean(const std::string& name, bool default_value = false) const
     {
         // "--noParam" <==> "--param=false"
         std::string negation_param = "no" + name;

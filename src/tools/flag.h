@@ -14,7 +14,7 @@ struct Flag
     constexpr Flag(uint16_t byte, uint8_t bit) : byte(byte), bit(bit)
     {}
 
-    Json to_json() const
+    virtual Json to_json() const
     {
         Json json;
         json["flagByte"] = byte;

@@ -4,13 +4,8 @@
 
 #include "../world_model/world.hpp"
 #include "../world_randomizer.hpp"
-#include "../logic_model/world_logic.hpp"
-#include "../randomizer_options.hpp"
-
-#include "../world_model/spawn_location.hpp"
 #include "../world_model/world_teleport_tree.hpp"
 #include "../world_model/entity_type.hpp"
-
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
 
@@ -30,7 +25,7 @@ Json SpoilerWriter::build_spoiler_json(const World& world, const WorldRandomizer
     {
         json["tiborTrees"] = Json::array();
         for(auto& pair : world.teleport_tree_pairs())
-            json["tiborTrees"].push_back(pair.first->name() + " <--> " + pair.second->name());
+            json["tiborTrees"].emplace_back(pair.first->name() + " <--> " + pair.second->name());
     }
 
     // Export item sources
@@ -49,7 +44,7 @@ Json SpoilerWriter::build_spoiler_json(const World& world, const WorldRandomizer
     // Fahl enemies
     json["fahlEnemies"] = Json::array();
     for(EntityType* enemy : world.fahl_enemies())
-        json["fahlEnemies"].push_back(enemy->name());
+        json["fahlEnemies"].emplace_back(enemy->name());
 
     return json;
 }

@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-class RandomizerException
+class RandomizerException : public std::exception
 {
 public:
     RandomizerException() :  _message()

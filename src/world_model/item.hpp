@@ -32,25 +32,25 @@ public:
         _allowed_on_ground  (allowed_on_ground)
     {}
     
-    uint8_t id() const { return _id; }
+    [[nodiscard]] uint8_t id() const { return _id; }
     Item& id(uint8_t id) { _id = id; return *this; }
 
-    const std::string& name() const { return _name; }
+    [[nodiscard]] const std::string& name() const { return _name; }
     Item& name(const std::string& name) { _name = name; return *this; }
 
-    uint8_t starting_quantity() const { return std::min(_starting_quantity, _max_quantity); }
+    [[nodiscard]] uint8_t starting_quantity() const { return std::min(_starting_quantity, _max_quantity); }
     Item& starting_quantity(uint8_t quantity) { _starting_quantity = quantity; return *this; }
     
-    uint8_t max_quantity() const { return _max_quantity; }
+    [[nodiscard]] uint8_t max_quantity() const { return _max_quantity; }
     Item& max_quantity(uint8_t quantity) { _max_quantity = quantity; return *this; }
 
-    uint16_t gold_value() const { return _gold_value; }
+    [[nodiscard]] uint16_t gold_value() const { return _gold_value; }
     virtual Item& gold_value(uint16_t value) { _gold_value = value; return *this; }
 
-    bool allowed_on_ground() const { return _allowed_on_ground; }
+    [[nodiscard]] bool allowed_on_ground() const { return _allowed_on_ground; }
     void allowed_on_ground(bool allowed) { _allowed_on_ground = allowed; }
 
-    Json to_json() const;
+    [[nodiscard]] Json to_json() const;
     static Item* from_json(uint8_t id, const Json& json);
     void apply_json(const Json& json);
 };
@@ -61,19 +61,17 @@ class ItemGolds : public Item
 {
 public:
     ItemGolds(uint8_t id, uint16_t gold_value) : 
-        Item(id, "", 0, 0, false)
+        Item(id,
+             std::to_string(gold_value) + " golds",
+             0,
+             0,
+             gold_value,
+             false)
+    {}
+
+    Item& gold_value(uint16_t value) override
     {
-        this->gold_value(gold_value);
-    }
-
-    virtual Item& gold_value(uint16_t value)
-    {
-        Item::gold_value(value);
-
-        std::ostringstream new_name;
-        new_name << (uint32_t)value << " golds";
-        name(new_name.str());
-
-        return *this;
+        this->name(std::to_string(value) + " golds");
+        return Item::gold_value(value);
     }
 };

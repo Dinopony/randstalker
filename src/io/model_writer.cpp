@@ -3,7 +3,6 @@
 #include <json.hpp>
 
 #include "../world_model/item_source.hpp"
-#include "../world_model/item.hpp"
 #include "../world_model/entity_type.hpp"
 #include "../world_model/map.hpp"
 #include "../world_model/map_connection.hpp"
@@ -23,7 +22,7 @@ void ModelWriter::write_world_model(const World& world)
     /////////// WORLD MODEL /////////////////////////////////////////////////////////
     Json item_sources_json = Json::array();
     for(ItemSource* source : world.item_sources())
-        item_sources_json.push_back(source->to_json());
+        item_sources_json.emplace_back(source->to_json());
     tools::dump_json_to_file(item_sources_json, "./json_data/item_source.json");
 
     Json items_json;
@@ -43,21 +42,21 @@ void ModelWriter::write_world_model(const World& world)
 
     Json map_connections_json = Json::array();
     for(const MapConnection& connection : world.map_connections())
-        map_connections_json.push_back(connection.to_json());
+        map_connections_json.emplace_back(connection.to_json());
     tools::dump_json_to_file(map_connections_json, "./json_data/map_connection.json");
 
     Json map_palettes_json = Json::array();
     for(MapPalette* palette : world.map_palettes())
-        map_palettes_json.push_back(palette->to_json());
+        map_palettes_json.emplace_back(palette->to_json());
     tools::dump_json_to_file(map_palettes_json, "./json_data/map_palette.json");
 
     Json trees_json = Json::array();
     for(auto& [tree_1, tree_2] : world.teleport_tree_pairs())
     {
         Json pair_json = Json::array();
-        pair_json.push_back(tree_1->to_json());
-        pair_json.push_back(tree_2->to_json());
-        trees_json.push_back(pair_json);
+        pair_json.emplace_back(tree_1->to_json());
+        pair_json.emplace_back(tree_2->to_json());
+        trees_json.emplace_back(pair_json);
     }
     tools::dump_json_to_file(trees_json, "./json_data/world_teleport_tree.json");
 
@@ -100,13 +99,13 @@ void ModelWriter::write_logic_model(const WorldLogic& logic)
             }
         }
         
-        paths_json.push_back(path->to_json(two_way));
+        paths_json.emplace_back(path->to_json(two_way));
     }
     tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
 
     Json regions_json = Json::array();
     for(WorldRegion* region : logic.regions())
-        regions_json.push_back(region->to_json());
+        regions_json.emplace_back(region->to_json());
     tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
 }
 
@@ -115,7 +114,7 @@ void ModelWriter::write_randomizer_model(const WorldRandomizer& randomizer)
     /////////// RANDOMIZER OBJECTS /////////////////////////////////////////////////////////
     Json hints_json = Json::array();
     for(auto& [id, hint_source] : randomizer.hint_sources())
-        hints_json.push_back(hint_source->to_json());
+        hints_json.emplace_back(hint_source->to_json());
     tools::dump_json_to_file(hints_json, "./json_data/hint_source.json");
 
     Json spawns_json;

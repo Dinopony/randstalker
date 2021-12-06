@@ -145,26 +145,26 @@ namespace md
     void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint8_t>& output) const
     {
         for (uint32_t addr = begin; addr < end; ++addr)
-            output.push_back(this->get_byte(addr));
+            output.emplace_back(this->get_byte(addr));
     }
 
     void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint16_t>& output) const
     {
         for (uint32_t addr = begin; addr < end; addr += 0x2)
-            output.push_back(this->get_word(addr));
+            output.emplace_back(this->get_word(addr));
     }
 
     void ROM::data_chunk(uint32_t begin, uint32_t end, std::vector<uint32_t>& output) const
     {
         for (uint32_t addr = begin; addr < end; addr += 0x4)
-            output.push_back(this->get_long(addr));
+            output.emplace_back(this->get_long(addr));
     }
 
     std::vector<uint8_t> ROM::data_chunk(uint32_t begin, uint32_t end) const
     {
         std::vector<uint8_t> output;
         for (uint32_t addr = begin; addr < end; ++addr)
-            output.push_back(this->get_byte(addr));
+            output.emplace_back(this->get_byte(addr));
         return output;
     }
 
@@ -189,7 +189,7 @@ namespace md
         for(uint32_t addr=begin ; addr < end ; ++addr)
             this->set_byte(addr, 0xFF);
 
-        _empty_chunks.push_back(std::make_pair(begin, end));
+        _empty_chunks.emplace_back(std::make_pair(begin, end));
     }
 
     uint32_t ROM::remaining_empty_bytes() const

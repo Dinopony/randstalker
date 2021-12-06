@@ -98,7 +98,7 @@ public:
     uint8_t map_palette_id(MapPalette* palette) const;
 
     const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
-    void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.push_back(enemy); }
+    void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.emplace_back(enemy); }
 
     // void parse_json(const Json& json);
     Item* parse_item_from_name(const std::string& itemName);

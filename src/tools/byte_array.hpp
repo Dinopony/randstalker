@@ -6,11 +6,11 @@
 class ByteArray : public std::vector<uint8_t>
 {
 public:
-    ByteArray() {}
+    ByteArray() = default;
 
     void add_byte(uint8_t byte)
     { 
-        this->push_back(byte);
+        this->emplace_back(byte);
     }
     
     void add_word(uint16_t word)

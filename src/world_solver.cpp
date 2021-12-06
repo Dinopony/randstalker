@@ -101,7 +101,7 @@ bool WorldSolver::try_unlocking_paths()
         _blocked_paths.erase(path);
         --i;
 
-        debug_log["exploration"].push_back("Unlocked path " + path->origin()->id() + " --> " + path->destination()->id());
+        debug_log["exploration"].emplace_back("Unlocked path " + path->origin()->id() + " --> " + path->destination()->id());
     }
     
     return opened_at_least_one_path;
@@ -118,7 +118,7 @@ void WorldSolver::expand_exploration_zone()
         WorldNode* node = *_nodes_to_explore.begin();
         _nodes_to_explore.erase(node);
         _explored_nodes.insert(node);
-        debug_log["exploration"].push_back("Explored " + node->id());
+        debug_log["exploration"].emplace_back("Explored " + node->id());
 
         // Process all outgoing paths
         for (WorldPath* path : node->outgoing_paths())
@@ -132,14 +132,14 @@ void WorldSolver::expand_exploration_zone()
             {
                 // For crossable paths, add destination to the list of nodes to explore
                 _nodes_to_explore.insert(destination);
-                debug_log["exploration"].push_back("Added " + destination->id() + " to accessible nodes");
+                debug_log["exploration"].emplace_back("Added " + destination->id() + " to accessible nodes");
             }
             else
             {
-                debug_log["exploration"].push_back("Found blocked path to " + path->destination()->id());
+                debug_log["exploration"].emplace_back("Found blocked path to " + path->destination()->id());
 
                 // For uncrossable blocked paths, add them to a pending list
-                _blocked_paths.push_back(path);
+                _blocked_paths.emplace_back(path);
 
                 // Add required items to the list of relevant items encountered
                 std::vector<Item*> required_items = path->required_items();
@@ -187,7 +187,7 @@ void WorldSolver::update_current_inventory()
         }
         else
         {
-            _inventory.push_back(item);
+            _inventory.emplace_back(item);
         }
     }
 }
@@ -199,7 +199,7 @@ std::vector<ItemSource*> WorldSolver::empty_reachable_item_sources() const
 
     for(ItemSource* source : _reachable_item_sources)
         if(!source->item())
-            empty_item_sources.push_back(source);
+            empty_item_sources.emplace_back(source);
     
     return empty_item_sources;
 }
@@ -217,7 +217,7 @@ std::vector<WorldNode*> WorldSolver::missing_nodes_to_take_path(WorldPath* path)
     {
         // A required node was not explored yet, path cannot be taken
         if(!_explored_nodes.contains(node))
-            missing_nodes.push_back(node);
+            missing_nodes.emplace_back(node);
     }
 
     return missing_nodes;
@@ -236,7 +236,7 @@ std::vector<Item*> WorldSolver::missing_items_to_take_path(WorldPath* path) cons
         // Item could not be found in inventory, path cannot be taken
         if (it == inventory_copy.end())
         {
-            missing_items.push_back(item);
+            missing_items.emplace_back(item);
         }
         else
         {
@@ -269,7 +269,7 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
             continue;
 
         std::vector<Item*> forbidden_items_plus_one = forbidden_items;
-        forbidden_items_plus_one.push_back(item);
+        forbidden_items_plus_one.emplace_back(item);
         
         WorldSolver solver(_logic);
         solver.forbid_item_instances(forbidden_items_plus_one);
@@ -281,7 +281,7 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
         else
         {
             // Item cannot be removed: it means it's required
-            minimal_inventory.push_back(item);
+            minimal_inventory.emplace_back(item);
         }
     }
  

@@ -4,10 +4,11 @@
 #include "map.hpp"
 #include "entity_type.hpp"
 #include <set>
+#include <utility>
 
 #include "../constants/entity_type_codes.hpp"
 
-static std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
+static const std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
     { ENTITY_SMALL_YELLOW_PLATFORM, 2 },
     { ENTITY_SMALL_YELLOW_PLATFORM_ALTERNATE, 2 },
     { ENTITY_SMALL_THIN_YELLOW_PLATFORM, 2 },
@@ -23,17 +24,17 @@ static std::map<uint8_t, uint8_t> DEFAULT_PALETTES = {
     { ENTITY_CRATE, 2 }
 };
 
-static std::set<uint8_t> LIFTABLE_TYPES = {
+static const std::set<uint8_t> LIFTABLE_TYPES = {
     ENTITY_CRATE, ENTITY_VASE, ENTITY_BUTTON_CUBE
 };
 
-static std::set<uint8_t> FIGHTABLE_TYPES = {
+static const std::set<uint8_t> FIGHTABLE_TYPES = {
     ENTITY_SMALL_GRAY_SPIKEBALL,
     ENTITY_LARGE_GRAY_SPIKEBALL,
     ENTITY_SACRED_TREE
 };
 
-static std::set<uint8_t> ENEMY_TYPES = {
+static const std::set<uint8_t> ENEMY_TYPES = {
     ENEMY_SLIME_1, ENEMY_SLIME_2, ENEMY_SLIME_3, ENEMY_SLIME_4, ENEMY_SLIME_5, ENEMY_SLIME_6,
     ENEMY_ORC_1, ENEMY_ORC_2, ENEMY_ORC_3,
     ENEMY_WORM_1, ENEMY_WORM_2, ENEMY_WORM_3,
@@ -62,11 +63,11 @@ static std::set<uint8_t> ENEMY_TYPES = {
 };
 
 Entity::Entity(Attributes attrs) :
-    _attrs  (attrs),
+    _attrs  (std::move(attrs)),
     _map    (nullptr)
 {
     if(DEFAULT_PALETTES.count(_attrs.type_id))
-        _attrs.palette = DEFAULT_PALETTES[_attrs.type_id];
+        _attrs.palette = DEFAULT_PALETTES.at(_attrs.type_id);
 
     if(LIFTABLE_TYPES.count(_attrs.type_id))
         _attrs.liftable = true;
@@ -87,11 +88,6 @@ Entity::Entity(uint8_t type_id, uint8_t pos_x, uint8_t pos_y, uint8_t pos_z) :
         .type_id = type_id,
         .position = Position(pos_x, pos_y, pos_z)
     })
-{}
-
-Entity::Entity(const Entity& entity) :
-    _map      (entity._map),
-    _attrs    (entity._attrs)
 {}
 
 uint8_t Entity::entity_id() const 
@@ -144,7 +140,7 @@ Json Entity::to_json(const World& world) const
     {
         json["maskFlags"] = Json::array();
         for(const EntityMaskFlag& mask : _attrs.mask_flags)
-            json["maskFlags"].push_back(mask.to_json());
+            json["maskFlags"].emplace_back(mask.to_json());
     }
 
     return json;
@@ -190,7 +186,7 @@ Entity* Entity::from_json(const Json& json, Map* map, const World& world)
     if(json.contains("maskFlags"))
     {
         for(const Json& j : json.at("maskFlags"))
-            attrs.mask_flags.push_back(EntityMaskFlag::from_json(j));
+            attrs.mask_flags.emplace_back(EntityMaskFlag::from_json(j));
     }
 
     Entity* entity = new Entity(attrs);

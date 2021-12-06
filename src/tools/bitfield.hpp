@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 #include "tools.hpp"
 
@@ -12,14 +13,14 @@ public:
         _values.reserve(4);
     }
 
-    Bitfield(const std::vector<uint8_t>& values, uint8_t size) : _values(values), _size(size)
+    Bitfield(std::vector<uint8_t> values, uint8_t size) : _values(std::move(values)), _size(size)
     {}
 
     void add(bool bit)
     {
         if (_size % 8 == 0)
         {
-            _values.push_back((bit) ? 1 : 0);
+            _values.emplace_back((bit) ? 1 : 0);
         }
         else
         {
@@ -31,7 +32,7 @@ public:
         ++_size;
     }
 
-    bool get(uint32_t bit_id) const
+    [[nodiscard]] bool get(uint32_t bit_id) const
     {
         size_t byteID = bit_id / 8;
         uint8_t byte = _values[byteID];
@@ -45,12 +46,12 @@ public:
         return (byte >> (7 - (bit_id % 8))) & 0x1;
     }
 
-    std::vector<uint8_t> to_bytes() const
+    [[nodiscard]] std::vector<uint8_t> to_bytes() const
     {
         return _values;
     }
 
-    uint32_t size() const
+    [[nodiscard]] uint32_t size() const
     {
         return _size;
     }
@@ -108,7 +109,7 @@ public:
         return true;
     }
 
-    std::string to_string() const
+    [[nodiscard]] std::string to_string() const
     {
         std::ostringstream oss;
         oss << "[";

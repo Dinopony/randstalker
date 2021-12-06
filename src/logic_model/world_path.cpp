@@ -21,7 +21,7 @@ std::vector<Item*> WorldPath::missing_items_to_cross(std::vector<Item*> player_i
     if(!only_strictly_required_items)
     {
         for(Item* item : _items_placed_when_crossing)
-            items_to_test.push_back(item);
+            items_to_test.emplace_back(item);
     }
 
     std::vector<Item*> missing_items;
@@ -30,7 +30,7 @@ std::vector<Item*> WorldPath::missing_items_to_cross(std::vector<Item*> player_i
         auto iter = std::find(player_inventory_copy.begin(), player_inventory_copy.end(), item);
         if (iter == player_inventory_copy.end())
         {
-            missing_items.push_back(item);
+            missing_items.emplace_back(item);
         }
         else
         {
@@ -84,20 +84,20 @@ Json WorldPath::to_json(bool two_way) const
     {
         json["requiredItems"] = Json::array();
         for(Item* item : _required_items)
-            json["requiredItems"].push_back(item->name());
+            json["requiredItems"].emplace_back(item->name());
     }
 
     if(!_required_nodes.empty())
     {
         json["requiredNodes"] = Json::array();
         for(WorldNode* node : _required_nodes)
-            json["requiredNodes"].push_back(node->id());
+            json["requiredNodes"].emplace_back(node->id());
     }
 
     if(!_items_placed_when_crossing.empty())
     {
         for(Item* item : _items_placed_when_crossing)
-            json["itemsPlacedWhenCrossing"].push_back(item->name());
+            json["itemsPlacedWhenCrossing"].emplace_back(item->name());
     }
 
     return json;
@@ -127,17 +127,17 @@ WorldPath* WorldPath::from_json(const Json& json, const std::map<std::string, Wo
     std::vector<Item*> required_items;
     if(json.contains("requiredItems"))
         for(const std::string& item_name : json.at("requiredItems"))
-            required_items.push_back(find_item_from_name(items, item_name));
+            required_items.emplace_back(find_item_from_name(items, item_name));
 
     std::vector<WorldNode*> required_nodes;
     if(json.contains("requiredNodes"))
         for(const std::string& node_id : json.at("requiredNodes"))
-            required_nodes.push_back(nodes.at(node_id));
+            required_nodes.emplace_back(nodes.at(node_id));
 
     std::vector<Item*> items_placed_when_crossing;
     if(json.contains("itemsPlacedWhenCrossing"))
         for(const std::string& item_name : json.at("itemsPlacedWhenCrossing"))
-            items_placed_when_crossing.push_back(find_item_from_name(items, item_name));
+            items_placed_when_crossing.emplace_back(find_item_from_name(items, item_name));
         
     return new WorldPath(from_node, to_node, weight, required_items, required_nodes, items_placed_when_crossing);
 }

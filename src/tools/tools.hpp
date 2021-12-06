@@ -29,11 +29,11 @@ namespace tools
         while (vector.size() > 1)
         {
             uint32_t random_pos = get_uniform_integer(rng(), 0, static_cast<uint32_t>(vector.size()-1));
-            elems.push_back(vector[random_pos]);
+            elems.emplace_back(vector[random_pos]);
             vector.erase(vector.begin() + random_pos);
         }
           
-        elems.push_back(*vector.begin());
+        elems.emplace_back(*vector.begin());
         vector = elems;
     }
 
@@ -46,7 +46,7 @@ namespace tools
             if (pos == std::string::npos)
                 pos = str.length();
             std::string token = str.substr(prev, pos-prev);
-            tokens.push_back(token);
+            tokens.emplace_back(token);
 
             prev = pos + delim.length();
         } while (pos < str.length() && prev < str.length());

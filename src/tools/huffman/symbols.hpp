@@ -70,7 +70,7 @@ namespace Symbols
         std::vector<uint8_t> ret;
         ret.reserve(symbol_string.size());
         for(char c : symbol_string)
-            ret.push_back(byte_for_symbol(c));
+            ret.emplace_back(byte_for_symbol(c));
         return ret;
     }
 }

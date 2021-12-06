@@ -32,7 +32,7 @@ void setup_mercator_castle_maps(World& world)
         castle_palette_darkened->color(i).apply_factor(0.55f);
     castle_palette_darkened->color(8).r--;
     castle_palette_darkened->color(9).r--;
-    world.map_palettes().push_back(castle_palette_darkened);
+    world.map_palettes().emplace_back(castle_palette_darkened);
 
     for(uint16_t map_id : maps_to_setup)
     {
@@ -215,7 +215,7 @@ void edit_castle_kayla_room(World& world)
     map->add_entity(new Entity(ENEMY_REAPER_1, 0x14, 0x15, 0))->palette(0);
 
     // On bathroom button pressed, remove all entities
-    map->global_entity_mask_flags().push_back(GlobalEntityMaskFlag(FLAG_KAYLA_BATHROOM_BUTTON_PRESSED, 0));
+    map->global_entity_mask_flags().emplace_back(GlobalEntityMaskFlag(FLAG_KAYLA_BATHROOM_BUTTON_PRESSED, 0));
 }
 
 void edit_castle_kayla_bathroom(World& world)

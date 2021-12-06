@@ -59,7 +59,7 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
             if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
                 throw RandomizerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
             
-            entities.push_back(entity);
+            entities.emplace_back(entity);
         }
 
         if(type == "shop")
@@ -107,7 +107,7 @@ Json ItemSourceOnGround::to_json() const
         if(_entities.size() == 1)
             json["entity"] = entity_json;
         else
-            json["entities"].push_back(entity_json);
+            json["entities"].emplace_back(entity_json);
     }
 
     if(_cannot_be_taken_repeatedly)

@@ -102,7 +102,7 @@ void WorldRandomizer::randomize_spawn_location()
     if(possible_spawn_locations.empty())
     {
         for(auto& [id, spawn] : _spawn_locations)
-            possible_spawn_locations.push_back(id);
+            possible_spawn_locations.emplace_back(id);
     }
 
     tools::shuffle(possible_spawn_locations, _rng);
@@ -125,7 +125,7 @@ void WorldRandomizer::randomize_dark_rooms()
             continue;
 
         if (!region->dark_map_ids().empty())
-            possible_regions.push_back(region);
+            possible_regions.emplace_back(region);
     }
 
     tools::shuffle(possible_regions, _rng);
@@ -148,9 +148,9 @@ void WorldRandomizer::randomize_tibor_trees()
     std::vector<WorldTeleportTree*> trees;
     for(auto& pair : tree_pairs)
     {
-        map_id_pairs.push_back(std::make_pair(pair.first->tree_map_id(), pair.second->tree_map_id()));
-        trees.push_back(pair.first);
-        trees.push_back(pair.second);
+        map_id_pairs.emplace_back(std::make_pair(pair.first->tree_map_id(), pair.second->tree_map_id()));
+        trees.emplace_back(pair.first);
+        trees.emplace_back(pair.second);
     }
 
     tools::shuffle(trees, _rng);
@@ -158,7 +158,7 @@ void WorldRandomizer::randomize_tibor_trees()
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> new_pairs;
     for(size_t i=0 ; i<trees.size() ; i+=2)
     {
-        new_pairs.push_back(std::make_pair(trees[i], trees[i+1]));
+        new_pairs.emplace_back(std::make_pair(trees[i], trees[i+1]));
         const std::pair<uint16_t, uint16_t>& map_id_pair = map_id_pairs[i/2];
         trees[i]->tree_map_id(map_id_pair.first);
         trees[i+1]->tree_map_id(map_id_pair.second);
@@ -236,7 +236,7 @@ void WorldRandomizer::init_filler_items()
         }
         
         for(uint16_t i=0 ; i<quantity ; ++i)
-            _filler_items.push_back(item);
+            _filler_items.emplace_back(item);
     }
 
     this->randomize_gold_values(gold_items_count);
@@ -260,7 +260,7 @@ void WorldRandomizer::randomize_gold_values(uint8_t gold_items_count)
 
         Item* gold_item = _world.add_gold_item(static_cast<uint8_t>(gold_value));
         if(gold_item)
-            _filler_items.push_back(gold_item);
+            _filler_items.emplace_back(gold_item);
     }
 }
 
@@ -298,7 +298,7 @@ void WorldRandomizer::init_mandatory_items()
         }
         
         for(uint16_t i=0 ; i<quantity ; ++i)
-            _mandatory_items.push_back(item);
+            _mandatory_items.emplace_back(item);
     }
 
     tools::shuffle(_mandatory_items, _rng);
@@ -339,16 +339,16 @@ void WorldRandomizer::randomize_items()
     Json& debug_log = _solver.debug_log();
     debug_log["endState"]["unplacedItems"] = Json::array();
     for (Item* item : _filler_items)
-        debug_log["endState"]["unplacedItems"].push_back(item->name());
+        debug_log["endState"]["unplacedItems"].emplace_back(item->name());
     debug_log["endState"]["remainingSourcesToFill"] = Json::array();
     for(ItemSource* source : empty_sources)
-        debug_log["endState"]["remainingSourcesToFill"].push_back(source->name());
+        debug_log["endState"]["remainingSourcesToFill"].emplace_back(source->name());
 
     // Analyse items required to complete the seed
     _minimal_items_to_complete = _solver.find_minimal_inventory();
     debug_log["requiredItems"] = Json::array();
     for (Item* item : _minimal_items_to_complete)
-        debug_log["requiredItems"].push_back(item->name());
+        debug_log["requiredItems"].emplace_back(item->name());
 }
 
 static ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item, WorldLogic& logic)
@@ -394,7 +394,7 @@ void WorldRandomizer::place_mandatory_items()
     std::vector<ItemSource*> all_empty_item_sources;
     for (ItemSource* source : _world.item_sources())
         if(!source->item())
-            all_empty_item_sources.push_back(source);
+            all_empty_item_sources.emplace_back(source);
 
     tools::shuffle(all_empty_item_sources, _rng);
 
@@ -424,9 +424,9 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
         if(!_solver.missing_nodes_to_take_path(path).empty())
             continue;
 
-        debug_log["blockedPaths"].push_back(path->origin()->id() + " --> " + path->destination()->id());
+        debug_log["blockedPaths"].emplace_back(path->origin()->id() + " --> " + path->destination()->id());
         for(int i=0 ; i<path->weight() ; ++i)
-            weighted_blocked_paths.push_back(path);
+            weighted_blocked_paths.emplace_back(path);
     }
 
     if (weighted_blocked_paths.empty())
@@ -435,7 +435,7 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
     // Randomly choose one of those blocking paths
     tools::shuffle(weighted_blocked_paths, _rng);
     WorldPath* path_to_open = weighted_blocked_paths[0];
-    debug_log["chosenPath"].push_back(path_to_open->origin()->id() + " --> " + path_to_open->destination()->id());
+    debug_log["chosenPath"].emplace_back(path_to_open->origin()->id() + " --> " + path_to_open->destination()->id());
 
     // Place all missing key items for this blocking path
     std::vector<Item*> items_to_place = _solver.missing_items_to_take_path(path_to_open);
@@ -450,7 +450,7 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
             throw NoAppropriateItemSourceException();
 
         compatible_source->item(item);
-        _logical_playthrough.push_back(compatible_source);
+        _logical_playthrough.emplace_back(compatible_source);
         debug_log["placedKeyItems"][compatible_source->name()] = item->name();
     }
 }
@@ -474,7 +474,7 @@ void WorldRandomizer::place_filler_items(std::vector<ItemSource*>& empty_sources
             debug_log["placedFillerItems"][source->name()] = item->name();
         }
         else
-            _filler_items.push_back(item);
+            _filler_items.emplace_back(item);
     }
 }
 
@@ -588,7 +588,7 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
     for (Item* item : _minimal_items_to_complete)
     {
         if(!forbidden_items.contains(item))
-            hintable_items.push_back(item);
+            hintable_items.emplace_back(item);
     }
     
     if (!hintable_items.empty())
@@ -614,7 +614,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
     UnsortedSet<WorldRegion*> hintable_regions;
     for(WorldRegion* region : _logic.regions())
         if(region->can_be_hinted())
-            hintable_regions.push_back(region);
+            hintable_regions.emplace_back(region);
     tools::shuffle(hintable_regions, _rng);
 
     // A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints

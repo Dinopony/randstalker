@@ -17,6 +17,8 @@ void fix_hud_tilemap(md::ROM& rom);
 void fix_item_checks(md::ROM& rom);
 void patch_game_init(md::ROM& rom, const World& world, bool add_ingame_tracker);
 void handle_additional_jewels(md::ROM& rom, World& world, WorldLogic& logic, uint8_t jewel_count);
+void make_sword_of_gaia_work_in_volcano(md::ROM& rom);
+void normalize_special_enemies_hp(md::ROM& rom, bool fix_tree_cutting_glitch);
 
 // alter_items_consumability.cpp patches
 void make_pawn_ticket_consumable(md::ROM& rom);
@@ -58,6 +60,8 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     fix_item_checks(rom);
     patch_game_init(rom, world, options.add_ingame_item_tracker());
     handle_additional_jewels(rom, world, logic, options.jewel_count());
+    make_sword_of_gaia_work_in_volcano(rom);
+    normalize_special_enemies_hp(rom, options.fix_tree_cutting_glitch());
     
     make_pawn_ticket_consumable(rom);
     make_key_not_consumed_on_use(rom);

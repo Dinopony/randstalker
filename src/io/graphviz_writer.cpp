@@ -39,12 +39,12 @@ void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
 
         std::vector<std::string> required_names;
         if(json.contains("requiredItems"))
-            for(const std::string& item_name : json.at("requiredItems"))
-                required_names.push_back(item_name);
+            for(const std::string item_name : json.at("requiredItems"))
+                required_names.emplace_back(item_name);
             
         if(json.contains("requiredNodes"))
-            for(const std::string& node_id : json.at("requiredNodes"))
-                required_names.push_back("Access to " + logic.node(node_id)->name());
+            for(const std::string node_id : json.at("requiredNodes"))
+                required_names.emplace_back("Access to " + logic.node(node_id)->name());
 
         if(!required_names.empty())
         {

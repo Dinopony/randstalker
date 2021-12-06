@@ -149,7 +149,7 @@ public:
         {
             if (currentNode->isLeaf())
             {
-                symbolBytes.push_back(currentNode->getSymbol());
+                symbolBytes.emplace_back(currentNode->getSymbol());
 
                 while (currentNode->getParent() && currentNode->getParent()->getRightChild() == currentNode)
                 {

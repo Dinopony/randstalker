@@ -77,6 +77,6 @@ Json MapPalette::to_json() const
 {
     Json json = Json::array();
     for(uint8_t i=0 ; i<COLOR_COUNT ; ++i)
-        json.push_back(_colors[i].to_json());
+        json.emplace_back(_colors[i].to_json());
     return json;
 }

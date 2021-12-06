@@ -16,8 +16,8 @@ void put_orcs_back_in_room_before_boss_swamp_shrine(World& world)
     world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->global_entity_mask_flags().clear();
     world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->remove_entity(5);
     // Remove the door orcs if Fara has been freed
-    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->entity(1)->mask_flags().push_back(EntityMaskFlag(false, 2, 5));
-    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->entity(2)->mask_flags().push_back(EntityMaskFlag(false, 2, 5));
+    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->entity(1)->mask_flags().emplace_back(EntityMaskFlag(false, 2, 5));
+    world.map(MAP_SWAMP_SHRINE_ROOM_BEFORE_BOSS)->entity(2)->mask_flags().emplace_back(EntityMaskFlag(false, 2, 5));
 }
 
 /**

@@ -16,18 +16,17 @@ void TextbanksEncoder::build_trees(const std::vector<std::string>& strings)
         const std::vector<SymbolCount>& next_symbol_counts = sorted_symbol_counts[symbol_id];
         if (next_symbol_counts.empty())
         {
-            _trees.push_back(nullptr);
+            _trees.emplace_back(nullptr);
             continue;
         }
         
-        _trees.push_back(new HuffmanTree(next_symbol_counts));
+        _trees.emplace_back(new HuffmanTree(next_symbol_counts));
     }
 }
 
 void TextbanksEncoder::count_symbols(const std::vector<std::string>& strings, std::map<uint8_t, std::vector<SymbolCount>>& sorted_symbol_counts)
 {
     uint32_t symbol_counts[SYMBOL_COUNT][SYMBOL_COUNT];
-    uint8_t previous_symbol = 0x55;
 
     for (uint8_t i = 0; i < SYMBOL_COUNT; ++i)
         for (uint8_t j = 0; j < SYMBOL_COUNT; ++j)
@@ -53,7 +52,7 @@ void TextbanksEncoder::count_symbols(const std::vector<std::string>& strings, st
         std::vector<SymbolCount>& next_symbol_counts = sorted_symbol_counts[i];
         for (uint8_t j = 0; j < SYMBOL_COUNT; ++j)
             if(symbol_counts[i][j])
-                next_symbol_counts.push_back(SymbolCount(j, symbol_counts[i][j]));
+                next_symbol_counts.emplace_back(SymbolCount(j, symbol_counts[i][j]));
         std::sort(next_symbol_counts.begin(), next_symbol_counts.end());
     }
 }
@@ -71,7 +70,7 @@ std::vector<uint8_t> TextbanksEncoder::string_to_symbols(const std::string& stri
 
             if (current_character == symbol_as_char)
             {
-                string_as_symbols.push_back(symbol_id);
+                string_as_symbols.emplace_back(symbol_id);
                 break;
             }
 
@@ -83,7 +82,7 @@ std::vector<uint8_t> TextbanksEncoder::string_to_symbols(const std::string& stri
         }
     }
 
-    string_as_symbols.push_back(0x55);
+    string_as_symbols.emplace_back(0x55);
     return string_as_symbols;
 }
 
@@ -112,7 +111,7 @@ void TextbanksEncoder::produce_textbanks(const std::vector<std::string>& strings
         while (bits.size() % 8 != 0)
             bits.add(0);
 
-        compressed_strings_bytes.push_back(bits.to_bytes());
+        compressed_strings_bytes.emplace_back(bits.to_bytes());
     }
 
     std::vector<uint8_t> textbank_bytes;
@@ -120,20 +119,20 @@ void TextbanksEncoder::produce_textbanks(const std::vector<std::string>& strings
     for (std::vector<uint8_t> compressed_string : compressed_strings_bytes)
     {
         uint8_t bytes_length = (uint8_t) (compressed_string.size() + 1);
-        textbank_bytes.push_back(bytes_length);
+        textbank_bytes.emplace_back(bytes_length);
         
         textbank_bytes.insert(textbank_bytes.end(), compressed_string.begin(), compressed_string.end());
 
         string_index++;
         if (string_index % 256 == 0)
         {
-            _textbanks.push_back(textbank_bytes);
+            _textbanks.emplace_back(textbank_bytes);
             textbank_bytes.clear();
         }
     }
 
     if (!textbank_bytes.empty())
-        _textbanks.push_back(textbank_bytes);
+        _textbanks.emplace_back(textbank_bytes);
 }
 
 void TextbanksEncoder::write_to_rom(md::ROM& rom) 
@@ -148,7 +147,7 @@ void TextbanksEncoder::write_to_rom(md::ROM& rom)
         HuffmanTree* tree = _trees[symbol_id];
         if (!tree)
         {
-            tree_offsets.push_back(0xFFFF);
+            tree_offsets.emplace_back(0xFFFF);
             continue;
         }
 
@@ -159,7 +158,7 @@ void TextbanksEncoder::write_to_rom(md::ROM& rom)
         tree_data_block.insert(tree_data_block.end(), treeNodes.begin(), treeNodes.end());
 
         currentOffset += (uint16_t)treeSymbols.size();
-        tree_offsets.push_back(currentOffset);
+        tree_offsets.emplace_back(currentOffset);
         currentOffset += (uint16_t)treeNodes.size();
     }
 

@@ -107,7 +107,7 @@ std::vector<Item*> World::starting_inventory() const
     {
         uint8_t item_starting_quantity = item->starting_quantity();
         for(uint8_t i=0 ; i<item_starting_quantity ; ++i)
-            starting_inventory.push_back(item);
+            starting_inventory.emplace_back(item);
     }
     return starting_inventory;
 }
@@ -118,7 +118,7 @@ std::vector<ItemSource*> World::item_sources_with_item(Item* item)
 
     for (ItemSource* source : _item_sources)
         if (source->item() == item)
-            sources_with_item.push_back(source);
+            sources_with_item.emplace_back(source);
 
     return sources_with_item;
 }
@@ -140,7 +140,7 @@ void World::init_item_sources()
     Json item_sources_json = Json::parse(ITEM_SOURCES_JSON);
     for(const Json& source_json : item_sources_json)
     {
-        _item_sources.push_back(ItemSource::from_json(source_json, *this));
+        _item_sources.emplace_back(ItemSource::from_json(source_json, *this));
     }
     std::cout << _item_sources.size() << " item sources loaded." << std::endl;
 
@@ -171,7 +171,7 @@ void World::init_teleport_trees()
     {
         WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0]);
         WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1]);
-        _teleport_tree_pairs.push_back(std::make_pair(tree_1, tree_2));
+        _teleport_tree_pairs.emplace_back(std::make_pair(tree_1, tree_2));
     }
 
     std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
@@ -202,7 +202,7 @@ void World::init_entity_types(const md::ROM& rom)
     // Read item drop probabilities from a table in the ROM
     std::vector<uint16_t> probability_table;
     for(uint32_t addr = offsets::PROBABILITY_TABLE ; addr < offsets::PROBABILITY_TABLE_END ; addr += 0x2)
-        probability_table.push_back(rom.get_word(addr));
+        probability_table.emplace_back(rom.get_word(addr));
 
     // Read enemy info from a table in the ROM
     for(uint32_t addr = offsets::ENEMY_STATS_TABLE ; rom.get_word(addr) != 0xFFFF ; addr += 0x6)
@@ -407,7 +407,7 @@ void World::parse_json(const Json& json)
             {
                 std::vector<std::string> hint_lines;
                 for(const std::string& line : hints_json.at(description))
-                    hint_lines.push_back(line);
+                    hint_lines.emplace_back(line);
                 std::string hint = tools::join(hint_lines, "\n");
                 source->text(hint);
             }
@@ -462,7 +462,7 @@ void World::parse_json(const Json& json)
                 msg << "Fahl enemy name '" << enemy_name << "' is invalid in plando JSON.";
                 throw JsonParsingException(msg.str());
             }
-            _fahl_enemies.push_back(enemy);
+            _fahl_enemies.emplace_back(enemy);
         }            
     }
 }

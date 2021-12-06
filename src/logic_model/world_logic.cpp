@@ -121,7 +121,7 @@ void WorldLogic::init_regions()
 {
     Json regions_json = Json::parse(WORLD_REGIONS_JSON);
     for(const Json& region_json : regions_json)
-        _regions.push_back(WorldRegion::from_json(region_json, _nodes));
+        _regions.emplace_back(WorldRegion::from_json(region_json, _nodes));
 
     std::cout << _regions.size() << " regions loaded." << std::endl;
 

@@ -117,28 +117,28 @@ static void rename_jewels(md::ROM& rom, World& world, uint8_t jewel_count)
 
         // Clear Island Map name to make room for other names
         if(item_names.size() == ITEM_ISLAND_MAP)
-            item_names.push_back(std::vector<uint8_t>({ 0x00 }));
+            item_names.emplace_back(std::vector<uint8_t>({ 0x00 }));
         // Rename all default equipments with "None"
         else if(item_names.size() == ITEM_NO_SWORD || item_names.size() == ITEM_NO_ARMOR || item_names.size() == ITEM_NO_BOOTS)
-            item_names.push_back({ 0x18, 0x33, 0x32, 0x29 });
+            item_names.emplace_back(std::vector<uint8_t>({ 0x18, 0x33, 0x32, 0x29 }));
         // Rename No52 into Green Jewel
         else if(item_names.size() == ITEM_GREEN_JEWEL && !kazalt_jewel_mode)
-            item_names.push_back({ 0x11, 0x36, 0x29, 0x29, 0x32, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+            item_names.emplace_back(std::vector<uint8_t>({ 0x11, 0x36, 0x29, 0x29, 0x32, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 }));
         // Rename Detox Book into Blue Jewel
         else if(item_names.size() == ITEM_BLUE_JEWEL && !kazalt_jewel_mode)
-            item_names.push_back({ 0x0C, 0x30, 0x39, 0x29, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+            item_names.emplace_back(std::vector<uint8_t>({ 0x0C, 0x30, 0x39, 0x29, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 }));
         // Rename AntiCurse Book into Yellow Jewel
         else if(item_names.size() == ITEM_YELLOW_JEWEL && !kazalt_jewel_mode)
-            item_names.push_back({ 0x23, 0x29, 0x30, 0x30, 0x33, 0x3B, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 });
+            item_names.emplace_back(std::vector<uint8_t>({ 0x23, 0x29, 0x30, 0x30, 0x33, 0x3B, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 }));
         // Clear "Purple Jewel" name to make room for other names since it's unused in Kazalt Jewel mode
         else if(item_names.size() == ITEM_PURPLE_JEWEL && kazalt_jewel_mode)
-            item_names.push_back(std::vector<uint8_t>({ 0x00 }));
+            item_names.emplace_back(std::vector<uint8_t>({ 0x00 }));
         // Rename "Red Jewel" into the more generic "Kazalt Jewel" in Kazalt Jewel mode
         else if(item_names.size() == ITEM_RED_JEWEL && kazalt_jewel_mode)
-            item_names.push_back(std::vector<uint8_t>({ 0x15, 0x25, 0x3E, 0x25, 0x30, 0x38, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 }));
+            item_names.emplace_back(std::vector<uint8_t>({ 0x15, 0x25, 0x3E, 0x25, 0x30, 0x38, 0x6A, 0x14, 0x29, 0x3B, 0x29, 0x30 }));
         // No specific treatment, just add it back as-is
         else
-            item_names.push_back(std::vector<uint8_t>(item_name_bytes.begin() + addr, item_name_bytes.begin() + addr + stringSize));
+            item_names.emplace_back(std::vector<uint8_t>(item_name_bytes.begin() + addr, item_name_bytes.begin() + addr + stringSize));
 
         addr += stringSize;
     }
@@ -148,13 +148,13 @@ static void rename_jewels(md::ROM& rom, World& world, uint8_t jewel_count)
     item_name_bytes.clear();
     for(const std::vector<uint8_t>& itemName : item_names)
     {
-        item_name_bytes.push_back((uint8_t)itemName.size());
+        item_name_bytes.emplace_back((uint8_t)itemName.size());
         item_name_bytes.insert(item_name_bytes.end(), itemName.begin(), itemName.end());
     }
-    item_name_bytes.push_back(0xFF);
+    item_name_bytes.emplace_back(0xFF);
 
     if(item_name_bytes.size() > initialSize)
-        throw new RandomizerException("Item names size is above initial game size");
+        throw RandomizerException("Item names size is above initial game size");
     rom.set_bytes(offsets::ITEM_NAMES_TABLE, item_name_bytes);
 }
 

@@ -64,21 +64,21 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
     if(options.all_trees_visited_at_start())
     {
         for(uint8_t bit=0 ; bit<8 ; ++bit)
-            flags_to_add.push_back(Flag(0x23, bit));
-        flags_to_add.push_back(Flag(0x25, 0));
-        flags_to_add.push_back(Flag(0x25, 1));
+            flags_to_add.emplace_back(Flag(0x23, bit));
+        flags_to_add.emplace_back(Flag(0x25, 0));
+        flags_to_add.emplace_back(Flag(0x25, 1));
     }
 
     // Clear Verla soldiers if spawning in Verla
     if(world.spawn_location().id() == "verla")
     {
-        flags_to_add.push_back(Flag(0x26, 3));
-        flags_to_add.push_back(Flag(0x26, 4));
+        flags_to_add.emplace_back(Flag(0x26, 3));
+        flags_to_add.emplace_back(Flag(0x26, 4));
     }
 
     // Mark the boulder as already removed at game start
     if(options.remove_gumi_boulder())
-        flags_to_add.push_back(Flag(0x02, 6));
+        flags_to_add.emplace_back(Flag(0x02, 6));
 
     world.starting_flags().insert(world.starting_flags().end(), flags_to_add.begin(), flags_to_add.end());
 }

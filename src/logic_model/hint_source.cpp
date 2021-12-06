@@ -57,7 +57,7 @@ HintSource* HintSource::from_json(const Json& json, const std::map<std::string, 
     std::vector<uint16_t> text_ids = json.at("textIds");
     std::vector<std::string*> string_ptrs;
     for(uint16_t id : text_ids)
-        string_ptrs.push_back(&(game_strings.at(id)));
+        string_ptrs.emplace_back(&(game_strings.at(id)));
 
     bool special = json.value("special", false);
     bool small_textbox = json.value("smallTextbox", false);

@@ -46,7 +46,7 @@ void setup_mercator_maps(World& world)
     // Darken the whole palette slightly
     exterior_palette_altered->apply_factor(0.9f);
 
-    world.map_palettes().push_back(exterior_palette_altered);
+    world.map_palettes().emplace_back(exterior_palette_altered);
     for(uint16_t map_id_to_repalette : exterior_maps_to_repalette)
         world.map(map_id_to_repalette)->palette(exterior_palette_altered);
 

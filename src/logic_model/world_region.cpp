@@ -21,7 +21,7 @@ Json WorldRegion::to_json() const
     
     json["nodeIds"] = Json::array();
     for(WorldNode* node : _nodes)
-        json["nodeIds"].push_back(node->id());
+        json["nodeIds"].emplace_back(node->id());
 
     if(!_dark_map_ids.empty())
         json["dark_map_ids"] = _dark_map_ids;
@@ -36,7 +36,7 @@ WorldRegion* WorldRegion::from_json(const Json& json, const std::map<std::string
 
     std::vector<WorldNode*> nodes;
     for(std::string node_id : json.at("nodeIds"))
-        nodes.push_back(all_nodes.at(node_id));
+        nodes.emplace_back(all_nodes.at(node_id));
 
     std::vector<uint16_t> dark_map_ids;
     if(json.contains("darkMapIds")) 

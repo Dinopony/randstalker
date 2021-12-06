@@ -75,16 +75,6 @@ void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom)
     rom.set_code(0x004E18, md::Code().clrw(reg_D0).jmp(proc_addr));
 }
 
-/**
- * In default game, the function that sets the flag to indicate that a room has been visited
- * is very limited in the number of addresses it can reach.
- * We modify it to be able to set any game flag, which is especially useful in some cases
- */
-void improve_visited_flag_setter(md::ROM& rom)
-{
-    rom.set_long(0x2954, 0xFF1000);
-}
-
 void make_ryuma_mayor_saveable(md::ROM& rom)
 {
     // Disable the cutscene (CSA_0068) when opening vanilla lithograph chest
@@ -250,24 +240,7 @@ void handle_armor_upgrades(md::ROM& rom)
 //      RANDOMIZER RELATED BUGS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Add the ability to also trigger the volcano using the Sword of Gaia instead of only Statue of Gaia
- */
-void make_sword_of_gaia_work_in_volcano(md::ROM& rom)
-{
-    md::Code proc_trigger_volcano;
 
-    proc_trigger_volcano.cmpiw(0x20A, addr_(0xFF1204));
-    proc_trigger_volcano.bne(4);
-        proc_trigger_volcano.bset(0x2, addr_(0xFF1027));
-        proc_trigger_volcano.jsr(0x16712);
-        proc_trigger_volcano.rts();
-    proc_trigger_volcano.jmp(0x16128);
-
-    uint32_t proc_addr = rom.inject_code(proc_trigger_volcano);
-
-    rom.set_code(0x1611E, md::Code().jmp(proc_addr));
-}
 
 /*
  * Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
@@ -300,70 +273,7 @@ void prevent_hint_item_save_scumming(md::ROM& rom)
 //      ORIGINAL GAME BUGS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * The original game has no way to make enemies unkillable, so it uses weird ultra high HP bosses
- * which don't represent their real life pool. This injection modifies the way this works to improve
- * this part of the engine by implementing a way to make them unkillable.
- * If specified in the options, this function also adds the check to prevent sacred trees from being
- * killed by feeding them money.
- */
-void improve_checks_before_kill(md::ROM& rom, const RandomizerOptions& options)
-{
-    constexpr uint32_t ADDR_JMP_KILL = 0x16284;
-    constexpr uint32_t ADDR_JMP_NO_KILL_YET = 0x16262;
-    constexpr uint32_t ADDR_JMP_NO_KILL = 0x1627C;
-    
-    // Inject a new function which fixes the money value check on an enemy when it is killed, causing the tree glitch to be possible
-    md::Code func_check_before_kill;
- 
-    // If enemy doesn't hold money, no kill yet
-    func_check_before_kill.tstb(addr_(reg_A5, 0x36));
-    if(options.fix_tree_cutting_glitch())
-    {
-        func_check_before_kill.beq(4);
-            // Only allow the "killable because holding money" check if the enemy is not a tree
-            func_check_before_kill.cmpiw(0x126, addr_(reg_A5, 0xA));
-            func_check_before_kill.beq(2);
-                func_check_before_kill.jmp(ADDR_JMP_KILL);
-    }
-    else
-    {
-        func_check_before_kill.beq(2);
-            func_check_before_kill.jmp(ADDR_JMP_KILL);
-    }
-    // If enemy has "empty item" as a drop, make it unkillable
-    func_check_before_kill.cmpib(0x3F, addr_(reg_A5, 0x77));
-    func_check_before_kill.bne(3);
-        func_check_before_kill.movew(0x0001, addr_(reg_A5, 0x3E));
-        func_check_before_kill.rts();
-    func_check_before_kill.jmp(ADDR_JMP_NO_KILL_YET);
 
-    uint32_t func_addr = rom.inject_code(func_check_before_kill);
-
-    // Call the injected function when killing an enemy
-    rom.set_code(0x01625C, md::Code().jmp(func_addr));
-}
-
-/**
- * In original game, bosses have way higher HP than their real HP pool, and the game checks regularly
- * if their health goes below 0x100 to trigger a death cutscene. In an effort to normalize bosses HP
- * and allow us to make them have bigger HP pools, we lower all of those checks to verify that health
- * goes below 0x002
- */
-void normalize_bosses_hp_checks(md::ROM& rom)
-{
-    // 1* Make the HP check below 0x0002 instead of below 0x6400
-    // 2* Make the corresponding boss have 100 less HP
-    // 3* Make the corresponding boss unkillable to ensure cutscene is played
-    rom.set_byte(0x118DC, 0x0002);
-    rom.set_byte(0x118EC, 0x0002);
-    rom.set_word(0x11D38, 0x0002);
-    rom.set_byte(0x11D80, 0x0002);
-    rom.set_byte(0x11F8A, 0x0002);
-    rom.set_byte(0x11FAA, 0x0002);
-    rom.set_byte(0x12072, 0x0002);
-    rom.set_byte(0x120C0, 0x0002);
-}
 
 void fix_crypt_soflocks(md::ROM& rom)
 {
@@ -398,6 +308,18 @@ void alter_labyrinth_rafts(md::ROM& rom)
 }
 
 
+/**
+ * In default game, the function that sets the flag to indicate that a room has been visited
+ * is very limited in the number of addresses it can reach.
+ * We modify it to be able to set any game flag, which is especially useful in some cases
+ * >>> WHICH ONES?
+ */
+//void improve_visited_flag_setter(md::ROM& rom)
+//{
+//    rom.set_long(0x2954, 0xFF1000);
+//}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world)
@@ -407,7 +329,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_fahl_challenge(rom, world);
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
-    improve_visited_flag_setter(rom);
+//    improve_visited_flag_setter(rom);
     make_ryuma_mayor_saveable(rom);
     fix_ryuma_mayor_reward(rom);
     if (options.remove_tibor_requirement())
@@ -415,12 +337,8 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
 
-    // Engine improvements
-    improve_checks_before_kill(rom, options);
-    normalize_bosses_hp_checks(rom);
-
     // Fix randomizer-related bugs
-    make_sword_of_gaia_work_in_volcano(rom);
+//    make_sword_of_gaia_work_in_volcano(rom);
     fix_mir_tower_priest_room_items(rom);
     prevent_hint_item_save_scumming(rom);
     fix_crypt_soflocks(rom);

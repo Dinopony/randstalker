@@ -21,9 +21,9 @@ void TextbanksDecoder::parse_huffman_trees(const md::ROM& rom)
     {
         uint16_t tree_offset = trees_offsets[i];
         if (tree_offset == 0xFFFF)
-            _trees.push_back(nullptr);
+            _trees.emplace_back(nullptr);
         else
-            _trees.push_back(new HuffmanTree(trees_data, tree_offset));
+            _trees.emplace_back(new HuffmanTree(trees_data, tree_offset));
     }
 }
 
@@ -45,7 +45,7 @@ void TextbanksDecoder::parse_textbanks(const md::ROM& rom)
         {
             uint8_t string_length = data[current_string_offset];
             std::string string = parse_string(data, current_string_offset + 1);
-            _strings.push_back(string);
+            _strings.emplace_back(string);
 
             current_string_offset += string_length;
             if (current_string_offset + 1 >= data.size())
@@ -88,6 +88,4 @@ uint8_t TextbanksDecoder::parse_next_symbol(HuffmanTree* huffman_tree, const std
         bits.add(string_bit);
         string_bit_index++;
     }
-
-    throw std::exception();
 }

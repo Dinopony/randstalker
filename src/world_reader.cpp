@@ -127,7 +127,7 @@ void WorldReader::read_maps_entity_masks(World& world, const md::ROM& rom)
         uint8_t flag_bit = lsb >> 5;
         uint8_t entity_id = lsb & 0x0F;
 
-        map->entities().at(entity_id)->mask_flags().push_back(EntityMaskFlag(visibility_if_flag_set, flag_byte, flag_bit));
+        map->entities().at(entity_id)->mask_flags().emplace_back(EntityMaskFlag(visibility_if_flag_set, flag_byte, flag_bit));
     }
 }
 
@@ -143,7 +143,7 @@ void WorldReader::read_maps_global_entity_masks(World& world, const md::ROM& rom
         uint8_t flag_bit = lsb >> 5;
         uint8_t first_entity_id = lsb & 0x1F;
  
-        map->global_entity_mask_flags().push_back(GlobalEntityMaskFlag(flag_byte, flag_bit, first_entity_id));
+        map->global_entity_mask_flags().emplace_back(GlobalEntityMaskFlag(flag_byte, flag_bit, first_entity_id));
     }
 }
 
@@ -168,7 +168,7 @@ void WorldReader::read_maps_dialogue_table(World& world, const md::ROM& rom)
             uint16_t speaker_id = word & 0x7FF;
             uint8_t consecutive_speakers = word >> 11;
             for(uint8_t j=0 ; j<consecutive_speakers ; ++j)
-                map_speakers.push_back(speaker_id++);
+                map_speakers.emplace_back(speaker_id++);
         }
 
         addr += (word_count + 1) * 2;
@@ -203,7 +203,7 @@ void WorldReader::read_persistence_flags(World& world, const md::ROM& rom)
         for (Entity* entity : map->entities())
         {
             if (entity->entity_type_id() == ENTITY_SACRED_TREE)
-                sacred_trees_per_map[map_id].push_back(entity);
+                sacred_trees_per_map[map_id].emplace_back(entity);
         }
     }
 
@@ -249,7 +249,7 @@ void WorldReader::read_map_connections(World& world, const md::ROM& rom)
         connection.pos_x_2(rom.get_byte(addr+6));
         connection.pos_y_2(rom.get_byte(addr+7));
 
-        world.map_connections().push_back(connection);
+        world.map_connections().emplace_back(connection);
     }
 }
 
@@ -266,6 +266,6 @@ void WorldReader::read_map_palettes(World& world, const md::ROM& rom)
             addr += 0x2;
         }
 
-        world.map_palettes().push_back(new MapPalette(palette_data));
+        world.map_palettes().emplace_back(new MapPalette(palette_data));
     }    
 }

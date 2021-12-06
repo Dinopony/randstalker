@@ -19,7 +19,7 @@ public:
     void insert(const T& elem) 
     {
         if (!this->contains(elem))
-            this->push_back(elem);
+            this->emplace_back(elem);
     }
 
     void insert(const UnsortedSet<T>& other) 

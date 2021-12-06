@@ -6,7 +6,7 @@ namespace md
 {
     void Code::add_byte(uint8_t byte)
     {
-        _bytes.push_back(byte);
+        _bytes.emplace_back(byte);
     }
 
     void Code::add_word(uint16_t word)

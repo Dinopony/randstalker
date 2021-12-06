@@ -103,7 +103,7 @@ void WorldWriter::write_entity_types(md::ROM& rom, const World& world)
             continue;
         EntityEnemy* enemy_type = reinterpret_cast<EntityEnemy*>(entity_type);
 
-        enemy_types.push_back(enemy_type);
+        enemy_types.emplace_back(enemy_type);
         drop_probabilities.insert(enemy_type->drop_probability());
 
         uint32_t count = 0;
@@ -450,7 +450,7 @@ void WorldWriter::write_maps_dialogue_table(md::ROM& rom, const World& world)
                 if(speaker_id == previous_speaker_id + 1)
                     consecutive_packs[consecutive_packs.size()-1].second++;
                 else
-                    consecutive_packs.push_back(std::make_pair(speaker_id, 1));
+                    consecutive_packs.emplace_back(std::make_pair(speaker_id, 1));
 
                 previous_speaker_id = speaker_id;
                 current_dialogue_id++;
@@ -542,7 +542,7 @@ void WorldWriter::write_maps_entity_persistence_flags(md::ROM& rom, const World&
                 }
                 else 
                 {
-                    sacred_trees_with_persistence.push_back(entity);
+                    sacred_trees_with_persistence.emplace_back(entity);
                 }
             }
         }

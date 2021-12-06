@@ -9,7 +9,7 @@ namespace md
 
     class Param {
     public:
-        Param() {}
+        constexpr Param() {}
 
         virtual uint16_t getXn() const = 0;
         virtual uint16_t getM() const = 0;
@@ -57,7 +57,7 @@ namespace md
 
     class DirectAddress : public Param {
     public:
-        DirectAddress(uint32_t address) :
+        constexpr DirectAddress(uint32_t address) :
             _address(address)
         {}
 
@@ -69,10 +69,10 @@ namespace md
         virtual std::vector<uint8_t> getAdditionnalData() const
         {
             std::vector<uint8_t> addressBytes;
-            addressBytes.push_back((_address >> 24) & 0xFF);
-            addressBytes.push_back((_address >> 16) & 0xFF);
-            addressBytes.push_back((_address >> 8) & 0xFF);
-            addressBytes.push_back(_address & 0xFF);
+            addressBytes.emplace_back((_address >> 24) & 0xFF);
+            addressBytes.emplace_back((_address >> 16) & 0xFF);
+            addressBytes.emplace_back((_address >> 8) & 0xFF);
+            addressBytes.emplace_back(_address & 0xFF);
             return addressBytes;
         }
 
@@ -84,7 +84,7 @@ namespace md
 
     class AddressInRegister : public Param {
     public:
-        AddressInRegister(const AddressRegister& reg, uint16_t offset = 0) :
+        constexpr AddressInRegister(const AddressRegister& reg, uint16_t offset = 0) :
             _offset(offset),
             _reg(reg)
         {}
@@ -97,8 +97,8 @@ namespace md
             if (_offset > 0)
             {
                 std::vector<uint8_t> offset_bytes;
-                offset_bytes.push_back((_offset >> 8) & 0xFF);
-                offset_bytes.push_back(_offset & 0xFF);
+                offset_bytes.emplace_back((_offset >> 8) & 0xFF);
+                offset_bytes.emplace_back(_offset & 0xFF);
                 return offset_bytes;
             }
             else return {};
@@ -113,7 +113,7 @@ namespace md
 
     class AddressWithIndex : public Param {
     public:
-        AddressWithIndex(const AddressRegister& baseAddrReg, const Register& offsetReg, Size offsetRegSize, uint8_t additionnalOffset = 0) :
+        constexpr AddressWithIndex(const AddressRegister& baseAddrReg, const Register& offsetReg, Size offsetRegSize, uint8_t additionnalOffset = 0) :
             _baseAddrReg(baseAddrReg),
             _offsetReg(offsetReg),
             _offsetRegSize(offsetRegSize),
@@ -132,8 +132,8 @@ namespace md
             uint8_t lsb = _additionnalOffset;
 
             std::vector<uint8_t> briefExtensionWord;
-            briefExtensionWord.push_back(msb);
-            briefExtensionWord.push_back(lsb);
+            briefExtensionWord.emplace_back(msb);
+            briefExtensionWord.emplace_back(lsb);
             return briefExtensionWord;
         }
 
@@ -148,9 +148,9 @@ namespace md
 
     class ImmediateValue : public Param {
     public:
-        explicit ImmediateValue(uint8_t value) : _size(Size::BYTE), _value(value) {}
-        explicit ImmediateValue(uint16_t value) : _size(Size::WORD), _value(value) {}
-        explicit ImmediateValue(uint32_t value) : _size(Size::LONG), _value(value) {}
+        explicit constexpr ImmediateValue(uint8_t value) : _size(Size::BYTE), _value(value) {}
+        explicit constexpr ImmediateValue(uint16_t value) : _size(Size::WORD), _value(value) {}
+        explicit constexpr ImmediateValue(uint32_t value) : _size(Size::LONG), _value(value) {}
 
         virtual uint16_t getXn() const { return 0x4; }
         virtual uint16_t getM() const { return 0x7; }
@@ -160,12 +160,12 @@ namespace md
             std::vector<uint8_t> valueBytes;
             if (_size == Size::LONG)
             {
-                valueBytes.push_back((_value >> 24) & 0xFF);
-                valueBytes.push_back((_value >> 16) & 0xFF);
+                valueBytes.emplace_back((_value >> 24) & 0xFF);
+                valueBytes.emplace_back((_value >> 16) & 0xFF);
             }
 
-            valueBytes.push_back((_value >> 8) & 0xFF);
-            valueBytes.push_back(_value & 0xFF);
+            valueBytes.emplace_back((_value >> 8) & 0xFF);
+            valueBytes.emplace_back(_value & 0xFF);
 
             return valueBytes;
         }

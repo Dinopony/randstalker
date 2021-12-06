@@ -31,7 +31,7 @@ struct GlobalEntityMaskFlag : public Flag
         return (((uint16_t)msb) << 8) + lsb;
     }
 
-    Json to_json() const
+    virtual Json to_json() const override
     {
         Json json = Flag::to_json();
         json["firstEntityId"] = first_entity_id;

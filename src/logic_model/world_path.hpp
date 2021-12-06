@@ -25,7 +25,7 @@ public:
 
     const std::vector<Item*>& required_items() const { return _required_items; }
     std::vector<Item*>& required_items() { return _required_items; }
-    void add_required_item(Item* item) { _required_items.push_back(item); }
+    void add_required_item(Item* item) { _required_items.emplace_back(item); }
 
     WorldNode* origin() const { return _from_node; }
     WorldNode* destination() const { return _to_node; }
@@ -34,7 +34,7 @@ public:
     bool has_explored_required_nodes(const UnsortedSet<WorldNode*>& explored_nodes) const;
 
     const std::vector<Item*>& items_placed_when_crossing() const { return _items_placed_when_crossing; }
-    void add_item_placed_when_crossing(Item* item) { _items_placed_when_crossing.push_back(item); }
+    void add_item_placed_when_crossing(Item* item) { _items_placed_when_crossing.emplace_back(item); }
 
     uint16_t weight() const { return _weight; }
     void weight(uint16_t weight) { _weight = weight; }

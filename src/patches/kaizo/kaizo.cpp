@@ -23,7 +23,7 @@ void wipe_map_variants(Map* map)
 {
     for(auto& [variant_map, flag] : map->variants())
     {
-        free_map_ids.push_back(map->id());
+        free_map_ids.emplace_back(map->id());
         variant_map->clear();
     }
     map->variants().clear();
@@ -44,7 +44,7 @@ void create_chest_item_source(World& world, uint8_t chest_id, uint8_t item_id)
 {
     ItemSource* source = new ItemSourceChest(chest_id, "");
     source->item(world.item(item_id));
-    world.item_sources().push_back(source);
+    world.item_sources().emplace_back(source);
 }
 
 void apply_kaizo_edits(World& world, md::ROM& rom)
