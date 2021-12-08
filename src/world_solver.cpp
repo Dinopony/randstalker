@@ -2,10 +2,10 @@
 
 #include <fstream>
 
-#include "logic_model/world_node.hpp"
-#include "world_model/item_source.hpp"
+#include <landstalker_lib/model/item_source.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
-#include "exceptions.hpp"
+#include "logic_model/world_node.hpp"
 
 WorldSolver::WorldSolver(const WorldLogic& logic) :
     _logic              (logic),
@@ -256,7 +256,7 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
         std::ofstream dump_file("./crash_dump.json");
         dump_file << _debug_log.dump(4);
         dump_file.close();
-        throw RandomizerException("Tried to find minimal inventory on an incomplete WorldSolver");
+        throw LandstalkerException("Tried to find minimal inventory on an incomplete WorldSolver");
     }
 
     std::vector<Item*> minimal_inventory;

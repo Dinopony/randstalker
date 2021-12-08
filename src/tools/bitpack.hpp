@@ -1,7 +1,7 @@
 #pragma once
 
-#include <json.hpp>
-#include "bitfield.hpp"
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/tools/bitfield.hpp>
 
 class Bitpack;
 template<typename T> T unpack_from(Bitpack& bitpack);

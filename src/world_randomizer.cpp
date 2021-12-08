@@ -2,25 +2,26 @@
 
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
-#include "constants/entity_type_codes.hpp"
-#include "constants/values.hpp"
+#include <landstalker_lib/constants/entity_type_codes.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
+#include <landstalker_lib/constants/values.hpp>
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/game_text.hpp>
+#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker_lib/model/item_source.hpp>
+#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include <landstalker_lib/model/spawn_location.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
-#include "tools/tools.hpp"
-#include "tools/game_text.hpp"
-
-#include "world_model/entity_type.hpp"
-#include "world_model/world_teleport_tree.hpp"
-#include "world_model/spawn_location.hpp"
-#include "world_model/data/spawn_location.json.hxx"
+#include "logic_model/data/spawn_location.json.hxx"
 
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
 #include "logic_model/data/hint_source.json.hxx"
-
-#include "exceptions.hpp"
 #include "world_solver.hpp"
-#include <iostream>
 
 WorldRandomizer::WorldRandomizer(World& world, WorldLogic& logic, const RandomizerOptions& options) :
     _world          (world),
@@ -232,7 +233,7 @@ void WorldRandomizer::init_filler_items()
         {
             std::stringstream msg;
             msg << "Unknown item '" << item_name << "' found in filler items.";
-            throw RandomizerException(msg.str());
+            throw LandstalkerException(msg.str());
         }
         
         for(uint16_t i=0 ; i<quantity ; ++i)
@@ -294,7 +295,7 @@ void WorldRandomizer::init_mandatory_items()
         {
             std::stringstream msg;
             msg << "Unknown item '" << item_name << "' found in mandatory items.";
-            throw RandomizerException(msg.str());
+            throw LandstalkerException(msg.str());
         }
         
         for(uint16_t i=0 ; i<quantity ; ++i)
@@ -406,7 +407,7 @@ void WorldRandomizer::place_mandatory_items()
             source->item(item);
             debug_log["steps"]["0"]["placedItems"][source->name()] = item->name();
         }
-        else throw NoAppropriateItemSourceException();
+        else throw LandstalkerException("No appropriate item source found for placing mandatory item");
     }
 }
 
@@ -447,7 +448,7 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
         // Place the key item in a compatible source
         ItemSource* compatible_source = pop_first_compatible_source(empty_sources, item, _logic);
         if (!compatible_source)
-            throw NoAppropriateItemSourceException();
+            throw LandstalkerException("No appropriate item source found for placing key item");
 
         compatible_source->item(item);
         _logical_playthrough.emplace_back(compatible_source);
@@ -581,7 +582,7 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
             for (Item* item : min_items_to_reach)
                 forbidden_items.insert(item);
         } 
-        else throw RandomizerException("Could not find minimal inventory to reach Oracle Stone");
+        else throw LandstalkerException("Could not find minimal inventory to reach Oracle Stone");
     }
 
     std::vector<Item*> hintable_items;

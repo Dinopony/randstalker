@@ -1,22 +1,22 @@
 #pragma once
 
-#include <md_tools.hpp>
-
+#include <landstalker_lib/md_tools.hpp>
+#include <landstalker_lib/model/world.hpp>
 #include "../randomizer_options.hpp"
-#include "../world_model/world.hpp"
 
 class WorldLogic;
 
 // Global patches
 void add_functions_to_items_on_use(md::ROM& rom, bool consumable_record_book);
 void add_statue_of_jypta_effect(md::ROM& rom);
-void alter_gold_rewards_handling(md::ROM& rom, World& world);   // Must happen AFTER randomization (access to generated gold items)
-void alter_lantern_handling(md::ROM& rom, const World& world);  // Must happen AFTER randomization (requires dark rooms)
+void alter_fahl_challenge(md::ROM& rom, const World& world);
+void alter_gold_rewards_handling(md::ROM& rom, World& world);
+void alter_lantern_handling(md::ROM& rom, const World& world);
 void alter_ui_color(md::ROM& rom, uint16_t ui_color);
 void fix_hud_tilemap(md::ROM& rom);
 void fix_item_checks(md::ROM& rom);
-void patch_game_init(md::ROM& rom, const World& world, bool add_ingame_tracker); // Must happen AFTER randomization (spawn location...)
-void handle_additional_jewels(md::ROM& rom, World& world, uint8_t jewel_count); // Can happen before or after
+void patch_game_init(md::ROM& rom, const World& world, bool add_ingame_tracker);
+void handle_additional_jewels(md::ROM& rom, World& world, uint8_t jewel_count);
 void make_sword_of_gaia_work_in_volcano(md::ROM& rom);
 void normalize_special_enemies_hp(md::ROM& rom, bool fix_tree_cutting_glitch);
 
@@ -33,19 +33,18 @@ void make_massan_elder_reward_not_story_dependant(md::ROM& rom);
 void make_lumberjack_reward_not_story_dependant(md::ROM& rom);
 void change_falling_ribbon_position(md::ROM& rom);
 void make_tibor_always_open(md::ROM& rom);
-void make_gumi_boulder_push_not_story_dependant(World& world); // Can happen before or after
-void make_falling_ribbon_not_story_dependant(World& world); // Can happen before or after
+void make_gumi_boulder_push_not_story_dependant(World& world);
+void make_falling_ribbon_not_story_dependant(World& world);
 
 // Randomizer patches
 void alter_hint_provider_dialogues(md::ROM& rom);
 void alter_randomizer_credits(md::ROM& rom);
-void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip); // Can happen before or after
+void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip);
 void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_sentence);
 void shorten_cutscenes(md::ROM& rom);
 
 // Not yet processed patches
-void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world); // Can happen before or after
-void apply_rando_options_to_world(const RandomizerOptions& options, World& world); // MUST HAPPEN BEFORE EVERYTHING ELSE! (sets world properties than are then used in game_init)
+void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world);
 
 void apply_kaizo_edits(World& world, md::ROM& rom);
 
@@ -53,6 +52,7 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
 {
     add_functions_to_items_on_use(rom, options.consumable_record_book());
     add_statue_of_jypta_effect(rom);
+    alter_fahl_challenge(rom, world);
     alter_gold_rewards_handling(rom, world);
     alter_lantern_handling(rom, world);
     alter_ui_color(rom, options.hud_color());
@@ -81,8 +81,7 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     apply_rando_world_edits(rom, world, options.fix_armlet_skip());
     replace_copy_save_by_show_hash(rom, options.hash_sentence());
     shorten_cutscenes(rom);
-    
-    apply_rando_options_to_world(options, world);
+
     patch_rando_adaptations(rom, options, world);
 }
 

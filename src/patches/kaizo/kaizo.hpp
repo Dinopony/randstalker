@@ -1,6 +1,6 @@
 #pragma once
 
-#include <md_tools.hpp>
+#include <landstalker_lib/md_tools.hpp>
 
 #include "../../world_model/world.hpp"
 #include "../../world_model/map.hpp"

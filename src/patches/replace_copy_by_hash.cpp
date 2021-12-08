@@ -1,6 +1,5 @@
-#include <md_tools.hpp>
-
-#include "../../tools/huffman/symbols.hpp"
+#include <landstalker_lib/md_tools.hpp>
+#include <landstalker_lib/tools/huffman/symbols.hpp>
 
 /**
  * Replace "Copy" behavior in menu by an injected function showing seed hash

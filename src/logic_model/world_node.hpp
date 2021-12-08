@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "../tools/unsorted_set.hpp"
-#include "../world_model/item_source.hpp"
+#include <landstalker_lib/tools/unsorted_set.hpp>
+#include <landstalker_lib/model/item_source.hpp>
 
 #include "world_path.hpp"
 

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <vector>
-#include "tools/unsorted_set.hpp"
-#include <json.hpp>
-#include "world_model/world.hpp"
+
+#include <landstalker_lib/tools/unsorted_set.hpp>
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/model/world.hpp>
+
 #include "logic_model/world_logic.hpp"
 
 class WorldNode;

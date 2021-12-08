@@ -1,16 +1,12 @@
-#include <md_tools.hpp>
-
+#include <landstalker_lib/md_tools.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/model/item.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
 #include "../randomizer_options.hpp"
-#include "../world_model/world.hpp"
-#include "../world_model/item.hpp"
-
-#include "../constants/item_codes.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       RANDO ADAPTATIONS / ENHANCEMENTS
 ///////////////////////////////////////////////////////////////////////////////////
-
-
 
 void alter_lifestock_handling_in_shops(md::ROM& rom)
 {
@@ -23,14 +19,6 @@ void alter_lifestock_handling_in_shops(md::ROM& rom)
         rom.set_byte(addr, 0xFF);
 }
 
-void alter_fahl_challenge(md::ROM& rom, const World& world)
-{
-    // Neutralize mid-challenge proposals for money
-    rom.set_code(0x12D52, md::Code().nop(24));
-    
-    // Set the end of the challenge at the number of fahl enemies in the world list
-    rom.set_byte(0x12D87, (uint8_t)world.fahl_enemies().size());
-}
 
 /**
  * Change Waterfall Shrine entrance check from "Talked to Prospero" to "What a noisy boy!", removing the need*
@@ -325,7 +313,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
 {
     // Rando adaptations / enhancements
     alter_lifestock_handling_in_shops(rom);
-    alter_fahl_challenge(rom, world);
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
 //    improve_visited_flag_setter(rom);

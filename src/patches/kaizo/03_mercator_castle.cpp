@@ -32,7 +32,7 @@ void setup_mercator_castle_maps(World& world)
         castle_palette_darkened->color(i).apply_factor(0.55f);
     castle_palette_darkened->color(8).r--;
     castle_palette_darkened->color(9).r--;
-    world.map_palettes().emplace_back(castle_palette_darkened);
+    world.add_map_palette(castle_palette_darkened);
 
     for(uint16_t map_id : maps_to_setup)
     {

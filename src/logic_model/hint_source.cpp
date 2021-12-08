@@ -1,7 +1,7 @@
 #include "hint_source.hpp"
 
 #include <algorithm>
-#include "../tools/game_text.hpp"
+#include <landstalker_lib/tools/game_text.hpp>
 
 HintSource::HintSource(const std::vector<uint16_t>& text_ids, const std::vector<std::string*>& string_ptrs, 
     const std::string& description, WorldNode* node, bool special, bool small_textbox) :

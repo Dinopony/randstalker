@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../world_model/item.hpp"
-#include "../tools/unsorted_set.hpp"
+#include <landstalker_lib/model/item.hpp>
+#include <landstalker_lib/tools/unsorted_set.hpp>
 
 class WorldNode;
 

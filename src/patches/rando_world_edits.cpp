@@ -1,14 +1,11 @@
-#include <md_tools.hpp>
+#include <landstalker_lib/md_tools.hpp>
 
-#include "../../world_model/world.hpp"
-#include "../../world_model/map.hpp"
-#include "../../world_model/entity.hpp"
-#include "../../world_model/entity_type.hpp"
-
-#include "../../constants/map_codes.hpp"
-#include "../../constants/entity_type_codes.hpp"
-
-
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/model/map.hpp>
+#include <landstalker_lib/model/entity.hpp>
+#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker_lib/constants/map_codes.hpp>
+#include <landstalker_lib/constants/entity_type_codes.hpp>
 
 void put_orcs_back_in_room_before_boss_swamp_shrine(World& world)
 {

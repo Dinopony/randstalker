@@ -1,11 +1,13 @@
 #include "writers.hpp"
 
-#include <json.hpp>
+#include <landstalker_lib/tools/json.hpp>
 
-#include "../world_model/world.hpp"
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include <landstalker_lib/model/entity_type.hpp>
+
 #include "../world_randomizer.hpp"
-#include "../world_model/world_teleport_tree.hpp"
-#include "../world_model/entity_type.hpp"
+
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
 

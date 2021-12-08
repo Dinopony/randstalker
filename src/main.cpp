@@ -16,24 +16,20 @@
 #include <string>
 #include <iostream>
 
-#include <base64.hpp>
-#include <json.hpp>
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/md_tools.hpp>
+#include <landstalker_lib/tools/argument_dictionary.hpp>
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/constants/offsets.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
+#include "tools/base64.hpp"
 #include "patches/patches.hpp"
-
-#include <md_tools.hpp>
-#include "tools/argument_dictionary.hpp"
-#include "tools/tools.hpp"
-
-#include "exceptions.hpp"
-#include "constants/offsets.hpp"
-#include "world_model/world.hpp"
+#include "apply_randomizer_options.hpp"
 #include "logic_model/world_logic.hpp"
 #include "world_randomizer.hpp"
 #include "io/writers.hpp"
-
-// TODO: Dark room patches need to be done AFTER randomization
-// TODO: Logic editing patches need to be done BEFORE randomization
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {
@@ -96,16 +92,19 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     std::cout << "Permalink: " << options.permalink() << "\n\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
-    WorldLogic logic(world, options);
+    WorldLogic logic(world);
 
-    // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-    std::cout << "Applying game patches...\n\n";
-    apply_randomizer_patches(rom, world, logic, options);
-    
+    // Apply randomizer options to alter World and WorldLogic accordingly before starting the actual randomization
+    apply_randomizer_options(options, world, logic);
+
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
     std::cout << "Randomizing world...\n";
     WorldRandomizer randomizer(world, logic, options);
     randomizer.randomize();
+
+    // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
+    std::cout << "Applying game patches...\n\n";
+    apply_randomizer_patches(rom, world, logic, options);
 
     std::string debug_log_path = args.get_string("debuglog");
     if (!debug_log_path.empty())
@@ -123,6 +122,7 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     {
         if(options.allow_spoiler_log())
         {
+            std::cout << "Outputting model...\n\n";
             ModelWriter::write_world_model(world);
             ModelWriter::write_logic_model(logic);
             ModelWriter::write_randomizer_model(randomizer);
@@ -223,8 +223,8 @@ void generate(const ArgumentDictionary& args)
     Json spoiler_json;
     if(args.contains("kaizo"))
     {
-        apply_kaizo_edits(world, *rom);
-        apply_kaizo_patches(*rom, world);
+//        apply_kaizo_edits(world, *rom);
+//        apply_kaizo_patches(*rom, world);
     }
     else if(options.is_plando())
     {
@@ -244,7 +244,7 @@ void generate(const ArgumentDictionary& args)
 
         std::ofstream output_rom_file(output_rom_path, std::ios::binary);
         if(!output_rom_file)
-            throw RandomizerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
+            throw LandstalkerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
 
         rom->write_to_file(output_rom_file);
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
@@ -258,7 +258,7 @@ void generate(const ArgumentDictionary& args)
         {
             std::ofstream spoiler_file(spoiler_log_path);
             if(!spoiler_file)
-                throw RandomizerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
+                throw LandstalkerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
 
             spoiler_file << spoiler_json.dump(4);
             spoiler_file.close();
@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
         for(int i=0 ; i<seed_count ; ++i)
             generate(args);
     }
-    catch(RandomizerException& e) 
+    catch(LandstalkerException& e)
     {
         std::cerr << "ERROR: " << e.what() << std::endl;
         return_code = EXIT_FAILURE;

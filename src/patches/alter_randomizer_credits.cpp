@@ -1,6 +1,6 @@
-#include <md_tools.hpp>
+#include <landstalker_lib/md_tools.hpp>
 
-#include "../../constants/offsets.hpp"
+#include <landstalker_lib/constants/offsets.hpp>
 
 void alter_randomizer_credits(md::ROM& rom)
 {

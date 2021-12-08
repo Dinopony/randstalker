@@ -1,13 +1,18 @@
-#include "../../randomizer_options.hpp"
-#include "../../world_model/world.hpp"
-#include "../../world_model/item.hpp"
-#include "../../world_model/entity_type.hpp"
+#include "randomizer_options.hpp"
 
-#include "../../constants/item_codes.hpp"
-#include "../../constants/flags.hpp"
-#include "../../constants/values.hpp"
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/model/item.hpp>
+#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
+#include <landstalker_lib/constants/flags.hpp>
+#include <landstalker_lib/constants/values.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
-#include "../../exceptions.hpp"
+#include "assets/game_strings.json.hxx"
+
+#include "logic_model/world_path.hpp"
+#include "logic_model/world_logic.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
 {
@@ -106,10 +111,18 @@ static void patch_items(World& world, const RandomizerOptions& options)
         {
             std::stringstream msg;
             msg << "Cannot set starting quantity of unknown item '" << item_name << "'";
-            throw RandomizerException(msg.str());
+            throw LandstalkerException(msg.str());
         }
 
         item->starting_quantity(std::min<uint8_t>(quantity, 9));
+    }
+
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
+    {
+        Item* red_jewel = world.item(ITEM_RED_JEWEL);
+        red_jewel->name("Kazalt Jewel");
+        red_jewel->allowed_on_ground(false);
+        red_jewel->max_quantity(options.jewel_count());
     }
 
     // Alter a few things depending on settings
@@ -148,26 +161,104 @@ static void patch_entity_types(World& world, const RandomizerOptions& options)
 
 static void patch_game_strings(World& world, const RandomizerOptions& options)
 {
+    Json game_strings_json = Json::parse(GAME_STRINGS_JSON, nullptr, true, true);
+    std::vector<std::string> strings_to_empty = game_strings_json.at("emptiedIndices");
+    for(const std::string& string_hex_id : strings_to_empty)
+    {
+        uint16_t game_string_id = std::stoi(string_hex_id, nullptr, 16);
+        world.game_strings()[game_string_id] = "";
+    }
+
+    for (auto& [string_hex_id, string_value] : game_strings_json.at("patches").items())
+    {
+        uint16_t game_string_id = std::stoi(string_hex_id, nullptr, 16);
+        world.game_strings()[game_string_id] = string_value;
+    }
+
     // Kazalt rejection message
     world.game_strings()[0x022] = std::string("Only the bearers of the ") 
         + std::to_string(options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
-void apply_rando_options_to_world(const RandomizerOptions& options, World& world)
+static void apply_options_on_logic_paths(const RandomizerOptions& options, World& world, WorldLogic& logic)
+{
+    if(options.remove_gumi_boulder())
+    {
+        logic.add_path(new WorldPath(
+                logic.node("route_gumi_ryuma"),
+                logic.node("gumi")));
+    }
+
+    // Handle paths related to specific tricks
+    if(options.handle_ghost_jumping_in_logic())
+    {
+        logic.add_path(new WorldPath(
+                logic.node("route_lake_shrine"),
+                logic.node("route_lake_shrine_cliff")));
+    }
+
+    // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements
+    if(options.handle_damage_boosting_in_logic())
+    {
+        for(auto& [pair, path] : logic.paths())
+        {
+            std::vector<Item*>& required_items = path->required_items();
+
+            auto it = std::find(required_items.begin(), required_items.end(), world.item(ITEM_IRON_BOOTS));
+            if(it != required_items.end())
+                required_items.erase(it);
+
+            it = std::find(required_items.begin(), required_items.end(), world.item(ITEM_FIREPROOF_BOOTS));
+            if(it != required_items.end())
+                required_items.erase(it);
+        }
+    }
+
+    // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
+    WorldPath* path_to_kazalt = logic.path("king_nole_cave", "kazalt");
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
+    {
+        for(int i=0; i<options.jewel_count() ; ++i)
+            path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
+    }
+    else if(options.jewel_count() >= 1)
+    {
+        path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
+        if(options.jewel_count() >= 2)
+            path_to_kazalt->add_required_item(world.item(ITEM_PURPLE_JEWEL));
+        if(options.jewel_count() >= 3)
+            path_to_kazalt->add_required_item(world.item(ITEM_GREEN_JEWEL));
+        if(options.jewel_count() >= 4)
+            path_to_kazalt->add_required_item(world.item(ITEM_BLUE_JEWEL));
+        if(options.jewel_count() >= 5)
+            path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
+    }
+
+    if(options.all_trees_visited_at_start())
+    {
+        std::vector<WorldNode*> required_nodes;
+        if(!options.remove_tibor_requirement())
+            required_nodes = { logic.node("tibor") };
+
+        for(auto& pair : world.teleport_tree_pairs())
+        {
+            WorldNode* first_node = logic.node(pair.first->node_id());
+            WorldNode* second_node = logic.node(pair.second->node_id());
+            logic.add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
+            logic.add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
+        }
+    }
+}
+
+void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic)
 {
     world.starting_golds(options.starting_gold());
     world.custom_starting_life(options.starting_life());
-
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-    {
-        Item* red_jewel = world.item(ITEM_RED_JEWEL);
-        red_jewel->name("Kazalt Jewel");
-        red_jewel->allowed_on_ground(false);
-        red_jewel->max_quantity(options.jewel_count());
-    }
 
     patch_starting_flags(world, options);
     patch_items(world, options);
     patch_entity_types(world, options);
     patch_game_strings(world, options);
+
+    apply_options_on_logic_paths(options, world, logic);
 }

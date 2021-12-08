@@ -4,13 +4,13 @@
 #include <string>
 #include <random>
 
-#include "tools/unsorted_set.hpp"
+#include <landstalker_lib/tools/unsorted_set.hpp>
+#include <landstalker_lib/model/world.hpp>
 
 #include "randomizer_options.hpp"
 #include "world_solver.hpp"
-
 #include "logic_model/world_logic.hpp"
-#include "world_model/world.hpp"
+
 
 class Item;
 class ItemSource;

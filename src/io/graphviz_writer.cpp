@@ -2,13 +2,12 @@
 
 #include <vector>
 #include <fstream>
-#include "../tools/tools.hpp"
 
-#include <json.hpp>
-
-#include "../world_model/map.hpp"
-#include "../world_model/map_connection.hpp"
-#include "../world_model/world.hpp"
+#include <landstalker_lib/model/map.hpp>
+#include <landstalker_lib/model/map_connection.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/json.hpp>
 
 #include "../logic_model/data/world_path.json.hxx"
 #include "../logic_model/world_node.hpp"
@@ -18,6 +17,7 @@ namespace graphviz {
 
 constexpr const char* COLORS[] = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
 size_t COLORS_SIZE = 7;
+
 
 void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
 {

@@ -1,11 +1,12 @@
 #include "randomizer_options.hpp"
 
 #include <iostream>
-#include <base64.hpp>
 
-#include "tools/tools.hpp"
-#include "exceptions.hpp"
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/exceptions.hpp>
+
 #include "tools/bitpack.hpp"
+#include "tools/base64.hpp"
 
 RandomizerOptions::RandomizerOptions() :
     _jewel_count                    (2),
@@ -51,7 +52,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         std::cout << "Reading plando file '" << plando_path << "'...\n\n";
         std::ifstream plando_file(plando_path);
         if(!plando_file)
-            throw RandomizerException("Could not open plando file at given path '" + plando_path + "'");
+            throw LandstalkerException("Could not open plando file at given path '" + plando_path + "'");
 
         plando_file >> _plando_json;
         if(_plando_json.contains("plando_permalink"))
@@ -80,7 +81,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         {
             std::ifstream preset_file(preset_path);
             if(!preset_file)
-                throw RandomizerException("Could not open preset file at given path '" + preset_path + "'");
+                throw LandstalkerException("Could not open preset file at given path '" + preset_path + "'");
 
             std::cout << "Reading preset file '" << preset_path << "'...\n\n";
 
@@ -272,7 +273,7 @@ void RandomizerOptions::parse_json(const Json& json)
                 *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
             } 
             catch(Json::exception) { 
-                throw RandomizerException("Error while parsing mandatory items from preset");
+                throw LandstalkerException("Error while parsing mandatory items from preset");
             }
         }
 
@@ -282,7 +283,7 @@ void RandomizerOptions::parse_json(const Json& json)
                 _filler_items = new std::map<std::string, uint16_t>();
                 *(_filler_items) = randomizer_settings_json.at("fillerItems");
             } catch (Json::exception) {
-                throw RandomizerException("Error while parsing filler items from preset");
+                throw LandstalkerException("Error while parsing filler items from preset");
             }
         }
     }
@@ -314,7 +315,7 @@ Json RandomizerOptions::personal_settings_as_json() const
 void RandomizerOptions::validate()
 {
     if(_jewel_count > 9)
-        throw RandomizerException("Jewel count must be between 0 and 9.");
+        throw LandstalkerException("Jewel count must be between 0 and 9.");
 }
 
 std::vector<std::string> RandomizerOptions::hash_words() const

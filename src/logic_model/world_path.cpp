@@ -1,15 +1,15 @@
 #include "world_path.hpp"
 #include "world_node.hpp"
-#include "../exceptions.hpp"
+#include <landstalker_lib/exceptions.hpp>
 
 WorldPath::WorldPath(WorldNode* from_node, WorldNode* to_node, uint16_t weight, const std::vector<Item*>& required_items, 
                     const std::vector<WorldNode*>& required_nodes, const std::vector<Item*>& items_placed_when_crossing) :
-    _from_node                 (from_node),
-    _to_node                   (to_node),
-    _weight                      (weight),
-    _required_items              (required_items),
-    _required_nodes            (required_nodes),
-    _items_placed_when_crossing  (items_placed_when_crossing)
+    _from_node                  (from_node),
+    _to_node                    (to_node),
+    _weight                     (weight),
+    _required_items             (required_items),
+    _required_nodes             (required_nodes),
+    _items_placed_when_crossing (items_placed_when_crossing)
 {
     _from_node->add_outgoing_path(this);
     _to_node->add_ingoing_path(this);

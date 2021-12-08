@@ -6,10 +6,9 @@
 #include <chrono>
 #include <fstream>
 
-#include <json.hpp>
-
-#include "tools/tools.hpp"
-#include "tools/argument_dictionary.hpp"
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/argument_dictionary.hpp>
 
 class RandomizerOptions 
 {

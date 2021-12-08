@@ -4,27 +4,21 @@
 #include "world_path.hpp"
 #include "world_region.hpp"
 
-#include "../constants/values.hpp"
-
-#include "../world_model/item_source.hpp"
-#include "../world_model/item.hpp"
-#include "../world_model/world_teleport_tree.hpp"
-#include "../world_model/world.hpp"
+#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
 #include "data/world_node.json.hxx"
 #include "data/world_path.json.hxx"
 #include "data/world_region.json.hxx"
 
-#include "../randomizer_options.hpp"
-
 #include <iostream>
-#include "../exceptions.hpp"
 
-WorldLogic::WorldLogic(const World& world, const RandomizerOptions& options)
+WorldLogic::WorldLogic(const World& world)
 {
-    this->init_nodes(world);
-    this->init_paths(world, options);
-    this->init_regions();
+    this->load_nodes(world);
+    this->load_paths(world);
+    this->load_regions();
 }
 
 WorldLogic::~WorldLogic()
@@ -37,7 +31,7 @@ WorldLogic::~WorldLogic()
         delete region;
 }
 
-void WorldLogic::init_nodes(const World& world)
+void WorldLogic::load_nodes(const World& world)
 {
     Json nodes_json = Json::parse(WORLD_NODES_JSON);
     for(auto& [node_id, node_json] : nodes_json.items())
@@ -52,14 +46,14 @@ void WorldLogic::init_nodes(const World& world)
         try {
             _nodes.at(node_id)->add_item_source(source);
         } catch(std::out_of_range&) {
-            throw RandomizerException("Could not find node '" + node_id + "' referenced by item source '" + source->name() + "'");
+            throw LandstalkerException("Could not find node '" + node_id + "' referenced by item source '" + source->name() + "'");
         }
     }
 
     std::cout << _nodes.size() << " nodes loaded." << std::endl;
 }
 
-void WorldLogic::init_paths(const World& world, const RandomizerOptions& options)
+void WorldLogic::load_paths(const World& world)
 {
     Json paths_json = Json::parse(WORLD_PATHS_JSON);
     for(const Json& path_json : paths_json)
@@ -74,73 +68,10 @@ void WorldLogic::init_paths(const World& world, const RandomizerOptions& options
             this->add_path(WorldPath::from_json(inverted_json, _nodes, world.items()));
         }
     }
-    std::cout << _paths.size() << " paths loaded." << std::endl;   
-
-    if(options.remove_gumi_boulder())
-    {
-        this->add_path(new WorldPath(_nodes.at("route_gumi_ryuma"), _nodes.at("gumi")));
-    }
-
-    // Handle paths related to specific tricks
-    if(options.handle_ghost_jumping_in_logic())
-    {
-        this->add_path(new WorldPath(_nodes.at("route_lake_shrine"), _nodes.at("route_lake_shrine_cliff")));
-    }
-
-    // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements 
-    if(options.handle_damage_boosting_in_logic())
-    {
-        for(auto& [pair, path] : _paths)
-        {
-            std::vector<Item*>& required_items = path->required_items();
-            
-            auto it = std::find(required_items.begin(), required_items.end(), world.item(ITEM_IRON_BOOTS));
-            if(it != required_items.end())
-                required_items.erase(it);
-                
-            it = std::find(required_items.begin(), required_items.end(), world.item(ITEM_FIREPROOF_BOOTS));
-            if(it != required_items.end())
-                required_items.erase(it);
-        }
-    }
-
-    // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
-    WorldPath* path_to_kazalt = this->path("king_nole_cave", "kazalt");
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
-    {
-        for(int i=0; i<options.jewel_count() ; ++i)
-            path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
-    }
-    else if(options.jewel_count() >= 1)
-    {
-        path_to_kazalt->add_required_item(world.item(ITEM_RED_JEWEL));
-        if(options.jewel_count() >= 2)
-            path_to_kazalt->add_required_item(world.item(ITEM_PURPLE_JEWEL));
-        if(options.jewel_count() >= 3)
-            path_to_kazalt->add_required_item(world.item(ITEM_GREEN_JEWEL));
-        if(options.jewel_count() >= 4)
-            path_to_kazalt->add_required_item(world.item(ITEM_BLUE_JEWEL));
-        if(options.jewel_count() >= 5)
-            path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
-    }
-
-    if(options.all_trees_visited_at_start())
-    {
-        std::vector<WorldNode*> required_nodes;
-        if(!options.remove_tibor_requirement())
-            required_nodes = { _nodes["tibor"] };
-
-        for(auto& pair : world.teleport_tree_pairs())
-        {
-            WorldNode* first_node = this->node(pair.first->node_id());
-            WorldNode* second_node = this->node(pair.second->node_id());
-            this->add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
-            this->add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
-        }
-    }
+    std::cout << _paths.size() << " paths loaded." << std::endl;
 }
 
-void WorldLogic::init_regions()
+void WorldLogic::load_regions()
 {
     Json regions_json = Json::parse(WORLD_REGIONS_JSON);
     for(const Json& region_json : regions_json)
@@ -150,7 +81,7 @@ void WorldLogic::init_regions()
 
     for(auto& [id, node] : _nodes)
         if(node->region() == nullptr)
-            throw RandomizerException("Node '" + node->id() + "' doesn't belong to any region");
+            throw LandstalkerException("Node '" + node->id() + "' doesn't belong to any region");
 }
 
 WorldPath* WorldLogic::path(WorldNode* origin, WorldNode* destination)

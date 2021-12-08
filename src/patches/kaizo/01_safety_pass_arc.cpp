@@ -125,7 +125,7 @@ static void edit_route_to_ryuma_1(World& world)
     snowy_palette->color(3) = MapPalette::Color(0xA, 0xA, 0xC);
     snowy_palette->color(4) = MapPalette::Color(0xC, 0xC, 0xE);
     snowy_palette->color(5) = MapPalette::Color(0xE, 0xE, 0xE);
-    world.map_palettes().emplace_back(snowy_palette);
+    world.add_map_palette(snowy_palette);
     
     map->palette(snowy_palette);
 }
@@ -226,7 +226,7 @@ static void edit_helga_hut_interior(World& world)
     std::array<uint16_t, 13> helga_palette_words = { 0x0204, 0x0426, 0x086A, 0x0222, 0x0444, 0x0888, 
                                                      0x000A, 0x04AA, 0x024A, 0x0028, 0x0066, 0x0A46, 0x0060 };
     MapPalette* palette = new MapPalette(helga_palette_words);
-    world.map_palettes().emplace_back(palette);
+    world.add_map_palette(palette);
     map->palette(palette);
 
     // Change the music

@@ -1,21 +1,21 @@
 #include "writers.hpp"
 
-#include <json.hpp>
-
-#include "../world_model/item_source.hpp"
-#include "../world_model/entity_type.hpp"
-#include "../world_model/map.hpp"
-#include "../world_model/map_connection.hpp"
-#include "../world_model/map_palette.hpp"
-#include "../world_model/world_teleport_tree.hpp"
-#include "../world_model/world.hpp"
+#include <landstalker_lib/model/item_source.hpp>
+#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker_lib/model/map.hpp>
+#include <landstalker_lib/model/map_connection.hpp>
+#include <landstalker_lib/model/map_palette.hpp>
+#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/json.hpp>
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
-
-#include "../tools/tools.hpp"
-
 #include "../world_randomizer.hpp"
+
+
+
 
 void ModelWriter::write_world_model(const World& world)
 {
@@ -70,6 +70,7 @@ void ModelWriter::write_world_model(const World& world)
     tools::dump_json_to_file(strings_json, "./json_data/game_strings.json");
 }
 
+
 void ModelWriter::write_logic_model(const WorldLogic& logic)
 {
     /////////// LOGIC /////////////////////////////////////////////////////////
@@ -122,3 +123,4 @@ void ModelWriter::write_randomizer_model(const WorldRandomizer& randomizer)
         spawns_json[id] = spawn->to_json();
     tools::dump_json_to_file(spawns_json, "./json_data/world_spawns.json");
 }
+
