@@ -106,128 +106,6 @@ void remove_tibor_requirement_to_use_trees(md::ROM& rom)
     rom.set_code(0x4E4A, md::Code().nop(5));
 }
 
-void handle_armor_upgrades(md::ROM& rom)
-{
-    // --------------- Alter item in D0 register function ---------------
-    md::Code func_alter_item_in_d0;
-
-    // Check if item ID is between 09 and 0C (armors). If not, branch to return.
-    func_alter_item_in_d0.cmpib(ITEM_STEEL_BREAST, reg_D0);
-    func_alter_item_in_d0.blt(13);
-    func_alter_item_in_d0.cmpib(ITEM_HYPER_BREAST, reg_D0);
-    func_alter_item_in_d0.bgt(11);
-
-    // By default, put Hyper breast as given armor
-    func_alter_item_in_d0.movew(ITEM_HYPER_BREAST, reg_D0);
-
-    // If Shell breast is not owned, put Shell breast
-    func_alter_item_in_d0.btst(0x05, addr_(0xFF1045));
-    func_alter_item_in_d0.bne(2);
-    func_alter_item_in_d0.movew(ITEM_SHELL_BREAST, reg_D0);
-
-    // If Chrome breast is not owned, put Chrome breast
-    func_alter_item_in_d0.btst(0x01, addr_(0xFF1045));
-    func_alter_item_in_d0.bne(2);
-    func_alter_item_in_d0.movew(ITEM_CHROME_BREAST, reg_D0);
-
-    // If Steel breast is not owned, put Steel breast
-    func_alter_item_in_d0.btst(0x05, addr_(0xFF1044));
-    func_alter_item_in_d0.bne(2);
-    func_alter_item_in_d0.movew(ITEM_STEEL_BREAST, reg_D0);
-
-    func_alter_item_in_d0.rts();
-
-    uint32_t func_alter_item_in_d0_addr = rom.inject_code(func_alter_item_in_d0);
-
-
-    // --------------- Change item in reward box function ---------------
-    md::Code func_change_item_reward_box;
-
-    func_change_item_reward_box.jsr(func_alter_item_in_d0_addr);
-    func_change_item_reward_box.movew(reg_D0, addr_(0xFF1196));
-    func_change_item_reward_box.rts();
-
-    uint32_t func_change_item_reward_box_addr = rom.inject_code(func_change_item_reward_box);
-
-    // --------------- Change item given by taking item on ground function ---------------
-    md::Code func_alter_item_given_by_ground_source;
-
-    func_alter_item_given_by_ground_source.movem_to_stack({ reg_D7 }, { reg_A0 }); // movem D7,A0 -(A7)	(48E7 0180)
-
-    func_alter_item_given_by_ground_source.cmpib(ITEM_HYPER_BREAST, reg_D0);
-    func_alter_item_given_by_ground_source.bgt(9); // to movem
-    func_alter_item_given_by_ground_source.cmpib(ITEM_STEEL_BREAST, reg_D0);
-    func_alter_item_given_by_ground_source.blt(7);  // to movem
-
-    func_alter_item_given_by_ground_source.jsr(func_alter_item_in_d0_addr);
-    func_alter_item_given_by_ground_source.moveb(addr_(reg_A5, 0x3B), reg_D7);  // move ($3B,A5), D7	(1E2D 003B)
-    func_alter_item_given_by_ground_source.subib(0xC9, reg_D7);
-    func_alter_item_given_by_ground_source.cmpa(lval_(0xFF5400), reg_A5);
-    func_alter_item_given_by_ground_source.blt(2);    // to movem
-    func_alter_item_given_by_ground_source.bset(reg_D7, addr_(0xFF103F)); // set a flag when an armor is taken on the ground for it to disappear afterwards
-
-    func_alter_item_given_by_ground_source.movem_from_stack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
-    func_alter_item_given_by_ground_source.lea(0xFF1040, reg_A0);
-    func_alter_item_given_by_ground_source.rts();
-
-    uint32_t func_alter_item_given_by_ground_source_addr = rom.inject_code(func_alter_item_given_by_ground_source);
-
-    // --------------- Change visible item for items on ground function ---------------
-    md::Code func_alter_visible_item_for_ground_source;
-
-    func_alter_visible_item_for_ground_source.movem_to_stack({ reg_D7 }, { reg_A0 });  // movem D7,A0 -(A7)
-
-    func_alter_visible_item_for_ground_source.subib(0xC0, reg_D0);
-    func_alter_visible_item_for_ground_source.cmpib(ITEM_HYPER_BREAST, reg_D0);
-    func_alter_visible_item_for_ground_source.bgt(10); // to move D0 in item slot
-    func_alter_visible_item_for_ground_source.cmpib(ITEM_STEEL_BREAST, reg_D0);
-    func_alter_visible_item_for_ground_source.blt(8); // to move D0 in item slot
-    func_alter_visible_item_for_ground_source.moveb(reg_D0, reg_D7);
-    func_alter_visible_item_for_ground_source.subib(ITEM_STEEL_BREAST, reg_D7);
-    func_alter_visible_item_for_ground_source.btst(reg_D7, addr_(0xFF103F));
-    func_alter_visible_item_for_ground_source.bne(3);
-    // Item was not already taken, alter the armor inside
-    func_alter_visible_item_for_ground_source.jsr(func_change_item_reward_box_addr);
-    func_alter_visible_item_for_ground_source.bra(2);
-    // Item was already taken, remove it by filling it with an empty item
-    func_alter_visible_item_for_ground_source.movew(ITEM_NONE, reg_D0);
-    func_alter_visible_item_for_ground_source.moveb(reg_D0, addr_(reg_A1, 0x36)); // move D0, ($36,A1) (1340 0036)
-    func_alter_visible_item_for_ground_source.movem_from_stack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
-    func_alter_visible_item_for_ground_source.rts();
-
-    uint32_t func_alter_visible_item_for_ground_source_addr = rom.inject_code(func_alter_visible_item_for_ground_source);
-
-    // --------------- Hooks ---------------
-    // In 'chest reward' function, replace the item ID move by the injected function
-    rom.set_code(0x0070BE, md::Code().jsr(func_change_item_reward_box_addr));
-
-    // In 'NPC reward' function, replace the item ID move by the injected function
-    rom.set_code(0x028DD8, md::Code().jsr(func_change_item_reward_box_addr));
-
-    // In 'item on ground reward' function, replace the item ID move by the injected function
-    rom.set_word(0x024ADC, 0x3002); // put the move D2,D0 before the jsr because it helps us while changing nothing to the usual logic
-    rom.set_code(0x024ADE, md::Code().jsr(func_change_item_reward_box_addr));
-
-    // Replace 2928C lea (41F9 00FF1040) by a jsr to injected function
-    rom.set_code(0x02928C, md::Code().jsr(func_alter_item_given_by_ground_source_addr));
-
-    // Replace 1963C - 19644 (0400 00C0 ; 1340 0036) by a jsr to a replacement function
-    rom.set_code(0x01963C, md::Code().jsr(func_alter_visible_item_for_ground_source_addr).nop());
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////
-//       LOGIC ENFORCING
-///////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//      RANDOMIZER RELATED BUGS
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 /*
  * Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
@@ -286,26 +164,13 @@ void fix_crypt_soflocks(md::ROM& rom)
  */
 void alter_labyrinth_rafts(md::ROM& rom)
 {
-    // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene while discarding the "raft already taken" state 
-    // as early as the player moves to another map.
+    // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene 
+    // while discarding the "raft already taken" state as early as the player moves to another map.
     rom.set_word(0x09E031, 0x0100);
     rom.set_word(0x09E034, 0x0100);
     rom.set_word(0x09E04E, 0x0100);
     rom.set_word(0x09E051, 0x0100);
 }
-
-
-/**
- * In default game, the function that sets the flag to indicate that a room has been visited
- * is very limited in the number of addresses it can reach.
- * We modify it to be able to set any game flag, which is especially useful in some cases
- * >>> WHICH ONES?
- */
-//void improve_visited_flag_setter(md::ROM& rom)
-//{
-//    rom.set_long(0x2954, 0xFF1000);
-//}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -315,13 +180,10 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     alter_lifestock_handling_in_shops(rom);
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom);
-//    improve_visited_flag_setter(rom);
     make_ryuma_mayor_saveable(rom);
     fix_ryuma_mayor_reward(rom);
     if (options.remove_tibor_requirement())
         remove_tibor_requirement_to_use_trees(rom);
-    if (options.use_armor_upgrades())
-        handle_armor_upgrades(rom);
 
     // Fix randomizer-related bugs
     fix_mir_tower_priest_room_items(rom);

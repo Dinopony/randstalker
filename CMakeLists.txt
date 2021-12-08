@@ -60,13 +60,6 @@ set(SOURCES
         "src/patches/patches.hpp"
         "src/patches/rando_adaptations.cpp"
 
-#        "src/patches/kaizo/kaizo.hpp"
-#        "src/patches/kaizo/kaizo.cpp"
-#        "src/patches/kaizo/00_engine.cpp"
-#        "src/patches/kaizo/01_safety_pass_arc.cpp"
-#        "src/patches/kaizo/02_mercator.cpp"
-#        "src/patches/kaizo/03_mercator_castle.cpp"
-
         # --- Project root ----------------------------------------
         "src/apply_randomizer_options.hpp"
         "src/apply_randomizer_options.cpp"

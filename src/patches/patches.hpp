@@ -32,6 +32,9 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     make_sword_of_gaia_work_in_volcano(rom);
     normalize_special_enemies_hp(rom, options.fix_tree_cutting_glitch());
     
+    if (options.use_armor_upgrades())
+        handle_armor_upgrades(rom);
+
     make_pawn_ticket_consumable(rom);
     make_key_not_consumed_on_use(rom);
 
