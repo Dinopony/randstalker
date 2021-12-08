@@ -9,6 +9,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: update-submodules
+      run: git submodule update --recursive
+      working-directory: "."
     - name: cmake
       run: cmake -G "Unix Makefiles"
       working-directory: "."
