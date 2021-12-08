@@ -221,12 +221,7 @@ void generate(const ArgumentDictionary& args)
     World world(*rom);
 
     Json spoiler_json;
-    if(args.contains("kaizo"))
-    {
-//        apply_kaizo_edits(world, *rom);
-//        apply_kaizo_patches(*rom, world);
-    }
-    else if(options.is_plando())
+    if(options.is_plando())
     {
         spoiler_json = plandomize(world, options, args);
     }
