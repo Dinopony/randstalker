@@ -21,3 +21,7 @@ namespace GraphvizWriter {
     void write_logic_as_dot(const World& world, const std::string& path);
     void write_maps_as_dot(const World& world, const std::string& path);
 }
+
+namespace WorldJsonParser {
+    void parse_world_json(World& world, WorldLogic& logic, const Json& json);
+}

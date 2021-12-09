@@ -19,30 +19,30 @@ public:
     WorldPath(WorldNode* from_node, 
                 WorldNode* to_node, 
                 uint16_t weight = 1, 
-                const std::vector<Item*>& required_items = {}, 
-                const std::vector<WorldNode*>& required_nodes = {}, 
-                const std::vector<Item*>& items_placed_when_crossing = {} );
+                std::vector<Item*> required_items = {},
+                std::vector<WorldNode*> required_nodes = {},
+                std::vector<Item*> items_placed_when_crossing = {});
 
-    const std::vector<Item*>& required_items() const { return _required_items; }
-    std::vector<Item*>& required_items() { return _required_items; }
+    [[nodiscard]] const std::vector<Item*>& required_items() const { return _required_items; }
+    [[nodiscard]] std::vector<Item*>& required_items() { return _required_items; }
     void add_required_item(Item* item) { _required_items.emplace_back(item); }
 
-    WorldNode* origin() const { return _from_node; }
-    WorldNode* destination() const { return _to_node; }
+    [[nodiscard]] WorldNode* origin() const { return _from_node; }
+    [[nodiscard]] WorldNode* destination() const { return _to_node; }
 
-    const std::vector<WorldNode*>& required_nodes() const { return _required_nodes; }
-    bool has_explored_required_nodes(const UnsortedSet<WorldNode*>& explored_nodes) const;
+    [[nodiscard]] const std::vector<WorldNode*>& required_nodes() const { return _required_nodes; }
+    [[nodiscard]] bool has_explored_required_nodes(const UnsortedSet<WorldNode*>& explored_nodes) const;
 
-    const std::vector<Item*>& items_placed_when_crossing() const { return _items_placed_when_crossing; }
+    [[nodiscard]] const std::vector<Item*>& items_placed_when_crossing() const { return _items_placed_when_crossing; }
     void add_item_placed_when_crossing(Item* item) { _items_placed_when_crossing.emplace_back(item); }
 
-    uint16_t weight() const { return _weight; }
+    [[nodiscard]] uint16_t weight() const { return _weight; }
     void weight(uint16_t weight) { _weight = weight; }
 
-    std::vector<Item*> missing_items_to_cross(std::vector<Item*> playerInventoryCopy, bool only_strictly_required_items = false);
+    [[nodiscard]] std::vector<Item*> missing_items_to_cross(std::vector<Item*> playerInventoryCopy, bool only_strictly_required_items = false);
 
-    bool is_perfect_opposite_of(WorldPath* other) const;
+    [[nodiscard]] bool is_perfect_opposite_of(WorldPath* other) const;
 
-    Json to_json(bool two_way) const;
+    [[nodiscard]] Json to_json(bool two_way) const;
     static WorldPath* from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes, const std::map<uint8_t, Item*>& items);  
 };

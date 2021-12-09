@@ -29,8 +29,7 @@
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_logic.hpp"
 #include "world_randomizer.hpp"
-#include "io/writers.hpp"
-#include "io/world_json_parser.hpp"
+#include "io/io.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {

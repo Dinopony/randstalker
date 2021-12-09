@@ -37,11 +37,11 @@ public:
     
     void randomize();
 
-    bool is_region_avoidable(WorldRegion* region) const;
-    bool is_item_avoidable(Item* item) const;
+    [[nodiscard]] bool is_region_avoidable(WorldRegion* region) const;
+    [[nodiscard]] bool is_item_avoidable(Item* item) const;
 
     [[nodiscard]] Json playthrough_as_json() const;
-    Json& debug_log_as_json() { return _solver.debug_log(); }
+    [[nodiscard]] Json& debug_log_as_json() { return _solver.debug_log(); }
 
 private:
     void init_filler_items();
@@ -64,10 +64,10 @@ private:
     void randomize_hints();
     void randomize_lithograph_hint();
     void randomize_where_is_lithograph_hint();
-    Item* randomize_fortune_teller_hint();
-    Item* randomize_oracle_stone_hint(Item* fortune_hinted_item);
+    [[nodiscard]] Item* randomize_fortune_teller_hint();
+    [[nodiscard]] Item* randomize_oracle_stone_hint(Item* fortune_hinted_item);
     void randomize_sign_hints(Item* fortune_hinted_item, Item* oracle_stone_hinted_item);
 
-    std::string random_hint_for_item(Item* item);
-    std::string random_hint_for_item_source(ItemSource* source);
+    [[nodiscard]] std::string random_hint_for_item(Item* item);
+    [[nodiscard]] std::string random_hint_for_item_source(ItemSource* source);
 };

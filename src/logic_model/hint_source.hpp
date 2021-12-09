@@ -28,5 +28,5 @@ public:
     void apply_text(World& world);
 
     [[nodiscard]] Json to_json() const;
-    static HintSource* from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes);
+    [[nodiscard]] static HintSource* from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes);
 };

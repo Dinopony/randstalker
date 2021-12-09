@@ -36,8 +36,7 @@ set(SOURCES
         "src/io/graphviz_writer.cpp"
         "src/io/model_writer.cpp"
         "src/io/spoiler_writer.cpp"
-        "src/io/writers.hpp"
-        "src/io/world_json_parser.hpp"
+        "src/io/io.hpp"
         "src/io/world_json_parser.cpp"
 
         # --- Logic model ----------------------------------------

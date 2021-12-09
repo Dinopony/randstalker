@@ -1,8 +1,10 @@
-#include "world_json_parser.hpp"
+#include "io.hpp"
 
 #include "../logic_model/world_node.hpp"
 #include "../logic_model/world_region.hpp"
+#include "../logic_model/world_logic.hpp"
 #include "../logic_model/hint_source.hpp"
+#include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/tools/tools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 

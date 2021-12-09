@@ -48,7 +48,7 @@ private:
     Json _debug_log;
 
 public:
-    WorldSolver(const WorldLogic& logic);
+    explicit WorldSolver(const WorldLogic& logic);
 
     void forbid_item_instances(const std::vector<Item*>& forbidden_item_instances);
     void forbid_item_types(const std::vector<Item*>& forbidden_item_types);
@@ -58,24 +58,24 @@ public:
     bool try_to_solve(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
     bool run_until_blocked();
 
-    const std::vector<Item*>& starting_inventory() const { return _starting_inventory; }
+    [[nodiscard]] const std::vector<Item*>& starting_inventory() const { return _starting_inventory; }
     void starting_inventory(const std::vector<Item*>& starting_inventory) { _starting_inventory = starting_inventory; }
     void update_current_inventory();
 
-    const UnsortedSet<WorldPath*>& blocked_paths() const { return _blocked_paths; }
-    const std::vector<ItemSource*>& reachable_item_sources() const { return _reachable_item_sources; }
-    std::vector<ItemSource*> empty_reachable_item_sources() const;
-    const std::vector<Item*>& inventory() const { return _inventory; }
+    [[nodiscard]] const UnsortedSet<WorldPath*>& blocked_paths() const { return _blocked_paths; }
+    [[nodiscard]] const std::vector<ItemSource*>& reachable_item_sources() const { return _reachable_item_sources; }
+    [[nodiscard]] std::vector<ItemSource*> empty_reachable_item_sources() const;
+    [[nodiscard]] const std::vector<Item*>& inventory() const { return _inventory; }
 
-    bool can_take_path(WorldPath* path) const;
-    std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
-    std::vector<Item*> missing_items_to_take_path(WorldPath* path) const;
+    [[nodiscard]] bool can_take_path(WorldPath* path) const;
+    [[nodiscard]] std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
+    [[nodiscard]] std::vector<Item*> missing_items_to_take_path(WorldPath* path) const;
 
-    bool reached_end() const { return _explored_nodes.contains(_end_node); }
-    std::vector<Item*> find_minimal_inventory();
+    [[nodiscard]] bool reached_end() const { return _explored_nodes.contains(_end_node); }
+    [[nodiscard]] std::vector<Item*> find_minimal_inventory();
 
-    Json& debug_log() { return _debug_log; }
-    Json& debug_log_for_current_step() { return _debug_log["steps"][std::to_string(_step_count)]; }
+    [[nodiscard]] Json& debug_log() { return _debug_log; }
+    [[nodiscard]] Json& debug_log_for_current_step() { return _debug_log["steps"][std::to_string(_step_count)]; }
 
 private:
     void expand_exploration_zone();
