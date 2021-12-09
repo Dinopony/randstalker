@@ -8,39 +8,6 @@
 #include "tools/bitpack.hpp"
 #include "tools/base64.hpp"
 
-RandomizerOptions::RandomizerOptions() :
-    _jewel_count                    (2),
-    _use_armor_upgrades             (true),
-    _startingLife                   (0),
-    _startingGold                   (0),
-    _starting_items                 (),
-    _fix_armlet_skip                (true),
-    _fix_tree_cutting_glitch        (true),
-    _consumable_record_book         (false),
-    _remove_gumi_boulder            (false),
-    _remove_tibor_requirement       (false),
-    _all_trees_visited_at_start     (false),
-    _enemies_damage_factor          (100),
-    _enemies_health_factor          (100),
-    _enemies_armor_factor           (100),
-    _enemies_golds_factor           (100),
-    _enemies_drop_chance_factor     (100),
-
-    _seed                           (0),
-    _allow_spoiler_log              (true),
-    _item_sources_window            (30),
-    _shuffle_tibor_trees            (false), 
-    _ghost_jumping_in_logic         (false),
-    _damage_boosting_in_logic       (false),
-    _mandatory_items                (nullptr),
-    _filler_items                   (nullptr),
-
-    _add_ingame_item_tracker        (false),
-    _hud_color                      (0x824),
-
-    _world_json                     ()
-{}
-
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
     std::string permalink_string = args.get_string("permalink");
@@ -354,7 +321,8 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack_map(_starting_items);
     bitpack.pack(_model_patch_items);
     bitpack.pack(_model_patch_spawns);
-    
+    bitpack.pack(_world_json);
+
     return "l" + base64_encode(bitpack.to_bytes()) + "s";
 }
 
@@ -412,4 +380,5 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _starting_items = bitpack.unpack_map<std::string, uint8_t>();
     _model_patch_items = bitpack.unpack<Json>();
     _model_patch_spawns = bitpack.unpack<Json>();
+    _world_json = bitpack.unpack<Json>();
 }

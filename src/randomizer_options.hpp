@@ -12,8 +12,54 @@
 
 class RandomizerOptions 
 {
+private:
+    static constexpr uint8_t STARTING_LIFE_USE_SPAWN_LOCATION_VALUE = 0;
+
+    // ------------- Game patching settings -------------
+    // (included in permalink, presets & plandos)
+    uint8_t _jewel_count = 2;
+    bool _use_armor_upgrades = true;
+    uint8_t _startingLife = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
+    uint16_t _startingGold = 0;
+    std::map<std::string, uint8_t> _starting_items;
+    bool _fix_armlet_skip = true;
+    bool _fix_tree_cutting_glitch = true;
+    bool _consumable_record_book = false;
+    bool _remove_gumi_boulder = false;
+    bool _remove_tibor_requirement = false;
+    bool _all_trees_visited_at_start = false;
+    uint16_t _enemies_damage_factor = 100;
+    uint16_t _enemies_health_factor = 100;
+    uint16_t _enemies_armor_factor = 100;
+    uint16_t _enemies_golds_factor = 100;
+    uint16_t _enemies_drop_chance_factor = 100;
+
+    // ------------- Randomization settings -------------
+    // (included in permalink & presets, not in plandos)
+    uint32_t _seed = 0;
+    bool _allow_spoiler_log = true;
+    uint16_t _item_sources_window = 30;
+    std::vector<std::string> _possible_spawn_locations;
+    bool _shuffle_tibor_trees = false;
+    bool _ghost_jumping_in_logic = false;
+    bool _damage_boosting_in_logic = false;
+    std::map<std::string, uint16_t>* _mandatory_items = nullptr;
+    std::map<std::string, uint16_t>* _filler_items = nullptr;
+
+    // ------------- Plando world JSON -------------
+    Json _world_json;
+
+    // ------------- Model patch -------------
+    Json _model_patch_items;
+    Json _model_patch_spawns;
+
+    // ------------- Personal settings -------------
+    // (not included in permalink nor presets)
+    bool _add_ingame_item_tracker = false;
+    uint16_t _hud_color = 0x824;
+
 public:
-    RandomizerOptions();
+    RandomizerOptions() = default;
     explicit RandomizerOptions(const ArgumentDictionary& args);
     ~RandomizerOptions();
     
@@ -70,48 +116,4 @@ public:
     [[nodiscard]] std::vector<std::string> hash_words() const;
     [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
     [[nodiscard]] std::string permalink() const;
-
-private:
-    // ------------- Game patching settings -------------
-    // (included in permalink, presets & plandos)
-    uint8_t _jewel_count;
-    bool _use_armor_upgrades;
-    uint8_t _startingLife;
-    uint16_t _startingGold;
-    std::map<std::string, uint8_t> _starting_items;
-    bool _fix_armlet_skip;
-    bool _fix_tree_cutting_glitch;
-    bool _consumable_record_book;
-    bool _remove_gumi_boulder;
-    bool _remove_tibor_requirement;
-    bool _all_trees_visited_at_start;
-    uint16_t _enemies_damage_factor;
-    uint16_t _enemies_health_factor;
-    uint16_t _enemies_armor_factor;
-    uint16_t _enemies_golds_factor;
-    uint16_t _enemies_drop_chance_factor;
-
-    // ------------- Randomization settings -------------
-    // (included in permalink & presets, not in plandos)
-    uint32_t _seed;
-    bool _allow_spoiler_log;
-    uint16_t _item_sources_window;
-    std::vector<std::string> _possible_spawn_locations;
-    bool _shuffle_tibor_trees;
-    bool _ghost_jumping_in_logic;
-    bool _damage_boosting_in_logic;
-    std::map<std::string, uint16_t>* _mandatory_items;
-    std::map<std::string, uint16_t>* _filler_items;
-
-    // ------------- Plando world JSON -------------
-    Json _world_json;
-
-    // ------------- Model patch -------------
-    Json _model_patch_items;
-    Json _model_patch_spawns;
-
-    // ------------- Personal settings -------------
-    // (not included in permalink nor presets)
-    bool _add_ingame_item_tracker;
-    uint16_t _hud_color;
 };
