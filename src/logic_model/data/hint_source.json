@@ -106,6 +106,7 @@
         ],
         "nodeId": "greenmaze_post_whistle"
     },
+    /*
     {
         "description": "Volcano sign",
         "textIds": [
@@ -113,7 +114,6 @@
         ],
         "nodeId": "lake_shrine"
     }
-/*
     {
         "description": "Thieves' Hideout entrance sign",
         "textIds": [
