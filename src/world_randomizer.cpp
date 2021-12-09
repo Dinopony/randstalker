@@ -607,7 +607,10 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
     if(hinted_fortune_item)
         hintable_item_locations.erase(hinted_fortune_item->id());
     if(hinted_oracle_stone_item)
+    {
+        hintable_item_requirements.erase(hinted_oracle_stone_item->id());
         hintable_item_locations.erase(hinted_oracle_stone_item->id());
+    }
 
     for (auto& [k, hint_source] : _logic.hint_sources())
     {
