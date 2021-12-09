@@ -9,7 +9,7 @@ private:
     /// The quantity placed before the beginning of the seed, in a fully random manner (no logic taken in account)
     uint16_t _mandatory_quantity = 0;
     /// The quantity placed when a path requiring it is opened by the exploration algorithm (only once per generation)
-    uint16_t _key_quantity = 0;
+    uint16_t _key_quantity = 1;
     /// The quantity placed at the end of generation to randomly fill remaining item sources
     uint16_t _filler_quantity = 0;
 

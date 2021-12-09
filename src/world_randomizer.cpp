@@ -19,6 +19,7 @@
 
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
+#include "logic_model/item_distribution.hpp"
 #include "logic_model/data/hint_source.json.hxx"
 #include "world_solver.hpp"
 
@@ -344,14 +345,21 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
 
     for(Item* item : items_to_place)
     {
-        // Place the key item in a compatible source
-        ItemSource* compatible_source = pop_first_compatible_source(empty_sources, item, _logic);
-        if (!compatible_source)
-            throw LandstalkerException("No appropriate item source found for placing key item");
+        uint16_t item_count = _logic.item_distribution(item->id())->key_quantity();
+        for(uint16_t i=0 ; i<item_count ; ++i)
+        {
+            // TODO: Check already placed key item count
+            // TODO: Case where keyQuantity = 0 ?
 
-        compatible_source->item(item);
-        _logical_playthrough.emplace_back(compatible_source);
-        debug_log["placedKeyItems"][compatible_source->name()] = item->name();
+            // Place the key item in a compatible source
+            ItemSource* compatible_source = pop_first_compatible_source(empty_sources, item, _logic);
+            if(!compatible_source)
+                throw LandstalkerException("No appropriate item source found for placing key item");
+
+            compatible_source->item(item);
+            _logical_playthrough.emplace_back(compatible_source);
+            debug_log["placedKeyItems"][compatible_source->name()] = item->name();
+        }
     }
 }
 

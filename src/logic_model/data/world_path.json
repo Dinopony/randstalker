@@ -170,9 +170,6 @@
         "toId": "mir_tower_post_garlic",
         "requiredItems": [
             "Garlic"
-        ],
-        "itemsPlacedWhenCrossing": [
-            "Garlic"
         ]
     },
     {
@@ -362,9 +359,6 @@
         "fromId": "king_nole_labyrinth_raft_entrance",
         "toId": "king_nole_labyrinth_raft",
         "requiredItems": [
-            "Logs"
-        ],
-        "itemsPlacedWhenCrossing": [
             "Logs"
         ]
     },
