@@ -11,6 +11,7 @@
         "name": "Massan Cave",
         "hints": [
             "in a large cave",
+            "in a region inhabited by bears",
             "in Massan cave"
         ]
     },
@@ -44,6 +45,7 @@
         "name": "Massan (after Swamp Shrine)",
         "hints": [
             "in a village",
+            "in a region inhabited by bears",
             "in the village of Massan"
         ]
     },
@@ -51,6 +53,7 @@
         "name": "Gumi (after Swamp Shrine)",
         "hints": [
             "in a village",
+            "in a region inhabited by bears",
             "in the village of Gumi"
         ]
     },
