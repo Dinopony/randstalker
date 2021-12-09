@@ -152,6 +152,8 @@ void WorldLogic::dark_region(WorldRegion* region, World& world)
         for (WorldPath* path : node->ingoing_paths())
             if(path->origin()->region() != region)
                 path->add_required_item(world.item(ITEM_LANTERN));
+
+        node->add_hint("in a very dark place");
     }
 }
 
