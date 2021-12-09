@@ -37,6 +37,8 @@ set(SOURCES
         "src/io/model_writer.cpp"
         "src/io/spoiler_writer.cpp"
         "src/io/writers.hpp"
+        "src/io/world_json_parser.hpp"
+        "src/io/world_json_parser.cpp"
 
         # --- Logic model ----------------------------------------
         "src/logic_model/hint_source.hpp"

@@ -180,7 +180,7 @@ static void patch_game_strings(World& world, const RandomizerOptions& options)
         + std::to_string(options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
-static void apply_options_on_logic_paths(const RandomizerOptions& options, World& world, WorldLogic& logic)
+static void apply_options_on_logic_paths(const RandomizerOptions& options, WorldLogic& logic, const World& world)
 {
     if(options.remove_gumi_boulder())
     {
@@ -250,6 +250,19 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, World
     }
 }
 
+static void apply_options_on_spawn_locations(const RandomizerOptions& options, WorldLogic& logic)
+{
+    // Patch model if user specified a model patch
+    const Json& model_patch = options.spawn_locations_model_patch();
+    for(auto& [id, patch_json] : model_patch.items())
+    {
+        if(!logic.spawn_locations().count(id))
+            logic.add_spawn_location(SpawnLocation::from_json(id, patch_json));
+        else
+            logic.spawn_locations().at(id)->apply_json(patch_json);
+    }
+}
+
 void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic)
 {
     world.starting_golds(options.starting_gold());
@@ -260,5 +273,6 @@ void apply_randomizer_options(const RandomizerOptions& options, World& world, Wo
     patch_entity_types(world, options);
     patch_game_strings(world, options);
 
-    apply_options_on_logic_paths(options, world, logic);
+    apply_options_on_logic_paths(options, logic, world);
+    apply_options_on_spawn_locations(options, logic);
 }

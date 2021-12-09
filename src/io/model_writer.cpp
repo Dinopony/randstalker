@@ -14,9 +14,6 @@
 #include "../logic_model/hint_source.hpp"
 #include "../world_randomizer.hpp"
 
-
-
-
 void ModelWriter::write_world_model(const World& world)
 {
     /////////// WORLD MODEL /////////////////////////////////////////////////////////
@@ -70,7 +67,6 @@ void ModelWriter::write_world_model(const World& world)
     tools::dump_json_to_file(strings_json, "./json_data/game_strings.json");
 }
 
-
 void ModelWriter::write_logic_model(const WorldLogic& logic)
 {
     /////////// LOGIC /////////////////////////////////////////////////////////
@@ -108,19 +104,14 @@ void ModelWriter::write_logic_model(const WorldLogic& logic)
     for(WorldRegion* region : logic.regions())
         regions_json.emplace_back(region->to_json());
     tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
-}
 
-void ModelWriter::write_randomizer_model(const WorldRandomizer& randomizer)
-{
-    /////////// RANDOMIZER OBJECTS /////////////////////////////////////////////////////////
     Json hints_json = Json::array();
-    for(auto& [id, hint_source] : randomizer.hint_sources())
+    for(auto& [id, hint_source] : logic.hint_sources())
         hints_json.emplace_back(hint_source->to_json());
     tools::dump_json_to_file(hints_json, "./json_data/hint_source.json");
 
     Json spawns_json;
-    for(auto& [id, spawn] : randomizer.spawn_locations())
+    for(auto& [id, spawn] : logic.spawn_locations())
         spawns_json[id] = spawn->to_json();
     tools::dump_json_to_file(spawns_json, "./json_data/world_spawns.json");
 }
-

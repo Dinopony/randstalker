@@ -19,7 +19,6 @@
 #include <landstalker_lib/tools/json.hpp>
 #include <landstalker_lib/md_tools.hpp>
 #include <landstalker_lib/tools/argument_dictionary.hpp>
-#include <landstalker_lib/tools/tools.hpp>
 #include <landstalker_lib/constants/offsets.hpp>
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/exceptions.hpp>
@@ -27,9 +26,11 @@
 #include "tools/base64.hpp"
 #include "patches/patches.hpp"
 #include "apply_randomizer_options.hpp"
+#include "logic_model/hint_source.hpp"
 #include "logic_model/world_logic.hpp"
 #include "world_randomizer.hpp"
 #include "io/writers.hpp"
+#include "io/world_json_parser.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {
@@ -58,7 +59,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
     bool output_path_is_a_directory = true;
     if(!output_rom_path.empty())
     {
-        output_path_is_a_directory = !tools::ends_with(output_rom_path, ".md") && !tools::ends_with(output_rom_path, ".bin");
+        output_path_is_a_directory = !output_rom_path.ends_with(".md") && !output_rom_path.ends_with(".bin");
         if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
             output_rom_path += "/";
     }
@@ -71,7 +72,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
         else
             spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
     }
-    else if(!spoiler_log_path.empty() && !tools::ends_with(spoiler_log_path, ".json") && *spoiler_log_path.rbegin() != '/')
+    else if(!spoiler_log_path.empty() && !spoiler_log_path.ends_with(".json") && !spoiler_log_path.ends_with('/'))
         spoiler_log_path += "/";
 
     // Add the filename afterwards
@@ -94,6 +95,9 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
 
     WorldLogic logic(world);
 
+    // Parse a potential "world" section inside the preset for plandos & half plandos
+    WorldJsonParser::parse_world_json(world, logic, options.world_json());
+
     // Apply randomizer options to alter World and WorldLogic accordingly before starting the actual randomization
     apply_randomizer_options(options, world, logic);
 
@@ -106,6 +110,9 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     std::cout << "Applying game patches...\n\n";
     apply_randomizer_patches(rom, world, logic, options);
 
+    for(auto& [name, hint_source] : logic.hint_sources())
+        hint_source->apply_text(world);
+
     std::string debug_log_path = args.get_string("debuglog");
     if (!debug_log_path.empty())
     {
@@ -114,7 +121,7 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
         debug_log_file.close();
     }
 
-    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, randomizer, logic, options));
+    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, logic, options));
     spoiler_json["playthrough"] = randomizer.playthrough_as_json();
 
     // Output model if requested
@@ -125,7 +132,6 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
             std::cout << "Outputting model...\n\n";
             ModelWriter::write_world_model(world);
             ModelWriter::write_logic_model(logic);
-            ModelWriter::write_randomizer_model(randomizer);
             std::cout << "Model dumped to './json_data/'" << std::endl;
         }
         else
@@ -135,6 +141,11 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     return spoiler_json;
 }
 
+// To handle plandos:
+// TODO: Detect already set elements
+//          - spawn location (spawn location on world side? not a pointer so not obvious)
+// TODO: Remove item sources window system, to adopt a weighted sources system
+/*
 Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictionary& args)
 {
     std::cout << "Plandomizing world...\n";
@@ -142,9 +153,6 @@ Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictiona
 
     // In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
     // The software will act as a simple ROM patcher, without verifying the game is actually completable.
-
-//  TODO: Make it functional again
-//    world.parse_json(options.input_plando_json());
 
     spoiler_json.merge_patch(options.to_json());
 //    spoiler_json.merge_patch(world.to_json());
@@ -176,7 +184,7 @@ Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictiona
 
     return spoiler_json;
 }
-
+*/
 void display_options(const RandomizerOptions& options)
 {
     Json options_as_json = options.to_json();
@@ -218,18 +226,11 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
 
+    display_options(options);
+
     World world(*rom);
 
-    Json spoiler_json;
-    if(options.is_plando())
-    {
-        spoiler_json = plandomize(world, options, args);
-    }
-    else
-    {
-        display_options(options);
-        spoiler_json = randomize(*rom, world, options, args);
-    }
+    Json spoiler_json = randomize(*rom, world, options, args);
     
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())

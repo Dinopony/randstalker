@@ -1,7 +1,6 @@
 #include "world_randomizer.hpp"
 
 #include <algorithm>
-#include <sstream>
 #include <iostream>
 
 #include <landstalker_lib/constants/entity_type_codes.hpp>
@@ -28,50 +27,8 @@ WorldRandomizer::WorldRandomizer(World& world, WorldLogic& logic, const Randomiz
     _logic          (logic),
     _solver         (_logic),
     _options        (options),
-    _rng            (_options.seed()),
-    _dark_region    (nullptr)
-{
-    this->init_spawn_locations();
-    this->init_hint_sources();
-}
-
-WorldRandomizer::~WorldRandomizer()
-{
-    for (auto& [key, hint_source] : _hint_sources)
-        delete hint_source;
-    for (auto& [key, spawn_loc] : _spawn_locations)
-        delete spawn_loc;
-}
-
-void WorldRandomizer::init_spawn_locations()
-{
-    // Load base model
-    Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
-    for(auto& [id, spawn_json] : spawns_json.items())
-        this->add_spawn_location(SpawnLocation::from_json(id, spawn_json));
-    std::cout << _spawn_locations.size() << " spawn locations loaded." << std::endl;
-
-    // Patch model if user specified a model patch
-    const Json& model_patch = _options.spawn_locations_model_patch();
-    for(auto& [id, patch_json] : model_patch.items())
-    {
-        if(!_spawn_locations.count(id))
-            this->add_spawn_location(SpawnLocation::from_json(id, patch_json));
-        else
-            _spawn_locations.at(id)->apply_json(patch_json);
-    }
-}
-
-void WorldRandomizer::init_hint_sources()
-{
-    Json hint_sources_json = Json::parse(HINT_SOURCES_JSON, nullptr, true, true);
-    for(const Json& hint_source_json : hint_sources_json)
-    {
-        HintSource* new_source = HintSource::from_json(hint_source_json, _logic.nodes(), _world.game_strings());
-        _hint_sources[new_source->description()] = new_source;
-    }
-    std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
-}
+    _rng            (_options.seed())
+{}
 
 void WorldRandomizer::randomize()
 {
@@ -102,18 +59,22 @@ void WorldRandomizer::randomize_spawn_location()
     std::vector<std::string> possible_spawn_locations = _options.possible_spawn_locations();
     if(possible_spawn_locations.empty())
     {
-        for(auto& [id, spawn] : _spawn_locations)
+        for(auto& [id, spawn] : _logic.spawn_locations())
             possible_spawn_locations.emplace_back(id);
     }
 
     tools::shuffle(possible_spawn_locations, _rng);
-    SpawnLocation* spawn = _spawn_locations.at(possible_spawn_locations[0]);
+    SpawnLocation* spawn = _logic.spawn_locations().at(possible_spawn_locations[0]);
     _world.spawn_location(*spawn);
     _logic.spawn_node(_logic.node(spawn->node_id()));
 }
 
 void WorldRandomizer::randomize_dark_rooms()
 {
+    // If dark region has already been set (e.g. through plando descriptor), no need to set it here
+    if(_logic.dark_region())
+        return;
+
     std::vector<Item*> starting_inventory = _world.starting_inventory();
     Item* item_lantern = _world.item(ITEM_LANTERN);
     bool lantern_as_starting_item = std::find(starting_inventory.begin(), starting_inventory.end(), item_lantern) != starting_inventory.end();
@@ -130,15 +91,8 @@ void WorldRandomizer::randomize_dark_rooms()
     }
 
     tools::shuffle(possible_regions, _rng);
-    _dark_region = possible_regions[0];
-    _world.dark_maps(_dark_region->dark_map_ids());
-
-    for(WorldNode* node : _dark_region->nodes())
-    {
-        for (WorldPath* path : node->ingoing_paths())
-            if(path->origin()->region() != _dark_region)
-                path->add_required_item(_world.item(ITEM_LANTERN));
-    }
+    WorldRegion* dark_region = possible_regions[0];
+    _logic.dark_region(dark_region, _world);
 }
 
 void WorldRandomizer::randomize_tibor_trees()
@@ -170,6 +124,9 @@ void WorldRandomizer::randomize_tibor_trees()
 
 void WorldRandomizer::randomize_fahl_enemies()
 {
+    if(!_world.fahl_enemies().empty())
+        return;
+
     std::vector<uint8_t> easy_enemies = { 
         ENEMY_SLIME_2,      ENEMY_SLIME_3,      ENEMY_SLIME_4,      ENEMY_ORC_1,        ENEMY_MUMMY_1,
         ENEMY_ORC_2,        ENEMY_UNICORN_1,    ENEMY_MUSHROOM_1,   ENEMY_LIZARD_1,     ENEMY_WORM_1
@@ -526,21 +483,29 @@ void WorldRandomizer::randomize_lithograph_hint()
     else
         lithograph_hint << "This tablet seems of no use...";
 
-    _hint_sources.at("Lithograph")->text(lithograph_hint.str());
+    _logic.hint_source("Lithograph")->text(lithograph_hint.str());
 }
 
 void WorldRandomizer::randomize_where_is_lithograph_hint()
 {
+    HintSource* knc_sign_source = _logic.hint_source("King Nole's Cave sign");
+    if(!knc_sign_source->text().empty())
+        return;
+
     std::stringstream where_is_litho_hint;
     where_is_litho_hint << "The lithograph will help you finding the jewels. It is "
                         << this->random_hint_for_item(_world.item(ITEM_LITHOGRAPH))
                         << ".";
 
-    _hint_sources.at("King Nole's Cave sign")->text(where_is_litho_hint.str());
+    knc_sign_source->text(where_is_litho_hint.str());
 }
 
 Item* WorldRandomizer::randomize_fortune_teller_hint()
 {
+    HintSource* fortune_teller_source = _logic.hint_source("Mercator fortune teller");
+    if(!fortune_teller_source->text().empty())
+        return nullptr;
+
     std::vector<uint8_t> hintable_items = { ITEM_GOLA_EYE, ITEM_GOLA_NAIL, ITEM_GOLA_FANG, ITEM_GOLA_HORN };
     tools::shuffle(hintable_items, _rng);
     
@@ -558,13 +523,17 @@ Item* WorldRandomizer::randomize_fortune_teller_hint()
 
     std::stringstream fortune_teller_hint;
     fortune_teller_hint << "\x1cI see... \x1aI see... \x1a\nI see " << item_fancy_name << " " << this->random_hint_for_item(hinted_item) << ".";
-    _hint_sources.at("Mercator fortune teller")->text(fortune_teller_hint.str());
+    fortune_teller_source->text(fortune_teller_hint.str());
 
     return hinted_item;
 }
 
 Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_item)
 {
+    HintSource* oracle_stone_source = _logic.hint_source("Oracle Stone");
+    if(!oracle_stone_source->text().empty())
+        return nullptr;
+
     UnsortedSet<Item*> forbidden_items = {
         forbidden_fortune_teller_item, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
         _world.item(ITEM_GREEN_JEWEL), _world.item(ITEM_BLUE_JEWEL), _world.item(ITEM_YELLOW_JEWEL)
@@ -595,16 +564,16 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
     if (!hintable_items.empty())
     {
         tools::shuffle(hintable_items, _rng);
-        Item* hinted_item = hintable_items[0];
+        Item* hinted_item = *hintable_items.begin();
 
         std::stringstream oracle_stone_hint;
         oracle_stone_hint << "You will need " << hinted_item->name() << ". It is " << this->random_hint_for_item(hinted_item) << ".";
-        _hint_sources.at("Oracle Stone")->text(oracle_stone_hint.str());
+        oracle_stone_source->text(oracle_stone_hint.str());
 
         return hinted_item;
     }
-    
-    _hint_sources.at("Oracle Stone")->text("The stone looks blurry. It looks like it won't be of any use...");
+
+    oracle_stone_source->text("The stone looks blurry. It looks like it won't be of any use...");
     return nullptr;
 }
 
@@ -640,26 +609,27 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
     if(hinted_oracle_stone_item)
         hintable_item_locations.erase(hinted_oracle_stone_item->id());
 
-    for (auto& [k, hint_source] : _hint_sources)
+    for (auto& [k, hint_source] : _logic.hint_sources())
     {
-        // Hint source is special (e.g. Oracle Stone, Lithograph...), don't handle it here
-        if(hint_source->special())
+        // If hint source is special (e.g. Oracle Stone, Lithograph...), don't handle it here
+        // If it already contains text (e.g. through plando descriptor), ignore it
+        if(hint_source->special() || !hint_source->text().empty())
             continue;
         
-        double random_number = (double) _rng() / (double) _rng.max();
+        double random_number = (double) _rng() / (double) std::mt19937::max();
 
         ////////////////////////////////////////////////////////////////
         // "Barren / pleasant surprise" (30%)
         if (random_number < 0.3 && !hintable_regions.empty())
         {
-            WorldRegion* region = hintable_regions[0];
-            hintable_regions.erase(region);
+            WorldRegion* region = *hintable_regions.begin();
 
             if (this->is_region_avoidable(region))
                 hint_source->text("What you are looking for is not " + region->hint_name() + ".");
             else
                 hint_source->text("You might have a pleasant surprise wandering " + region->hint_name() + ".");
 
+            hintable_regions.erase(region);
             continue;
         }
 
@@ -764,11 +734,6 @@ bool WorldRandomizer::is_item_avoidable(Item* item) const
     WorldSolver solver(_logic);
     solver.forbid_item_types({ item });
     return solver.try_to_solve(_logic.spawn_node(), _logic.end_node(), _world.starting_inventory());
-}
-
-void WorldRandomizer::add_spawn_location(SpawnLocation* spawn)
-{ 
-    _spawn_locations[spawn->id()] = spawn;
 }
 
 Json WorldRandomizer::playthrough_as_json() const

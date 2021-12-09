@@ -1,16 +1,18 @@
 #include "world_logic.hpp"
 
+#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include <landstalker_lib/model/spawn_location.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/exceptions.hpp>
 #include "world_node.hpp"
 #include "world_path.hpp"
 #include "world_region.hpp"
-
-#include <landstalker_lib/model/world_teleport_tree.hpp>
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/exceptions.hpp>
-
+#include "hint_source.hpp"
 #include "data/world_node.json.hxx"
 #include "data/world_path.json.hxx"
 #include "data/world_region.json.hxx"
+#include "data/spawn_location.json.hxx"
+#include "data/hint_source.json.hxx"
 
 #include <iostream>
 
@@ -19,6 +21,8 @@ WorldLogic::WorldLogic(const World& world)
     this->load_nodes(world);
     this->load_paths(world);
     this->load_regions();
+    this->load_spawn_locations();
+    this->load_hint_sources();
 }
 
 WorldLogic::~WorldLogic()
@@ -29,6 +33,10 @@ WorldLogic::~WorldLogic()
         delete path;
     for (WorldRegion* region : _regions)
         delete region;
+    for (auto& [key, hint_source] : _hint_sources)
+        delete hint_source;
+    for (auto& [key, spawn_loc] : _spawn_locations)
+        delete spawn_loc;
 }
 
 void WorldLogic::load_nodes(const World& world)
@@ -84,6 +92,26 @@ void WorldLogic::load_regions()
             throw LandstalkerException("Node '" + node->id() + "' doesn't belong to any region");
 }
 
+void WorldLogic::load_spawn_locations()
+{
+    // Load base model
+    Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
+    for(auto& [id, spawn_json] : spawns_json.items())
+        this->add_spawn_location(SpawnLocation::from_json(id, spawn_json));
+    std::cout << _spawn_locations.size() << " spawn locations loaded." << std::endl;
+}
+
+void WorldLogic::load_hint_sources()
+{
+    Json hint_sources_json = Json::parse(HINT_SOURCES_JSON, nullptr, true, true);
+    for(const Json& hint_source_json : hint_sources_json)
+    {
+        HintSource* new_source = HintSource::from_json(hint_source_json, _nodes);
+        _hint_sources[new_source->description()] = new_source;
+    }
+    std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
+}
+
 WorldPath* WorldLogic::path(WorldNode* origin, WorldNode* destination)
 {
     return _paths.at(std::make_pair(origin, destination));
@@ -109,3 +137,20 @@ WorldRegion* WorldLogic::region(const std::string& name) const
     return nullptr;
 }
 
+void WorldLogic::add_spawn_location(SpawnLocation* spawn)
+{
+    _spawn_locations[spawn->id()] = spawn;
+}
+
+void WorldLogic::dark_region(WorldRegion* region, World& world)
+{
+    _dark_region = region;
+    world.dark_maps(region->dark_map_ids());
+
+    for(WorldNode* node : region->nodes())
+    {
+        for (WorldPath* path : node->ingoing_paths())
+            if(path->origin()->region() != region)
+                path->add_required_item(world.item(ITEM_LANTERN));
+    }
+}

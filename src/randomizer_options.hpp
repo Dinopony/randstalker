@@ -14,64 +14,62 @@ class RandomizerOptions
 {
 public:
     RandomizerOptions();
-    RandomizerOptions(const ArgumentDictionary& args);
+    explicit RandomizerOptions(const ArgumentDictionary& args);
     ~RandomizerOptions();
     
     void parse_permalink(const std::string& permalink);
     void parse_arguments(const ArgumentDictionary& args);
     void parse_personal_settings(const ArgumentDictionary& args);
-    void validate();
+    void validate() const;
 
-    Json to_json() const;
+    [[nodiscard]] Json to_json() const;
     void parse_json(const Json& json);
-    Json personal_settings_as_json() const;
 
     // Game patching options 
-    const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
-    uint8_t jewel_count() const { return _jewel_count; }
-    bool use_armor_upgrades() const { return _use_armor_upgrades; }
-    uint8_t starting_life() const { return _startingLife; }
-    uint16_t starting_gold() const { return _startingGold; }
-    const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
-    bool fix_armlet_skip() const { return _fix_armlet_skip; }
-    bool fix_tree_cutting_glitch() const { return _fix_tree_cutting_glitch; }
-    bool consumable_record_book() const { return _consumable_record_book; }
-    bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
-    bool remove_tibor_requirement() const { return _remove_tibor_requirement; }
-    bool all_trees_visited_at_start() const { return _all_trees_visited_at_start; }
-    double enemies_damage_factor() const { return (double)_enemies_damage_factor / 100.0; }
-    double enemies_health_factor() const { return (double)_enemies_health_factor / 100.0; }
-    double enemies_armor_factor() const { return (double)_enemies_armor_factor / 100.0; }
-    double enemies_golds_factor() const { return (double)_enemies_golds_factor / 100.0; }
-    double enemies_drop_chance_factor() const { return (double)_enemies_drop_chance_factor / 100.0; }
+    [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
+    [[nodiscard]] uint8_t jewel_count() const { return _jewel_count; }
+    [[nodiscard]] bool use_armor_upgrades() const { return _use_armor_upgrades; }
+    [[nodiscard]] uint8_t starting_life() const { return _startingLife; }
+    [[nodiscard]] uint16_t starting_gold() const { return _startingGold; }
+    [[nodiscard]] const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
+    [[nodiscard]] bool fix_armlet_skip() const { return _fix_armlet_skip; }
+    [[nodiscard]] bool fix_tree_cutting_glitch() const { return _fix_tree_cutting_glitch; }
+    [[nodiscard]] bool consumable_record_book() const { return _consumable_record_book; }
+    [[nodiscard]] bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
+    [[nodiscard]] bool remove_tibor_requirement() const { return _remove_tibor_requirement; }
+    [[nodiscard]] bool all_trees_visited_at_start() const { return _all_trees_visited_at_start; }
+    [[nodiscard]] double enemies_damage_factor() const { return (double)_enemies_damage_factor / 100.0; }
+    [[nodiscard]] double enemies_health_factor() const { return (double)_enemies_health_factor / 100.0; }
+    [[nodiscard]] double enemies_armor_factor() const { return (double)_enemies_armor_factor / 100.0; }
+    [[nodiscard]] double enemies_golds_factor() const { return (double)_enemies_golds_factor / 100.0; }
+    [[nodiscard]] double enemies_drop_chance_factor() const { return (double)_enemies_drop_chance_factor / 100.0; }
 
     // Randomization options
-    uint32_t seed() const { return _seed; }
-    bool allow_spoiler_log() const { return _allow_spoiler_log; }
-    uint16_t item_sources_window() const { return _item_sources_window; }
-    bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
-    bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
-    bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
-    bool has_custom_mandatory_items() const { return _mandatory_items != nullptr; }
-    const std::map<std::string, uint16_t>& mandatory_items() const { return *_mandatory_items; }
-    bool has_custom_filler_items() const { return _filler_items != nullptr; }
-    const std::map<std::string, uint16_t>& filler_items() const { return *_filler_items; }
-
-    // Model patch
-    const Json& items_model_patch() const { return _model_patch_items; }
-    const Json& spawn_locations_model_patch() const { return _model_patch_spawns; }
-
-    // Personal options 
-    bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
-    uint16_t hud_color() const { return _hud_color; }
-
-    std::vector<std::string> hash_words() const;
-    std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
-    std::string permalink() const;
+    [[nodiscard]] uint32_t seed() const { return _seed; }
+    [[nodiscard]] bool allow_spoiler_log() const { return _allow_spoiler_log; }
+    [[nodiscard]] uint16_t item_sources_window() const { return _item_sources_window; }
+    [[nodiscard]] bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
+    [[nodiscard]] bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
+    [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
+    [[nodiscard]] bool has_custom_mandatory_items() const { return _mandatory_items != nullptr; }
+    [[nodiscard]] const std::map<std::string, uint16_t>& mandatory_items() const { return *_mandatory_items; }
+    [[nodiscard]] bool has_custom_filler_items() const { return _filler_items != nullptr; }
+    [[nodiscard]] const std::map<std::string, uint16_t>& filler_items() const { return *_filler_items; }
 
     // Plando-specific options
-    bool is_plando() const { return _plando_enabled; }
-    const Json& input_plando_json() const { return _plando_json; }
+    [[nodiscard]] const Json& world_json() const { return _world_json; }
+
+    // Model patch
+    [[nodiscard]] const Json& items_model_patch() const { return _model_patch_items; }
+    [[nodiscard]] const Json& spawn_locations_model_patch() const { return _model_patch_spawns; }
+
+    // Personal options 
+    [[nodiscard]] bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
+    [[nodiscard]] uint16_t hud_color() const { return _hud_color; }
+
+    [[nodiscard]] std::vector<std::string> hash_words() const;
+    [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
+    [[nodiscard]] std::string permalink() const;
 
 private:
     // ------------- Game patching settings -------------
@@ -105,6 +103,9 @@ private:
     std::map<std::string, uint16_t>* _mandatory_items;
     std::map<std::string, uint16_t>* _filler_items;
 
+    // ------------- Plando world JSON -------------
+    Json _world_json;
+
     // ------------- Model patch -------------
     Json _model_patch_items;
     Json _model_patch_spawns;
@@ -113,8 +114,4 @@ private:
     // (not included in permalink nor presets)
     bool _add_ingame_item_tracker;
     uint16_t _hud_color;
-
-    // Plando-specific arguments
-    bool _plando_enabled;
-    Json _plando_json;
 };

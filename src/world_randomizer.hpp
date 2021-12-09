@@ -32,33 +32,18 @@ private:
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
 
-    std::map<std::string, HintSource*> _hint_sources;
-    std::map<std::string, SpawnLocation*> _spawn_locations;
-    const WorldRegion* _dark_region;
-
 public:
     WorldRandomizer(World& world, WorldLogic& logic, const RandomizerOptions& options);
-    ~WorldRandomizer();
     
     void randomize();
-
-    const WorldRegion* dark_region() const { return _dark_region; }
 
     bool is_region_avoidable(WorldRegion* region) const;
     bool is_item_avoidable(Item* item) const;
 
-    Json playthrough_as_json() const;
+    [[nodiscard]] Json playthrough_as_json() const;
     Json& debug_log_as_json() { return _solver.debug_log(); }
 
-    const std::map<std::string, SpawnLocation*>& spawn_locations() const { return _spawn_locations; }
-    void add_spawn_location(SpawnLocation* spawn);
-
-    const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
-
 private:
-    void init_spawn_locations();
-    void init_hint_sources();
-
     void init_filler_items();
     void init_mandatory_items();
     

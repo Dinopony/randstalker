@@ -38,31 +38,13 @@ RandomizerOptions::RandomizerOptions() :
     _add_ingame_item_tracker        (false),
     _hud_color                      (0x824),
 
-    _plando_enabled                 (false),
-    _plando_json                    ()
+    _world_json                     ()
 {}
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
-    std::string plando_path = args.get_string("plando");
-    if(!plando_path.empty())
-    {
-        _plando_enabled = true;
-
-        std::cout << "Reading plando file '" << plando_path << "'...\n\n";
-        std::ifstream plando_file(plando_path);
-        if(!plando_file)
-            throw LandstalkerException("Could not open plando file at given path '" + plando_path + "'");
-
-        plando_file >> _plando_json;
-        if(_plando_json.contains("plando_permalink"))
-            _plando_json = Json::from_msgpack(base64_decode(_plando_json.at("plando_permalink")));
-
-        this->parse_json(_plando_json);
-    }
-
     std::string permalink_string = args.get_string("permalink");
-    if(!permalink_string.empty() && !_plando_enabled) 
+    if(!permalink_string.empty())
     {
         this->parse_permalink(permalink_string);
     }
@@ -77,7 +59,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         }
 
         std::string preset_path = args.get_string("preset");
-        if(!preset_path.empty() && !_plando_enabled)
+        if(!preset_path.empty())
         {
             std::ifstream preset_file(preset_path);
             if(!preset_file)
@@ -99,10 +81,8 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
 
 RandomizerOptions::~RandomizerOptions()
 {
-    if(_mandatory_items)
-        delete _mandatory_items;
-    if(_filler_items)
-        delete _filler_items;
+    delete _mandatory_items;
+    delete _filler_items;
 }
 
 void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
@@ -139,7 +119,7 @@ void RandomizerOptions::parse_personal_settings(const ArgumentDictionary& args)
         try {
             _hud_color = (uint16_t)std::stoul(hud_color_as_string);
         } 
-        catch(std::invalid_argument)
+        catch(std::invalid_argument&)
         {
             tools::to_lower(hud_color_as_string);
 
@@ -245,7 +225,7 @@ void RandomizerOptions::parse_json(const Json& json)
         }
     }
 
-    if(json.contains("randomizerSettings") && !_plando_enabled)
+    if(json.contains("randomizerSettings"))
     {
         const Json& randomizer_settings_json = json.at("randomizerSettings");
 
@@ -272,7 +252,7 @@ void RandomizerOptions::parse_json(const Json& json)
                 _mandatory_items = new std::map<std::string, uint16_t>();
                 *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
             } 
-            catch(Json::exception) { 
+            catch(Json::exception&) {
                 throw LandstalkerException("Error while parsing mandatory items from preset");
             }
         }
@@ -282,7 +262,7 @@ void RandomizerOptions::parse_json(const Json& json)
             try {
                 _filler_items = new std::map<std::string, uint16_t>();
                 *(_filler_items) = randomizer_settings_json.at("fillerItems");
-            } catch (Json::exception) {
+            } catch (Json::exception&) {
                 throw LandstalkerException("Error while parsing filler items from preset");
             }
         }
@@ -298,21 +278,11 @@ void RandomizerOptions::parse_json(const Json& json)
             _model_patch_spawns = model_patch_json.at("spawnLocations");
     }
 
-    if(json.contains("seed") && !_plando_enabled)
+    if(json.contains("seed"))
         _seed = json.at("seed");
 }
 
-Json RandomizerOptions::personal_settings_as_json() const
-{
-    Json json;
-
-    json["addIngameItemTracker"] = _add_ingame_item_tracker;
-    json["hudColor"] = _hud_color;
-
-    return json;
-}
-
-void RandomizerOptions::validate()
+void RandomizerOptions::validate() const
 {
     if(_jewel_count > 9)
         throw LandstalkerException("Jewel count must be between 0 and 9.");
@@ -342,7 +312,7 @@ std::vector<std::string> RandomizerOptions::hash_words() const
 
     std::mt19937 rng(_seed);
     tools::shuffle(words, rng);
-    return std::vector<std::string>(words.begin(), words.begin() + 4);
+    return { words.begin(), words.begin()+4 };
 }
 
 std::string RandomizerOptions::permalink() const
