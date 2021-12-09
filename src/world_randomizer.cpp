@@ -590,7 +590,7 @@ void WorldRandomizer::randomize_sign_hints(Item* hinted_fortune_item, Item* hint
     // A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints
     UnsortedSet<uint8_t> hintable_item_requirements = {
         ITEM_BUYER_CARD,   ITEM_EINSTEIN_WHISTLE,   ITEM_ARMLET,    ITEM_GARLIC, 
-        ITEM_IDOL_STONE,   ITEM_CASINO_TICKET,      ITEM_LOGS
+        ITEM_IDOL_STONE,   ITEM_CASINO_TICKET,      ITEM_LOGS,      ITEM_LANTERN
     };
     tools::shuffle(hintable_item_requirements, _rng);
 
