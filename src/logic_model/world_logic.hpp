@@ -10,6 +10,7 @@ class WorldPath;
 class WorldRegion;
 class HintSource;
 class SpawnLocation;
+class ItemDistribution;
 
 class WorldLogic {
 private:
@@ -18,6 +19,8 @@ private:
     std::vector<WorldRegion*> _regions;
     std::map<std::string, HintSource*> _hint_sources;
     std::map<std::string, SpawnLocation*> _spawn_locations;
+    std::map<uint8_t, ItemDistribution*> _item_distributions;
+
     WorldNode* _spawn_node = nullptr;
     WorldRegion* _dark_region = nullptr;
 
@@ -39,6 +42,11 @@ public:
     [[nodiscard]] const std::map<std::string, SpawnLocation*>& spawn_locations() const { return _spawn_locations; }
     void add_spawn_location(SpawnLocation* spawn);
 
+    [[nodiscard]] const std::map<uint8_t, ItemDistribution*>& item_distributions() const { return _item_distributions; }
+    [[nodiscard]] ItemDistribution* item_distribution(uint8_t item_id) const { return _item_distributions.at(item_id); }
+    [[nodiscard]] std::vector<uint8_t> build_mandatory_items_vector() const;
+    [[nodiscard]] std::vector<uint8_t> build_filler_items_vector() const;
+
     [[nodiscard]] const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     [[nodiscard]] HintSource* hint_source(const std::string& name) const { return _hint_sources.at(name); }
 
@@ -55,4 +63,5 @@ private:
     void load_regions();
     void load_spawn_locations();
     void load_hint_sources();
+    void load_item_distributions();
 };

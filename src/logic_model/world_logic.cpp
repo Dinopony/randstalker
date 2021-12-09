@@ -8,11 +8,13 @@
 #include "world_path.hpp"
 #include "world_region.hpp"
 #include "hint_source.hpp"
+#include "item_distribution.hpp"
 #include "data/world_node.json.hxx"
 #include "data/world_path.json.hxx"
 #include "data/world_region.json.hxx"
 #include "data/spawn_location.json.hxx"
 #include "data/hint_source.json.hxx"
+#include "data/item_distribution.json.hxx"
 
 #include <iostream>
 
@@ -23,6 +25,7 @@ WorldLogic::WorldLogic(const World& world)
     this->load_regions();
     this->load_spawn_locations();
     this->load_hint_sources();
+    this->load_item_distributions();
 }
 
 WorldLogic::~WorldLogic()
@@ -112,6 +115,20 @@ void WorldLogic::load_hint_sources()
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 }
 
+void WorldLogic::load_item_distributions()
+{
+    Json item_distributions_json = Json::parse(ITEM_DISTRIBUTIONS_JSON, nullptr, true, true);
+    for(auto& [item_id_str, item_distribution_json] : item_distributions_json.items())
+    {
+        uint8_t item_id = std::stoi(item_id_str);
+        if(_item_distributions.count(item_id))
+            throw LandstalkerException("Cannot load multiple item distributions for item id " + std::to_string((uint16_t)item_id));
+
+        _item_distributions[item_id] = ItemDistribution::from_json(item_distribution_json);
+    }
+    std::cout << _item_distributions.size() << " item distributions loaded." << std::endl;
+}
+
 WorldPath* WorldLogic::path(WorldNode* origin, WorldNode* destination)
 {
     return _paths.at(std::make_pair(origin, destination));
@@ -161,4 +178,30 @@ void WorldLogic::active_spawn_location(SpawnLocation* spawn, World& world)
 {
     _spawn_node = _nodes.at(spawn->node_id());
     world.spawn_location(*spawn);
+}
+
+std::vector<uint8_t> WorldLogic::build_mandatory_items_vector() const
+{
+    std::vector<uint8_t> mandatory_items_vector;
+
+    for(auto& [item_id, item_distrib] : _item_distributions)
+    {
+        for(uint16_t i=0 ; i<item_distrib->mandatory_quantity() ; ++i)
+            mandatory_items_vector.emplace_back(item_id);
+    }
+
+    return mandatory_items_vector;
+}
+
+std::vector<uint8_t> WorldLogic::build_filler_items_vector() const
+{
+    std::vector<uint8_t> filler_items_vector;
+
+    for(auto& [item_id, item_distrib] : _item_distributions)
+    {
+        for(uint16_t i=0 ; i<item_distrib->filler_quantity() ; ++i)
+            filler_items_vector.emplace_back(item_id);
+    }
+
+    return filler_items_vector;
 }

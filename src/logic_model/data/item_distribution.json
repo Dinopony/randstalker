@@ -1,0 +1,327 @@
+{
+    "0": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 55
+    },
+    "1": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "2": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "3": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "4": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "5": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "6": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "7": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "8": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "9": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "10": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "11": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "12": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "13": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "14": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "15": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "16": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "17": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "18": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 9
+    },
+    "19": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 12
+    },
+    "20": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 10
+    },
+    "21": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 7
+    },
+    "22": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "23": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "24": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 1
+    },
+    "25": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "26": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "27": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 2,
+        "fillerQuantity": 0
+    },
+    "28": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 7
+    },
+    "29": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "30": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "31": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "32": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "33": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "34": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "35": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "36": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "37": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "38": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "39": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "40": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "41": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 4
+    },
+    "42": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "43": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "44": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 1
+    },
+    "45": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 16
+    },
+    "46": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 9
+    },
+    "47": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 2,
+        "fillerQuantity": 0
+    },
+    "48": {
+        "mandatoryQuantity": 1,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "49": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "50": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "51": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "52": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "53": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 1
+    },
+    "54": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 1
+    },
+    "55": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "56": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "57": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 1,
+        "fillerQuantity": 0
+    },
+    "58": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "59": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "60": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "61": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 0
+    },
+    "62": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 80
+    },
+    "63": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 6
+    },
+    "64": {
+        "mandatoryQuantity": 0,
+        "keyQuantity": 0,
+        "fillerQuantity": 28
+    }
+}

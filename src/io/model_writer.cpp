@@ -12,11 +12,11 @@
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
+#include "../logic_model/item_distribution.hpp"
 #include "../world_randomizer.hpp"
 
 void ModelWriter::write_world_model(const World& world)
 {
-    /////////// WORLD MODEL /////////////////////////////////////////////////////////
     Json item_sources_json = Json::array();
     for(ItemSource* source : world.item_sources())
         item_sources_json.emplace_back(source->to_json());
@@ -69,7 +69,6 @@ void ModelWriter::write_world_model(const World& world)
 
 void ModelWriter::write_logic_model(const WorldLogic& logic)
 {
-    /////////// LOGIC /////////////////////////////////////////////////////////
     Json nodes_json;
     for(auto& [id, node] : logic.nodes())
         nodes_json[id] = node->to_json();
@@ -113,5 +112,10 @@ void ModelWriter::write_logic_model(const WorldLogic& logic)
     Json spawns_json;
     for(auto& [id, spawn] : logic.spawn_locations())
         spawns_json[id] = spawn->to_json();
-    tools::dump_json_to_file(spawns_json, "./json_data/world_spawns.json");
+    tools::dump_json_to_file(spawns_json, "./json_data/spawn_location.json");
+
+    Json distribs_json = Json::object();
+    for(auto& [id, distrib] : logic.item_distributions())
+        distribs_json[std::to_string(id)] = distrib->to_json();
+    tools::dump_json_to_file(distribs_json, "./json_data/item_distribution.json");
 }

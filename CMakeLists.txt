@@ -17,6 +17,7 @@ wrap_file(SOURCE_FILE "src/logic_model/data/world_path.json" VARIABLE_NAME "WORL
 wrap_file(SOURCE_FILE "src/logic_model/data/world_region.json" VARIABLE_NAME "WORLD_REGIONS_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/logic_model/data/hint_source.json" VARIABLE_NAME "HINT_SOURCES_JSON" TEXT_FILE)
 wrap_file(SOURCE_FILE "src/logic_model/data/spawn_location.json" VARIABLE_NAME "SPAWN_LOCATIONS_JSON" TEXT_FILE)
+wrap_file(SOURCE_FILE "src/logic_model/data/item_distribution.json" VARIABLE_NAME "ITEM_DISTRIBUTIONS_JSON" TEXT_FILE)
 # Wrap assets files into automated .hxx headers
 wrap_file(SOURCE_FILE "src/assets/game_strings.json" VARIABLE_NAME "GAME_STRINGS_JSON" TEXT_FILE)
 
@@ -33,15 +34,16 @@ set(SOURCES
         "src/tools/base64.cpp"
 
         # --- I/O ----------------------------------------
+        "src/io/io.hpp"
         "src/io/graphviz_writer.cpp"
         "src/io/model_writer.cpp"
         "src/io/spoiler_writer.cpp"
-        "src/io/io.hpp"
         "src/io/world_json_parser.cpp"
 
         # --- Logic model ----------------------------------------
         "src/logic_model/hint_source.hpp"
         "src/logic_model/hint_source.cpp"
+        "src/logic_model/item_distribution.hpp"
         "src/logic_model/world_node.hpp"
         "src/logic_model/world_path.hpp"
         "src/logic_model/world_path.cpp"

@@ -46,10 +46,10 @@ public:
 private:
     void init_filler_items();
     void init_mandatory_items();
-    
+    Item* generate_gold_item();
+
     // First pass randomizations (before items)
     void randomize_spawn_location();
-    void randomize_gold_values(uint8_t gold_items_count);
     void randomize_dark_rooms();
     void randomize_tibor_trees();
     void randomize_fahl_enemies();

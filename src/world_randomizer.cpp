@@ -161,107 +161,47 @@ void WorldRandomizer::randomize_fahl_enemies()
 ///        SECOND PASS RANDOMIZATIONS (items)
 ///////////////////////////////////////////////////////////////////////////////////////
 
+void WorldRandomizer::init_mandatory_items()
+{
+    std::vector<uint8_t> mandatory_item_ids = _logic.build_mandatory_items_vector();
+
+    _mandatory_items.clear();
+    for(uint8_t item_id : mandatory_item_ids)
+    {
+        if(item_id >= ITEM_GOLDS_START)
+            _mandatory_items.emplace_back(this->generate_gold_item());
+        else
+            _mandatory_items.emplace_back(_world.item(item_id));
+    }
+    tools::shuffle(_mandatory_items, _rng);
+}
+
 void WorldRandomizer::init_filler_items()
 {
-    std::map<std::string, uint16_t> filler_items_desc;
-    if(_options.has_custom_filler_items())
+    std::vector<uint8_t> filler_item_ids = _logic.build_filler_items_vector();
+
+    _filler_items.clear();
+    for(uint8_t item_id : filler_item_ids)
     {
-        filler_items_desc = _options.filler_items();
+        if(item_id >= ITEM_GOLDS_START)
+            _filler_items.emplace_back(this->generate_gold_item());
+        else
+            _filler_items.emplace_back(_world.item(item_id));
     }
-    else
-    {
-        filler_items_desc = { 
-            {"Life Stock", 80},      {"EkeEke", 55},         {"Golds", 28},          {"Dahl", 16},             
-            {"Statue of Gaia", 12},  {"Golden Statue", 10},  {"Restoration", 9},     {"Detox Grass", 9},    
-            {"Mind Repair", 7},      {"Anti Paralyze", 7},   {"No Item", 6},         {"Pawn Ticket", 4},
-            {"Short Cake", 1},       {"Bell", 1},            {"Blue Ribbon", 1},     {"Death Statue", 1}
-        };
-    }
-
-    uint8_t gold_items_count = 0;
-    for (auto& [item_name, quantity] : filler_items_desc)
-    {
-        if(item_name == "Golds")
-        {
-            gold_items_count += quantity;
-            continue;
-        }
-
-        Item* item = _world.item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Unknown item '" << item_name << "' found in filler items.";
-            throw LandstalkerException(msg.str());
-        }
-        
-        for(uint16_t i=0 ; i<quantity ; ++i)
-            _filler_items.emplace_back(item);
-    }
-
-    this->randomize_gold_values(gold_items_count);
-
     tools::shuffle(_filler_items, _rng);
 }
 
-void WorldRandomizer::randomize_gold_values(uint8_t gold_items_count)
+Item* WorldRandomizer::generate_gold_item()
 {
     std::normal_distribution<double> distribution(40.0, 18.0);
-    double total_golds = 0;
-    for (uint8_t i = 0; i < gold_items_count ; ++i)
-    {
-        double gold_value = distribution(_rng);
-        if (gold_value < 1)
-            gold_value = 1;
-        else if (gold_value > 255)
-            gold_value = 255;
+    double gold_value = distribution(_rng);
 
-        total_golds += gold_value;
+    if (gold_value < 1)
+        gold_value = 1;
+    else if (gold_value > 255)
+        gold_value = 255;
 
-        Item* gold_item = _world.add_gold_item(static_cast<uint8_t>(gold_value));
-        if(gold_item)
-            _filler_items.emplace_back(gold_item);
-    }
-}
-
-void WorldRandomizer::init_mandatory_items()
-{
-    std::map<std::string, uint16_t> mandatory_items_desc;
-    if(_options.has_custom_mandatory_items())
-    {
-        mandatory_items_desc = _options.mandatory_items();
-    }
-    else
-    {
-        mandatory_items_desc = {
-            {"Magic Sword", 1},      {"Thunder Sword", 1},     {"Sword of Ice", 1},     {"Sword of Gaia", 1},
-            {"Steel Breast", 1},     {"Chrome Breast", 1},     {"Shell Breast", 1},     {"Hyper Breast", 1},
-            {"Mars Stone", 1},       {"Moon Stone", 1},        {"Saturn Stone", 1},     {"Venus Stone", 1},
-            {"Healing Boots", 1},    {"Oracle Stone", 1},      {"Statue of Jypta", 1}
-        };
-
-        if(_options.handle_damage_boosting_in_logic())
-        {
-            mandatory_items_desc["Iron Boots"] = 1;
-            mandatory_items_desc["Fireproof"] = 1;
-        }
-    }
-
-    for (auto& [item_name, quantity] : mandatory_items_desc)
-    {
-        Item* item = _world.item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Unknown item '" << item_name << "' found in mandatory items.";
-            throw LandstalkerException(msg.str());
-        }
-        
-        for(uint16_t i=0 ; i<quantity ; ++i)
-            _mandatory_items.emplace_back(item);
-    }
-
-    tools::shuffle(_mandatory_items, _rng);
+    return _world.add_gold_item(static_cast<uint8_t>(gold_value));
 }
 
 void WorldRandomizer::randomize_items()

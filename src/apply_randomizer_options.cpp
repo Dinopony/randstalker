@@ -13,6 +13,7 @@
 
 #include "logic_model/world_path.hpp"
 #include "logic_model/world_logic.hpp"
+#include "logic_model/item_distribution.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
 {
@@ -263,6 +264,17 @@ static void apply_options_on_spawn_locations(const RandomizerOptions& options, W
     }
 }
 
+static void apply_options_on_item_distributions(const RandomizerOptions& options, WorldLogic& logic)
+{
+    if(!options.handle_damage_boosting_in_logic())
+    {
+        logic.item_distribution(ITEM_IRON_BOOTS)->mandatory_quantity(1);
+        logic.item_distribution(ITEM_FIREPROOF_BOOTS)->mandatory_quantity(1);
+    }
+
+    // TODO: Load custom mandatory items, filler items & key items
+}
+
 void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic)
 {
     world.starting_golds(options.starting_gold());
@@ -275,4 +287,5 @@ void apply_randomizer_options(const RandomizerOptions& options, World& world, Wo
 
     apply_options_on_logic_paths(options, logic, world);
     apply_options_on_spawn_locations(options, logic);
+    apply_options_on_item_distributions(options, logic);
 }
