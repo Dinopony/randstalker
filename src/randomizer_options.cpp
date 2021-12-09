@@ -278,6 +278,9 @@ void RandomizerOptions::parse_json(const Json& json)
             _model_patch_spawns = model_patch_json.at("spawnLocations");
     }
 
+    if(json.contains("world"))
+        _world_json = json.at("world");
+
     if(json.contains("seed"))
         _seed = json.at("seed");
 }

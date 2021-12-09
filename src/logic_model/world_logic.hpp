@@ -42,7 +42,7 @@ public:
     [[nodiscard]] const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     [[nodiscard]] HintSource* hint_source(const std::string& name) const { return _hint_sources.at(name); }
 
-    void spawn_node(WorldNode* node) { _spawn_node = node; }
+    void active_spawn_location(SpawnLocation* spawn, World& world);
     [[nodiscard]] WorldNode* spawn_node() const { return _spawn_node; }
     [[nodiscard]] WorldNode* end_node() const { return _nodes.at("end"); }
 

@@ -38,14 +38,22 @@ static void parse_item_sources_from_json(World& world, const WorldLogic& logic, 
     const Json& item_sources_json = json.at("itemSources");
     for(auto&[region_id, item_sources_in_region_json] : item_sources_json.items())
     {
-        WorldRegion *region = logic.region(region_id);
-        std::map<std::string, ItemSource *> region_item_sources = region->item_sources();
+        try {
+            WorldRegion* region = logic.region(region_id);
+            std::map<std::string, ItemSource*> region_item_sources = region->item_sources();
 
-        for(auto&[source_name, item_name] : item_sources_in_region_json.items())
-        {
-            ItemSource *source = region_item_sources.at(source_name);
-            Item *item = parse_item_from_name_in_json(item_name, world);
-            source->item(item);
+            for(auto&[source_name, item_name] : item_sources_in_region_json.items())
+            {
+                try {
+                    ItemSource* source = region_item_sources.at(source_name);
+                    Item* item = parse_item_from_name_in_json(item_name, world);
+                    source->item(item);
+                } catch(std::out_of_range&) {
+                    throw LandstalkerException("Item source '" + source_name + "' could not be found in region '" + region_id +  "'");
+                }
+            }
+        } catch(std::out_of_range&) {
+            throw LandstalkerException("Region '" + region_id + "' could not be found");
         }
     }
 }
@@ -58,17 +66,22 @@ static void parse_hints_from_json(WorldLogic& logic, const Json& json)
     const Json& hints_json = json.at("hints");
     for(auto& [hint_source_name, contents] : hints_json.items())
     {
-        HintSource* source = logic.hint_source(hint_source_name);
+        try {
+            HintSource* source = logic.hint_source(hint_source_name);
 
-        if(contents.is_array())
-        {
-            std::vector<std::string> hint_lines;
-            for(std::string line : contents)
-                hint_lines.emplace_back(line);
-            std::string hint = tools::join(hint_lines, "\n");
-            source->text(hint);
+            if(contents.is_array())
+            {
+                std::vector<std::string> hint_lines;
+                for(std::string line : contents)
+                    hint_lines.emplace_back(line);
+                std::string hint = tools::join(hint_lines, "\n");
+                source->text(hint);
+            }
+            else source->text(contents);
         }
-        else source->text(contents);
+        catch(std::out_of_range&) {
+            throw LandstalkerException("Hint source '" + hint_source_name + "' could not be found.");
+        }
     }
 }
 
@@ -77,7 +90,13 @@ static void parse_spawn_location_from_json(World& world, WorldLogic& logic, cons
     if(json.contains("spawnLocation"))
     {
         const std::string& spawn_location_name = json.at("spawnLocation");
-        world.spawn_location(*logic.spawn_locations().at(spawn_location_name));
+        try {
+            SpawnLocation* spawn = logic.spawn_locations().at(spawn_location_name);
+            logic.active_spawn_location(spawn, world);
+        }
+        catch(std::out_of_range&) {
+            throw LandstalkerException("Spawn location '" + spawn_location_name + "' could not be found");
+        }
     }
 }
 
@@ -86,7 +105,12 @@ static void parse_dark_region_from_json(World& world, WorldLogic& logic, const J
     if(json.contains("darkRegion"))
     {
         const std::string& dark_region_name = json.at("darkRegion");
-        logic.dark_region(logic.region(dark_region_name), world);
+        try {
+            logic.dark_region(logic.region(dark_region_name), world);
+        }
+        catch(std::out_of_range&) {
+                throw LandstalkerException("Dark region '" + dark_region_name + "' could not be found");
+        }
     }
 }
 
@@ -98,7 +122,7 @@ static void parse_fahl_enemies(World& world, const Json& json)
         {
             EntityType* enemy = world.entity_type(enemy_name);
             if(!enemy)
-                throw std::out_of_range("Unknown enemy type '" + enemy_name + "'");
+                throw LandstalkerException("Enemy type '" + enemy_name + "' could not be found");
 
             world.add_fahl_enemy(enemy);
         }
@@ -113,23 +137,3 @@ void WorldJsonParser::parse_world_json(World &world, WorldLogic &logic, const Js
     parse_dark_region_from_json(world, logic, json);
     parse_fahl_enemies(world, json);
 }
-
-
-
-/*
-void World::parse_json(const Json& json)
-{
-
-
-    ////////// Miscellaneous ///////////////////////////////////////////
-
-
-    // Parse dark node
-
-
-    // Parse Fahl enemies
-
-}
-
-
-*/

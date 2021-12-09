@@ -141,50 +141,6 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     return spoiler_json;
 }
 
-// To handle plandos:
-// TODO: Detect already set elements
-//          - spawn location (spawn location on world side? not a pointer so not obvious)
-// TODO: Remove item sources window system, to adopt a weighted sources system
-/*
-Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictionary& args)
-{
-    std::cout << "Plandomizing world...\n";
-    Json spoiler_json;
-
-    // In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
-    // The software will act as a simple ROM patcher, without verifying the game is actually completable.
-
-    spoiler_json.merge_patch(options.to_json());
-//    spoiler_json.merge_patch(world.to_json());
-
-    // If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
-    if (args.get_boolean("encodeplando") && options.is_plando())
-    {
-        std::ofstream encodedPlandoFile("./encoded_plando.json");
-        Json fileJson;
-        fileJson["plando_permalink"] = base64_encode(Json::to_msgpack(spoiler_json));
-        encodedPlandoFile << fileJson.dump(4);
-        encodedPlandoFile.close();
-
-        std::cout << "Plando encoded to './encoded_plando.json'" << std::endl;
-        exit(0);
-    }
-
-    // Output model if requested
-    if(args.get_boolean("dumpmodel"))
-    {
-        if(options.allow_spoiler_log())
-        {
-            ModelWriter::write_world_model(world);
-            std::cout << "Model dumped to './json_data/'" << std::endl;
-        }
-        else
-            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
-    }
-
-    return spoiler_json;
-}
-*/
 void display_options(const RandomizerOptions& options)
 {
     Json options_as_json = options.to_json();

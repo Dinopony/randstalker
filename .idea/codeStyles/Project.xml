@@ -2,6 +2,7 @@
   <code_scheme name="Project" version="173">
     <Objective-C>
       <option name="INDENT_NAMESPACE_MEMBERS" value="0" />
+      <option name="KEEP_CASE_EXPRESSIONS_IN_ONE_LINE" value="true" />
       <option name="FUNCTION_BRACE_PLACEMENT" value="2" />
       <option name="SPACE_BEFORE_INIT_LIST" value="true" />
       <option name="SPACE_BEFORE_COLON_IN_FOREACH" value="true" />
@@ -38,6 +39,7 @@
     <codeStyleSettings language="ObjectiveC">
       <option name="BRACE_STYLE" value="5" />
       <option name="CLASS_BRACE_STYLE" value="2" />
+      <option name="CATCH_ON_NEW_LINE" value="true" />
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="SPACE_BEFORE_SEMICOLON" value="true" />
       <option name="SPACE_WITHIN_ARRAY_INITIALIZER_BRACES" value="true" />

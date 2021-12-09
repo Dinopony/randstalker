@@ -56,6 +56,9 @@ void WorldRandomizer::randomize()
 
 void WorldRandomizer::randomize_spawn_location()
 {
+    if(!_world.spawn_location().empty())
+        return;
+
     std::vector<std::string> possible_spawn_locations = _options.possible_spawn_locations();
     if(possible_spawn_locations.empty())
     {
@@ -65,8 +68,7 @@ void WorldRandomizer::randomize_spawn_location()
 
     tools::shuffle(possible_spawn_locations, _rng);
     SpawnLocation* spawn = _logic.spawn_locations().at(possible_spawn_locations[0]);
-    _world.spawn_location(*spawn);
-    _logic.spawn_node(_logic.node(spawn->node_id()));
+    _logic.active_spawn_location(spawn, _world);
 }
 
 void WorldRandomizer::randomize_dark_rooms()

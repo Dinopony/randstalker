@@ -154,3 +154,9 @@ void WorldLogic::dark_region(WorldRegion* region, World& world)
                 path->add_required_item(world.item(ITEM_LANTERN));
     }
 }
+
+void WorldLogic::active_spawn_location(SpawnLocation* spawn, World& world)
+{
+    _spawn_node = _nodes.at(spawn->node_id());
+    world.spawn_location(*spawn);
+}
