@@ -38,13 +38,10 @@ private:
     // (included in permalink & presets, not in plandos)
     uint32_t _seed = 0;
     bool _allow_spoiler_log = true;
-    uint16_t _item_sources_window = 30;
     std::vector<std::string> _possible_spawn_locations;
     bool _shuffle_tibor_trees = false;
     bool _ghost_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
-    std::map<std::string, uint16_t>* _mandatory_items = nullptr;
-    std::map<std::string, uint16_t>* _filler_items = nullptr;
 
     // ------------- Plando world JSON -------------
     Json _world_json;
@@ -61,7 +58,6 @@ private:
 public:
     RandomizerOptions() = default;
     explicit RandomizerOptions(const ArgumentDictionary& args);
-    ~RandomizerOptions();
     
     void parse_permalink(const std::string& permalink);
     void parse_arguments(const ArgumentDictionary& args);
@@ -93,14 +89,9 @@ public:
     // Randomization options
     [[nodiscard]] uint32_t seed() const { return _seed; }
     [[nodiscard]] bool allow_spoiler_log() const { return _allow_spoiler_log; }
-    [[nodiscard]] uint16_t item_sources_window() const { return _item_sources_window; }
     [[nodiscard]] bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
     [[nodiscard]] bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
     [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
-    [[nodiscard]] bool has_custom_mandatory_items() const { return _mandatory_items != nullptr; }
-    [[nodiscard]] const std::map<std::string, uint16_t>& mandatory_items() const { return *_mandatory_items; }
-    [[nodiscard]] bool has_custom_filler_items() const { return _filler_items != nullptr; }
-    [[nodiscard]] const std::map<std::string, uint16_t>& filler_items() const { return *_filler_items; }
 
     // Plando-specific options
     [[nodiscard]] const Json& world_json() const { return _world_json; }

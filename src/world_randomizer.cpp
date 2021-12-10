@@ -1,8 +1,5 @@
 #include "world_randomizer.hpp"
 
-#include <algorithm>
-#include <iostream>
-
 #include <landstalker_lib/constants/entity_type_codes.hpp>
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/values.hpp>
@@ -22,6 +19,9 @@
 #include "logic_model/item_distribution.hpp"
 #include "logic_model/data/hint_source.json.hxx"
 #include "world_solver.hpp"
+
+#include <algorithm>
+#include <iostream>
 
 WorldRandomizer::WorldRandomizer(World& world, WorldLogic& logic, const RandomizerOptions& options) :
     _world          (world),
@@ -43,9 +43,8 @@ void WorldRandomizer::randomize()
     this->randomize_fahl_enemies();
 
     // 2nd pass: randomizing items
-    this->init_mandatory_items();
-    this->init_filler_items();
     this->randomize_items();
+    tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
 
     // 3rd pass: randomizations happening AFTER randomizing items
     this->randomize_hints();
@@ -162,34 +161,57 @@ void WorldRandomizer::randomize_fahl_enemies()
 ///        SECOND PASS RANDOMIZATIONS (items)
 ///////////////////////////////////////////////////////////////////////////////////////
 
-void WorldRandomizer::init_mandatory_items()
+void WorldRandomizer::init_item_pool()
 {
-    std::vector<uint8_t> mandatory_item_ids = _logic.build_mandatory_items_vector();
+    std::map<uint8_t, uint16_t> item_quantities = _logic.item_quantities();
 
-    _mandatory_items.clear();
-    for(uint8_t item_id : mandatory_item_ids)
+    // Count quantities already in place
+    for(ItemSource* source : _world.item_sources())
     {
-        if(item_id >= ITEM_GOLDS_START)
-            _mandatory_items.emplace_back(this->generate_gold_item());
-        else
-            _mandatory_items.emplace_back(_world.item(item_id));
+        Item* item = source->item();
+        if(item)
+        {
+            if(item_quantities[item->id()] == 0)
+            {
+                throw LandstalkerException("There are more " + item->name() +
+                                           " already placed than the expected number in the item pool");
+            }
+            item_quantities[item->id()] -= 1;
+        }
     }
-    tools::shuffle(_mandatory_items, _rng);
-}
 
-void WorldRandomizer::init_filler_items()
-{
-    std::vector<uint8_t> filler_item_ids = _logic.build_filler_items_vector();
+    _item_pool.clear();
+    _item_pool.reserve(_world.item_sources().size());
 
-    _filler_items.clear();
-    for(uint8_t item_id : filler_item_ids)
+    for(auto& [item_id, quantity] : item_quantities)
     {
-        if(item_id >= ITEM_GOLDS_START)
-            _filler_items.emplace_back(this->generate_gold_item());
-        else
-            _filler_items.emplace_back(_world.item(item_id));
+        for(uint16_t i=0 ; i<quantity ; ++i)
+        {
+            if(item_id >= ITEM_GOLDS_START)
+                _item_pool.emplace_back(this->generate_gold_item());
+            else
+                _item_pool.emplace_back(_world.item(item_id));
+        }
     }
-    tools::shuffle(_filler_items, _rng);
+
+    if(_item_pool.size() > _world.item_sources().size())
+    {
+        throw LandstalkerException("The number of items in item pool is not the same as the number of item sources (" +
+                                    std::to_string(_item_pool.size()) + " =/= " +
+                                    std::to_string(_world.item_sources().size()) + ")");
+    }
+    else if(_item_pool.size() < _world.item_sources().size())
+    {
+        size_t missing_item_count = _world.item_sources().size() - _item_pool.size();
+        std::cout << "Warning: Item pool (" << _item_pool.size() << " items) is smaller than the item sources pool ("
+                                            << _world.item_sources().size() << " item sources)."
+                                            << "Remaining sources will remain empty.\n\n";
+
+        for(size_t i=0 ; i<missing_item_count ; ++i)
+            _item_pool.emplace_back(_world.item(ITEM_NONE));
+    }
+
+    tools::shuffle(_item_pool, _rng);
 }
 
 Item* WorldRandomizer::generate_gold_item()
@@ -207,8 +229,9 @@ Item* WorldRandomizer::generate_gold_item()
 
 void WorldRandomizer::randomize_items()
 {
+    this->init_item_pool();
+
     _solver.setup(_logic.spawn_node(), _logic.end_node(), _world.starting_inventory());
-    this->place_mandatory_items();
 
     bool explored_new_nodes = true;
     while(explored_new_nodes)
@@ -221,62 +244,31 @@ void WorldRandomizer::randomize_items()
 
         this->place_key_items(empty_sources);
 
-        // Fill a fraction of already available sources with filler items
-        if(empty_sources.size() > _options.item_sources_window())
-        {
-            size_t sources_to_fill_count = (size_t)(empty_sources.size() - _options.item_sources_window());
-            this->place_filler_items(empty_sources, sources_to_fill_count);
-        }
-
         // Item sources changed, force the solver to update its inventory
         _solver.update_current_inventory();
     }
 
-    // Place the remaining filler items
-    std::vector<ItemSource*> empty_sources = _solver.empty_reachable_item_sources();
-    this->place_filler_items(empty_sources);
-
-    // Put the end state inside the debug log
-    Json& debug_log = _solver.debug_log();
-    debug_log["endState"]["unplacedItems"] = Json::array();
-    for (Item* item : _filler_items)
-        debug_log["endState"]["unplacedItems"].emplace_back(item->name());
-    debug_log["endState"]["remainingSourcesToFill"] = Json::array();
-    for(ItemSource* source : empty_sources)
-        debug_log["endState"]["remainingSourcesToFill"].emplace_back(source->name());
+    // Place the remaining items from the item pool in the remaining sources
+    std::vector<ItemSource*> empty_sources;
+    for(ItemSource* source : _world.item_sources())
+        if(!source->item())
+            empty_sources.emplace_back(source);
+    this->place_remaining_items(empty_sources);
 
     // Analyse items required to complete the seed
+    Json& debug_log = _solver.debug_log();
     _minimal_items_to_complete = _solver.find_minimal_inventory();
     debug_log["requiredItems"] = Json::array();
     for (Item* item : _minimal_items_to_complete)
         debug_log["requiredItems"].emplace_back(item->name());
 }
 
-static ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item, WorldLogic& logic)
+ItemSource* WorldRandomizer::pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item)
 {
     for (uint32_t i = 0; i < sources.size(); ++i)
     {
-        if (sources[i]->is_item_compatible(item))
+        if (this->test_item_source_compatibility(sources[i], item))
         {
-            // If another shop source in the same node contains the same item, deny item placement
-            if(sources[i]->is_shop_item())
-            {
-                WorldNode* shop_node = logic.node(sources[i]->node_id());
-                const std::vector<ItemSource*> sources_in_node = shop_node->item_sources();
-                bool other_source_contains_item = false;
-                for(ItemSource* source : sources_in_node)
-                {
-                    if(source != sources[i] && source->is_shop_item() && source->item() == item)
-                    {
-                        other_source_contains_item = true;
-                        break;
-                    }
-                }
-
-                if(other_source_contains_item)
-                    continue;
-            }
-
             ItemSource* source = sources[i];
             sources.erase(sources.begin() + i);
             return source;
@@ -284,31 +276,6 @@ static ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources
     }
 
     return nullptr;
-} 
-
-void WorldRandomizer::place_mandatory_items()
-{
-    Json& debug_log = _solver.debug_log();
-    debug_log["steps"]["0"]["comment"] = "Placing mandatory items";
-
-    // Mandatory items are filler items which are always placed first in the randomization, no matter what
-    std::vector<ItemSource*> all_empty_item_sources;
-    for (ItemSource* source : _world.item_sources())
-        if(!source->item())
-            all_empty_item_sources.emplace_back(source);
-
-    tools::shuffle(all_empty_item_sources, _rng);
-
-    for (Item* item : _mandatory_items)
-    {
-        ItemSource* source = pop_first_compatible_source(all_empty_item_sources, item, _logic);
-        if(source)
-        {
-            source->item(item);
-            debug_log["steps"]["0"]["placedItems"][source->name()] = item->name();
-        }
-        else throw LandstalkerException("No appropriate item source found for placing mandatory item");
-    }
 }
 
 void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
@@ -345,14 +312,16 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
 
     for(Item* item : items_to_place)
     {
-        uint16_t item_count = _logic.item_distribution(item->id())->key_quantity();
-        for(uint16_t i=0 ; i<item_count ; ++i)
+        uint16_t inserted_count = 0;
+
+        decltype(_item_pool)::iterator it;
+        while( (it = std::find(_item_pool.begin(), _item_pool.end(), item)) != _item_pool.end() )
         {
-            // TODO: Check already placed key item count
-            // TODO: Case where keyQuantity = 0 ?
+            _item_pool.erase(it);
+            inserted_count += 1;
 
             // Place the key item in a compatible source
-            ItemSource* compatible_source = pop_first_compatible_source(empty_sources, item, _logic);
+            ItemSource* compatible_source = this->pop_first_compatible_source(empty_sources, item);
             if(!compatible_source)
                 throw LandstalkerException("No appropriate item source found for placing key item");
 
@@ -360,30 +329,38 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
             _logical_playthrough.emplace_back(compatible_source);
             debug_log["placedKeyItems"][compatible_source->name()] = item->name();
         }
+
+        if(inserted_count == 0)
+        {
+            tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
+            throw LandstalkerException("Trying to place " + item->name() + " as a key item but there are none remaining in the pool");
+        }
     }
 }
 
-void WorldRandomizer::place_filler_items(std::vector<ItemSource*>& empty_sources, size_t count)
+void WorldRandomizer::place_remaining_items(std::vector<ItemSource*>& empty_sources)
 {
-    count = std::min(count, empty_sources.size());
-    count = std::min(count, _filler_items.size());
-
     Json& debug_log = _solver.debug_log_for_current_step();
 
-    for (size_t i=0 ; i<count ; ++i)
-    {
-        Item* item = _filler_items[0];
-        _filler_items.erase(_filler_items.begin());
+    std::sort(empty_sources.begin(), empty_sources.end(), [](ItemSource* a, ItemSource* b) {
+        uint8_t a_val = (a->is_chest()) ? 1 : 0;
+        uint8_t b_val = (b->is_chest()) ? 1 : 0;
+        return a_val < b_val;
+    });
 
-        ItemSource* source = pop_first_compatible_source(empty_sources, item, _logic);
+    for (Item* item : _item_pool)
+    {
+        ItemSource* source = this->pop_first_compatible_source(empty_sources, item);
         if(source)
-        {
             source->item(item);
-            debug_log["placedFillerItems"][source->name()] = item->name();
-        }
         else
-            _filler_items.emplace_back(item);
+        {
+            tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
+            throw LandstalkerException("No source for item " + item->name() + " during final filling phase");
+        }
     }
+
+    _item_pool.clear();
 }
 
 
@@ -484,43 +461,50 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
     if(!oracle_stone_source->text().empty())
         return nullptr;
 
-    UnsortedSet<Item*> forbidden_items = {
-        forbidden_fortune_teller_item, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
-        _world.item(ITEM_GREEN_JEWEL), _world.item(ITEM_BLUE_JEWEL), _world.item(ITEM_YELLOW_JEWEL)
-    };
-
-    // Also excluding items strictly needed to get to Oracle Stone's location
-    std::vector<ItemSource*> sources = _world.item_sources_with_item(_world.item(ITEM_ORACLE_STONE));
-    WorldNode* first_source_node = _logic.node(sources.at(0)->node_id());
-    if(first_source_node)
+    if(_logic.item_distribution(ITEM_ORACLE_STONE)->quantity() > 0)
     {
-        WorldSolver solver(_logic);
-        if(solver.try_to_solve(_logic.spawn_node(), first_source_node, _world.starting_inventory()))
+        UnsortedSet<Item*> forbidden_items = {
+                forbidden_fortune_teller_item, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
+                _world.item(ITEM_GREEN_JEWEL), _world.item(ITEM_BLUE_JEWEL), _world.item(ITEM_YELLOW_JEWEL)
+        };
+
+        // Also excluding items strictly needed to get to Oracle Stone's location
+        std::vector<ItemSource*> sources = _world.item_sources_with_item(_world.item(ITEM_ORACLE_STONE));
+        WorldNode* first_source_node = _logic.node(sources.at(0)->node_id());
+        if(first_source_node)
         {
-            std::vector<Item*> min_items_to_reach = solver.find_minimal_inventory();
-            for (Item* item : min_items_to_reach)
-                forbidden_items.insert(item);
-        } 
-        else throw LandstalkerException("Could not find minimal inventory to reach Oracle Stone");
-    }
+            WorldSolver solver(_logic);
+            if(solver.try_to_solve(_logic.spawn_node(), first_source_node, _world.starting_inventory()))
+            {
+                std::vector<Item*> min_items_to_reach = solver.find_minimal_inventory();
+                for(Item* item : min_items_to_reach)
+                    forbidden_items.insert(item);
+            } else
+            {
+                tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
+                throw LandstalkerException("Could not find minimal inventory to reach Oracle Stone");
+            }
+        }
 
-    std::vector<Item*> hintable_items;
-    for (Item* item : _minimal_items_to_complete)
-    {
-        if(!forbidden_items.contains(item))
-            hintable_items.emplace_back(item);
-    }
-    
-    if (!hintable_items.empty())
-    {
-        tools::shuffle(hintable_items, _rng);
-        Item* hinted_item = *hintable_items.begin();
+        std::vector<Item*> hintable_items;
+        for(Item* item : _minimal_items_to_complete)
+        {
+            if(!forbidden_items.contains(item))
+                hintable_items.emplace_back(item);
+        }
 
-        std::stringstream oracle_stone_hint;
-        oracle_stone_hint << "You will need " << hinted_item->name() << ". It is " << this->random_hint_for_item(hinted_item) << ".";
-        oracle_stone_source->text(oracle_stone_hint.str());
+        if(!hintable_items.empty())
+        {
+            tools::shuffle(hintable_items, _rng);
+            Item* hinted_item = *hintable_items.begin();
 
-        return hinted_item;
+            std::stringstream oracle_stone_hint;
+            oracle_stone_hint << "You will need " << hinted_item->name() << ". It is "
+                              << this->random_hint_for_item(hinted_item) << ".";
+            oracle_stone_source->text(oracle_stone_hint.str());
+
+            return hinted_item;
+        }
     }
 
     oracle_stone_source->text("The stone looks blurry. It looks like it won't be of any use...");
@@ -702,4 +686,34 @@ Json WorldRandomizer::playthrough_as_json() const
     }
 
     return json;
+}
+
+bool WorldRandomizer::test_item_source_compatibility(ItemSource* source, Item* item) const
+{
+    if(source->is_chest())
+        return true;
+
+    if(source->is_npc_reward())
+        return (item->id() < ITEM_NONE);
+
+    ItemSourceOnGround* cast_source = reinterpret_cast<ItemSourceOnGround*>(source);
+    if(item->id() >= ITEM_GOLDS_START)
+        return false;
+    if(!cast_source->can_be_taken_only_once() && !_logic.item_distribution(item->id())->allowed_on_ground())
+        return false;
+
+    if(source->is_shop_item())
+    {
+        if(item->id() == ITEM_NONE)
+            return false;
+
+        // If another shop source in the same node contains the same item, deny item placement
+        WorldNode* shop_node = _logic.node(source->node_id());
+        const std::vector<ItemSource*> sources_in_node = shop_node->item_sources();
+        for(ItemSource* source_in_node : sources_in_node)
+            if(source_in_node != source && source_in_node->is_shop_item() && source_in_node->item() == item)
+                return false;
+    }
+
+    return true;
 }

@@ -44,8 +44,7 @@ public:
 
     [[nodiscard]] const std::map<uint8_t, ItemDistribution*>& item_distributions() const { return _item_distributions; }
     [[nodiscard]] ItemDistribution* item_distribution(uint8_t item_id) const { return _item_distributions.at(item_id); }
-    [[nodiscard]] std::vector<uint8_t> build_mandatory_items_vector() const;
-    [[nodiscard]] std::vector<uint8_t> build_filler_items_vector() const;
+    [[nodiscard]] std::map<uint8_t, uint16_t> item_quantities() const;
 
     [[nodiscard]] const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
     [[nodiscard]] HintSource* hint_source(const std::string& name) const { return _hint_sources.at(name); }

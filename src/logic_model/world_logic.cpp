@@ -180,28 +180,14 @@ void WorldLogic::active_spawn_location(SpawnLocation* spawn, World& world)
     world.spawn_location(*spawn);
 }
 
-std::vector<uint8_t> WorldLogic::build_mandatory_items_vector() const
+std::map<uint8_t, uint16_t> WorldLogic::item_quantities() const
 {
-    std::vector<uint8_t> mandatory_items_vector;
+    std::map<uint8_t, uint16_t> item_quantities;
+    for(uint8_t i=0 ; i<=ITEM_GOLDS_START ; ++i)
+        item_quantities[i] = 0;
 
     for(auto& [item_id, item_distrib] : _item_distributions)
-    {
-        for(uint16_t i=0 ; i<item_distrib->mandatory_quantity() ; ++i)
-            mandatory_items_vector.emplace_back(item_id);
-    }
+        item_quantities[item_id] = item_distrib->quantity();
 
-    return mandatory_items_vector;
-}
-
-std::vector<uint8_t> WorldLogic::build_filler_items_vector() const
-{
-    std::vector<uint8_t> filler_items_vector;
-
-    for(auto& [item_id, item_distrib] : _item_distributions)
-    {
-        for(uint16_t i=0 ; i<item_distrib->filler_quantity() ; ++i)
-            filler_items_vector.emplace_back(item_id);
-    }
-
-    return filler_items_vector;
+    return item_quantities;
 }

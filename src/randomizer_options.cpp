@@ -46,12 +46,6 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
     this->validate();
 }
 
-RandomizerOptions::~RandomizerOptions()
-{
-    delete _mandatory_items;
-    delete _filler_items;
-}
-
 void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
 {
     if(args.contains("spawnlocation"))
@@ -69,8 +63,6 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
     if(args.contains("nospellbook"))          _starting_items["Spell Book"] = 0;
     if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
-
-    if(args.contains("itemsourceswindow"))    _item_sources_window = args.get_integer("itemsourceswindow");
     if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
     if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
@@ -128,16 +120,10 @@ Json RandomizerOptions::to_json() const
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
-    json["randomizerSettings"]["itemSourcesWindow"] = _item_sources_window;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
     json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
-
-    if(_mandatory_items)
-        json["randomizerSettings"]["mandatoryItems"] = *_mandatory_items;
-    if(_filler_items)
-        json["randomizerSettings"]["fillerItems"] = *_filler_items;
 
     if(!_model_patch_items.empty())
         json["modelPatch"]["items"] = _model_patch_items;
@@ -198,8 +184,6 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("allowSpoilerLog"))
             _allow_spoiler_log = randomizer_settings_json.at("allowSpoilerLog");
-        if(randomizer_settings_json.contains("itemSourcesWindow"))
-            _item_sources_window = randomizer_settings_json.at("itemSourcesWindow");
 
         if(randomizer_settings_json.contains("spawnLocations"))
             randomizer_settings_json.at("spawnLocations").get_to(_possible_spawn_locations);
@@ -212,27 +196,6 @@ void RandomizerOptions::parse_json(const Json& json)
             _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
         if(randomizer_settings_json.contains("damageBoostingInLogic"))
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
-
-        if(randomizer_settings_json.contains("mandatoryItems"))
-        {
-            try {            
-                _mandatory_items = new std::map<std::string, uint16_t>();
-                *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
-            } 
-            catch(Json::exception&) {
-                throw LandstalkerException("Error while parsing mandatory items from preset");
-            }
-        }
-
-        if(randomizer_settings_json.contains("fillerItems"))
-        {
-            try {
-                _filler_items = new std::map<std::string, uint16_t>();
-                *(_filler_items) = randomizer_settings_json.at("fillerItems");
-            } catch (Json::exception&) {
-                throw LandstalkerException("Error while parsing filler items from preset");
-            }
-        }
     }
 
     if(json.contains("modelPatch"))
@@ -301,7 +264,6 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemies_drop_chance_factor);
 
     bitpack.pack(_seed);
-    bitpack.pack(_item_sources_window);
 
     bitpack.pack(_use_armor_upgrades);
     bitpack.pack(_fix_armlet_skip);
@@ -316,8 +278,6 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_damage_boosting_in_logic);
 
     bitpack.pack_vector(_possible_spawn_locations);
-    bitpack.pack(_mandatory_items ? Json(*_mandatory_items) : Json());
-    bitpack.pack(_filler_items ? Json(*_filler_items) : Json());
     bitpack.pack_map(_starting_items);
     bitpack.pack(_model_patch_items);
     bitpack.pack(_model_patch_spawns);
@@ -345,7 +305,6 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
 
     _seed = bitpack.unpack<uint32_t>();
-    _item_sources_window = bitpack.unpack<uint16_t>();
 
     _use_armor_upgrades = bitpack.unpack<bool>();
     _fix_armlet_skip = bitpack.unpack<bool>();
@@ -360,22 +319,6 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _damage_boosting_in_logic = bitpack.unpack<bool>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
-
-    Json mandatory_items_json = bitpack.unpack<Json>();
-    if(!mandatory_items_json.is_null())
-    {
-        _mandatory_items = new std::map<std::string, uint16_t>();
-        mandatory_items_json.get_to(*_mandatory_items);
-    }
-    else _mandatory_items = nullptr;
-
-    Json filler_items_json = bitpack.unpack<Json>();
-    if(!filler_items_json.is_null())
-    {
-        _filler_items = new std::map<std::string, uint16_t>();
-        filler_items_json.get_to(*_filler_items); 
-    }
-    else _filler_items = nullptr;
 
     _starting_items = bitpack.unpack_map<std::string, uint8_t>();
     _model_patch_items = bitpack.unpack<Json>();

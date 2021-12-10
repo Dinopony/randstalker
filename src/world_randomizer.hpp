@@ -26,8 +26,7 @@ private:
     const RandomizerOptions& _options;
     std::mt19937 _rng;
 
-    std::vector<Item*> _filler_items;
-    std::vector<Item*> _mandatory_items;
+    std::vector<Item*> _item_pool;
 
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
@@ -44,9 +43,11 @@ public:
     [[nodiscard]] Json& debug_log_as_json() { return _solver.debug_log(); }
 
 private:
-    void init_filler_items();
-    void init_mandatory_items();
+    void init_item_pool();
     Item* generate_gold_item();
+
+    ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item);
+    bool test_item_source_compatibility(ItemSource* source, Item* item) const;
 
     // First pass randomizations (before items)
     void randomize_spawn_location();
@@ -56,9 +57,8 @@ private:
 
     // Item randomization
     void randomize_items();
-    void place_mandatory_items();
     void place_key_items(std::vector<ItemSource*>& empty_sources);
-    void place_filler_items(std::vector<ItemSource*>& empty_sources, size_t count = SIZE_MAX);
+    void place_remaining_items(std::vector<ItemSource*>& empty_sources);
 
     // Hints randomization
     void randomize_hints();

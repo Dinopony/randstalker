@@ -122,7 +122,6 @@ static void patch_items(World& world, const RandomizerOptions& options)
     {
         Item* red_jewel = world.item(ITEM_RED_JEWEL);
         red_jewel->name("Kazalt Jewel");
-        red_jewel->allowed_on_ground(false);
         red_jewel->max_quantity(options.jewel_count());
     }
 
@@ -266,30 +265,41 @@ static void apply_options_on_spawn_locations(const RandomizerOptions& options, W
 
 static void apply_options_on_item_distributions(const RandomizerOptions& options, WorldLogic& logic, const World& world)
 {
-    if(!options.handle_damage_boosting_in_logic())
+    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        logic.item_distribution(ITEM_IRON_BOOTS)->mandatory_quantity(1);
-        logic.item_distribution(ITEM_FIREPROOF_BOOTS)->mandatory_quantity(1);
+        logic.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
     }
-
-    if(options.has_custom_mandatory_items())
+    else
     {
-        for(auto& [item_id, item_distrib] : logic.item_distributions())
-            item_distrib->mandatory_quantity(0);
-
-        const std::map<std::string, uint16_t>& mandatory_items_by_name = options.mandatory_items();
-        for(auto& [item_name, quantity] : mandatory_items_by_name)
+        if(options.jewel_count() >= 1)
         {
-            uint8_t item_id;
-            if(item_name == "Golds")
-                item_id = ITEM_GOLDS_START;
-            else
-                item_id = world.item(item_name)->id();
-
-            logic.item_distribution(item_id)->mandatory_quantity(quantity);
+            logic.item_distribution(ITEM_RED_JEWEL)->add(1);
+            logic.item_distribution(ITEM_NONE)->remove(1);
+        }
+        if(options.jewel_count() >= 2)
+        {
+            logic.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
+            logic.item_distribution(ITEM_NONE)->remove(1);
+        }
+        if(options.jewel_count() >= 3)
+        {
+            logic.item_distribution(ITEM_GREEN_JEWEL)->add(1);
+            logic.item_distribution(ITEM_NONE)->remove(1);
+        }
+        if(options.jewel_count() >= 4)
+        {
+            logic.item_distribution(ITEM_BLUE_JEWEL)->add(1);
+            logic.item_distribution(ITEM_NONE)->remove(1);
+        }
+        if(options.jewel_count() >= 5)
+        {
+            logic.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
+            logic.item_distribution(ITEM_NONE)->remove(1);
         }
     }
 
+    // TODO: Handle custom item distribution
+    /*
     if(options.has_custom_filler_items())
     {
         for(auto& [item_id, item_distrib] : logic.item_distributions())
@@ -306,7 +316,7 @@ static void apply_options_on_item_distributions(const RandomizerOptions& options
 
             logic.item_distribution(item_id)->filler_quantity(quantity);
         }
-    }
+    }*/
 }
 
 void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic)

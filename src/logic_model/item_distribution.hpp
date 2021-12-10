@@ -6,47 +6,45 @@
 class ItemDistribution
 {
 private:
-    /// The quantity placed before the beginning of the seed, in a fully random manner (no logic taken in account)
-    uint16_t _mandatory_quantity = 0;
-    /// The quantity placed when a path requiring it is opened by the exploration algorithm (only once per generation)
-    uint16_t _key_quantity = 1;
-    /// The quantity placed at the end of generation to randomly fill remaining item sources
-    uint16_t _filler_quantity = 0;
+    uint16_t _quantity = 0;
+    bool _allowed_on_ground = true;
 
 public:
     ItemDistribution() = default;
 
-    ItemDistribution(uint16_t mandatory_quantity, uint16_t key_quantity, uint16_t filler_quantity) :
-        _mandatory_quantity (mandatory_quantity),
-        _key_quantity       (key_quantity),
-        _filler_quantity    (filler_quantity)
+    ItemDistribution(uint16_t quantity, bool allowed_on_ground) :
+        _quantity           (quantity),
+        _allowed_on_ground  (allowed_on_ground)
     {}
 
-    [[nodiscard]] uint16_t mandatory_quantity() const { return _mandatory_quantity; }
-    void mandatory_quantity(uint16_t value) { _mandatory_quantity = value; }
+    [[nodiscard]] uint16_t quantity() const { return _quantity; }
+    void quantity(uint16_t value) { _quantity = value; }
+    void add(uint8_t quantity) { _quantity += quantity; }
+    void remove(uint8_t quantity)
+    {
+        if(_quantity <= quantity)
+            _quantity = 0;
+        else
+            _quantity -= quantity;
+    }
 
-    [[nodiscard]] uint16_t key_quantity() const { return _key_quantity; }
-    void key_quantity(uint16_t value) { _key_quantity = value; }
-
-    [[nodiscard]] uint16_t filler_quantity() const { return _filler_quantity; }
-    void filler_quantity(uint16_t value) { _filler_quantity = value; }
+    [[nodiscard]] bool allowed_on_ground() const { return _allowed_on_ground; }
+    void allowed_on_ground(bool allowed) { _allowed_on_ground = allowed; }
 
     [[nodiscard]] Json to_json() const
     {
         return {
-            {"mandatoryQuantity", _mandatory_quantity},
-            {"keyQuantity", _key_quantity},
-            {"fillerQuantity", _filler_quantity},
+            {"quantity", _quantity},
+            {"allowedOnGround", _allowed_on_ground}
         };
     }
 
     static ItemDistribution* from_json(const Json& json)
     {
-        uint16_t mandatory_quantity = json.value("mandatoryQuantity", 0);
-        uint16_t key_quantity = json.value("keyQuantity", 0);
-        uint16_t filler_quantity = json.value("fillerQuantity", 0);
+        uint16_t quantity = json.value("quantity", 0);
+        bool allowed_on_ground = json.value("allowedOnGround", true);
 
-        return new ItemDistribution(mandatory_quantity, key_quantity, filler_quantity);
+        return new ItemDistribution(quantity, allowed_on_ground);
     }
 };
 
