@@ -89,9 +89,6 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
-    std::cout << "Permalink: " << options.permalink() << "\n\n";
-    std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
-
     WorldLogic logic(world);
 
     // Parse a potential "world" section inside the preset for plandos & half plandos
@@ -101,7 +98,7 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     apply_randomizer_options(options, world, logic);
 
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
-    std::cout << "Randomizing world...\n";
+    std::cout << "\nRandomizing world...\n";
     WorldRandomizer randomizer(world, logic, options);
     randomizer.randomize();
 
@@ -140,16 +137,6 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     return spoiler_json;
 }
 
-void display_options(const RandomizerOptions& options)
-{
-    Json options_as_json = options.to_json();
-    if(!options.has_custom_mandatory_items())
-        options_as_json["randomizerSettings"]["mandatoryItems"] = "default";
-    if(!options.has_custom_filler_items())
-        options_as_json["randomizerSettings"]["fillerItems"] = "default";
-    std::cout << "Settings: " << options_as_json.dump(2) << "\n\n";
-}
-
 void generate(const ArgumentDictionary& args)
 {
     // Parse options from command-line args, preset file, plando file...
@@ -181,7 +168,10 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
 
-    display_options(options);
+    std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
+
+    std::cout << "Permalink: " << options.permalink() << "\n";
+    std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
     World world(*rom);
 
@@ -198,8 +188,8 @@ void generate(const ArgumentDictionary& args)
             throw LandstalkerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
 
         rom->write_to_file(output_rom_file);
-        std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
         std::cout << (rom->remaining_empty_bytes()/1000) << "Ko remaining of empty data" << std::endl;
+        std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n";
     }
 
     // Write a spoiler log to help the player
@@ -213,10 +203,10 @@ void generate(const ArgumentDictionary& args)
 
             spoiler_file << spoiler_json.dump(4);
             spoiler_file.close();
-            std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n\n";
+            std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n";
         }
         else
-            std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n\n";
+            std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n";
     }
 }
 
@@ -242,7 +232,7 @@ int main(int argc, char* argv[])
 
     if(args.get_boolean("pause", true))
     {
-        std::cout << "Press any key to exit.";
+        std::cout << "\nPress any key to exit.";
         std::string dummy;
         std::getline(std::cin, dummy);
     }
