@@ -265,6 +265,12 @@ static void apply_options_on_spawn_locations(const RandomizerOptions& options, W
 
 static void apply_options_on_item_distributions(const RandomizerOptions& options, WorldLogic& logic, const World& world)
 {
+    // Apply the global distribution params, if set by the user
+    std::map<uint8_t, uint16_t> distribution_param = options.items_distribution();
+    for(auto& [item_id, quantity] : distribution_param)
+        logic.item_distribution(item_id)->quantity(quantity);
+
+    // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         logic.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);

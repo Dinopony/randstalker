@@ -196,6 +196,16 @@ void RandomizerOptions::parse_json(const Json& json)
             _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
         if(randomizer_settings_json.contains("damageBoostingInLogic"))
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
+
+        if(randomizer_settings_json.contains("itemsDistribution"))
+        {
+            for(auto& [key, value] : randomizer_settings_json.at("itemsDistribution").items())
+            {
+                uint8_t item_id = (uint8_t)std::stoi(key);
+                uint16_t quantity = (uint16_t)std::stoi(std::string(value));
+                _items_distribution[item_id] = quantity;
+            }
+        }
     }
 
     if(json.contains("modelPatch"))
@@ -276,6 +286,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_shuffle_tibor_trees);
     bitpack.pack(_ghost_jumping_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
+    bitpack.pack_map(_items_distribution);
 
     bitpack.pack_vector(_possible_spawn_locations);
     bitpack.pack_map(_starting_items);
@@ -317,6 +328,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _shuffle_tibor_trees = bitpack.unpack<bool>();
     _ghost_jumping_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
+    _items_distribution = bitpack.unpack_map<uint8_t, uint16_t>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 
