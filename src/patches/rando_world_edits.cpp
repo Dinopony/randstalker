@@ -260,8 +260,9 @@ void optimize_maps(World& world)
     for(Entity* entity : world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entities())
         world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->add_entity(new Entity(*entity));
 
-    // Empty Mercator castle entrance hallway
+    // Empty Mercator castle entrance hallway and main hall
     world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->clear_entities();
+    world.map(MAP_MERCATOR_CASTLE_MAIN_HALL)->clear_entities();
 
     // Clear unreachable variants and prevent them from triggering
     const std::vector<uint16_t> MAPS_TO_REMOVE_VARIANTS_FROM = { 
