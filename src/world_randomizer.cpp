@@ -359,23 +359,43 @@ void WorldRandomizer::place_remaining_items(std::vector<ItemSource*>& empty_sour
 {
     Json& debug_log = _solver.debug_log_for_current_step();
 
-    std::sort(empty_sources.begin(), empty_sources.end(), [](ItemSource* a, ItemSource* b) {
-        uint8_t a_val = (a->is_chest()) ? 1 : 0;
-        uint8_t b_val = (b->is_chest()) ? 1 : 0;
-        return a_val < b_val;
-    });
-
-    for (Item* item : _item_pool)
+    std::vector<ItemSource*> empty_chests;
+    std::vector<ItemSource*> constrained_item_sources;
+    for(ItemSource* source : empty_sources)
     {
-        ItemSource* source = this->pop_first_compatible_source(empty_sources, item);
-        if(source)
-            source->item(item);
+        if(source->is_chest())
+            empty_chests.emplace_back(source);
         else
+            constrained_item_sources.emplace_back(source);
+    }
+
+    // Step 1: We fill "constrained" item sources with the first compatible item
+    for(ItemSource* source : constrained_item_sources)
+    {
+        for(auto it=_item_pool.begin() ; it!=_item_pool.end() ; ++it)
         {
-            tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
-            throw LandstalkerException("No source for item " + item->name() + " during final filling phase");
+            if(test_item_source_compatibility(source, *it))
+            {
+                source->item(*it);
+                _item_pool.erase(it);
+                break;
+            }
         }
     }
+
+    for(ItemSource* source : constrained_item_sources)
+        if(source->item() == nullptr)
+            std::cout << "[WARNING] Item source '" << source->name() << "' could not be filled with any item of the item pool.\n";
+
+    // Step 2: We fill chests (= unrestricted)
+    for(ItemSource* chest : empty_chests)
+    {
+        chest->item(_item_pool[0]);
+        _item_pool.erase(_item_pool.begin());
+    }
+
+    for(Item* item : _item_pool)
+        std::cout << "[WARNING] Item '" << item->name() << "' is remaining in the item pool at end of generation.\n";
 
     _item_pool.clear();
 }
