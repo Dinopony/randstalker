@@ -260,7 +260,13 @@
     {
         "fromId": "route_lake_shrine",
         "toId": "lake_shrine",
-        "twoWay": true
+        "requiredItems": [
+            "Sword of Gaia"
+        ]
+    },
+    {
+        "fromId": "lake_shrine",
+        "toId": "route_lake_shrine"
     },
     {
         "fromId": "lake_shrine",
