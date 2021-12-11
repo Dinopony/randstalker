@@ -227,10 +227,16 @@ void remove_pockets_from_gumi(World& world)
     world.map(MAP_GUMI_EXTERIOR)->remove_entity(3);
 }
 
+/**
+ * In the original game, having the keydoor open near Verla Mines entrance remove permanently the brown giants from
+ * the room. In rando, this door is always open through the flag and therefore giants were never there.
+ * This patch makes them come back, even when the door is open.
+ */
 void put_back_giants_in_verla_mines_keydoor_map(World& world)
 {
     Map* map = world.map(MAP_VERLA_MINES_KEYDOOR_NEAR_ENTRANCE);
     map->global_entity_mask_flags().clear();
+    map->key_door_mask_flags().clear();
     // Remove the keydoor and an invisible cube
     map->remove_entity(1);
     map->remove_entity(0);
