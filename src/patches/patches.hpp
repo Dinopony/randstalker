@@ -24,6 +24,7 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     alter_fahl_challenge(rom, world);
     alter_gold_rewards_handling(rom, world);
     alter_lantern_handling(rom, world);
+    alter_nigel_colors(rom, options.nigel_colors());
     alter_ui_color(rom, options.hud_color());
     fix_hud_tilemap(rom);
     fix_item_checks(rom);

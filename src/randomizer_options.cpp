@@ -92,7 +92,36 @@ void RandomizerOptions::parse_personal_settings(const ArgumentDictionary& args)
             else if (hud_color_as_string == "gray")        _hud_color = 0x444;
             else if (hud_color_as_string == "lightgray")   _hud_color = 0x666;
         }
-    }        
+    }
+
+    if(args.contains("nigelcolor"))
+    {
+        std::string hud_color_as_string = args.get_string("nigelcolor");
+
+        try {
+            uint16_t light_color = (uint16_t)std::stoul(hud_color_as_string);
+
+            uint8_t b = light_color & 0x0F00 - (0x0600);
+            uint8_t g = light_color & 0x00F0 - (0x0060);
+            uint8_t r = light_color & 0x000F - (0x0006);
+            uint16_t dark_color = (b & 0x0F00) | (g & 0x00F0) | (r & 0x000F);
+
+            _nigel_colors = std::make_pair(light_color, dark_color);
+        }
+        catch(std::invalid_argument&)
+        {
+            tools::to_lower(hud_color_as_string);
+
+            if (hud_color_as_string == "red")              _nigel_colors = std::make_pair(0x66E, 0x22A);
+            else if (hud_color_as_string == "darkred")     _nigel_colors = std::make_pair(0x228, 0x004);
+            else if (hud_color_as_string == "green")       _nigel_colors = std::make_pair(0x6E6, 0x080);
+            else if (hud_color_as_string == "blue")        _nigel_colors = std::make_pair(0xE88, 0x822);
+            else if (hud_color_as_string == "darkblue")    _nigel_colors = std::make_pair(0xC66, 0x800);
+            else if (hud_color_as_string == "orange")      _nigel_colors = std::make_pair(0x28E, 0x048);
+            else if (hud_color_as_string == "darkgray")    _nigel_colors = std::make_pair(0x888, 0x222);
+            else if (hud_color_as_string == "lightgray")   _nigel_colors = std::make_pair(0xFFF, 0x888);
+        }
+    }
 }
 
 Json RandomizerOptions::to_json() const

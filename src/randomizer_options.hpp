@@ -55,6 +55,7 @@ private:
     // (not included in permalink nor presets)
     bool _add_ingame_item_tracker = false;
     uint16_t _hud_color = 0x824;
+    std::pair<uint16_t, uint16_t> _nigel_colors = std::make_pair(0x08A0, 0x0240);
 
 public:
     RandomizerOptions() = default;
@@ -105,6 +106,7 @@ public:
     // Personal options 
     [[nodiscard]] bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
     [[nodiscard]] uint16_t hud_color() const { return _hud_color; }
+    [[nodiscard]] const std::pair<uint16_t, uint16_t>& nigel_colors() const { return _nigel_colors; }
 
     [[nodiscard]] std::vector<std::string> hash_words() const;
     [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
