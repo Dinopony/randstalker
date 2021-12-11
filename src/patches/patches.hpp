@@ -19,7 +19,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
 
 inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& logic, const RandomizerOptions& options)
 {
-    add_functions_to_items_on_use(rom, options.consumable_record_book());
+    add_functions_to_items_on_use(rom, world, options.consumable_record_book());
     add_statue_of_jypta_effect(rom);
     alter_fahl_challenge(rom, world);
     alter_gold_rewards_handling(rom, world);
