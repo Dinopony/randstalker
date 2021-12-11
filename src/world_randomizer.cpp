@@ -160,7 +160,7 @@ void WorldRandomizer::randomize_fahl_enemies()
 
 void WorldRandomizer::init_item_pool()
 {
-    std::map<uint8_t, uint16_t> item_quantities = _logic.item_quantities();
+    _item_pool_quantities = _logic.item_quantities();
 
     // Count quantities already in place
     for(ItemSource* source : _world.item_sources())
@@ -168,19 +168,19 @@ void WorldRandomizer::init_item_pool()
         Item* item = source->item();
         if(item)
         {
-            if(item_quantities[item->id()] == 0)
+            if(_item_pool_quantities[item->id()] == 0)
             {
                 throw LandstalkerException("There are more " + item->name() +
                                            " already placed than the expected number in the item pool");
             }
-            item_quantities[item->id()] -= 1;
+            _item_pool_quantities[item->id()] -= 1;
         }
     }
 
     _item_pool.clear();
     _item_pool.reserve(_world.item_sources().size());
 
-    for(auto& [item_id, quantity] : item_quantities)
+    for(auto& [item_id, quantity] : _item_pool_quantities)
     {
         for(uint16_t i=0 ; i<quantity ; ++i)
         {
@@ -211,6 +211,12 @@ void WorldRandomizer::init_item_pool()
     tools::shuffle(_item_pool, _rng);
 }
 
+void WorldRandomizer::remove_item_from_pool(Item* item)
+{
+    _item_pool.erase(std::find(_item_pool.begin(), _item_pool.end(), item));
+    _item_pool_quantities[item->id()] -= 1;
+}
+
 Item* WorldRandomizer::generate_gold_item()
 {
     std::normal_distribution<double> distribution(40.0, 18.0);
@@ -223,9 +229,6 @@ Item* WorldRandomizer::generate_gold_item()
 
     return _world.add_gold_item(static_cast<uint8_t>(gold_value));
 }
-
-// TODO: Make it so the algorithm doesn't try to open a blocked path if all quantities are already at 0
-// (And check that it would work anwyay?)
 
 void WorldRandomizer::randomize_items()
 {
@@ -280,10 +283,10 @@ ItemSource* WorldRandomizer::pop_first_compatible_source(std::vector<ItemSource*
 
 void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
 {
-    // List all blocked paths, taking weights into account
     Json& debug_log = _solver.debug_log_for_current_step();
     debug_log["blockedPaths"] = Json::array();
 
+    // List all blocked paths, taking weights into account
     const std::vector<WorldPath*>& blocked_paths = _solver.blocked_paths();
     std::vector<WorldPath*> weighted_blocked_paths;
     for (WorldPath* path : blocked_paths)
@@ -292,6 +295,32 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
         if(!_solver.missing_nodes_to_take_path(path).empty())
             continue;
 
+        // If all items cannot be placed since the item pool is running out of that item type,
+        // do not try to open this path. It will open by itself once the item (as placed inside plando)
+        // will be reached.
+        std::vector<Item*> items_to_place = _solver.missing_items_to_take_path(path);
+        std::map<uint8_t, uint16_t> quantities_to_place;
+        for(Item* item : items_to_place)
+        {
+            if(!quantities_to_place.count(item->id()))
+                quantities_to_place[item->id()] = 0;
+            quantities_to_place[item->id()] += 1;
+        }
+
+        bool can_place_all_items = true;
+        for(auto& [item_id, quantity_to_place] : quantities_to_place)
+        {
+            if(_item_pool_quantities[item_id] < quantity_to_place)
+            {
+                can_place_all_items = false;
+                break;
+            }
+        }
+
+        if(!can_place_all_items)
+            continue;
+
+        // All conditions are met, add this path to the weighted blocked paths list
         debug_log["blockedPaths"].emplace_back(path->origin()->id() + " --> " + path->destination()->id());
         for(int i=0 ; i<path->weight() ; ++i)
             weighted_blocked_paths.emplace_back(path);
@@ -305,20 +334,15 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
     WorldPath* path_to_open = weighted_blocked_paths[0];
     debug_log["chosenPath"].emplace_back(path_to_open->origin()->id() + " --> " + path_to_open->destination()->id());
 
-    // Place all missing key items for this blocking path
+    // Place all missing key items for the player to be able to open this blocking path
     std::vector<Item*> items_to_place = _solver.missing_items_to_take_path(path_to_open);
     std::vector<Item*> extra_items = path_to_open->items_placed_when_crossing();
     items_to_place.insert(items_to_place.end(), extra_items.begin(), extra_items.end());
-
     for(Item* item : items_to_place)
     {
-        uint16_t inserted_count = 0;
-
-        decltype(_item_pool)::iterator it;
-        while( (it = std::find(_item_pool.begin(), _item_pool.end(), item)) != _item_pool.end() )
+        while(_item_pool_quantities[item->id()] > 0)
         {
-            _item_pool.erase(it);
-            inserted_count += 1;
+            this->remove_item_from_pool(item);
 
             // Place the key item in a compatible source
             ItemSource* compatible_source = this->pop_first_compatible_source(empty_sources, item);
@@ -328,12 +352,6 @@ void WorldRandomizer::place_key_items(std::vector<ItemSource*>& empty_sources)
             compatible_source->item(item);
             _logical_playthrough.emplace_back(compatible_source);
             debug_log["placedKeyItems"][compatible_source->name()] = item->name();
-        }
-
-        if(inserted_count == 0)
-        {
-            tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
-            throw LandstalkerException("Trying to place " + item->name() + " as a key item but there are none remaining in the pool");
         }
     }
 }

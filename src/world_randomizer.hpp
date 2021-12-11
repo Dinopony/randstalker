@@ -27,6 +27,7 @@ private:
     std::mt19937 _rng;
 
     std::vector<Item*> _item_pool;
+    std::map<uint8_t, uint16_t> _item_pool_quantities;
 
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
@@ -44,6 +45,7 @@ public:
 
 private:
     void init_item_pool();
+    void remove_item_from_pool(Item* item);
     Item* generate_gold_item();
 
     ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item);
