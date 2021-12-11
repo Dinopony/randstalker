@@ -28,6 +28,7 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     alter_ui_color(rom, options.hud_color());
     fix_hud_tilemap(rom);
     fix_item_checks(rom);
+    improve_engine(rom);
     patch_game_init(rom, world, options.add_ingame_item_tracker());
     handle_additional_jewels(rom, world, options.jewel_count());
     make_sword_of_gaia_work_in_volcano(rom);

@@ -1,14 +1,17 @@
 #include <landstalker_lib/md_tools.hpp>
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/item.hpp>
+#include <landstalker_lib/model/map.hpp>
 #include <landstalker_lib/constants/item_codes.hpp>
+#include <landstalker_lib/constants/map_codes.hpp>
+#include <landstalker_lib/constants/flags.hpp>
 #include "../randomizer_options.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////
 //       RANDO ADAPTATIONS / ENHANCEMENTS
 ///////////////////////////////////////////////////////////////////////////////////
 
-void alter_lifestock_handling_in_shops(md::ROM& rom)
+static void alter_lifestock_handling_in_shops(md::ROM& rom)
 {
     // Make Lifestock prices the same over all shops
     for (uint32_t addr = 0x024D34; addr <= 0x024EAE; addr += 0xE)
@@ -19,12 +22,11 @@ void alter_lifestock_handling_in_shops(md::ROM& rom)
         rom.set_byte(addr, 0xFF);
 }
 
-
 /**
  * Change Waterfall Shrine entrance check from "Talked to Prospero" to "What a noisy boy!", removing the need*
  * of talking to Prospero (which we couldn't do anyway because of the story flags).
  */
-void alter_waterfall_shrine_secret_stairs_check(md::ROM& rom)
+static void alter_waterfall_shrine_secret_stairs_check(md::ROM& rom)
 {
     // 0x005014:
         // Before:	00 08 (bit 0 of FF1000)
@@ -35,34 +37,13 @@ void alter_waterfall_shrine_secret_stairs_check(md::ROM& rom)
 /**
  * Change the flag checked for teleporter appearance from "saw the duke Kazalt cutscene" to "has visited four white golems room in King Nole's Cave"
  */
-void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom)
+static void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom, const World& world)
 {
-    // 0x0050A0:
-        // Before:	27 09 (bit 1 of flag 1027)
-        // After:	D0 09 (bit 1 of flag 10D0)
-    rom.set_word(0x0050A0, 0xD009);
-    // 0x00509C:
-        // Before:	27 11 (bit 1 of flag 1027)
-        // After:	D0 11 (bit 1 of flag 10D0)
-    rom.set_word(0x00509C, 0xD011);
-
-    // We need to inject a procedure checking "is D0 equal to FF" to replace the "bmi" previously used which was preventing
-    // from checking flags above 0x80 (the one we need to check is 0xD0).
-    md::Code proc_extended_flag_check;
-
-    proc_extended_flag_check.moveb(addr_(reg_A0, 0x2), reg_D0);     // 1028 0002
-    proc_extended_flag_check.cmpib(0xFF, reg_D0);
-    proc_extended_flag_check.bne(2);
-    proc_extended_flag_check.jmp(0x4E2E);
-    proc_extended_flag_check.jmp(0x4E20);
-
-    uint32_t proc_addr = rom.inject_code(proc_extended_flag_check);
-
-    // Replace the (move.b, bmi, ext.w) by a jmp to the injected procedure
-    rom.set_code(0x004E18, md::Code().clrw(reg_D0).jmp(proc_addr));
+    world.map(MAP_KN_CAVE_TELEPORTER_TO_KAZALT)->clear_entities();
+    world.map(MAP_KN_CAVE_ROOM_WITH_WHITE_GOLEMS_VARIANT)->visited_flag(FLAG_OPENED_MERCATOR_TELEPORTER_TO_KNC);
 }
 
-void make_ryuma_mayor_saveable(md::ROM& rom)
+static void make_ryuma_mayor_saveable(md::ROM& rom)
 {
     // Disable the cutscene (CSA_0068) when opening vanilla lithograph chest
     rom.set_code(0x136BE, md::Code().rts());
@@ -80,7 +61,7 @@ void make_ryuma_mayor_saveable(md::ROM& rom)
     rom.set_word(0x9BA62, 0xFEFE);
 }
 
-void fix_ryuma_mayor_reward(md::ROM& rom)
+static void fix_ryuma_mayor_reward(md::ROM& rom)
 {
     // Change the second reward from "fixed 100 golds" to "item with ID located at 0x2837F"
     rom.set_byte(0x2837E, 0x00);
@@ -100,17 +81,16 @@ void fix_ryuma_mayor_reward(md::ROM& rom)
  * In the original game, you need to save Tibor to make teleport trees usable.
  * This removes this requirement.
  */
-void remove_tibor_requirement_to_use_trees(md::ROM& rom)
+static void remove_tibor_requirement_to_use_trees(md::ROM& rom)
 {
     // Remove the check of the "completed Tibor sidequest" flag to make trees usable
     rom.set_code(0x4E4A, md::Code().nop(5));
 }
 
-
 /*
  * Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
  */
-void fix_mir_tower_priest_room_items(md::ROM& rom)
+static void fix_mir_tower_priest_room_items(md::ROM& rom)
 {
     // TODO: Handle ShopScript
     // 0x024E5A:
@@ -119,7 +99,7 @@ void fix_mir_tower_priest_room_items(md::ROM& rom)
     rom.set_word(0x024E5A, 0x7F7F);
 }
 
-void prevent_hint_item_save_scumming(md::ROM& rom)
+static void prevent_hint_item_save_scumming(md::ROM& rom)
 {
     md::Code func_save_on_buy;
     // Redo instructions that were removed by injection
@@ -138,9 +118,7 @@ void prevent_hint_item_save_scumming(md::ROM& rom)
 //      ORIGINAL GAME BUGS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-void fix_crypt_soflocks(md::ROM& rom)
+static void fix_crypt_soflocks(md::ROM& rom)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
     // 0x019DF6:
@@ -162,7 +140,7 @@ void fix_crypt_soflocks(md::ROM& rom)
 /**
  * Change the rafts logic so we can take them several times in a row, preventing from getting softlocked by missing chests
  */
-void alter_labyrinth_rafts(md::ROM& rom)
+static void alter_labyrinth_rafts(md::ROM& rom)
 {
     // The trick here is to use flag 1001 (which resets on every map change) to correctly end the cutscene 
     // while discarding the "raft already taken" state as early as the player moves to another map.
@@ -179,7 +157,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     // Rando adaptations / enhancements
     alter_lifestock_handling_in_shops(rom);
     alter_waterfall_shrine_secret_stairs_check(rom);
-    alter_king_nole_cave_teleporter_to_mercator_condition(rom);
+    alter_king_nole_cave_teleporter_to_mercator_condition(rom, world);
     make_ryuma_mayor_saveable(rom);
     fix_ryuma_mayor_reward(rom);
     if (options.remove_tibor_requirement())

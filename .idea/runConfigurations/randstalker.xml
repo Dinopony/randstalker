@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="randstalker" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="--preset=&quot;preset.json&quot; --outputrom=&quot;./seeds/&quot; --nopause --nigelcolor=blue" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="randstalker" TARGET_NAME="randstalker" CONFIG_NAME="Debug x64" RUN_TARGET_PROJECT_NAME="randstalker" RUN_TARGET_NAME="randstalker">
+  <configuration default="false" name="randstalker" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="--preset=&quot;preset.json&quot; --outputrom=&quot;./seeds/&quot; --nopause --nigelcolor=blue --dumpmodel" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="randstalker" TARGET_NAME="randstalker" CONFIG_NAME="Debug x64" RUN_TARGET_PROJECT_NAME="randstalker" RUN_TARGET_NAME="randstalker">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>
