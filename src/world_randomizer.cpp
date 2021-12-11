@@ -12,12 +12,9 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
-#include "logic_model/data/spawn_location.json.hxx"
-
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
 #include "logic_model/item_distribution.hpp"
-#include "logic_model/data/hint_source.json.hxx"
 #include "world_solver.hpp"
 
 #include <algorithm>
@@ -226,6 +223,9 @@ Item* WorldRandomizer::generate_gold_item()
 
     return _world.add_gold_item(static_cast<uint8_t>(gold_value));
 }
+
+// TODO: Make it so the algorithm doesn't try to open a blocked path if all quantities are already at 0
+// (And check that it would work anwyay?)
 
 void WorldRandomizer::randomize_items()
 {

@@ -303,26 +303,6 @@ static void apply_options_on_item_distributions(const RandomizerOptions& options
             logic.item_distribution(ITEM_NONE)->remove(1);
         }
     }
-
-    // TODO: Handle custom item distribution
-    /*
-    if(options.has_custom_filler_items())
-    {
-        for(auto& [item_id, item_distrib] : logic.item_distributions())
-            item_distrib->filler_quantity(0);
-
-        const std::map<std::string, uint16_t>& filler_items_by_name = options.filler_items();
-        for(auto& [item_name, quantity] : filler_items_by_name)
-        {
-            uint8_t item_id;
-            if(item_name == "Golds")
-                item_id = ITEM_GOLDS_START;
-            else
-                item_id = world.item(item_name)->id();
-
-            logic.item_distribution(item_id)->filler_quantity(quantity);
-        }
-    }*/
 }
 
 void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic)

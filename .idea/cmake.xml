@@ -2,7 +2,7 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="true" GENERATION_DIR="build_debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-G &quot;Visual Studio 16 2019&quot;" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" GENERATION_DIR="build_debug" CONFIG_NAME="Debug" GENERATION_OPTIONS="-G &quot;Visual Studio 17 2022&quot; -A x64 -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE" />
     </configurations>
   </component>
 </project>
