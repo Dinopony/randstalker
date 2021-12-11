@@ -41,7 +41,6 @@ void WorldRandomizer::randomize()
 
     // 2nd pass: randomizing items
     this->randomize_items();
-    tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
 
     // 3rd pass: randomizations happening AFTER randomizing items
     this->randomize_hints();
@@ -497,7 +496,8 @@ Item* WorldRandomizer::randomize_oracle_stone_hint(Item* forbidden_fortune_telle
                 std::vector<Item*> min_items_to_reach = solver.find_minimal_inventory();
                 for(Item* item : min_items_to_reach)
                     forbidden_items.insert(item);
-            } else
+            }
+            else
             {
                 tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
                 throw LandstalkerException("Could not find minimal inventory to reach Oracle Stone");

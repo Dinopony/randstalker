@@ -13,7 +13,7 @@ static inline bool is_base64(uint8_t c) {
 std::string base64_encode(const std::vector<uint8_t>& vec) {
   std::string ret;
   int i = 0;
-  int j = 0;
+  int j;
   uint8_t char_array_3[3];
   uint8_t char_array_4[4];
 
@@ -57,7 +57,7 @@ std::string base64_encode(const std::vector<uint8_t>& vec) {
 std::vector<uint8_t> base64_decode(std::string const& encoded_string) {
   size_t in_len = encoded_string.size();
   int i = 0;
-  int j = 0;
+  int j;
   int in_ = 0;
   uint8_t char_array_4[4], char_array_3[3];
   std::vector<uint8_t> ret;
