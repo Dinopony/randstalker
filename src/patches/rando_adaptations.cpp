@@ -7,10 +7,6 @@
 #include <landstalker_lib/constants/flags.hpp>
 #include "../randomizer_options.hpp"
 
-///////////////////////////////////////////////////////////////////////////////////
-//       RANDO ADAPTATIONS / ENHANCEMENTS
-///////////////////////////////////////////////////////////////////////////////////
-
 static void alter_lifestock_handling_in_shops(md::ROM& rom)
 {
     // Make Lifestock prices the same over all shops
@@ -113,11 +109,6 @@ static void prevent_hint_item_save_scumming(md::ROM& rom)
     rom.set_code(0x24F3E, md::Code().jsr(func_save_on_buy_addr));
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//      ORIGINAL GAME BUGS
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 static void fix_crypt_soflocks(md::ROM& rom)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
@@ -150,11 +141,18 @@ static void alter_labyrinth_rafts(md::ROM& rom)
     rom.set_word(0x09E051, 0x0100);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Set the story progress at least as "Duke fled to Kazalt" state, whatever the current progress is
+ */
+static void set_story_as_advanced(md::ROM& rom)
+{
+    rom.set_word(0x25324, 0x0000);
+}
 
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world)
 {
-    // Rando adaptations / enhancements
+    set_story_as_advanced(rom);
+
     alter_lifestock_handling_in_shops(rom);
     alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom, world);
@@ -163,7 +161,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, con
     if (options.remove_tibor_requirement())
         remove_tibor_requirement_to_use_trees(rom);
 
-    // Fix randomizer-related bugs
     fix_mir_tower_priest_room_items(rom);
     prevent_hint_item_save_scumming(rom);
     fix_crypt_soflocks(rom);
