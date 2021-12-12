@@ -190,13 +190,18 @@ void WorldRandomizer::init_item_pool()
         }
     }
 
-    if(_item_pool.size() > _world.item_sources().size())
+    size_t empty_item_sources_count = 0;
+    for(ItemSource* source : _world.item_sources())
+        if(source->item() == nullptr)
+            empty_item_sources_count += 1;
+
+    if(_item_pool.size() > empty_item_sources_count)
     {
         throw LandstalkerException("The number of items in item pool is not the same as the number of item sources (" +
                                     std::to_string(_item_pool.size()) + " =/= " +
                                     std::to_string(_world.item_sources().size()) + ")");
     }
-    else if(_item_pool.size() < _world.item_sources().size())
+    else if(_item_pool.size() < empty_item_sources_count)
     {
         size_t missing_item_count = _world.item_sources().size() - _item_pool.size();
         std::cout << "Warning: Item pool (" << _item_pool.size() << " items) is smaller than the item sources pool ("
