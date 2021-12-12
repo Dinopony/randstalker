@@ -33,6 +33,7 @@ private:
     uint16_t _enemies_armor_factor = 100;
     uint16_t _enemies_golds_factor = 100;
     uint16_t _enemies_drop_chance_factor = 100;
+    uint8_t _health_gained_per_lifestock = 1;
 
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)
@@ -87,6 +88,7 @@ public:
     [[nodiscard]] double enemies_armor_factor() const { return (double)_enemies_armor_factor / 100.0; }
     [[nodiscard]] double enemies_golds_factor() const { return (double)_enemies_golds_factor / 100.0; }
     [[nodiscard]] double enemies_drop_chance_factor() const { return (double)_enemies_drop_chance_factor / 100.0; }
+    [[nodiscard]] uint8_t health_gained_per_lifestock() const { return _health_gained_per_lifestock; }
 
     // Randomization options
     [[nodiscard]] uint32_t seed() const { return _seed; }

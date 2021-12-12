@@ -144,6 +144,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesArmorFactor"] = _enemies_armor_factor;
     json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
     json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
+    json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
@@ -198,6 +199,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _enemies_golds_factor = game_settings_json.at("enemiesGoldsFactor");
         if(game_settings_json.contains("enemiesDropChanceFactor"))    
             _enemies_drop_chance_factor = game_settings_json.at("enemiesDropChanceFactor");
+        if(game_settings_json.contains("healthGainedPerLifestock"))
+            _health_gained_per_lifestock = game_settings_json.at("healthGainedPerLifestock");
 
         if(game_settings_json.contains("startingItems"))
         {
@@ -301,6 +304,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemies_armor_factor);
     bitpack.pack(_enemies_golds_factor);
     bitpack.pack(_enemies_drop_chance_factor);
+    bitpack.pack(_health_gained_per_lifestock);
 
     bitpack.pack(_seed);
 
@@ -343,6 +347,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemies_armor_factor = bitpack.unpack<uint16_t>();
     _enemies_golds_factor = bitpack.unpack<uint16_t>();
     _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
+    _health_gained_per_lifestock = bitpack.unpack<uint8_t>();
 
     _seed = bitpack.unpack<uint32_t>();
 

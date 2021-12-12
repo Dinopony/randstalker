@@ -33,7 +33,8 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     handle_additional_jewels(rom, world, options.jewel_count());
     make_sword_of_gaia_work_in_volcano(rom);
     normalize_special_enemies_hp(rom, options.fix_tree_cutting_glitch());
-    
+    make_lifestocks_give_specific_health(rom, options.health_gained_per_lifestock());
+
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
 
