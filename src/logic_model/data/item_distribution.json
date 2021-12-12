@@ -140,9 +140,7 @@
   "51": {
     "quantity": 1
   },
-  "52": {
-    "quantity": 1
-  },
+  "52": {},
   "53": {
     "quantity": 1
   },
@@ -168,7 +166,7 @@
     "allowedOnGround": false
   },
   "63": {
-    "quantity": 12
+    "quantity": 13
   },
   "64": {
     "quantity": 28,
