@@ -270,6 +270,36 @@ void WorldRandomizer::randomize_items()
         debug_log["requiredItems"].emplace_back(item->name());
 }
 
+bool WorldRandomizer::test_item_source_compatibility(ItemSource* source, Item* item) const
+{
+    if(source->is_chest())
+        return true;
+
+    if(source->is_npc_reward())
+        return (item->id() != ITEM_NONE);
+
+    ItemSourceOnGround* cast_source = reinterpret_cast<ItemSourceOnGround*>(source);
+    if(item->id() >= ITEM_GOLDS_START)
+        return false;
+    if(!cast_source->can_be_taken_only_once() && !_logic.item_distribution(item->id())->allowed_on_ground())
+        return false;
+
+    if(source->is_shop_item())
+    {
+        if(item->id() == ITEM_NONE)
+            return false;
+
+        // If another shop source in the same node contains the same item, deny item placement
+        WorldNode* shop_node = _logic.node(source->node_id());
+        const std::vector<ItemSource*> sources_in_node = shop_node->item_sources();
+        for(ItemSource* source_in_node : sources_in_node)
+            if(source_in_node != source && source_in_node->is_shop_item() && source_in_node->item() == item)
+                return false;
+    }
+
+    return true;
+}
+
 ItemSource* WorldRandomizer::pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item)
 {
     for (uint32_t i = 0; i < sources.size(); ++i)
@@ -731,32 +761,4 @@ Json WorldRandomizer::playthrough_as_json() const
     return json;
 }
 
-bool WorldRandomizer::test_item_source_compatibility(ItemSource* source, Item* item) const
-{
-    if(source->is_chest())
-        return true;
 
-    if(source->is_npc_reward())
-        return (item->id() < ITEM_NONE);
-
-    ItemSourceOnGround* cast_source = reinterpret_cast<ItemSourceOnGround*>(source);
-    if(item->id() >= ITEM_GOLDS_START)
-        return false;
-    if(!cast_source->can_be_taken_only_once() && !_logic.item_distribution(item->id())->allowed_on_ground())
-        return false;
-
-    if(source->is_shop_item())
-    {
-        if(item->id() == ITEM_NONE)
-            return false;
-
-        // If another shop source in the same node contains the same item, deny item placement
-        WorldNode* shop_node = _logic.node(source->node_id());
-        const std::vector<ItemSource*> sources_in_node = shop_node->item_sources();
-        for(ItemSource* source_in_node : sources_in_node)
-            if(source_in_node != source && source_in_node->is_shop_item() && source_in_node->item() == item)
-                return false;
-    }
-
-    return true;
-}
