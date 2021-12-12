@@ -272,11 +272,8 @@ void WorldRandomizer::randomize_items()
 
 bool WorldRandomizer::test_item_source_compatibility(ItemSource* source, Item* item) const
 {
-    if(source->is_chest())
+    if(source->is_chest() || source->is_npc_reward())
         return true;
-
-    if(source->is_npc_reward())
-        return (item->id() != ITEM_NONE);
 
     ItemSourceOnGround* cast_source = reinterpret_cast<ItemSourceOnGround*>(source);
     if(item->id() >= ITEM_GOLDS_START)
@@ -394,18 +391,18 @@ void WorldRandomizer::place_remaining_items(std::vector<ItemSource*>& empty_sour
 {
     Json& debug_log = _solver.debug_log_for_current_step();
 
-    std::vector<ItemSource*> empty_chests;
-    std::vector<ItemSource*> constrained_item_sources;
+    std::vector<ItemSource*> unrestricted_item_sources;
+    std::vector<ItemSource*> restricted_item_sources;
     for(ItemSource* source : empty_sources)
     {
-        if(source->is_chest())
-            empty_chests.emplace_back(source);
+        if(source->is_chest() || source->is_npc_reward())
+            unrestricted_item_sources.emplace_back(source);
         else
-            constrained_item_sources.emplace_back(source);
+            restricted_item_sources.emplace_back(source);
     }
 
-    // Step 1: We fill "constrained" item sources with the first compatible item
-    for(ItemSource* source : constrained_item_sources)
+    // Step 1: We fill "restricted" (not compatible with all items) item sources with the first compatible item
+    for(ItemSource* source : restricted_item_sources)
     {
         for(auto it=_item_pool.begin() ; it!=_item_pool.end() ; ++it)
         {
@@ -418,12 +415,12 @@ void WorldRandomizer::place_remaining_items(std::vector<ItemSource*>& empty_sour
         }
     }
 
-    for(ItemSource* source : constrained_item_sources)
+    for(ItemSource* source : restricted_item_sources)
         if(source->item() == nullptr)
             std::cout << "[WARNING] Item source '" << source->name() << "' could not be filled with any item of the item pool.\n";
 
-    // Step 2: We fill chests (= unrestricted)
-    for(ItemSource* chest : empty_chests)
+    // Step 2: We fill unrestricted item sources (= chests & NPCs)
+    for(ItemSource* chest : unrestricted_item_sources)
     {
         chest->item(_item_pool[0]);
         _item_pool.erase(_item_pool.begin());

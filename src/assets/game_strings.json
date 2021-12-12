@@ -70,6 +70,9 @@
     //    "19_old": "You have finished \u001b%\nof this island...\u001e\nspoke the Oracle Stone.\u001e",
         "19": "The stone looks blurry. It looks like it won't be of any use...",
 
+    //    "1d_old": "DEBUG MENU",
+        "1d": "Got a useless trinket.\u001e",
+
     //    "21_old": "MAP MENU",
         "21": "This tablet seems of no use...",
 
