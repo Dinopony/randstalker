@@ -260,7 +260,7 @@
     {
         "fromId": "route_lake_shrine",
         "toId": "lake_shrine",
-        "requiredItems": [
+        "itemsPlacedWhenCrossing": [
             "Sword of Gaia"
         ]
     },
