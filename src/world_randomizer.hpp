@@ -44,13 +44,6 @@ public:
     [[nodiscard]] Json& debug_log_as_json() { return _solver.debug_log(); }
 
 private:
-    void init_item_pool();
-    void remove_item_from_pool(Item* item);
-    Item* generate_gold_item();
-
-    ItemSource* pop_first_compatible_source(std::vector<ItemSource*>& sources, Item* item);
-    bool test_item_source_compatibility(ItemSource* source, Item* item) const;
-
     // First pass randomizations (before items)
     void randomize_spawn_location();
     void randomize_dark_rooms();
@@ -59,8 +52,14 @@ private:
 
     // Item randomization
     void randomize_items();
-    void place_key_items(std::vector<ItemSource*>& empty_sources);
-    void place_remaining_items(std::vector<ItemSource*>& empty_sources);
+    void init_item_pool();
+    [[nodiscard]] Item* generate_gold_item();
+    ItemSource* place_item_randomly(Item* item, std::vector<ItemSource*> possible_sources);
+    Item* fill_item_source_randomly(ItemSource* source);
+    [[nodiscard]] bool test_item_source_compatibility(ItemSource* source, Item* item) const;
+    [[nodiscard]] std::vector<WorldPath*> build_weighted_blocked_paths_list();
+    void open_random_blocked_path();
+    void place_remaining_items();
 
     // Hints randomization
     void randomize_hints();

@@ -13,7 +13,7 @@
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
 #include "../logic_model/item_distribution.hpp"
-#include "../world_randomizer.hpp"
+#include "../logic_model/world_logic.hpp"
 
 void ModelWriter::write_world_model(const World& world)
 {

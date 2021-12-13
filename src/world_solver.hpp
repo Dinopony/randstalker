@@ -27,10 +27,10 @@ class WorldSolver
 private:
     const WorldLogic& _logic;
 
-    WorldNode* _start_node;
-    WorldNode* _end_node;
-    std::vector<Item*> _forbidden_item_instances;
-    std::vector<Item*> _forbidden_item_types;
+    WorldNode* _start_node = nullptr;
+    WorldNode* _end_node = nullptr;
+
+    std::map<Item*, uint16_t> _forbidden_items;
     UnsortedSet<WorldNode*> _forbidden_nodes_to_pick_items;
 
     UnsortedSet<WorldNode*> _explored_nodes;
@@ -44,14 +44,16 @@ private:
     std::vector<Item*> _starting_inventory;
     std::vector<Item*> _inventory;
 
+    std::vector<std::pair<Item*, std::vector<ItemSource*>>> _scheduled_item_placements;
+
     uint32_t _step_count;
     Json _debug_log;
 
 public:
     explicit WorldSolver(const WorldLogic& logic);
 
-    void forbid_item_instances(const std::vector<Item*>& forbidden_item_instances);
-    void forbid_item_types(const std::vector<Item*>& forbidden_item_types);
+    void forbid_items(const std::map<Item*, uint16_t>& item_quantities);
+    void forbid_item_type(Item* item);
     void forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes);
 
     void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
@@ -68,8 +70,10 @@ public:
     [[nodiscard]] const std::vector<Item*>& inventory() const { return _inventory; }
 
     [[nodiscard]] bool can_take_path(WorldPath* path) const;
-    [[nodiscard]] std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
     [[nodiscard]] std::vector<Item*> missing_items_to_take_path(WorldPath* path) const;
+    [[nodiscard]] std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
+
+    [[nodiscard]] const std::vector<std::pair<Item*, std::vector<ItemSource*>>>& scheduled_item_placements() const { return _scheduled_item_placements; }
 
     [[nodiscard]] bool reached_end() const { return _explored_nodes.contains(_end_node); }
     [[nodiscard]] std::vector<Item*> find_minimal_inventory();
@@ -80,4 +84,5 @@ public:
 private:
     void expand_exploration_zone();
     bool try_unlocking_paths();
+    void take_path(WorldPath* path);
 };
