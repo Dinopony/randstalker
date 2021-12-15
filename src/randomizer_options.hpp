@@ -44,6 +44,7 @@ private:
     bool _ghost_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
     std::map<uint8_t, uint16_t> _items_distribution;
+    uint8_t _hints_count = 10;
 
     // ------------- Plando world JSON -------------
     Json _world_json;
@@ -97,6 +98,7 @@ public:
     [[nodiscard]] bool handle_ghost_jumping_in_logic() const { return _ghost_jumping_in_logic; }
     [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
     [[nodiscard]] const std::map<uint8_t, uint16_t>& items_distribution() const { return _items_distribution; }
+    [[nodiscard]] uint8_t hints_count() const { return _hints_count; }
 
     // Plando-specific options
     [[nodiscard]] const Json& world_json() const { return _world_json; }

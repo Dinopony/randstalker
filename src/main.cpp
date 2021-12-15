@@ -27,8 +27,8 @@
 #include "patches/patches.hpp"
 #include "apply_randomizer_options.hpp"
 #include "logic_model/hint_source.hpp"
-#include "logic_model/world_logic.hpp"
-#include "world_randomizer.hpp"
+#include "logic_model/randomizer_world.hpp"
+#include "world_shuffler.hpp"
 #include "io/io.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
@@ -81,7 +81,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
         spoiler_log_path += options.hash_sentence() + ".json";
 }
 
-Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const ArgumentDictionary& args)
+Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options, const ArgumentDictionary& args)
 {
     Json spoiler_json;
 
@@ -89,36 +89,31 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
-    WorldLogic logic(world);
-
     // Parse a potential "world" section inside the preset for plandos & half plandos
-    WorldJsonParser::parse_world_json(world, logic, options.world_json());
+    WorldJsonParser::parse_world_json(world, options.world_json());
 
-    // Apply randomizer options to alter World and WorldLogic accordingly before starting the actual randomization
-    apply_randomizer_options(options, world, logic);
+    // Apply randomizer options to alter World and RandomizerWorld accordingly before starting the actual randomization
+    apply_randomizer_options(options, world);
 
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
     std::cout << "\nRandomizing world...\n";
-    WorldRandomizer randomizer(world, logic, options);
-    randomizer.randomize();
+    WorldShuffler shuffler(world, options);
+    shuffler.randomize();
 
     // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
     std::cout << "Applying game patches...\n\n";
-    apply_randomizer_patches(rom, world, logic, randomizer, options);
-
-    for(auto& [name, hint_source] : logic.hint_sources())
-        hint_source->apply_text(world);
+    apply_randomizer_patches(rom, world, options);
 
     std::string debug_log_path = args.get_string("debuglog");
     if (!debug_log_path.empty())
     {
         std::ofstream debug_log_file(debug_log_path);
-        debug_log_file << randomizer.debug_log_as_json().dump(4);
+        debug_log_file << shuffler.debug_log_as_json().dump(4);
         debug_log_file.close();
     }
 
-    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, logic, options));
-    spoiler_json["playthrough"] = randomizer.playthrough_as_json();
+    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
+    spoiler_json["playthrough"] = shuffler.playthrough_as_json();
 
     // Output model if requested
     if(args.get_boolean("dumpmodel"))
@@ -127,7 +122,7 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
         {
             std::cout << "Outputting model...\n\n";
             ModelWriter::write_world_model(world);
-            ModelWriter::write_logic_model(logic);
+            ModelWriter::write_logic_model(world);
             std::cout << "Model dumped to './json_data/'" << std::endl;
         }
         else
@@ -173,7 +168,7 @@ void generate(const ArgumentDictionary& args)
     std::cout << "Permalink: " << options.permalink() << "\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
-    World world(*rom);
+    RandomizerWorld world(*rom);
 
     Json spoiler_json = randomize(*rom, world, options, args);
     

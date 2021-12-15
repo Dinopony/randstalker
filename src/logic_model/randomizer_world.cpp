@@ -1,4 +1,4 @@
-#include "world_logic.hpp"
+#include "randomizer_world.hpp"
 
 #include <landstalker_lib/model/world_teleport_tree.hpp>
 #include <landstalker_lib/model/spawn_location.hpp>
@@ -18,17 +18,17 @@
 
 #include <iostream>
 
-WorldLogic::WorldLogic(const World& world)
+RandomizerWorld::RandomizerWorld(const md::ROM& rom) : World(rom)
 {
-    this->load_nodes(world);
-    this->load_paths(world);
+    this->load_nodes();
+    this->load_paths();
     this->load_regions();
     this->load_spawn_locations();
     this->load_hint_sources();
     this->load_item_distributions();
 }
 
-WorldLogic::~WorldLogic()
+RandomizerWorld::~RandomizerWorld()
 {
     for (auto& [key, node] : _nodes)
         delete node;
@@ -38,11 +38,11 @@ WorldLogic::~WorldLogic()
         delete region;
     for (auto& [key, hint_source] : _hint_sources)
         delete hint_source;
-    for (auto& [key, spawn_loc] : _spawn_locations)
+    for (auto& [key, spawn_loc] : _available_spawn_locations)
         delete spawn_loc;
 }
 
-void WorldLogic::load_nodes(const World& world)
+void RandomizerWorld::load_nodes()
 {
     Json nodes_json = Json::parse(WORLD_NODES_JSON);
     for(auto& [node_id, node_json] : nodes_json.items())
@@ -51,7 +51,7 @@ void WorldLogic::load_nodes(const World& world)
         _nodes[node_id] = new_node;
     }
 
-    for(ItemSource* source : world.item_sources())
+    for(ItemSource* source : this->item_sources())
     {
         const std::string& node_id = source->node_id();
         try {
@@ -64,25 +64,25 @@ void WorldLogic::load_nodes(const World& world)
     std::cout << _nodes.size() << " nodes loaded." << std::endl;
 }
 
-void WorldLogic::load_paths(const World& world)
+void RandomizerWorld::load_paths()
 {
     Json paths_json = Json::parse(WORLD_PATHS_JSON);
     for(const Json& path_json : paths_json)
     {
-        this->add_path(WorldPath::from_json(path_json, _nodes, world.items()));
+        this->add_path(WorldPath::from_json(path_json, _nodes, this->items()));
 
         if(path_json.contains("twoWay") && path_json.at("twoWay"))
         {
             Json inverted_json = path_json;
             inverted_json["fromId"] = path_json.at("toId");
             inverted_json["toId"] = path_json.at("fromId");
-            this->add_path(WorldPath::from_json(inverted_json, _nodes, world.items()));
+            this->add_path(WorldPath::from_json(inverted_json, _nodes, this->items()));
         }
     }
     std::cout << _paths.size() << " paths loaded." << std::endl;
 }
 
-void WorldLogic::load_regions()
+void RandomizerWorld::load_regions()
 {
     Json regions_json = Json::parse(WORLD_REGIONS_JSON);
     for(const Json& region_json : regions_json)
@@ -95,16 +95,16 @@ void WorldLogic::load_regions()
             throw LandstalkerException("Node '" + node->id() + "' doesn't belong to any region");
 }
 
-void WorldLogic::load_spawn_locations()
+void RandomizerWorld::load_spawn_locations()
 {
     // Load base model
     Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
     for(auto& [id, spawn_json] : spawns_json.items())
         this->add_spawn_location(SpawnLocation::from_json(id, spawn_json));
-    std::cout << _spawn_locations.size() << " spawn locations loaded." << std::endl;
+    std::cout << _available_spawn_locations.size() << " spawn locations loaded." << std::endl;
 }
 
-void WorldLogic::load_hint_sources()
+void RandomizerWorld::load_hint_sources()
 {
     Json hint_sources_json = Json::parse(HINT_SOURCES_JSON, nullptr, true, true);
     for(const Json& hint_source_json : hint_sources_json)
@@ -115,7 +115,7 @@ void WorldLogic::load_hint_sources()
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 }
 
-void WorldLogic::load_item_distributions()
+void RandomizerWorld::load_item_distributions()
 {
     Json item_distributions_json = Json::parse(ITEM_DISTRIBUTIONS_JSON, nullptr, true, true);
     for(auto& [item_id_str, item_distribution_json] : item_distributions_json.items())
@@ -129,24 +129,24 @@ void WorldLogic::load_item_distributions()
     std::cout << _item_distributions.size() << " item distributions loaded." << std::endl;
 }
 
-WorldPath* WorldLogic::path(WorldNode* origin, WorldNode* destination)
+WorldPath* RandomizerWorld::path(WorldNode* origin, WorldNode* destination)
 {
     return _paths.at(std::make_pair(origin, destination));
 }
 
-WorldPath* WorldLogic::path(const std::string& origin_name, const std::string& destination_name)
+WorldPath* RandomizerWorld::path(const std::string& origin_name, const std::string& destination_name)
 {
     WorldNode* origin = _nodes.at(origin_name);
     WorldNode* destination = _nodes.at(destination_name);
     return this->path(origin, destination);
 }
 
-void WorldLogic::add_path(WorldPath* path)
+void RandomizerWorld::add_path(WorldPath* path)
 {
     _paths[std::make_pair(path->origin(), path->destination())] = path;
 }
 
-WorldRegion* WorldLogic::region(const std::string& name) const
+WorldRegion* RandomizerWorld::region(const std::string& name) const
 {
     for(WorldRegion* region : _regions)
         if(region->name() == name)
@@ -154,33 +154,33 @@ WorldRegion* WorldLogic::region(const std::string& name) const
     return nullptr;
 }
 
-void WorldLogic::add_spawn_location(SpawnLocation* spawn)
+void RandomizerWorld::add_spawn_location(SpawnLocation* spawn)
 {
-    _spawn_locations[spawn->id()] = spawn;
+    _available_spawn_locations[spawn->id()] = spawn;
 }
 
-void WorldLogic::dark_region(WorldRegion* region, World& world)
+void RandomizerWorld::dark_region(WorldRegion* region)
 {
     _dark_region = region;
-    world.dark_maps(region->dark_map_ids());
+    this->dark_maps(region->dark_map_ids());
 
     for(WorldNode* node : region->nodes())
     {
         for (WorldPath* path : node->ingoing_paths())
             if(path->origin()->region() != region)
-                path->add_required_item(world.item(ITEM_LANTERN));
+                path->add_required_item(this->item(ITEM_LANTERN));
 
         node->add_hint("in a very dark place");
     }
 }
 
-void WorldLogic::active_spawn_location(SpawnLocation* spawn, World& world)
+void RandomizerWorld::spawn_location(const SpawnLocation& spawn)
 {
-    _spawn_node = _nodes.at(spawn->node_id());
-    world.spawn_location(*spawn);
+    World::spawn_location(spawn);
+    _spawn_node = _nodes.at(spawn.node_id());
 }
 
-std::map<uint8_t, uint16_t> WorldLogic::item_quantities() const
+std::map<uint8_t, uint16_t> RandomizerWorld::item_quantities() const
 {
     std::map<uint8_t, uint16_t> item_quantities;
     for(uint8_t i=0 ; i<=ITEM_GOLDS_START ; ++i)

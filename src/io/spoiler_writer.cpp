@@ -1,27 +1,25 @@
 #include "io.hpp"
 
 #include <landstalker_lib/tools/json.hpp>
-
-#include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/world_teleport_tree.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
 
 #include "../logic_model/world_region.hpp"
-#include "../logic_model/world_logic.hpp"
+#include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
 #include "../randomizer_options.hpp"
 
-Json SpoilerWriter::build_spoiler_json(const World& world, const WorldLogic& logic, const RandomizerOptions& options)
+Json SpoilerWriter::build_spoiler_json(const RandomizerWorld& world, const RandomizerOptions& options)
 {
     Json json;
 
     // Export dark node
     json["spawnLocation"] = world.spawn_location().id();
-    json["darkRegion"] = logic.dark_region()->name();
+    json["darkRegion"] = world.dark_region()->name();
 
     // Export hints
-    for(auto& [description, source] : logic.hint_sources())
-        json["hints"][description] = source->text();
+    for(HintSource* hint_source : world.used_hint_sources())
+        json["hints"][hint_source->description()] = hint_source->text();
 
     if(options.shuffle_tibor_trees())
     {
@@ -31,7 +29,7 @@ Json SpoilerWriter::build_spoiler_json(const World& world, const WorldLogic& log
     }
 
     // Export item sources
-    for(WorldRegion* region : logic.regions())
+    for(WorldRegion* region : world.regions())
     {
         for(WorldNode* node : region->nodes())
         {

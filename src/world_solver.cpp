@@ -5,7 +5,7 @@
 
 #include "logic_model/world_node.hpp"
 
-WorldSolver::WorldSolver(const WorldLogic& logic) : _logic (logic)
+WorldSolver::WorldSolver(const RandomizerWorld& world) : _world (world)
 {}
 
 /**
@@ -118,7 +118,7 @@ void WorldSolver::update_current_inventory()
     for(ItemSource* source : _reachable_item_sources)
     {
         // If item is located in forbidden node, don't take it
-        if(_forbidden_nodes_to_pick_items.contains(_logic.node(source->node_id())))
+        if(_forbidden_nodes_to_pick_items.contains(_world.node(source->node_id())))
             continue;
 
         Item* item = source->item();
@@ -247,7 +247,7 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
             forbidden_items_plus_one[item] = 0;
         forbidden_items_plus_one[item] += 1;
 
-        WorldSolver solver(_logic);
+        WorldSolver solver(_world);
         solver.forbid_items(forbidden_items_plus_one);
         if(solver.try_to_solve(_start_node, _end_node, _starting_inventory))
         {

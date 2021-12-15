@@ -2,6 +2,6 @@
 
 class RandomizerOptions;
 class World;
-class WorldLogic;
+class RandomizerWorld;
 
-void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic);
+void apply_randomizer_options(const RandomizerOptions& options, RandomizerWorld& world);

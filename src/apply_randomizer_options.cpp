@@ -12,7 +12,7 @@
 #include "assets/game_strings.json.hxx"
 
 #include "logic_model/world_path.hpp"
-#include "logic_model/world_logic.hpp"
+#include "logic_model/randomizer_world.hpp"
 #include "logic_model/item_distribution.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
@@ -179,27 +179,23 @@ static void patch_game_strings(World& world, const RandomizerOptions& options)
         + std::to_string(options.jewel_count()) + " jewels\n are worthy of entering\n King Nole's domain...\x1E";
 }
 
-static void apply_options_on_logic_paths(const RandomizerOptions& options, WorldLogic& logic, const World& world)
+static void apply_options_on_logic_paths(const RandomizerOptions& options, RandomizerWorld& world)
 {
     if(options.remove_gumi_boulder())
     {
-        logic.add_path(new WorldPath(
-                logic.node("route_gumi_ryuma"),
-                logic.node("gumi")));
+        world.add_path(new WorldPath(world.node("route_gumi_ryuma"), world.node("gumi")));
     }
 
     // Handle paths related to specific tricks
     if(options.handle_ghost_jumping_in_logic())
     {
-        logic.add_path(new WorldPath(
-                logic.node("route_lake_shrine"),
-                logic.node("route_lake_shrine_cliff")));
+        world.add_path(new WorldPath(world.node("route_lake_shrine"), world.node("route_lake_shrine_cliff")));
     }
 
     // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements
     if(options.handle_damage_boosting_in_logic())
     {
-        for(auto& [pair, path] : logic.paths())
+        for(auto& [pair, path] : world.paths())
         {
             std::vector<Item*>& required_items = path->required_items();
 
@@ -214,7 +210,7 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, World
     }
 
     // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
-    WorldPath* path_to_kazalt = logic.path("king_nole_cave", "kazalt");
+    WorldPath* path_to_kazalt = world.path("king_nole_cave", "kazalt");
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         for(int i=0; i<options.jewel_count() ; ++i)
@@ -237,74 +233,74 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, World
     {
         std::vector<WorldNode*> required_nodes;
         if(!options.remove_tibor_requirement())
-            required_nodes = { logic.node("tibor") };
+            required_nodes = { world.node("tibor") };
 
         for(auto& pair : world.teleport_tree_pairs())
         {
-            WorldNode* first_node = logic.node(pair.first->node_id());
-            WorldNode* second_node = logic.node(pair.second->node_id());
-            logic.add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
-            logic.add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
+            WorldNode* first_node = world.node(pair.first->node_id());
+            WorldNode* second_node = world.node(pair.second->node_id());
+            world.add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
+            world.add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
         }
     }
 }
 
-static void apply_options_on_spawn_locations(const RandomizerOptions& options, WorldLogic& logic)
+static void apply_options_on_spawn_locations(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Patch model if user specified a model patch
     const Json& model_patch = options.spawn_locations_model_patch();
     for(auto& [id, patch_json] : model_patch.items())
     {
-        if(!logic.spawn_locations().count(id))
-            logic.add_spawn_location(SpawnLocation::from_json(id, patch_json));
+        if(!world.available_spawn_locations().count(id))
+            world.add_spawn_location(SpawnLocation::from_json(id, patch_json));
         else
-            logic.spawn_locations().at(id)->apply_json(patch_json);
+            world.available_spawn_locations().at(id)->apply_json(patch_json);
     }
 }
 
-static void apply_options_on_item_distributions(const RandomizerOptions& options, WorldLogic& logic, const World& world)
+static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
     std::map<uint8_t, uint16_t> distribution_param = options.items_distribution();
     for(auto& [item_id, quantity] : distribution_param)
-        logic.item_distribution(item_id)->quantity(quantity);
+        world.item_distribution(item_id)->quantity(quantity);
 
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        logic.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
+        world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
     }
     else
     {
         if(options.jewel_count() >= 1)
         {
-            logic.item_distribution(ITEM_RED_JEWEL)->add(1);
-            logic.item_distribution(ITEM_NONE)->remove(1);
+            world.item_distribution(ITEM_RED_JEWEL)->add(1);
+            world.item_distribution(ITEM_NONE)->remove(1);
         }
         if(options.jewel_count() >= 2)
         {
-            logic.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
-            logic.item_distribution(ITEM_NONE)->remove(1);
+            world.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
+            world.item_distribution(ITEM_NONE)->remove(1);
         }
         if(options.jewel_count() >= 3)
         {
-            logic.item_distribution(ITEM_GREEN_JEWEL)->add(1);
-            logic.item_distribution(ITEM_NONE)->remove(1);
+            world.item_distribution(ITEM_GREEN_JEWEL)->add(1);
+            world.item_distribution(ITEM_NONE)->remove(1);
         }
         if(options.jewel_count() >= 4)
         {
-            logic.item_distribution(ITEM_BLUE_JEWEL)->add(1);
-            logic.item_distribution(ITEM_NONE)->remove(1);
+            world.item_distribution(ITEM_BLUE_JEWEL)->add(1);
+            world.item_distribution(ITEM_NONE)->remove(1);
         }
         if(options.jewel_count() >= 5)
         {
-            logic.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
-            logic.item_distribution(ITEM_NONE)->remove(1);
+            world.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
+            world.item_distribution(ITEM_NONE)->remove(1);
         }
     }
 }
 
-void apply_randomizer_options(const RandomizerOptions& options, World& world, WorldLogic& logic)
+void apply_randomizer_options(const RandomizerOptions& options, RandomizerWorld& world)
 {
     world.starting_golds(options.starting_gold());
     world.custom_starting_life(options.starting_life());
@@ -314,7 +310,7 @@ void apply_randomizer_options(const RandomizerOptions& options, World& world, Wo
     patch_entity_types(world, options);
     patch_game_strings(world, options);
 
-    apply_options_on_logic_paths(options, logic, world);
-    apply_options_on_spawn_locations(options, logic);
-    apply_options_on_item_distributions(options, logic, world);
+    apply_options_on_logic_paths(options, world);
+    apply_options_on_spawn_locations(options, world);
+    apply_options_on_item_distributions(options, world);
 }

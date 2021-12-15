@@ -6,16 +6,15 @@
 #include <landstalker_lib/model/map_connection.hpp>
 #include <landstalker_lib/model/map_palette.hpp>
 #include <landstalker_lib/model/world_teleport_tree.hpp>
-#include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/tools/tools.hpp>
 #include <landstalker_lib/tools/json.hpp>
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
 #include "../logic_model/item_distribution.hpp"
-#include "../logic_model/world_logic.hpp"
+#include "../logic_model/randomizer_world.hpp"
 
-void ModelWriter::write_world_model(const World& world)
+void ModelWriter::write_world_model(const RandomizerWorld& world)
 {
     Json item_sources_json = Json::array();
     for(ItemSource* source : world.item_sources())
@@ -67,14 +66,14 @@ void ModelWriter::write_world_model(const World& world)
     tools::dump_json_to_file(strings_json, "./json_data/game_strings.json");
 }
 
-void ModelWriter::write_logic_model(const WorldLogic& logic)
+void ModelWriter::write_logic_model(const RandomizerWorld& world)
 {
     Json nodes_json;
-    for(auto& [id, node] : logic.nodes())
+    for(auto& [id, node] : world.nodes())
         nodes_json[id] = node->to_json();
     tools::dump_json_to_file(nodes_json, "./json_data/world_node.json");
 
-    auto paths_copy = logic.paths();
+    auto paths_copy = world.paths();
     Json paths_json = Json::array();
     while(!paths_copy.empty())
     {
@@ -100,22 +99,22 @@ void ModelWriter::write_logic_model(const WorldLogic& logic)
     tools::dump_json_to_file(paths_json, "./json_data/world_path.json");
 
     Json regions_json = Json::array();
-    for(WorldRegion* region : logic.regions())
+    for(WorldRegion* region : world.regions())
         regions_json.emplace_back(region->to_json());
     tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
 
     Json hints_json = Json::array();
-    for(auto& [id, hint_source] : logic.hint_sources())
+    for(auto& [id, hint_source] : world.hint_sources())
         hints_json.emplace_back(hint_source->to_json());
     tools::dump_json_to_file(hints_json, "./json_data/hint_source.json");
 
     Json spawns_json;
-    for(auto& [id, spawn] : logic.spawn_locations())
+    for(auto& [id, spawn] : world.available_spawn_locations())
         spawns_json[id] = spawn->to_json();
     tools::dump_json_to_file(spawns_json, "./json_data/spawn_location.json");
 
     Json distribs_json = Json::object();
-    for(auto& [id, distrib] : logic.item_distributions())
+    for(auto& [id, distrib] : world.item_distributions())
         distribs_json[std::to_string(id)] = distrib->to_json();
     tools::dump_json_to_file(distribs_json, "./json_data/item_distribution.json");
 }

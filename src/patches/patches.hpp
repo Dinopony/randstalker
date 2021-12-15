@@ -4,22 +4,23 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/patches/patches.hpp>
 #include "../randomizer_options.hpp"
-#include "../world_randomizer.hpp"
+#include "../world_shuffler.hpp"
 
-class WorldLogic;
+class RandomizerWorld;
 
 // Randomizer patches
 void alter_hint_provider_dialogues(md::ROM& rom);
 void alter_randomizer_credits(md::ROM& rom);
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip);
+void handle_fox_hints(md::ROM& rom, RandomizerWorld& world);
 void optimize_maps(World& world);
 void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_sentence);
 void shorten_cutscenes(md::ROM& rom);
 
 // Not yet processed patches
-void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world);
+void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world);
 
-inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& logic, WorldRandomizer& randomizer, const RandomizerOptions& options)
+inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options)
 {
     optimize_maps(world);
 
@@ -61,5 +62,6 @@ inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& log
     replace_copy_save_by_show_hash(rom, options.hash_sentence());
     shorten_cutscenes(rom);
 
+    handle_fox_hints(rom, world);
     patch_rando_adaptations(rom, options, world);
 }

@@ -149,7 +149,7 @@ static void set_story_as_advanced(md::ROM& rom)
     rom.set_word(0x25324, 0x0000);
 }
 
-void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world)
+void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
 

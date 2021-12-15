@@ -6,7 +6,7 @@
 #include <landstalker_lib/tools/json.hpp>
 #include <landstalker_lib/model/world.hpp>
 
-#include "logic_model/world_logic.hpp"
+#include "logic_model/randomizer_world.hpp"
 
 class WorldNode;
 class ItemSource;
@@ -25,7 +25,7 @@ class WorldPath;
 class WorldSolver
 {
 private:
-    const WorldLogic& _logic;
+    const RandomizerWorld& _world;
 
     WorldNode* _start_node = nullptr;
     WorldNode* _end_node = nullptr;
@@ -46,11 +46,11 @@ private:
 
     std::vector<std::pair<Item*, std::vector<ItemSource*>>> _scheduled_item_placements;
 
-    uint32_t _step_count;
+    uint32_t _step_count = 0;
     Json _debug_log;
 
 public:
-    explicit WorldSolver(const WorldLogic& logic);
+    explicit WorldSolver(const RandomizerWorld& world);
 
     void forbid_items(const std::map<Item*, uint16_t>& item_quantities);
     void forbid_item_type(Item* item);

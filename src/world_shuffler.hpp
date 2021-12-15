@@ -9,19 +9,17 @@
 
 #include "randomizer_options.hpp"
 #include "world_solver.hpp"
-#include "logic_model/world_logic.hpp"
-
+#include "logic_model/randomizer_world.hpp"
 
 class Item;
 class ItemSource;
 class HintSource;
 class SpawnLocation;
 
-class WorldRandomizer
+class WorldShuffler
 {
 private:
-    World& _world;
-    WorldLogic& _logic;
+    RandomizerWorld& _world;
     WorldSolver _solver;
     const RandomizerOptions& _options;
     std::mt19937 _rng;
@@ -32,8 +30,12 @@ private:
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
 
+    UnsortedSet<WorldRegion*> _hintable_regions;
+    UnsortedSet<uint8_t> _hintable_item_requirements;
+    UnsortedSet<uint8_t> _hintable_item_locations;
+
 public:
-    WorldRandomizer(World& world, WorldLogic& logic, const RandomizerOptions& options);
+    WorldShuffler(RandomizerWorld& world, const RandomizerOptions& options);
     
     void randomize();
 
@@ -63,11 +65,15 @@ private:
 
     // Hints randomization
     void randomize_hints();
+    void init_hint_collections();
     void randomize_lithograph_hint();
     void randomize_where_is_lithograph_hint();
     [[nodiscard]] Item* randomize_fortune_teller_hint();
-    [[nodiscard]] Item* randomize_oracle_stone_hint(Item* fortune_hinted_item);
-    void randomize_sign_hints(Item* fortune_hinted_item, Item* oracle_stone_hinted_item);
+    void randomize_oracle_stone_hint(Item* fortune_hinted_item);
+    void randomize_fox_hints();
+    void generate_region_requirement_hint(HintSource* hint_source);
+    void generate_item_requirement_hint(HintSource* hint_source);
+    void generate_item_position_hint(HintSource* hint_source);
 
     [[nodiscard]] std::string random_hint_for_item(Item* item);
     [[nodiscard]] std::string random_hint_for_item_source(ItemSource* source);

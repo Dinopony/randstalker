@@ -11,7 +11,7 @@
 
 #include "../logic_model/data/world_path.json.hxx"
 #include "../logic_model/world_node.hpp"
-#include "../logic_model/world_logic.hpp"
+#include "../logic_model/randomizer_world.hpp"
 
 namespace graphviz {
 
@@ -19,7 +19,7 @@ constexpr const char* COLORS[] = { "indianred2", "lightslateblue", "limegreen", 
 size_t COLORS_SIZE = 7;
 
 
-void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
+void output_logic_as_dot(const RandomizerWorld& world, const std::string& path)
 {
     std::ofstream graphviz(path);
     graphviz << "digraph {\n";
@@ -31,8 +31,8 @@ void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
     uint32_t path_i = 0;
     for(const Json& json : paths_json)
     {
-        WorldNode* from = logic.node(json["fromId"]);
-        WorldNode* to = logic.node(json["toId"]);
+        WorldNode* from = world.node(json["fromId"]);
+        WorldNode* to = world.node(json["toId"]);
         graphviz << "\t" << from->id() << " -> " << to->id() << " [";
         if(json.contains("twoWay") && json.at("twoWay"))
             graphviz << "dir=both ";
@@ -44,7 +44,7 @@ void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
             
         if(json.contains("requiredNodes"))
             for(const std::string node_id : json.at("requiredNodes"))
-                required_names.emplace_back("Access to " + logic.node(node_id)->name());
+                required_names.emplace_back("Access to " + world.node(node_id)->name());
 
         if(!required_names.empty())
         {
@@ -59,13 +59,13 @@ void output_logic_as_dot(const WorldLogic& logic, const std::string& path)
     }
 
     graphviz << "\n";
-    for(auto& [id, node] : logic.nodes())
+    for(auto& [id, node] : world.nodes())
         graphviz << "\t" << id << " [label=\"" << node->name() << " [" << std::to_string(node->item_sources().size()) << "]\"]\n";
 
     graphviz << "}\n"; 
 }
 
-void output_maps_as_dot(const World& world, const std::string& path)
+void output_maps_as_dot(const RandomizerWorld& world, const std::string& path)
 {
     std::ofstream graphviz(path);
     graphviz << "digraph {\n";
