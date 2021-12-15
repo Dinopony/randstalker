@@ -59,8 +59,8 @@ void fix_mir_after_lake_shrine_softlock(World& world)
 void make_arthur_always_in_throne_room(World& world)
 {
     // Make Arthur and the boy next to him always present in their throne room variant
-    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entity(0)->mask_flags().clear();
-    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entity(1)->mask_flags().clear();
+    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->entity(0)->mask_flags().clear();
+    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->entity(1)->mask_flags().clear();
 
     // Remove Arthur from the armory
     world.map(MAP_MERCATOR_CASTLE_ARMORY_1F)->variants().clear();
@@ -224,7 +224,7 @@ void make_pockets_always_in_thieves_hideout_cell(World& world)
 
 void remove_pockets_from_gumi(World& world)
 {
-    world.map(MAP_GUMI_EXTERIOR)->remove_entity(3);
+    world.map(MAP_GUMI_EXTERIOR_VARIANT_DESERTED)->remove_entity(3);
 }
 
 /**
@@ -240,61 +240,6 @@ void put_back_giants_in_verla_mines_keydoor_map(World& world)
     // Remove the keydoor and an invisible cube
     map->remove_entity(1);
     map->remove_entity(0);
-}
-
-void optimize_maps(World& world)
-{
-    // Remove ghosts from laggy Tibor rooms
-    world.map(MAP_TIBOR_808)->remove_entity(5);
-    world.map(MAP_TIBOR_811)->remove_entity(4);
-    world.map(MAP_TIBOR_812)->remove_entity(2);
-    world.map(MAP_TIBOR_813)->remove_entity(1);
-    world.map(MAP_TIBOR_814)->remove_entity(2);
-    world.map(MAP_TIBOR_815)->remove_entity(3);
-
-    // Remove a useless Miro from a map in Swamp Shrine
-    world.map(MAP_SWAMP_SHRINE_0)->remove_entity(7);
-    
-    // Make the Arthur variant of throne room the standard
-    world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->clear_entities();
-    for(Entity* entity : world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT)->entities())
-        world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM)->add_entity(new Entity(*entity));
-
-    // Empty Mercator castle entrance hallway and main hall
-    world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_MAIN_HALL)->clear_entities();
-
-    // Clear unreachable variants and prevent them from triggering
-    const std::vector<uint16_t> MAPS_TO_REMOVE_VARIANTS_FROM = { 
-        MAP_THIEVES_HIDEOUT_TREASURE_ROOM,
-        MAP_MERCATOR_CASTLE_THRONE_ROOM,
-        MAP_MERCATOR_CASTLE_MAIN_HALL,
-        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY
-    };
-
-    for(uint16_t map_id : MAPS_TO_REMOVE_VARIANTS_FROM)
-    {
-        Map* map = world.map(map_id);
-        for(auto& [variant_map, flag] : map->variants())
-            variant_map->clear();
-        map->variants().clear();
-    }
-
-    // Clear unreachable maps
-    const std::vector<uint16_t> UNREACHABLE_MAPS = { 
-        MAP_INTRO_139,
-        MAP_INTRO_140,
-        MAP_INTRO_141,
-        MAP_INTRO_142,
-        MAP_INTRO_143,
-
-        MAP_MERCATOR_CASTLE_KAYLA_ROOM,
-        MAP_MERCATOR_CASTLE_KAYLA_BATHROOM_ENTRANCE,
-        MAP_MERCATOR_CASTLE_KAYLA_BATHROOM
-    };
-
-    for(uint16_t map_id : UNREACHABLE_MAPS)
-        world.map(map_id)->clear();
 }
 
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
@@ -316,7 +261,6 @@ void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
     make_pockets_always_in_thieves_hideout_cell(world);
     remove_pockets_from_gumi(world);
     put_back_giants_in_verla_mines_keydoor_map(world);
-    optimize_maps(world);
     
     if(fix_armlet_skip)
         prevent_armlet_skip(world);

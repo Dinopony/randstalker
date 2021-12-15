@@ -4,6 +4,7 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/patches/patches.hpp>
 #include "../randomizer_options.hpp"
+#include "../world_randomizer.hpp"
 
 class WorldLogic;
 
@@ -11,14 +12,17 @@ class WorldLogic;
 void alter_hint_provider_dialogues(md::ROM& rom);
 void alter_randomizer_credits(md::ROM& rom);
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip);
+void optimize_maps(World& world);
 void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_sentence);
 void shorten_cutscenes(md::ROM& rom);
 
 // Not yet processed patches
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, const World& world);
 
-inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& logic, const RandomizerOptions& options)
+inline void apply_randomizer_patches(md::ROM& rom, World& world, WorldLogic& logic, WorldRandomizer& randomizer, const RandomizerOptions& options)
 {
+    optimize_maps(world);
+
     add_functions_to_items_on_use(rom, world, options.consumable_record_book());
     add_statue_of_jypta_effect(rom);
     alter_fahl_challenge(rom, world);

@@ -67,7 +67,7 @@ set(SOURCES
         # --- Patches ----------------------------------------
         "src/patches/alter_hint_provider_dialogues.cpp"
         "src/patches/alter_randomizer_credits.cpp"
-        "src/apply_randomizer_options.cpp"
+        "src/patches/optimize_maps.cpp"
         "src/patches/rando_world_edits.cpp"
         "src/patches/replace_copy_by_hash.cpp"
         "src/patches/shorten_cutscenes.cpp"

@@ -104,7 +104,7 @@ Json randomize(md::ROM& rom, World& world, RandomizerOptions& options, const Arg
 
     // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
     std::cout << "Applying game patches...\n\n";
-    apply_randomizer_patches(rom, world, logic, options);
+    apply_randomizer_patches(rom, world, logic, randomizer, options);
 
     for(auto& [name, hint_source] : logic.hint_sources())
         hint_source->apply_text(world);
