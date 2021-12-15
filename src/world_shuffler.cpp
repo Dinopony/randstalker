@@ -715,7 +715,7 @@ void WorldShuffler::randomize_fox_hints()
             // "Barren / pleasant surprise" (30%)
             generate_region_requirement_hint(hint_source);
         }
-        else if(random_number < 0.55)
+        else if(random_number < 0.55 && !_hintable_item_requirements.empty())
         {
             // "You will / won't need {item} to finish" (25%)
             generate_item_requirement_hint(hint_source);

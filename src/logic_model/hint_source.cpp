@@ -34,15 +34,15 @@ void HintSource::apply_text(World& world)
     // Edit the game string contained in World referenced by the text id
     if(!_text.empty())
     {
-        for(uint16_t text_id : _text_ids)
-            world.game_strings()[text_id].clear();
-
         if(text_ids().empty())
         {
             // Associate an empty game_string ID with this hint source (take it from 0x4D since strings below 0x4D
             // cannot be referenced by dialogue script commands)
             _text_ids = { world.first_empty_game_string_id(0x4D) };
         }
+
+        for(uint16_t text_id : _text_ids)
+            world.game_strings()[text_id].clear();
 
         std::string& game_string = world.game_strings().at(_text_ids[0]);
         uint8_t textbox_size = _small_textbox ? 2 : 3;
