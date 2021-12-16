@@ -714,22 +714,23 @@ void WorldShuffler::randomize_fox_hints()
         {
             // "Barren / pleasant surprise" (30%)
             generate_region_requirement_hint(hint_source);
+            continue;
         }
         else if(random_number < 0.55 && !_hintable_item_requirements.empty())
         {
             // "You will / won't need {item} to finish" (25%)
-            generate_item_requirement_hint(hint_source);
+            if(generate_item_requirement_hint(hint_source))
+                continue;
         }
         else if(!_hintable_item_locations.empty())
         {
             // "You shall find {item} in {place}" (45%)
-            generate_item_position_hint(hint_source);
+            if(generate_item_position_hint(hint_source))
+                continue;
         }
-        else
-        {
-            // Fallback if none matched
-            hint_source->text("I don't have anything to tell you. Move on.");
-        }
+
+        // Fallback if none matched
+        hint_source->text("I don't have anything to tell you. Move on.");
     }
 }
 
@@ -745,7 +746,7 @@ void WorldShuffler::generate_region_requirement_hint(HintSource* hint_source)
     _hintable_regions.erase(region);
 }
 
-void WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)
+bool WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)
 {
     Item* hinted_item_requirement = nullptr;
     for(uint8_t item_id : _hintable_item_requirements)
@@ -763,16 +764,18 @@ void WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)
         }
     }
 
-    if(hinted_item_requirement)
-    {
-        if (!this->is_item_avoidable(hinted_item_requirement))
-            hint_source->text("You will need " + hinted_item_requirement->name() + " in your quest to King Nole's treasure.");
-        else
-            hint_source->text(hinted_item_requirement->name() + " is not required in your quest to King Nole's treasure.");
-    }
+    if(!hinted_item_requirement)
+        return false;
+
+    if (!this->is_item_avoidable(hinted_item_requirement))
+        hint_source->text("You will need " + hinted_item_requirement->name() + " in your quest to King Nole's treasure.");
+    else
+        hint_source->text(hinted_item_requirement->name() + " is not required in your quest to King Nole's treasure.");
+
+    return true;
 }
 
-void WorldShuffler::generate_item_position_hint(HintSource* hint_source)
+bool WorldShuffler::generate_item_position_hint(HintSource* hint_source)
 {
     Item* hinted_item_location = nullptr;
     for(uint8_t item_id : _hintable_item_locations)
@@ -790,8 +793,11 @@ void WorldShuffler::generate_item_position_hint(HintSource* hint_source)
         }
     }
 
-    if (hinted_item_location)
-        hint_source->text("You shall find " + hinted_item_location->name() + " " + this->random_hint_for_item(hinted_item_location) + ".");
+    if (!hinted_item_location)
+        return false;
+
+    hint_source->text("You shall find " + hinted_item_location->name() + " " + this->random_hint_for_item(hinted_item_location) + ".");
+    return true;
 }
 
 std::string WorldShuffler::random_hint_for_item(Item* item)

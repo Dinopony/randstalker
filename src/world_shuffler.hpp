@@ -72,8 +72,8 @@ private:
     void randomize_oracle_stone_hint(Item* fortune_hinted_item);
     void randomize_fox_hints();
     void generate_region_requirement_hint(HintSource* hint_source);
-    void generate_item_requirement_hint(HintSource* hint_source);
-    void generate_item_position_hint(HintSource* hint_source);
+    bool generate_item_requirement_hint(HintSource* hint_source);
+    bool generate_item_position_hint(HintSource* hint_source);
 
     [[nodiscard]] std::string random_hint_for_item(Item* item);
     [[nodiscard]] std::string random_hint_for_item_source(ItemSource* source);
