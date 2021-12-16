@@ -51,8 +51,7 @@ void alter_randomizer_credits(md::ROM& rom)
         0x05, 0x0A, 0x0D, 0x02, 0x0F, 0x05, 0x02, 0x16, 0x00
     });
 
-    std::vector<uint8_t> rest;
-    rom.data_chunk(offsets::CREDITS_TEXT + 0x1D2, offsets::CREDITS_TEXT + 0x929, rest);
+    std::vector<uint8_t> rest = rom.get_bytes(offsets::CREDITS_TEXT + 0x1D2, offsets::CREDITS_TEXT + 0x929);
     rom.set_bytes(offsets::CREDITS_TEXT + 0xF5, rest);
     for(uint32_t addr = offsets::CREDITS_TEXT + 0xF5 + (uint32_t)rest.size() ; addr <= offsets::CREDITS_TEXT + 0x929 ; ++addr)
         rom.set_byte(addr, 0x00);

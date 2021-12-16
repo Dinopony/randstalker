@@ -4,7 +4,7 @@
 #include <landstalker_lib/model/map.hpp>
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/constants/entity_type_codes.hpp>
-#include <landstalker_lib/tools/byte_array.hpp>
+#include "landstalker_lib/tools/byte_array.hpp"
 #include <landstalker_lib/tools/huffman/symbols.hpp>
 #include <landstalker_lib/tools/sprite.hpp>
 #include "../logic_model/randomizer_world.hpp"
@@ -95,8 +95,8 @@ static void make_magic_fox_only_use_low_palette(md::ROM& rom, World& world)
         sprite.replace_color(0x0B, 0x0F); // Dark grey now uses black
     };
 
-    Sprite magic_fox_ne_sprite = Sprite::decode_from(rom, 0x180D56);
-    Sprite magic_fox_sw_sprite = Sprite::decode_from(rom, 0x181038);
+    Sprite magic_fox_ne_sprite = Sprite::decode_from(rom.iterator_at(0x180D56));
+    Sprite magic_fox_sw_sprite = Sprite::decode_from(rom.iterator_at(0x181038));
     rom.mark_empty_chunk(0x180D56, 0x182F64);
 
     edit_sprite(magic_fox_ne_sprite);
