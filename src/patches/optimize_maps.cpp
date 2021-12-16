@@ -52,17 +52,23 @@ static void clear_unreachable_maps(World& world)
 
 static void remove_useless_entities(World& world)
 {
-    world.map(MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_MAIN_HALL)->clear_entities();
-    world.map(MAP_ROUTE_GUMI_RYUMA_MERCATOR_GATES)->clear_entities();
-    world.map(MAP_GUMI_EXTERIOR)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_BANQUET_ROOM)->clear_entities();
-    world.map(MAP_MECATOR_CASTLE_TOWER_SUMMIT)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_ZAK_ROOM)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_DEXTER_ROOM)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_NIGEL_ROOM)->clear_entities();
-    world.map(MAP_MERCATOR_CASTLE_ARMORY_BARRACKS)->clear_entities();
-    world.map(MAP_RYUMA_LIGHTHOUSE)->clear_entities(); // Base Ryuma lighthouse (before Duke breaks it) is not reachable
+    const std::vector<uint16_t> MAPS_TO_CLEAR_ENTITIES_FROM = {
+        MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY,
+        MAP_MERCATOR_CASTLE_MAIN_HALL,
+        MAP_ROUTE_GUMI_RYUMA_MERCATOR_GATES,
+        MAP_GUMI_EXTERIOR,
+        MAP_MERCATOR_CASTLE_BANQUET_ROOM,
+        MAP_MECATOR_CASTLE_TOWER_SUMMIT,
+        MAP_MERCATOR_CASTLE_ZAK_ROOM,
+        MAP_MERCATOR_CASTLE_DEXTER_ROOM,
+        MAP_MERCATOR_CASTLE_NIGEL_ROOM,
+        MAP_MERCATOR_CASTLE_ARMORY_BARRACKS,
+        MAP_RYUMA_LIGHTHOUSE, // Base Ryuma lighthouse (before Duke breaks it) is not reachable
+        MAP_ROUTE_MASSAN_GUMI_WATERFALL_SHRINE_ENTRANCE
+    };
+
+    for(uint16_t map_id : MAPS_TO_CLEAR_ENTITIES_FROM)
+        world.map(map_id)->clear_entities();
 
     // Remove a useless Miro from a map in Swamp Shrine
     world.map(MAP_SWAMP_SHRINE_0)->remove_entity(7);
@@ -83,8 +89,9 @@ static void optimize_palettes(World& world)
         MAP_VERLA_MINES_LIZARDS_LAVA_ROOM_MARLEY_SECTOR,
         MAP_DESTEL_WELL_WATERY_HUB,
         MAP_DESTEL_WELL_WATERY_ROOM_BEFORE_BOSS,
-        MAP_MIR_TOWER_SECTOR_ROUTE_TO_TOWER_2,
-        MAP_ROUTE_GUMI_RYUMA_BOULDER
+        MAP_MIR_TOWER_SECTOR_ROUTE_TO_TOWER_1,
+        MAP_ROUTE_GUMI_RYUMA_BOULDER,
+        MAP_MIR_TOWER_FALLING_SPIKEBALLS_ROOM
     };
 
     for(uint16_t map_id : MAPS_TO_SWAP_PALETTE_3_AND_1)
