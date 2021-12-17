@@ -7,14 +7,15 @@
 
 HintSource::HintSource(std::vector<uint16_t> text_ids, std::string description,
         WorldNode* node, bool small_textbox,
-        std::vector<uint16_t> map_ids, Position position, uint8_t orientation) :
+        std::vector<uint16_t> map_ids, Position position, uint8_t orientation, bool high_palette) :
     _text_ids       (std::move(text_ids)),
     _description    (std::move(description)),
     _node           (node),
     _small_textbox  (small_textbox),
     _map_ids        (std::move(map_ids)),
     _position       (position),
-    _orientation    (orientation)
+    _orientation    (orientation),
+    _high_palette   (high_palette)
 {}
 
 std::string HintSource::text() const
@@ -99,6 +100,7 @@ HintSource* HintSource::from_json(const Json& json, const std::map<std::string, 
     std::vector<uint16_t> map_ids;
     Position position;
     uint8_t orientation = 0;
+    bool high_palette = false;
     if(json.contains("entity"))
     {
         if(json.at("entity").at("mapId").is_array())
@@ -119,8 +121,10 @@ HintSource* HintSource::from_json(const Json& json, const std::map<std::string, 
             orientation = ENTITY_ORIENTATION_NW;
         else
             orientation = std::stoi(orientation_str);
+
+        high_palette = json.at("entity").value("highPalette", false);
     }
 
-    return new HintSource(text_ids, description, node, small_textbox, map_ids, position, orientation);
+    return new HintSource(text_ids, description, node, small_textbox, map_ids, position, orientation, high_palette);
 }
 

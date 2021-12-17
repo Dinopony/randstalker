@@ -9,10 +9,11 @@
 #include <landstalker_lib/tools/sprite.hpp>
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
-#include "../world_shuffler.hpp"
 
 constexpr uint32_t KAYLA_DIALOGUE_SCRIPT = 0x27222;
 constexpr uint32_t KAYLA_DIALOGUE_SCRIPT_END = 0x27260;
+
+constexpr uint8_t ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE = ENTITY_NPC_DUKE_CHAIR;
 
 static uint32_t inject_func_handle_hints(md::ROM& rom, uint32_t hint_map_ids_addr, uint32_t hints_dialogue_commands_block)
 {
@@ -41,9 +42,9 @@ static uint32_t inject_func_handle_hints(md::ROM& rom, uint32_t hint_map_ids_add
     return rom.inject_code(func_handle_hints);
 }
 
-static uint16_t add_magic_fox(World& world, HintSource* hint_source_entity)
+static uint16_t add_magic_fox(World& world, HintSource* hint_source)
 {
-    Map* map = world.map(hint_source_entity->map_ids()[0]);
+    Map* map = world.map(hint_source->map_ids()[0]);
 
     // Add Magic Foxes speaker ID to the map speakers (former Kayla ID)
     Map* parent_map = map;
@@ -53,13 +54,16 @@ static uint16_t add_magic_fox(World& world, HintSource* hint_source_entity)
     parent_map->speaker_ids().emplace_back(0x2E);
     uint8_t dialogue_id = parent_map->speaker_ids().size() - 1;
 
-    for(uint16_t map_id : hint_source_entity->map_ids())
+    for(uint16_t map_id : hint_source->map_ids())
     {
+        uint8_t entity_type_id = hint_source->high_palette() ? ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE : ENTITY_NPC_MAGIC_FOX;
+        uint8_t palette_id = hint_source->high_palette() ? 1 : 3;
+
         world.map(map_id)->add_entity(new Entity({
-            .type_id = ENTITY_NPC_MAGIC_FOX,
-            .position = hint_source_entity->position(),
-            .orientation = hint_source_entity->orientation(),
-            .palette = 3,
+            .type_id = entity_type_id,
+            .position = hint_source->position(),
+            .orientation = hint_source->orientation(),
+            .palette = palette_id,
             .talkable = true,
             .dialogue = dialogue_id,
         }));
@@ -70,8 +74,10 @@ static uint16_t add_magic_fox(World& world, HintSource* hint_source_entity)
 
 static void edit_fox_voice_and_name(md::ROM& rom)
 {
-    // Set foxes voice to the same one as Mir (replacing now unused "Kayla in bath" entry)
-    rom.set_byte(0x2910C, ENTITY_NPC_MAGIC_FOX);
+    // Set foxes voice to the same one as Mir (replacing now unused "Kayla" and "Kayla in bath" entries)
+    rom.set_byte(0x2910A, ENTITY_NPC_MAGIC_FOX);
+    rom.set_byte(0x2910B, 0x6A);
+    rom.set_byte(0x2910C, ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE);
     rom.set_byte(0x2910D, 0x6A);
 
     // Set their name to "Foxy"
@@ -83,11 +89,9 @@ static void edit_fox_voice_and_name(md::ROM& rom)
     rom.set_byte(0x2968B + name.length(), 0x05 + (0x5 - name.length()));
 }
 
-static void make_magic_fox_only_use_low_palette(md::ROM& rom, World& world)
+static void inject_altered_fox_sprites(md::ROM& rom, World& world)
 {
-    // Anim 0 Frame 0 = NE ---> SpriteGfx006Frame00 ---> 180D56
-    // Anim 1 Frame 0 = SW ---> SpriteGfx006Frame01 ---> 181038
-    //                                           Next is 18131C
+    // Turn the "Magic Fox" entity into a strictly low palette entity
     auto edit_sprite = [](Sprite& sprite) {
         sprite.replace_color(0x0C, 0x06); // Tunic lose one color shade
         sprite.replace_color(0x0A, 0x0F); // Eye becomes black
@@ -113,6 +117,30 @@ static void make_magic_fox_only_use_low_palette(md::ROM& rom, World& world)
     EntityLowPaletteColors fox_palette = world.entity_type(ENTITY_NPC_MAGIC_FOX)->low_palette();
     fox_palette[0x05] = 0x424; // Put the dark purple that was moved to an unused slot in the actual slot
     world.entity_type(ENTITY_NPC_MAGIC_FOX)->low_palette(fox_palette);
+
+    // Replace the "Duke in chair" sprite by the high palette fox
+    auto make_low_palette_sprite_high = [](Sprite& sprite) {
+        for(uint8_t i=0x2 ; i<0x8 ; ++i)
+            sprite.replace_color(i, i+6);
+    };
+
+    Sprite magic_fox_ne_high_sprite = magic_fox_ne_sprite;
+    make_low_palette_sprite_high(magic_fox_ne_high_sprite);
+    uint32_t sprite_ne_high_addr = rom.inject_bytes(magic_fox_ne_high_sprite.encode());
+    rom.set_long(0x120FCC, sprite_ne_high_addr);
+    rom.set_long(0x120FD0, sprite_ne_high_addr);
+
+    Sprite magic_fox_sw_high_sprite = magic_fox_sw_sprite;
+    make_low_palette_sprite_high(magic_fox_sw_high_sprite);
+    uint32_t sprite_sw_high_addr = rom.inject_bytes(magic_fox_sw_high_sprite.encode());
+    rom.set_long(0x120FD4, sprite_sw_high_addr);
+    rom.set_long(0x120FD8, sprite_sw_high_addr);
+
+    EntityHighPaletteColors fox_high_palette;
+    std::copy(fox_palette.begin(), fox_palette.end(), fox_high_palette.begin());
+    fox_high_palette[6] = 0;
+    world.entity_type(ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE)->clear_low_palette();
+    world.entity_type(ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE)->high_palette(fox_high_palette);
 }
 
 void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
@@ -144,5 +172,5 @@ void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
 
     // Edit the voice used when foxes talk, as well as their name
     edit_fox_voice_and_name(rom);
-    make_magic_fox_only_use_low_palette(rom, world);
+    inject_altered_fox_sprites(rom, world);
 }

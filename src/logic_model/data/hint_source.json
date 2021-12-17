@@ -707,7 +707,7 @@
                 "y": 17,
                 "z": 1
             },
-            "orientation": "sw"
+            "orientation": "se"
         },
         "nodeId": "mir_tower_sector"
     },
@@ -774,7 +774,7 @@
                 "y": 27,
                 "z": 11
             },
-            "orientation": "ne"
+            "orientation": "se"
         },
         "nodeId": "route_gumi_ryuma"
     },
@@ -783,11 +783,12 @@
         "entity": {
             "mapId": 449,
             "position": {
-                "x": 29,
-                "y": 27,
-                "z": 1
+                "x": 48,
+                "y": 20,
+                "z": 1,
+                "halfX": true
             },
-            "orientation": "ne"
+            "orientation": "sw"
         },
         "nodeId": "route_gumi_ryuma"
     },
@@ -1070,6 +1071,732 @@
             "orientation": "se"
         },
         "nodeId": "mountainous_area"
+    },
+    {
+        "description": "Foxy (on Mir Tower sector crossroads)",
+        "entity": {
+            "mapId": 458,
+            "position": {
+                "x": 21,
+                "y": 21,
+                "z": 1
+            },
+            "orientation": "se",
+            "highPalette": true
+        },
+        "nodeId": "mir_tower_sector"
+    },
+    {
+        "description": "Foxy (near Mountainous Area teleport tree)",
+        "entity": {
+            "mapId": 484,
+            "position": {
+                "x": 38,
+                "y": 57,
+                "z": 0
+            },
+            "orientation": "sw",
+            "highPalette": true
+        },
+        "nodeId": "mountainous_area"
+    },
+    {
+        "description": "Foxy (on route to Mountainous Area, in rocky arch map)",
+        "entity": {
+            "mapId": 500,
+            "position": {
+                "x": 19,
+                "y": 19,
+                "z": 7
+            },
+            "orientation": "sw",
+            "highPalette": true
+        },
+        "nodeId": "mountainous_area"
+    },
+    {
+        "description": "Foxy (on route to Mountainous Area, in L-shaped turn map)",
+        "entity": {
+            "mapId": 540,
+            "position": {
+                "x": 16,
+                "y": 23,
+                "z": 3
+            },
+            "orientation": "se",
+            "halfY": true,
+            "highPalette": true
+        },
+        "nodeId": "mountainous_area"
+    },
+    {
+        "description": "Foxy (in map next to Mountainous Area goddess statue)",
+        "entity": {
+            "mapId": 518,
+            "position": {
+                "x": 38,
+                "y": 33,
+                "z": 12
+            },
+            "orientation": "sw",
+            "highPalette": true
+        },
+        "nodeId": "mountainous_area"
+    },
+    {
+        "description": "Foxy (in King Nole's Cave isolated chest room)",
+        "entity": {
+            "mapId": 156,
+            "position": {
+                "x": 21,
+                "y": 27,
+                "z": 0,
+                "halfX": true
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "king_nole_cave"
+    },
+    {
+        "description": "Foxy (in King Nole's Cave crate stairway room)",
+        "entity": {
+            "mapId": 158,
+            "position": {
+                "x": 29,
+                "y": 26,
+                "z": 6
+            },
+            "orientation": "sw",
+            "highPalette": true
+        },
+        "nodeId": "king_nole_cave"
+    },
+    {
+        "description": "Foxy (in room before boulder hallway inside King Nole's Cave)",
+        "entity": {
+            "mapId": 147,
+            "position": {
+                "x": 26,
+                "y": 23,
+                "z": 2
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "king_nole_cave"
+    },
+    {
+        "description": "Foxy (in empty isolated room inside King Nole's Cave)",
+        "entity": {
+            "mapId": 162,
+            "position": {
+                "x": 26,
+                "y": 17,
+                "z": 0,
+                "halfX": true
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "king_nole_cave"
+    },
+    {
+        "description": "Foxy (looking at the waterfall in King Nole's Cave)",
+        "entity": {
+            "mapId": 164,
+            "position": {
+                "x": 22,
+                "y": 48,
+                "z": 1
+            },
+            "orientation": "sw",
+            "highPalette": true
+        },
+        "nodeId": "king_nole_cave"
+    },
+    {
+        "description": "Foxy (in King Nole's Cave teleporter to Kazalt)",
+        "entity": {
+            "mapId": 170,
+            "position": {
+                "x": 22,
+                "y": 27,
+                "z": 1
+            },
+            "orientation": "se"
+        },
+        "nodeId": "king_nole_cave"
+    },
+    {
+        "description": "Foxy (in access to Kazalt)",
+        "entity": {
+            "mapId": 739,
+            "position": {
+                "x": 17,
+                "y": 28,
+                "z": 1
+            },
+            "orientation": "se"
+        },
+        "nodeId": "kazalt"
+    },
+    {
+        "description": "Foxy (on Kazalt bridge)",
+        "entity": {
+            "mapId": 737,
+            "position": {
+                "x": 46,
+                "y": 34,
+                "z": 7
+            },
+            "orientation": "se"
+        },
+        "nodeId": "kazalt"
+    },
+    {
+        "description": "Foxy (in Mir Tower 0F isolated chest room)",
+        "entity": {
+            "mapId": 757,
+            "position": {
+                "x": 19,
+                "y": 24,
+                "z": 0
+            },
+            "orientation": "se"
+        },
+        "nodeId": "mir_tower_pre_garlic"
+    },
+    {
+        "description": "Foxy (in Mir Tower activatable bridge room)",
+        "entity": {
+            "mapId": [ 752, 753 ],
+            "position": {
+                "x": 29,
+                "y": 34,
+                "z": 3,
+                "halfX": true
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "mir_tower_pre_garlic"
+    },
+    {
+        "description": "Foxy (in Garlic trial room inside Mir Tower)",
+        "entity": {
+            "mapId": 750,
+            "position": {
+                "x": 22,
+                "y": 21,
+                "z": 4
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "mir_tower_pre_garlic"
+    },
+    {
+        "description": "Foxy (in Mir Tower library)",
+        "entity": {
+            "mapId": 759,
+            "position": {
+                "x": 38,
+                "y": 29,
+                "z": 4
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in Mir Tower priest room)",
+        "entity": {
+            "mapId": 775,
+            "position": {
+                "x": 23,
+                "y": 22,
+                "z": 1,
+                "halfX": true
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (right after making Miro flee with Garlic in Mir Tower)",
+        "entity": {
+            "mapId": 758,
+            "position": {
+                "x": 14,
+                "y": 34,
+                "z": 1
+            },
+            "orientation": "se"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in falling spikeballs room inside Mir Tower)",
+        "entity": {
+            "mapId": 761,
+            "position": {
+                "x": 14,
+                "y": 24,
+                "z": 1
+            },
+            "orientation": "se"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in first room of Mir Tower teleporter maze)",
+        "entity": {
+            "mapId": 767,
+            "position": {
+                "x": 19,
+                "y": 18,
+                "z": 2
+            },
+            "orientation": "se"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in small spikeballs room of Mir Tower teleporter maze)",
+        "entity": {
+            "mapId": 771,
+            "position": {
+                "x": 18,
+                "y": 18,
+                "z": 2
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in wooden elevators room after Mir Tower teleporter maze)",
+        "entity": {
+            "mapId": 779,
+            "position": {
+                "x": 32,
+                "y": 20,
+                "z": 7,
+                "halfY": true
+            },
+            "orientation": "nw"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in room before Mir Tower boss room)",
+        "entity": {
+            "mapId": 783,
+            "position": {
+                "x": 32,
+                "y": 19,
+                "z": 2
+            },
+            "orientation": "se"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (in Mir Tower treasure room)",
+        "entity": {
+            "mapId": 781,
+            "position": {
+                "x": 53,
+                "y": 26,
+                "z": 1
+            },
+            "orientation": "se"
+        },
+        "nodeId": "mir_tower_post_garlic"
+    },
+    {
+        "description": "Foxy (next to Waterfall Shrine entrance)",
+        "entity": {
+            "mapId": 426,
+            "position": {
+                "x": 46,
+                "y": 31,
+                "z": 0,
+                "halfX": true,
+                "halfY": true
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "route_massan_gumi"
+    },
+    {
+        "description": "Foxy (looking at river next to Massan teleport tree)",
+        "entity": {
+            "mapId": 424,
+            "position": {
+                "x": 44,
+                "y": 35,
+                "z": 0
+            },
+            "orientation": "nw"
+        },
+        "nodeId": "route_massan_gumi"
+    },
+    {
+        "description": "Foxy (looking at bush at Swamp Shrine crossroads)",
+        "entity": {
+            "mapId": 440,
+            "position": {
+                "x": 25,
+                "y": 42,
+                "z": 4
+            },
+            "orientation": "nw",
+            "highPalette": true
+        },
+        "nodeId": "route_massan_gumi"
+    },
+    {
+        "description": "Foxy (at Helga's Hut crossroads)",
+        "entity": {
+            "mapId": 447,
+            "position": {
+                "x": 24,
+                "y": 17,
+                "z": 1
+            },
+            "orientation": "se",
+            "highPalette": true
+        },
+        "nodeId": "route_gumi_ryuma"
+    },
+    {
+        "description": "Foxy (near Helga's Hut)",
+        "entity": {
+            "mapId": 444,
+            "position": {
+                "x": 25,
+                "y": 26,
+                "z": 7
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "route_gumi_ryuma"
+    },
+    {
+        "description": "Foxy (in reapers room at Greenmaze entrance)",
+        "entity": {
+            "mapId": 571,
+            "position": {
+                "x": 31,
+                "y": 20,
+                "z": 6
+            },
+            "orientation": "nw",
+            "highPalette": true
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (near Greenmaze swamp)",
+        "entity": {
+            "mapId": 566,
+            "position": {
+                "x": 53,
+                "y": 51,
+                "z": 1
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (spying on Cutter in Greenmaze)",
+        "entity": {
+            "mapId": 560,
+            "position": {
+                "x": 31,
+                "y": 52,
+                "z": 9
+            },
+            "orientation": "nw"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (in sector with red orcs making an elevator appear in Greenmaze)",
+        "entity": {
+            "mapId": 565,
+            "position": {
+                "x": 50,
+                "y": 30,
+                "z": 1
+            },
+            "orientation": "se"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (in center of Greenmaze)",
+        "entity": {
+            "mapId": 576,
+            "position": {
+                "x": 32,
+                "y": 38,
+                "z": 5,
+                "halfY": true
+            },
+            "orientation": "se"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (in waterfall sector of Greenmaze)",
+        "entity": {
+            "mapId": 568,
+            "position": {
+                "x": 29,
+                "y": 41,
+                "z": 7,
+                "halfX": true
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (in ropes sector of Greenmaze)",
+        "entity": {
+            "mapId": 567,
+            "position": {
+                "x": 38,
+                "y": 28,
+                "z": 0
+            },
+            "orientation": "se"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (in Sun Stone sector of Greenmaze)",
+        "entity": {
+            "mapId": 564,
+            "position": {
+                "x": 30,
+                "y": 35,
+                "z": 1
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "greenmaze_pre_whistle"
+    },
+    {
+        "description": "Foxy (in first chest map of Greenmaze after cutting trees)",
+        "entity": {
+            "mapId": 570,
+            "position": {
+                "x": 26,
+                "y": 15,
+                "z": 1
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "greenmaze_post_whistle"
+    },
+    {
+        "description": "Foxy (near shortcut cavern entrance in Greenmaze after cutting trees)",
+        "entity": {
+            "mapId": 569,
+            "position": {
+                "x": 20,
+                "y": 24,
+                "z": 6,
+                "halfY": true
+            },
+            "orientation": "se"
+        },
+        "nodeId": "greenmaze_post_whistle"
+    },
+    {
+        "description": "Foxy (in room next to spiked floor and keydoor room in King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 380,
+            "position": {
+                "x": 17,
+                "y": 18,
+                "z": 0
+            },
+            "orientation": "se"
+        },
+        "nodeId": "king_nole_labyrinth_pre_door"
+    },
+    {
+        "description": "Foxy (in ice shortcut room in King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 390,
+            "position": {
+                "x": 19,
+                "y": 41,
+                "z": 2
+            },
+            "orientation": "se"
+        },
+        "nodeId": "king_nole_labyrinth_pre_door"
+    },
+    {
+        "description": "Foxy (in exterior room of King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 362,
+            "position": {
+                "x": 35,
+                "y": 21,
+                "z": 2
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "king_nole_labyrinth_pre_door"
+    },
+    {
+        "description": "Foxy (in room above Iron Boots in King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 373,
+            "position": {
+                "x": 26,
+                "y": 30,
+                "z": 2
+            },
+            "orientation": "se"
+        },
+        "nodeId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "description": "Foxy (next to raft starting point in King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 406,
+            "position": {
+                "x": 46,
+                "y": 40,
+                "z": 7
+            },
+            "orientation": "nw",
+            "highPalette": true
+        },
+        "nodeId": "king_nole_labyrinth_raft_entrance"
+    },
+    {
+        "description": "Foxy (in fast boulder room in King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 382,
+            "position": {
+                "x": 30,
+                "y": 30,
+                "z": 7,
+                "halfX": true
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "description": "Foxy (in first maze room inside King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 367,
+            "position": {
+                "x": 43,
+                "y": 38,
+                "z": 1
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "description": "Foxy (in lava sector of King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 399,
+            "position": {
+                "x": 23,
+                "y": 19,
+                "z": 2,
+                "halfY": true
+            },
+            "orientation": "se"
+        },
+        "nodeId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "description": "Foxy (in hands room inside King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 418,
+            "position": {
+                "x": 41,
+                "y": 31,
+                "z": 7
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "king_nole_labyrinth_post_door"
+    },
+    {
+        "description": "Foxy (in King Nole's Labyrinth spiral room)",
+        "entity": {
+            "mapId": 393,
+            "position": {
+                "x": 56,
+                "y": 35,
+                "z": 2
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "king_nole_labyrinth_path_to_palace"
+    },
+    {
+        "description": "Foxy (next to King Nole's Palace entrance)",
+        "entity": {
+            "mapId": 422,
+            "position": {
+                "x": 27,
+                "y": 25,
+                "z": 2
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "king_nole_labyrinth_path_to_palace"
+    },
+    {
+        "description": "Foxy (in King Nole's Palace entrance room)",
+        "entity": {
+            "mapId": 122,
+            "position": {
+                "x": 30,
+                "y": 35,
+                "z": 8
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "king_nole_palace"
+    },
+    {
+        "description": "Foxy (in King Nole's Palace jar and moving platforms room)",
+        "entity": {
+            "mapId": 126,
+            "position": {
+                "x": 27,
+                "y": 37,
+                "z": 6
+            },
+            "orientation": "se"
+        },
+        "nodeId": "king_nole_palace"
+    },
+    {
+        "description": "Foxy (in King Nole's Palace last chest room)",
+        "entity": {
+            "mapId": 125,
+            "position": {
+                "x": 25,
+                "y": 39,
+                "z": 32
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "king_nole_palace"
     }
     /*
 {

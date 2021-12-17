@@ -19,11 +19,12 @@ private:
     std::vector<uint16_t> _map_ids;
     Position _position;
     uint8_t _orientation = 0;
+    bool _high_palette = false;
 
 public:
     HintSource(std::vector<uint16_t> text_ids, std::string description,
                WorldNode* node, bool small_textbox,
-               std::vector<uint16_t> map_ids, Position position, uint8_t orientation);
+               std::vector<uint16_t> map_ids, Position position, uint8_t orientation, bool high_palette);
 
     [[nodiscard]] const std::string& description() const { return _description; }
     [[nodiscard]] WorldNode* node() const { return _node; }
@@ -42,6 +43,7 @@ public:
     [[nodiscard]] const std::vector<uint16_t>& map_ids() const { return _map_ids; }
     [[nodiscard]] Position position() const { return _position; }
     [[nodiscard]] uint8_t orientation() const { return _orientation; }
+    [[nodiscard]] bool high_palette() const { return _high_palette; }
 
     [[nodiscard]] virtual Json to_json() const;
     [[nodiscard]] static HintSource* from_json(const Json& json, const std::map<std::string, WorldNode*>& nodes);
