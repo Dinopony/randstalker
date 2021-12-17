@@ -34,10 +34,12 @@ wrapped_dependency(TEXT     src/logic_model/data/hint_source.json           HINT
 wrapped_dependency(TEXT     src/logic_model/data/spawn_location.json        SPAWN_LOCATIONS_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/item_distribution.json     ITEM_DISTRIBUTIONS_JSON)
 wrapped_dependency(TEXT     src/assets/game_strings.json                    GAME_STRINGS_JSON)
+wrapped_dependency(RAW      src/assets/edited_title_tileset.bin             EDITED_TITLE_TILESET)
 
 set(SOURCES
         # --- Auto-generated dependencies ----------------------------------------
         "src/assets/game_strings.json.hxx"
+        "src/assets/edited_title_tileset.bin.hxx"
         "src/logic_model/data/world_node.json.hxx"
         "src/logic_model/data/world_path.json.hxx"
         "src/logic_model/data/world_region.json.hxx"
@@ -67,6 +69,7 @@ set(SOURCES
         # --- Patches ----------------------------------------
         "src/patches/alter_hint_provider_dialogues.cpp"
         "src/patches/alter_randomizer_credits.cpp"
+        "src/patches/alter_randomizer_title.cpp"
         "src/patches/handle_fox_hints.cpp"
         "src/patches/optimize_maps.cpp"
         "src/patches/rando_world_edits.cpp"

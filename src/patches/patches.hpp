@@ -11,6 +11,7 @@ class RandomizerWorld;
 // Randomizer patches
 void alter_hint_provider_dialogues(md::ROM& rom);
 void alter_randomizer_credits(md::ROM& rom);
+void alter_randomizer_title(md::ROM& rom);
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip);
 void handle_fox_hints(md::ROM& rom, RandomizerWorld& world);
 void optimize_maps(World& world);
@@ -58,6 +59,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
 
     alter_hint_provider_dialogues(rom);
     alter_randomizer_credits(rom);
+    alter_randomizer_title(rom);
     apply_rando_world_edits(rom, world, options.fix_armlet_skip());
     replace_copy_save_by_show_hash(rom, options.hash_sentence());
     shorten_cutscenes(rom);
