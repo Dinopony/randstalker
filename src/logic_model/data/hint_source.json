@@ -874,7 +874,7 @@
         "nodeId": "massan_cave"
     },
     {
-        "description": "Foxy (in treasure room of Massan Cave)",
+        "description": "Foxy (bathing in the swamp next to Swamp Shrine entrance)",
         "entity": {
             "mapId": 433,
             "position": {
@@ -893,7 +893,7 @@
             "position": {
                 "x": 25,
                 "y": 27,
-                "z": 0,
+                "z": 2,
                 "halfX": true
             },
             "orientation": "ne"
