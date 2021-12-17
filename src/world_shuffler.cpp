@@ -580,6 +580,9 @@ void WorldShuffler::randomize_lithograph_hint()
 void WorldShuffler::randomize_where_is_lithograph_hint()
 {
     HintSource* knc_sign_source = _world.hint_source("King Nole's Cave sign");
+
+    _world.add_used_hint_source(knc_sign_source);
+
     if(!knc_sign_source->text().empty())
         return;
 

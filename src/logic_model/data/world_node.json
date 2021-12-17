@@ -151,7 +151,7 @@
         "name": "Mir Tower sector",
         "hints": [
             "on a route",
-            "nearby Mir Tower"
+            "near Mir Tower"
         ]
     },
     "mir_tower_sector_trees": {
@@ -159,7 +159,7 @@
         "hints": [
             "on a route",
             "among the trees",
-            "nearby Mir Tower"
+            "near Mir Tower"
         ]
     },
     "twinkle_village": {
@@ -201,7 +201,7 @@
         "name": "Verla shore",
         "hints": [
             "on a route",
-            "nearby the town of Verla"
+            "near the town of Verla"
         ]
     },
     "verla": {
