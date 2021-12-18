@@ -104,7 +104,7 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
     tools::dump_json_to_file(regions_json, "./json_data/world_region.json");
 
     Json hints_json = Json::array();
-    for(auto& [id, hint_source] : world.hint_sources())
+    for(HintSource* hint_source : world.hint_sources())
         hints_json.emplace_back(hint_source->to_json());
     tools::dump_json_to_file(hints_json, "./json_data/hint_source.json");
 

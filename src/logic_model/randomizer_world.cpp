@@ -36,7 +36,7 @@ RandomizerWorld::~RandomizerWorld()
         delete path;
     for (WorldRegion* region : _regions)
         delete region;
-    for (auto& [key, hint_source] : _hint_sources)
+    for (HintSource* hint_source : _hint_sources)
         delete hint_source;
     for (auto& [key, spawn_loc] : _available_spawn_locations)
         delete spawn_loc;
@@ -110,7 +110,7 @@ void RandomizerWorld::load_hint_sources()
     for(const Json& hint_source_json : hint_sources_json)
     {
         HintSource* new_source = HintSource::from_json(hint_source_json, _nodes);
-        _hint_sources[new_source->description()] = new_source;
+        _hint_sources.emplace_back(new_source);
     }
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 }
@@ -190,4 +190,13 @@ std::map<uint8_t, uint16_t> RandomizerWorld::item_quantities() const
         item_quantities[item_id] = item_distrib->quantity();
 
     return item_quantities;
+}
+
+HintSource* RandomizerWorld::hint_source(const std::string& name) const
+{
+    for(HintSource* source : _hint_sources)
+        if(source->description() == name)
+            return source;
+
+    throw LandstalkerException("Could not find hint source '" + name + "' as requested");
 }

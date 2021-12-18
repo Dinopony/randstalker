@@ -43,7 +43,7 @@ void WorldShuffler::randomize()
 
     // 3rd pass: randomizations happening AFTER randomizing items
     this->randomize_hints();
-    for(auto& [name, hint_source] : _world.hint_sources())
+    for(HintSource* hint_source : _world.hint_sources())
         hint_source->apply_text(_world);
 }
 
@@ -693,7 +693,7 @@ void WorldShuffler::randomize_fox_hints()
 {
     // Pick a subset of all possible fox_hints trying to follow as much as possible the randomizer settings
     std::vector<HintSource*> foxes_pool;
-    for(auto& [k, hint_source] : _world.hint_sources())
+    for(HintSource* hint_source : _world.hint_sources())
     {
         if(hint_source->has_entity())
             foxes_pool.emplace_back(hint_source);

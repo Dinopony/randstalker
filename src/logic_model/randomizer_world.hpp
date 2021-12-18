@@ -19,7 +19,7 @@ private:
     std::map<std::string, SpawnLocation*> _available_spawn_locations;
     std::map<uint8_t, ItemDistribution*> _item_distributions;
 
-    std::map<std::string, HintSource*> _hint_sources;
+    std::vector<HintSource*> _hint_sources;
     std::vector<HintSource*> _used_hint_sources;
 
     WorldNode* _spawn_node = nullptr;
@@ -50,8 +50,8 @@ public:
     [[nodiscard]] ItemDistribution* item_distribution(uint8_t item_id) const { return _item_distributions.at(item_id); }
     [[nodiscard]] std::map<uint8_t, uint16_t> item_quantities() const;
 
-    [[nodiscard]] const std::map<std::string, HintSource*>& hint_sources() const { return _hint_sources; }
-    [[nodiscard]] HintSource* hint_source(const std::string& name) const { return _hint_sources.at(name); }
+    [[nodiscard]] const std::vector<HintSource*>& hint_sources() const { return _hint_sources; }
+    [[nodiscard]] HintSource* hint_source(const std::string& name) const;
     [[nodiscard]] const std::vector<HintSource*>& used_hint_sources() const { return _used_hint_sources; }
     void add_used_hint_source(HintSource* hint_source) { _used_hint_sources.emplace_back(hint_source); }
 
