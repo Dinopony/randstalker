@@ -216,6 +216,14 @@
         "twoWay": true
     },
     {
+        "fromId": "verla",
+        "toId": "verla_after_mines",
+        "requiredNodes": [
+            "verla_mines"
+        ],
+        "twoWay": true
+    },
+    {
         "fromId": "verla_shore",
         "toId": "verla_mines",
         "twoWay": true

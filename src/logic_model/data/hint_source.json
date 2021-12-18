@@ -221,7 +221,7 @@
         "nodeId": "thieves_hideout_post_key"
     },
     {
-        "description": "Foxy (inside Mercator armory tower)",
+        "description": "Foxy (inside Mercator Castle armory tower)",
         "entity": {
             "mapId": 106,
             "position": {

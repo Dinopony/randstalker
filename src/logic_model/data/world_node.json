@@ -211,6 +211,13 @@
             "in the town of Verla"
         ]
     },
+    "verla_after_mines": {
+        "name": "Verla (after mines)",
+        "hints": [
+            "in a town",
+            "in the town of Verla"
+        ]
+    },
     "verla_mines": {
         "name": "Verla Mines",
         "hints": [

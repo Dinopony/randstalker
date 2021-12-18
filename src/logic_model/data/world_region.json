@@ -161,7 +161,8 @@
         "name": "Verla",
         "hintName": "in the town of Verla",
         "nodeIds": [
-            "verla"
+            "verla",
+            "verla_after_mines"
         ]
     },
     {
