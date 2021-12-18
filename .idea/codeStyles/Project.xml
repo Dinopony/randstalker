@@ -39,6 +39,7 @@
     <codeStyleSettings language="ObjectiveC">
       <option name="BRACE_STYLE" value="5" />
       <option name="CLASS_BRACE_STYLE" value="2" />
+      <option name="ELSE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="SPACE_BEFORE_SEMICOLON" value="true" />

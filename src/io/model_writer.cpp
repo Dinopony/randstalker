@@ -4,7 +4,7 @@
 #include <landstalker_lib/model/entity_type.hpp>
 #include <landstalker_lib/model/map.hpp>
 #include <landstalker_lib/model/map_connection.hpp>
-#include <landstalker_lib/model/map_palette.hpp>
+#include "landstalker_lib/tools/color_palette.hpp"
 #include <landstalker_lib/model/world_teleport_tree.hpp>
 #include <landstalker_lib/tools/tools.hpp>
 #include <landstalker_lib/tools/json.hpp>

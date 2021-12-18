@@ -5,6 +5,7 @@
 #include <landstalker_lib/patches/patches.hpp>
 #include "../randomizer_options.hpp"
 #include "../world_shuffler.hpp"
+#include "../personal_settings.hpp"
 
 class RandomizerWorld;
 
@@ -21,7 +22,7 @@ void shorten_cutscenes(md::ROM& rom);
 // Not yet processed patches
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world);
 
-inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options)
+inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options, const PersonalSettings& personal_settings)
 {
     optimize_maps(world);
 
@@ -30,12 +31,12 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     alter_fahl_challenge(rom, world);
     alter_gold_rewards_handling(rom, world);
     alter_lantern_handling(rom, world);
-    alter_nigel_colors(rom, options.nigel_colors());
-    alter_ui_color(rom, options.hud_color());
+    alter_nigel_colors(rom, personal_settings.nigel_colors());
+    alter_ui_color(rom, personal_settings.hud_color());
     fix_hud_tilemap(rom);
     fix_item_checks(rom);
     improve_engine(rom);
-    patch_game_init(rom, world, options.add_ingame_item_tracker());
+    patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
     handle_additional_jewels(rom, world, options.jewel_count());
     make_sword_of_gaia_work_in_volcano(rom);
     normalize_special_enemies_hp(rom, options.fix_tree_cutting_glitch());

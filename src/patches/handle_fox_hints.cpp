@@ -115,8 +115,8 @@ static void inject_altered_fox_sprites(md::ROM& rom, World& world)
     rom.set_long(0x120DC8, sprite_sw_addr);
 
     world.entity_type(ENTITY_NPC_MAGIC_FOX)->clear_high_palette();
-    EntityLowPaletteColors fox_palette = world.entity_type(ENTITY_NPC_MAGIC_FOX)->low_palette();
-    fox_palette[0x05] = 0x424; // Put the dark purple that was moved to an unused slot in the actual slot
+    EntityLowPalette fox_palette = world.entity_type(ENTITY_NPC_MAGIC_FOX)->low_palette();
+    fox_palette[0x05] = Color(0x40, 0x20, 0x40); // Put the dark purple that was moved to an unused slot in the actual slot
     world.entity_type(ENTITY_NPC_MAGIC_FOX)->low_palette(fox_palette);
 
     // Replace the "Duke in chair" sprite by the high palette fox
@@ -137,9 +137,9 @@ static void inject_altered_fox_sprites(md::ROM& rom, World& world)
     rom.set_long(0x120FD4, sprite_sw_high_addr);
     rom.set_long(0x120FD8, sprite_sw_high_addr);
 
-    EntityHighPaletteColors fox_high_palette;
+    EntityHighPalette fox_high_palette;
     std::copy(fox_palette.begin(), fox_palette.end(), fox_high_palette.begin());
-    fox_high_palette[6] = 0;
+    fox_high_palette[6] = Color(0, 0, 0);
     world.entity_type(ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE)->clear_low_palette();
     world.entity_type(ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE)->high_palette(fox_high_palette);
 }

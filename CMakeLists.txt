@@ -86,6 +86,8 @@ set(SOURCES
         # --- Project root ----------------------------------------
         "src/apply_randomizer_options.hpp"
         "src/apply_randomizer_options.cpp"
+        "src/personal_settings.hpp"
+        "src/personal_settings.cpp"
         "src/randomizer_options.hpp"
         "src/randomizer_options.cpp"
         "src/world_shuffler.hpp"

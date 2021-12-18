@@ -81,7 +81,7 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
         spoiler_log_path += options.hash_sentence() + ".json";
 }
 
-Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options, const ArgumentDictionary& args)
+Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options, PersonalSettings& personal_settings, const ArgumentDictionary& args)
 {
     Json spoiler_json;
 
@@ -102,7 +102,7 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
     // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
     std::cout << "Applying game patches...\n\n";
-    apply_randomizer_patches(rom, world, options);
+    apply_randomizer_patches(rom, world, options, personal_settings);
 
     std::string debug_log_path = args.get_string("debuglog");
     if (!debug_log_path.empty())
@@ -136,6 +136,7 @@ void generate(const ArgumentDictionary& args)
 {
     // Parse options from command-line args, preset file, plando file...
     RandomizerOptions options(args);
+    PersonalSettings personal_settings(args);
 
     // Parse various paths from args
     std::string input_rom_path, output_rom_path, spoiler_log_path;
@@ -171,7 +172,7 @@ void generate(const ArgumentDictionary& args)
 
     RandomizerWorld world(*rom);
 
-    Json spoiler_json = randomize(*rom, world, options, args);
+    Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
     
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())

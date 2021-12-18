@@ -53,11 +53,7 @@ private:
     Json _model_patch_items;
     Json _model_patch_spawns;
 
-    // ------------- Personal settings -------------
-    // (not included in permalink nor presets)
-    bool _add_ingame_item_tracker = false;
-    uint16_t _hud_color = 0x824;
-    std::pair<uint16_t, uint16_t> _nigel_colors = std::make_pair(0x08A0, 0x0240);
+
 
 public:
     RandomizerOptions() = default;
@@ -65,7 +61,6 @@ public:
     
     void parse_permalink(const std::string& permalink);
     void parse_arguments(const ArgumentDictionary& args);
-    void parse_personal_settings(const ArgumentDictionary& args);
     void validate() const;
 
     [[nodiscard]] Json to_json() const;
@@ -106,11 +101,6 @@ public:
     // Model patch
     [[nodiscard]] const Json& items_model_patch() const { return _model_patch_items; }
     [[nodiscard]] const Json& spawn_locations_model_patch() const { return _model_patch_spawns; }
-
-    // Personal options 
-    [[nodiscard]] bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }
-    [[nodiscard]] uint16_t hud_color() const { return _hud_color; }
-    [[nodiscard]] const std::pair<uint16_t, uint16_t>& nigel_colors() const { return _nigel_colors; }
 
     [[nodiscard]] std::vector<std::string> hash_words() const;
     [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
