@@ -125,7 +125,8 @@
                 "y": 62,
                 "z": 2
             },
-            "orientation": "nw"
+            "orientation": "nw",
+            "highPalette": true
         },
         "nodeId": "mountainous_area"
     },
@@ -1797,6 +1798,62 @@
             "orientation": "ne"
         },
         "nodeId": "king_nole_palace"
+    },
+    {
+        "description": "Foxy (in Mercator casino)",
+        "entity": {
+            "mapId": 663,
+            "position": {
+                "x": 16,
+                "y": 58,
+                "z": 0,
+                "halfX": true,
+                "halfY": true
+            },
+            "orientation": "ne"
+        },
+        "nodeId": "mercator_casino"
+    },
+    {
+        "description": "Foxy (in Helga's hut basement)",
+        "entity": {
+            "mapId": 479,
+            "position": {
+                "x": 20,
+                "y": 33,
+                "z": 0,
+                "halfX": true
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "helga_hut"
+    },
+    {
+        "description": "Foxy (in Helga's hut dungeon deepest room)",
+        "entity": {
+            "mapId": 802,
+            "position": {
+                "x": 28,
+                "y": 19,
+                "z": 2
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "helga_hut"
+    },
+    {
+        "description": "Foxy (in Helga's hut dungeon topmost room)",
+        "entity": {
+            "mapId": 786,
+            "position": {
+                "x": 25,
+                "y": 23,
+                "z": 2,
+                "halfY": true
+            },
+            "orientation": "se"
+        },
+        "nodeId": "helga_hut"
     }
     /*
 {
