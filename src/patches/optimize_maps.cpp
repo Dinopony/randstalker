@@ -107,7 +107,8 @@ static void optimize_palettes(World& world)
     }
 
     const std::vector<uint16_t> MAPS_TO_SWAP_PALETTE_3_AND_2 = {
-        MAP_MIR_TOWER_EXTERIOR
+        MAP_MIR_TOWER_EXTERIOR,
+        MAP_CRYPT_MAIN_HALL
     };
 
     for(uint16_t map_id : MAPS_TO_SWAP_PALETTE_3_AND_2)
