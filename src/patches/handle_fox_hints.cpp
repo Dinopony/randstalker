@@ -44,10 +44,8 @@ static uint32_t inject_func_handle_hints(md::ROM& rom, uint32_t hint_map_ids_add
 
 static uint16_t add_magic_fox(World& world, HintSource* hint_source)
 {
-    Map* map = world.map(hint_source->map_ids()[0]);
-
     // Add Magic Foxes speaker ID to the map speakers (former Kayla ID)
-    Map* parent_map = map;
+    Map* parent_map = world.map(hint_source->map_ids()[0]);
     while(parent_map->parent_map())
         parent_map = parent_map->parent_map();
 
@@ -59,7 +57,10 @@ static uint16_t add_magic_fox(World& world, HintSource* hint_source)
         uint8_t entity_type_id = hint_source->high_palette() ? ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE : ENTITY_NPC_MAGIC_FOX;
         uint8_t palette_id = hint_source->high_palette() ? 1 : 3;
 
-        world.map(map_id)->add_entity(new Entity({
+        Map* map = world.map(map_id);
+        map->convert_global_masks_into_individual();
+
+        map->add_entity(new Entity({
             .type_id = entity_type_id,
             .position = hint_source->position(),
             .orientation = hint_source->orientation(),
