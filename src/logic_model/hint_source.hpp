@@ -32,7 +32,7 @@ public:
     [[nodiscard]] bool small_textbox() const { return _small_textbox; }
 
     [[nodiscard]] std::string text() const;
-    void text(const std::string& text) { _text = "\u001c" + text; }
+    void text(const std::string& text) { _text = text; }
     void apply_text(World& world);
 
     [[nodiscard]] const std::vector<uint16_t>& text_ids() const { return _text_ids; }
