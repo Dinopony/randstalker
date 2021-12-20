@@ -50,7 +50,8 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
 
     alter_item_order_in_menu(rom);
     quicken_gaia_effect(rom);
-
+    quicken_pawn_ticket_effect(rom);
+    
     make_massan_elder_reward_not_story_dependant(rom, world);
     make_lumberjack_reward_not_story_dependant(rom);
     change_falling_ribbon_position(rom);
