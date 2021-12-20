@@ -149,6 +149,12 @@ static void set_story_as_advanced(md::ROM& rom)
     rom.set_word(0x25324, 0x0000);
 }
 
+static void untangle_verla_mines_flags(World& world)
+{
+    // Make Slasher appearance not dependant on Marley being killed
+    world.map(MAP_VERLA_MINES_SLASHER_ARENA)->global_entity_mask_flags().clear();
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
@@ -165,5 +171,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     prevent_hint_item_save_scumming(rom);
     fix_crypt_softlocks(rom, world);
     alter_labyrinth_rafts(rom);
+    untangle_verla_mines_flags(world);
 }
 
