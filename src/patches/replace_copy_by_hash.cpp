@@ -8,7 +8,7 @@ void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_s
 {
     md::Code show_hash_func;
     show_hash_func.cmpib(1, reg_D0);
-    show_hash_func.bne(9);
+    show_hash_func.bne("hash_not_selected");
         show_hash_func.jsr(0xF5F4); // ClearTextBuffer
         show_hash_func.movew(0x4D, reg_D1);
         show_hash_func.jsr(0xF618); // j_j_LoadUncompressedString
@@ -17,7 +17,8 @@ void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_s
         show_hash_func.moveb(0x00, addr_(0xFF0556));
         show_hash_func.jsr(0x10C6); // WaitForNextButtonPress
         show_hash_func.jmp(0x00EEF6);
-    show_hash_func.add_bytes({ 0x3D, 0x7C, 0xFF, 0xFF, 0xFF, 0xFC });
+        show_hash_func.add_bytes({ 0x3D, 0x7C, 0xFF, 0xFF, 0xFF, 0xFC });
+    show_hash_func.label("hash_not_selected");
     show_hash_func.jmp(0x00EF00);
 
     uint32_t addr = rom.inject_code(show_hash_func);

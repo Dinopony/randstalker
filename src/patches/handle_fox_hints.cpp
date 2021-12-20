@@ -24,18 +24,19 @@ static uint32_t inject_func_handle_hints(md::ROM& rom, uint32_t hint_map_ids_add
     func_handle_hints.lea(hint_map_ids_addr, reg_A0);
     func_handle_hints.label("loop_start");
     func_handle_hints.movew(addr_(reg_A0), reg_D1);
-    func_handle_hints.bpl(2);
-        // Reached end of list without finding the appropriate map
-        func_handle_hints.bra(8);
+    func_handle_hints.bmi("return"); // Reached end of list without finding the appropriate map
     func_handle_hints.cmpw(reg_D1, reg_D2);
-    func_handle_hints.beq(4);
+    func_handle_hints.beq("map_found");
         // Not the right map, point on next value and loop back
         func_handle_hints.adda(0x2, reg_A0);
         func_handle_hints.addqw(0x2, reg_D0);
         func_handle_hints.bra("loop_start");
     // Right map found
+    func_handle_hints.label("map_found");
     func_handle_hints.lea(hints_dialogue_commands_block, reg_A0);
     func_handle_hints.jsr(0x253F8); // RunTextCmd function
+
+    func_handle_hints.label("return");
     func_handle_hints.movem_from_stack({reg_D0, reg_D1, reg_D2}, { reg_A0 });
     func_handle_hints.rts();
 

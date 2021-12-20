@@ -124,8 +124,8 @@ static void fix_crypt_softlocks(md::ROM& rom, World& world)
     md::Code inject_change_crypt_exit_check;
     inject_change_crypt_exit_check.btst(0x2, addr_(0xFF1097));
     inject_change_crypt_exit_check.nop(2);
-    inject_change_crypt_exit_check.beq(); // beq $10F52
     rom.set_code(0x117E8, inject_change_crypt_exit_check);
+    rom.set_byte(0x117F4, 0x67); // Turn the BMI into a BEQ
 }
 
 /**
