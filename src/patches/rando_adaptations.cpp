@@ -2,6 +2,7 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/item.hpp>
 #include <landstalker_lib/model/map.hpp>
+#include <landstalker_lib/model/entity.hpp>
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/map_codes.hpp>
 #include <landstalker_lib/constants/flags.hpp>
@@ -108,7 +109,7 @@ static void prevent_hint_item_save_scumming(md::ROM& rom)
     rom.set_code(0x24F3E, md::Code().jsr(func_save_on_buy_addr));
 }
 
-static void fix_crypt_soflocks(md::ROM& rom)
+static void fix_crypt_softlocks(md::ROM& rom, World& world)
 {
     // 1) Remove the check "if shadow mummy was beaten, raft mummy never appears again"
     // 0x019DF6:
@@ -116,7 +117,7 @@ static void fix_crypt_soflocks(md::ROM& rom)
         // After:	4EB9 00019E14 (jsr $19E14; 4E71 4E71 (nop nop)
     rom.set_code(0x19DF6, md::Code().nop(5));
 
-    // 2) Change the room exit check and shadow mummy appearance from "if armlet is owned" to "chest was opened"
+    // 2) Change the shadow mummy appearance from "if armlet is owned" to "chest was opened"
     // 0x0117E8:
         // Before:	103C 001F ; 4EB9 00022ED0 ; 4A41 ; 6B00 F75C (bmi $10F52)
         // After:	0839 0002 00FF1097 (btst 2 FF1097)	; 6700 F75C (bne $10F52)
@@ -162,7 +163,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
 
     fix_mir_tower_priest_room_items(rom);
     prevent_hint_item_save_scumming(rom);
-    fix_crypt_soflocks(rom);
+    fix_crypt_softlocks(rom, world);
     alter_labyrinth_rafts(rom);
 }
 
