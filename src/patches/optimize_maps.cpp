@@ -78,6 +78,8 @@ static void optimize_palettes(World& world)
 {
     world.map(MAP_MERCATOR_EXTERIOR_2_VARIANT_2)->entity(0)->palette(1);
 
+    world.map(MAP_VERLA_MINES_CHEST_ROOM_AFTER_LAVA_WALK)->palette(world.map(MAP_VERLA_MINES_MARLEY_LAVA_ROOM_MOVING_PLATFORMS)->palette());
+
     Map* gumi_happy = world.map(MAP_GUMI_EXTERIOR_VARIANT_HAPPY);
     gumi_happy->entity(0)->palette(1);
     gumi_happy->entity(1)->palette(1);
