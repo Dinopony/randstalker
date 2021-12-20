@@ -80,6 +80,8 @@ static void parse_hints_from_json(RandomizerWorld& world, const Json& json)
                 source->text(hint);
             }
             else source->text(contents);
+
+            world.add_used_hint_source(source);
         }
         catch(std::out_of_range&) {
             throw LandstalkerException("Hint source '" + hint_source_name + "' could not be found.");

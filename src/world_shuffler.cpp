@@ -691,16 +691,25 @@ void WorldShuffler::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_i
 
 void WorldShuffler::randomize_fox_hints()
 {
+    uint8_t hints_count = _options.hints_count();
+    for(HintSource* source : _world.used_hint_sources())
+        if(source->has_entity())
+            --hints_count;
+
     // Pick a subset of all possible fox_hints trying to follow as much as possible the randomizer settings
     std::vector<HintSource*> foxes_pool;
     for(HintSource* hint_source : _world.hint_sources())
     {
+        // If source is already used (e.g. in plando context), don't add it to the pool
+        if(std::find(_world.used_hint_sources().begin(), _world.used_hint_sources().end(), hint_source) != _world.used_hint_sources().end())
+            continue;
+
         if(hint_source->has_entity())
             foxes_pool.emplace_back(hint_source);
     }
     tools::shuffle(foxes_pool, _rng);
-    if(foxes_pool.size() > _options.hints_count())
-        foxes_pool.resize(_options.hints_count());
+    if(foxes_pool.size() > hints_count)
+        foxes_pool.resize(hints_count);
 
     // Put hints inside
     for (HintSource* hint_source : foxes_pool)
