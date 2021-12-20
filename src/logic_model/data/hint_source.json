@@ -410,13 +410,15 @@
     {
         "description": "Foxy (in Verla Mines lava room in Marley sector)",
         "entity": {
-            "mapId": 267,
+            "mapId": 264,
             "position": {
-                "x": 16,
-                "y": 24,
-                "z": 1
+                "x": 18,
+                "y": 19,
+                "z": 6,
+                "halfX": true,
+                "halfY": true
             },
-            "orientation": "se"
+            "orientation": "sw"
         },
         "nodeId": "verla_mines"
     },
