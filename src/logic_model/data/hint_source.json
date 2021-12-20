@@ -479,9 +479,9 @@
         "entity": {
             "mapId": 525,
             "position": {
-                "x": 51,
-                "y": 43,
-                "z": 11
+                "x": 53,
+                "y": 45,
+                "z": 5
             },
             "orientation": "ne"
         },
@@ -1952,6 +1952,45 @@
             "orientation": "sw"
         },
         "nodeId": "lake_shrine"
+    },
+    {
+        "description": "Foxy (in triple chest room in Slasher sector of Verla Mines)",
+        "entity": {
+            "mapId": 256,
+            "position": {
+                "x": 23,
+                "y": 23,
+                "z": 0
+            },
+            "orientation": "sw"
+        },
+        "nodeId": "verla_mines"
+    },
+    {
+        "description": "Foxy (near teleport tree after Destel)",
+        "entity": {
+            "mapId": 488,
+            "position": {
+                "x": 28,
+                "y": 53,
+                "z": 0
+            },
+            "orientation": "se"
+        },
+        "nodeId": "route_after_destel"
+    },
+    {
+        "description": "Foxy (in lower half of mimics room in King Nole's Labyrinth)",
+        "entity": {
+            "mapId": 383,
+            "position": {
+                "x": 26,
+                "y": 26,
+                "z": 2
+            },
+            "orientation": "nw"
+        },
+        "nodeId": "king_nole_labyrinth_pre_door"
     }
     /*
 {
