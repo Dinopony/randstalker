@@ -148,7 +148,15 @@
     },
     {
         "fromId": "mir_tower_sector",
-        "toId": "mir_tower_sector_trees",
+        "toId": "mir_tower_sector_tree_ledge",
+        "twoWay": true,
+        "requiredItems": [
+            "Axe Magic"
+        ]
+    },
+    {
+        "fromId": "mir_tower_sector",
+        "toId": "mir_tower_sector_tree_coast",
         "twoWay": true,
         "requiredItems": [
             "Axe Magic"

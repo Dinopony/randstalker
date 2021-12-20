@@ -94,8 +94,9 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
-    json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
+    json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
+    json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
     json["randomizerSettings"]["hintsCount"] = _hints_count;
 
     if(!_model_patch_items.empty())
@@ -167,10 +168,12 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("shuffleTrees"))
             _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
-        if(randomizer_settings_json.contains("ghostJumpingInLogic"))
-            _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
+        if(randomizer_settings_json.contains("enemyJumpingInLogic"))
+            _enemy_jumping_in_logic = randomizer_settings_json.at("enemyJumpingInLogic");
         if(randomizer_settings_json.contains("damageBoostingInLogic"))
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
+        if(randomizer_settings_json.contains("treeCuttingGlitchInLogic"))
+            _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
         if(randomizer_settings_json.contains("hintsCount"))
             _hints_count = randomizer_settings_json.at("hintsCount");
 
@@ -262,7 +265,8 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_all_trees_visited_at_start);
     bitpack.pack(_allow_spoiler_log);
     bitpack.pack(_shuffle_tibor_trees);
-    bitpack.pack(_ghost_jumping_in_logic);
+    bitpack.pack(_enemy_jumping_in_logic);
+    bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
     bitpack.pack(_hints_count);
     bitpack.pack_map(_items_distribution);
@@ -306,7 +310,8 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _all_trees_visited_at_start = bitpack.unpack<bool>();
     _allow_spoiler_log = bitpack.unpack<bool>();
     _shuffle_tibor_trees = bitpack.unpack<bool>();
-    _ghost_jumping_in_logic = bitpack.unpack<bool>();
+    _enemy_jumping_in_logic = bitpack.unpack<bool>();
+    _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
     _hints_count = bitpack.unpack<uint8_t>();
     _items_distribution = bitpack.unpack_map<uint8_t, uint16_t>();

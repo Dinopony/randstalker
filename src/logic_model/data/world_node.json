@@ -154,8 +154,16 @@
             "near Mir Tower"
         ]
     },
-    "mir_tower_sector_trees": {
-        "name": "Mir Tower sector (behind trees)",
+    "mir_tower_sector_tree_ledge": {
+        "name": "Mir Tower sector (ledge behind sacred tree)",
+        "hints": [
+            "on a route",
+            "among the trees",
+            "near Mir Tower"
+        ]
+    },
+    "mir_tower_sector_tree_coast": {
+        "name": "Mir Tower sector (coast behind sacred tree)",
         "hints": [
             "on a route",
             "among the trees",

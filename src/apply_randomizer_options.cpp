@@ -181,15 +181,23 @@ static void patch_game_strings(World& world, const RandomizerOptions& options)
 
 static void apply_options_on_logic_paths(const RandomizerOptions& options, RandomizerWorld& world)
 {
+    // Handle paths related to specific tricks
     if(options.remove_gumi_boulder())
-    {
         world.add_path(new WorldPath(world.node("route_gumi_ryuma"), world.node("gumi")));
+
+    if(options.handle_enemy_jumping_in_logic())
+    {
+        // Mountainous Area can be reached from route to Lake Shrine by doing a "ghost jump" at crossroads map
+        world.add_path(new WorldPath(world.node("route_lake_shrine"), world.node("route_lake_shrine_cliff")));
+        // Mir Tower sector first tree can be bypassed by jumping on an enemy to reach the elevated ledge
+        world.path(world.node("mir_tower_sector"), world.node("mir_tower_sector_tree_ledge"))->required_items().clear();
     }
 
-    // Handle paths related to specific tricks
-    if(options.handle_ghost_jumping_in_logic())
+    if(options.handle_tree_cutting_glitch_in_logic())
     {
-        world.add_path(new WorldPath(world.node("route_lake_shrine"), world.node("route_lake_shrine_cliff")));
+        // Both trees in Mir Tower sector can be abused through tree cutting glitch
+        world.path(world.node("mir_tower_sector"), world.node("mir_tower_sector_tree_coast"))->required_items().clear();
+        world.path(world.node("mir_tower_sector"), world.node("mir_tower_sector_tree_ledge"))->required_items().clear();
     }
 
     // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements
