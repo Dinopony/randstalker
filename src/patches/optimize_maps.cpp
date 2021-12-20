@@ -63,7 +63,8 @@ static void remove_useless_entities(World& world)
         MAP_MERCATOR_CASTLE_DEXTER_ROOM,
         MAP_MERCATOR_CASTLE_NIGEL_ROOM,
         MAP_MERCATOR_CASTLE_ARMORY_BARRACKS,
-        MAP_RYUMA_LIGHTHOUSE // Base Ryuma lighthouse (before Duke breaks it) is not reachable
+        MAP_RYUMA_LIGHTHOUSE, // Base Ryuma lighthouse (before Duke breaks it) is not reachable
+        MAP_KN_CAVE_TELEPORTER_TO_KAZALT
     };
 
     for(uint16_t map_id : MAPS_TO_CLEAR_ENTITIES_FROM)

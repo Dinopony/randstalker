@@ -35,7 +35,6 @@ static void alter_waterfall_shrine_secret_stairs_check(md::ROM& rom)
  */
 static void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom, const World& world)
 {
-    world.map(MAP_KN_CAVE_TELEPORTER_TO_KAZALT)->clear_entities();
     world.map(MAP_KN_CAVE_ROOM_WITH_WHITE_GOLEMS_VARIANT)->visited_flag(FLAG_OPENED_MERCATOR_TELEPORTER_TO_KNC);
 }
 
