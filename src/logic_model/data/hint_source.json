@@ -1725,19 +1725,6 @@
         "nodeId": "king_nole_labyrinth_post_door"
     },
     {
-        "description": "Foxy (in King Nole's Labyrinth spiral room)",
-        "entity": {
-            "mapId": 393,
-            "position": {
-                "x": 56,
-                "y": 35,
-                "z": 2
-            },
-            "orientation": "sw"
-        },
-        "nodeId": "king_nole_labyrinth_path_to_palace"
-    },
-    {
         "description": "Foxy (next to King Nole's Palace entrance)",
         "entity": {
             "mapId": 422,
