@@ -539,6 +539,13 @@ void WorldShuffler::randomize_lithograph_hint()
 {
     HintSource* lithograph_hint_source = _world.hint_source("Lithograph");
 
+    // If hint source already contains text (e.g. through plando descriptor), ignore it
+    if(!lithograph_hint_source->text().empty())
+    {
+        _world.add_used_hint_source(lithograph_hint_source);
+        return;
+    }
+
     if(_options.jewel_count() == 0 || _world.item_distribution(ITEM_LITHOGRAPH)->quantity() == 0)
     {
         lithograph_hint_source->text("This tablet seems of no use...");
