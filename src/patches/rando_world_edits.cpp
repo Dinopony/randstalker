@@ -6,6 +6,7 @@
 #include <landstalker_lib/model/entity_type.hpp>
 #include <landstalker_lib/constants/map_codes.hpp>
 #include <landstalker_lib/constants/entity_type_codes.hpp>
+#include <landstalker_lib/constants/flags.hpp>
 
 void put_orcs_back_in_room_before_boss_swamp_shrine(World& world)
 {
@@ -160,6 +161,26 @@ void remove_sailor_in_dark_port(World& world)
 }
 
 /**
+ * By default, once boat is taken, there is no way to take it again to go back to Verla.
+ * In randomizer, using Spell Book brings you back in your spawn area, potentially locking you out forever from Verla.
+ * This function replaces the sailor blocking the pier by a new one which makes you take the boat again once boat
+ * has already been taken once.
+ */
+void add_sailor_to_take_boat_again_on_docks(World& world)
+{
+    world.map(MAP_MERCATOR_DOCKS_LIGHTHOUSE_FIXED_VARIANT)->add_entity(new Entity({
+        .type_id = ENTITY_NPC_SAILOR,
+        .position = Position(35, 44, 1, true),
+        .orientation = ENTITY_ORIENTATION_NE,
+        .palette = 3,
+        .talkable = true,
+        .dialogue = 4,
+        .entity_to_use_tiles_from = world.map(MAP_MERCATOR_DOCKS_LIGHTHOUSE_FIXED_VARIANT)->entity(0),
+        .mask_flags = { EntityMaskFlag(true, FLAG_TOOK_BOAT_TO_VERLA) }
+    }));
+}
+
+/**
  * There is a guard staying in front of the Mercator castle backdoor to prevent you from using
  * Mir Tower keys on it. He appears when Crypt is finished and disappears when Mir Tower is finished,
  * but we actually never want him to be there, so we delete him from existence by moving him away from the map.
@@ -253,6 +274,7 @@ void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
     alter_mercator_special_shop_check(world);
     add_reverse_mercator_gate(world);
     remove_sailor_in_dark_port(world);
+    add_sailor_to_take_boat_again_on_docks(world);
     remove_mercator_castle_backdoor_guard(world);
     fix_reverse_greenmaze_fountain_softlock(world);
     alter_palettes_for_miscolored_ground_items(world);
