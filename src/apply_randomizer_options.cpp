@@ -14,6 +14,7 @@
 #include "logic_model/world_path.hpp"
 #include "logic_model/randomizer_world.hpp"
 #include "logic_model/item_distribution.hpp"
+#include "logic_model/hint_source.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
 {
@@ -265,6 +266,16 @@ static void apply_options_on_spawn_locations(const RandomizerOptions& options, R
     }
 }
 
+static void apply_options_on_hint_sources(const RandomizerOptions& options, RandomizerWorld& world)
+{
+    // Patch model if user specified a model patch
+    const Json& model_patch = options.hint_sources_model_patch();
+    for(const Json& json : model_patch)
+    {
+        world.add_hint_source(HintSource::from_json(json, world.nodes()));
+    }
+}
+
 static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
@@ -320,4 +331,5 @@ void apply_randomizer_options(const RandomizerOptions& options, RandomizerWorld&
     apply_options_on_logic_paths(options, world);
     apply_options_on_spawn_locations(options, world);
     apply_options_on_item_distributions(options, world);
+    apply_options_on_hint_sources(options, world);
 }

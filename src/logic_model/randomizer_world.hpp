@@ -52,6 +52,7 @@ public:
 
     [[nodiscard]] const std::vector<HintSource*>& hint_sources() const { return _hint_sources; }
     [[nodiscard]] HintSource* hint_source(const std::string& name) const;
+    void add_hint_source(HintSource* hint_source) { _hint_sources.emplace_back(hint_source); }
     [[nodiscard]] const std::vector<HintSource*>& used_hint_sources() const { return _used_hint_sources; }
     void add_used_hint_source(HintSource* hint_source) { _used_hint_sources.emplace_back(hint_source); }
 

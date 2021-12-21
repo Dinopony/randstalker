@@ -53,8 +53,7 @@ private:
     // ------------- Model patch -------------
     Json _model_patch_items;
     Json _model_patch_spawns;
-
-
+    Json _model_patch_hint_sources;
 
 public:
     RandomizerOptions() = default;
@@ -103,6 +102,7 @@ public:
     // Model patch
     [[nodiscard]] const Json& items_model_patch() const { return _model_patch_items; }
     [[nodiscard]] const Json& spawn_locations_model_patch() const { return _model_patch_spawns; }
+    [[nodiscard]] const Json& hint_sources_model_patch() const { return _model_patch_hint_sources; }
 
     [[nodiscard]] std::vector<std::string> hash_words() const;
     [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }

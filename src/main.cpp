@@ -89,11 +89,11 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
-    // Parse a potential "world" section inside the preset for plandos & half plandos
-    WorldJsonParser::parse_world_json(world, options.world_json());
-
     // Apply randomizer options to alter World and RandomizerWorld accordingly before starting the actual randomization
     apply_randomizer_options(options, world);
+
+    // Parse a potential "world" section inside the preset for plandos & half plandos
+    WorldJsonParser::parse_world_json(world, options.world_json());
 
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
     std::cout << "\nRandomizing world...\n";
