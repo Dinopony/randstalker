@@ -23,7 +23,7 @@ private:
     uint16_t _startingGold = 0;
     std::map<std::string, uint8_t> _starting_items;
     bool _fix_armlet_skip = true;
-    bool _fix_tree_cutting_glitch = true;
+    bool _remove_tree_cutting_glitch_drops = true;
     bool _consumable_record_book = false;
     bool _remove_gumi_boulder = false;
     bool _remove_tibor_requirement = false;
@@ -75,7 +75,7 @@ public:
     [[nodiscard]] uint16_t starting_gold() const { return _startingGold; }
     [[nodiscard]] const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
     [[nodiscard]] bool fix_armlet_skip() const { return _fix_armlet_skip; }
-    [[nodiscard]] bool fix_tree_cutting_glitch() const { return _fix_tree_cutting_glitch; }
+    [[nodiscard]] bool remove_tree_cutting_glitch_drops() const { return _remove_tree_cutting_glitch_drops; }
     [[nodiscard]] bool consumable_record_book() const { return _consumable_record_book; }
     [[nodiscard]] bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
     [[nodiscard]] bool remove_tibor_requirement() const { return _remove_tibor_requirement; }

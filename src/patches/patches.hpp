@@ -39,8 +39,11 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
     handle_additional_jewels(rom, world, options.jewel_count());
     make_sword_of_gaia_work_in_volcano(rom);
-    normalize_special_enemies_hp(rom, options.fix_tree_cutting_glitch());
+    normalize_special_enemies_hp(rom);
     make_lifestocks_give_specific_health(rom, options.health_gained_per_lifestock());
+
+    if(options.remove_tree_cutting_glitch_drops())
+        remove_tree_cutting_glitch_drops(rom);
 
     if (options.use_armor_upgrades())
         handle_armor_upgrades(rom);
@@ -51,7 +54,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     alter_item_order_in_menu(rom);
     quicken_gaia_effect(rom);
     quicken_pawn_ticket_effect(rom);
-    
+
     make_massan_elder_reward_not_story_dependant(rom, world);
     make_lumberjack_reward_not_story_dependant(rom);
     change_falling_ribbon_position(rom);

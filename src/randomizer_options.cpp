@@ -76,7 +76,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["startingGold"] = _startingGold;
     json["gameSettings"]["startingItems"] = _starting_items;
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
-    json["gameSettings"]["fixTreeCuttingGlitch"] = _fix_tree_cutting_glitch;
+    json["gameSettings"]["removeTreeCuttingGlitchDrops"] = _remove_tree_cutting_glitch_drops;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
@@ -123,8 +123,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _startingGold = game_settings_json.at("startingGold");
         if(game_settings_json.contains("fixArmletSkip"))
             _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
-        if(game_settings_json.contains("fixTreeCuttingGlitch"))
-            _fix_tree_cutting_glitch = game_settings_json.at("fixTreeCuttingGlitch");
+        if(game_settings_json.contains("removeTreeCuttingGlitchDrops"))
+            _remove_tree_cutting_glitch_drops = game_settings_json.at("removeTreeCuttingGlitchDrops");
         if(game_settings_json.contains("consumableRecordBook"))
             _consumable_record_book = game_settings_json.at("consumableRecordBook");
         if(game_settings_json.contains("removeGumiBoulder"))
@@ -258,7 +258,7 @@ std::string RandomizerOptions::permalink() const
 
     bitpack.pack(_use_armor_upgrades);
     bitpack.pack(_fix_armlet_skip);
-    bitpack.pack(_fix_tree_cutting_glitch);
+    bitpack.pack(_remove_tree_cutting_glitch_drops);
     bitpack.pack(_consumable_record_book);
     bitpack.pack(_remove_gumi_boulder);
     bitpack.pack(_remove_tibor_requirement);
@@ -303,7 +303,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
 
     _use_armor_upgrades = bitpack.unpack<bool>();
     _fix_armlet_skip = bitpack.unpack<bool>();
-    _fix_tree_cutting_glitch = bitpack.unpack<bool>();
+    _remove_tree_cutting_glitch_drops = bitpack.unpack<bool>();
     _consumable_record_book = bitpack.unpack<bool>();
     _remove_gumi_boulder = bitpack.unpack<bool>();
     _remove_tibor_requirement = bitpack.unpack<bool>();
