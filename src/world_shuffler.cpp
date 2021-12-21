@@ -203,6 +203,16 @@ void WorldShuffler::randomize_items()
 void WorldShuffler::init_item_pool()
 {
     _item_pool.clear();
+
+    // TODO: Improve this behavior by using the item pool as a list of how to fill remaining item sources
+    //       instead of what is meant to be inside all item sources.
+    size_t filled_item_sources_count = 0;
+    for(ItemSource* source : _world.item_sources())
+        if(!source->empty())
+            filled_item_sources_count++;
+    if(filled_item_sources_count == _world.item_sources().size())
+        return;
+
     _item_pool.reserve(_world.item_sources().size());
     _item_pool_quantities = _world.item_quantities();
 
@@ -289,8 +299,9 @@ ItemSource* WorldShuffler::place_item_randomly(Item* item, std::vector<ItemSourc
 {
     if(_item_pool_quantities[item->id()] == 0)
     {
-        throw LandstalkerException("Could not place " + item->name() + " as requested because there are no more "
-                                   "instances of it inside the item pool.");
+        std::cout << "Ignored placement of " << item->name() << " after crossing path because there are no more"
+                                                                " instances of it inside the item pool." << std::endl;
+        return nullptr;
     }
 
     tools::shuffle(possible_sources, _rng);
