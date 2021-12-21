@@ -5,6 +5,7 @@
 #include <landstalker_lib/model/entity.hpp>
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/map_codes.hpp>
+#include <landstalker_lib/constants/entity_type_codes.hpp>
 #include <landstalker_lib/constants/flags.hpp>
 #include "../randomizer_options.hpp"
 
@@ -155,6 +156,28 @@ static void untangle_verla_mines_flags(World& world)
     world.map(MAP_VERLA_MINES_SLASHER_ARENA)->global_entity_mask_flags().clear();
 }
 
+static void put_dex_back_in_verla_mines(World& world)
+{
+    Map* map = world.map(MAP_VERLA_MINES_DEX_ARENA);
+
+    // Clear global masks
+    map->global_entity_mask_flags().clear();
+
+    // Remove townsfolk and invisible cube
+    map->remove_entity(4);
+    map->remove_entity(3);
+    map->remove_entity(2);
+    map->remove_entity(1);
+
+    // Add a new door
+    map->add_entity(new Entity({
+        .type_id = ENTITY_GATE_NORTH,
+        .position = Position(20, 17, 3),
+        .behavior_id = 525, // Open when Dex is killed
+        .mask_flags = { EntityMaskFlag(false, FLAG_DEX_KILLED) },
+    }));
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
@@ -172,5 +195,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     fix_crypt_softlocks(rom, world);
     alter_labyrinth_rafts(rom);
     untangle_verla_mines_flags(world);
+    put_dex_back_in_verla_mines(world);
 }
 
