@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 
     std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
 
-    if(args.get_string("permalink").empty())
+    if(args.contains("permalink") && args.get_string("permalink").empty())
     {
         std::string permalink;
         std::cout << "Please specify a permalink: ";

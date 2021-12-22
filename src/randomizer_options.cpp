@@ -116,6 +116,12 @@ Json RandomizerOptions::to_json() const
 
 void RandomizerOptions::parse_json(const Json& json)
 {
+    if(json.contains("permalink"))
+    {
+        this->parse_permalink(json.at("permalink"));
+        return;
+    }
+
     if(json.contains("gameSettings"))
     {
         const Json& game_settings_json = json.at("gameSettings");
