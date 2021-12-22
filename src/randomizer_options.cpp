@@ -108,6 +108,8 @@ Json RandomizerOptions::to_json() const
         json["modelPatch"]["items"] = _model_patch_items;
     if(!_model_patch_spawns.empty())
         json["modelPatch"]["spawnLocations"] = _model_patch_spawns;
+    if(!_model_patch_hint_sources.empty())
+        json["modelPatch"]["hintSources"] = _model_patch_hint_sources;
 
     return json;
 }
