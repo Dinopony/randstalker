@@ -98,6 +98,11 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
     json["randomizerSettings"]["hintsCount"] = _hints_count;
+    json["randomizerSettings"]["hintsDistribution"] = {
+        { "regionRequirement", _hint_distribution_region_requirement },
+        { "itemRequirement", _hint_distribution_item_requirement },
+        { "itemLocation", _hint_distribution_item_location }
+    };
 
     if(!_model_patch_items.empty())
         json["modelPatch"]["items"] = _model_patch_items;
@@ -186,6 +191,14 @@ void RandomizerOptions::parse_json(const Json& json)
                 _items_distribution[item_id] = quantity;
             }
         }
+
+        if(randomizer_settings_json.contains("hintsDistribution"))
+        {
+            const Json& hints_distrib_json = randomizer_settings_json.at("hintsDistribution");
+            _hint_distribution_region_requirement = hints_distrib_json.value("regionRequirement", 0);
+            _hint_distribution_item_requirement = hints_distrib_json.value("itemRequirement", 0);
+            _hint_distribution_item_location = hints_distrib_json.value("itemLocation", 0);
+        }
     }
 
     if(json.contains("modelPatch"))
@@ -272,6 +285,9 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_damage_boosting_in_logic);
     bitpack.pack(_hints_count);
     bitpack.pack_map(_items_distribution);
+    bitpack.pack(_hint_distribution_region_requirement);
+    bitpack.pack(_hint_distribution_item_requirement);
+    bitpack.pack(_hint_distribution_item_location);
 
     bitpack.pack_vector(_possible_spawn_locations);
     bitpack.pack_map(_starting_items);
@@ -317,6 +333,9 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _damage_boosting_in_logic = bitpack.unpack<bool>();
     _hints_count = bitpack.unpack<uint8_t>();
     _items_distribution = bitpack.unpack_map<uint8_t, uint16_t>();
+    _hint_distribution_region_requirement = bitpack.unpack<uint8_t>();
+    _hint_distribution_item_requirement = bitpack.unpack<uint8_t>();
+    _hint_distribution_item_location = bitpack.unpack<uint8_t>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 

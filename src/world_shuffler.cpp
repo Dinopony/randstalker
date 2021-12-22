@@ -9,7 +9,6 @@
 #include <landstalker_lib/model/item_source.hpp>
 #include <landstalker_lib/model/world_teleport_tree.hpp>
 #include <landstalker_lib/model/spawn_location.hpp>
-#include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
 #include "logic_model/hint_source.hpp"
@@ -737,30 +736,37 @@ void WorldShuffler::randomize_fox_hints()
         // If hint source already contains text (e.g. through plando descriptor), ignore it
         if(!hint_source->text().empty())
             continue;
-        
-        double random_number = (double) _rng() / (double) std::mt19937::max();
 
-        if(random_number < 0.3 && !_hintable_regions.empty())
+        // Fallback in case none of the following options match.
+        hint_source->text("I don't have anything to tell you. Move on.");
+
+        double random_number = (double) _rng() / (double) std::mt19937::max();
+        double current_tested_value = _options.hint_distribution_region_requirement();
+        if(random_number < current_tested_value)
         {
-            // "Barren / pleasant surprise" (30%)
-            generate_region_requirement_hint(hint_source);
+            // "Barren / pleasant surprise"
+            if(!_hintable_regions.empty())
+                this->generate_region_requirement_hint(hint_source);
             continue;
         }
-        else if(random_number < 0.55 && !_hintable_item_requirements.empty())
+
+        current_tested_value += _options.hint_distribution_item_requirement();
+        if(random_number < current_tested_value)
         {
-            // "You will / won't need {item} to finish" (25%)
-            if(generate_item_requirement_hint(hint_source))
-                continue;
-        }
-        else if(!_hintable_item_locations.empty())
-        {
-            // "You shall find {item} in {place}" (45%)
-            if(generate_item_position_hint(hint_source))
-                continue;
+            // "You will / won't need {item} to finish"
+            if(!_hintable_item_requirements.empty())
+                this->generate_item_requirement_hint(hint_source);
+            continue;
         }
 
-        // Fallback if none matched
-        hint_source->text("I don't have anything to tell you. Move on.");
+        current_tested_value += _options.hint_distribution_item_location();
+        if(random_number < current_tested_value)
+        {
+            // "You shall find {item} in {place}"
+            if(!_hintable_item_locations.empty())
+                this->generate_item_position_hint(hint_source);
+            continue;
+        }
     }
 }
 

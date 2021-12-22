@@ -45,7 +45,10 @@ private:
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
     std::map<uint8_t, uint16_t> _items_distribution;
-    uint8_t _hints_count = 10;
+    uint8_t _hints_count = 20;
+    uint8_t _hint_distribution_region_requirement = 30;
+    uint8_t _hint_distribution_item_requirement = 25;
+    uint8_t _hint_distribution_item_location = 45;
 
     // ------------- Plando world JSON -------------
     Json _world_json;
@@ -95,6 +98,9 @@ public:
     [[nodiscard]] bool handle_tree_cutting_glitch_in_logic() const { return _tree_cutting_glitch_in_logic; }
     [[nodiscard]] const std::map<uint8_t, uint16_t>& items_distribution() const { return _items_distribution; }
     [[nodiscard]] uint8_t hints_count() const { return _hints_count; }
+    [[nodiscard]] double hint_distribution_region_requirement() const { return (double)_hint_distribution_region_requirement / 100.0; }
+    [[nodiscard]] double hint_distribution_item_requirement() const { return (double)_hint_distribution_item_requirement / 100.0; }
+    [[nodiscard]] double hint_distribution_item_location() const { return (double)_hint_distribution_item_location / 100.0; }
 
     // Plando-specific options
     [[nodiscard]] const Json& world_json() const { return _world_json; }
