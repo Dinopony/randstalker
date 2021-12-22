@@ -293,6 +293,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack_map(_starting_items);
     bitpack.pack(_model_patch_items);
     bitpack.pack(_model_patch_spawns);
+    bitpack.pack(_model_patch_hint_sources);
     bitpack.pack(_world_json);
 
     return "l" + base64_encode(bitpack.to_bytes()) + "s";
@@ -342,5 +343,6 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _starting_items = bitpack.unpack_map<std::string, uint8_t>();
     _model_patch_items = bitpack.unpack<Json>();
     _model_patch_spawns = bitpack.unpack<Json>();
+    _model_patch_hint_sources = bitpack.unpack<Json>();
     _world_json = bitpack.unpack<Json>();
 }
