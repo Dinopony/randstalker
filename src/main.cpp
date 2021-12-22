@@ -141,7 +141,7 @@ void generate(const ArgumentDictionary& args)
     // Parse various paths from args
     std::string input_rom_path, output_rom_path, spoiler_log_path;
     process_paths(args, options, input_rom_path, output_rom_path, spoiler_log_path);
- 
+
     // Output current preset
     if (args.get_boolean("writepreset"))
     {
@@ -214,6 +214,14 @@ int main(int argc, char* argv[])
     ArgumentDictionary args(argc, argv);
 
     std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
+
+    if(args.get_string("permalink").empty())
+    {
+        std::string permalink;
+        std::cout << "Please specify a permalink: ";
+        std::getline(std::cin, permalink);
+        args.set_string("permalink", permalink);
+    }
 
     try
     {
