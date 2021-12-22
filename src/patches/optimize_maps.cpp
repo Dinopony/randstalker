@@ -125,6 +125,16 @@ static void optimize_palettes(World& world)
     }
 }
 
+static void optimize_map_connections(World& world)
+{
+    // Replace direct waterless variants references by parent map in Thieves Hideout
+    world.map_connection(MAP_THIEVES_HIDEOUT_DOOR_BEHIND_WATERFALL_WATERLESS, MAP_THIEVES_HIDEOUT_BACK_ACCESS)
+            .replace_map(MAP_THIEVES_HIDEOUT_DOOR_BEHIND_WATERFALL_WATERLESS, MAP_THIEVES_HIDEOUT_DOOR_BEHIND_WATERFALL);
+
+    world.map_connection(MAP_THIEVES_HIDEOUT_ENTRANCE_WATERLESS, MAP_THIEVES_HIDEOUT_POCKETS_CELL_ACCESS_1)
+         .replace_map(MAP_THIEVES_HIDEOUT_ENTRANCE_WATERLESS, MAP_THIEVES_HIDEOUT_ENTRANCE);
+}
+
 static void remove_useless_map_variants(World& world)
 {
     // Clear unreachable variants and prevent them from triggering
@@ -152,6 +162,7 @@ void optimize_maps(World& world)
     clear_unreachable_maps(world);
     remove_useless_entities(world);
     optimize_palettes(world);
+    optimize_map_connections(world);
 
     transform_variant_into_standard(world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT));
 
