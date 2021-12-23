@@ -14,13 +14,17 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 - You will need as many jewels as specified in the settings to use the teleporter to go to Kazalt
 - All other conditions from the original game stay as-is (Safety Pass to reach Mercator, Gola's Eye to reach King Nole's Cave, Axe Magic to cut trees, all three Gola pieces to reach King Nole's fight...)
 - The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked by having Buyer Card in your inventory
-- The key is now a unique item and can open several doors without being consumed. All key doors are gone, except two : 
+- The **Key** is now a unique item and can open several doors without being consumed. All key doors are gone, except three of them : 
 	* the Mercator castle backdoor (giving access to Greenmaze sector) 
-	* Thieves Hideout middle door (cutting the level in half)
-- Some reward-giving NPCs are replaced by chests for technical reasons:
-	* Lumberjack in Greenmaze (Einstein Whistle in OG)
-	* Depressed shopkeeper in Mercator (Buyer's Card in OG)
-- Tibor trees connections can be optionally randomized
+	* Thieves Hideout middle door (cutting the level in half) 
+	* King Nole's Labyrinth door near entrance
+
+### New item features
+
+- On default settings, you start with two unusual items:
+    - a **Record Book** allowing you to save anywhere and pontentially save time by strategically save-scumming
+    - a **Spell Book** allowing you to warp back to your spawn point
+- You will also be able to find the **Statue of Jypta** which is reintroduced as a real item giving gold passively as you walk. Free riches!
 
 ### Hints 
 
@@ -31,37 +35,39 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 
 ### Fixes
 
-- Original game glitches (tree cutting glitch, armlet skip...) are fixed. Sorry!
-- All known places where you usually can't go back and could potentially softlock now stay opened (e.g. Crypt, King Nole's Labyrinth raft sector, Swamp Shrine boss reward chest...)
-
-### New item features
-
-- You start with a Record Book in your inventory allowing you to save anywhere and pontentially save time by strategically save-scumming (this can be disabled as an option)
-- Spell Book warps you back to your spawn point when used
-- Statue of Jypta is reintroduced as a real item giving gold passively as you walk. Free riches!
-- Armors work by default as "armor upgrades", meaning you will always get them one tier after another (this can be disabled as an option)
+- You won't be able to go to Mir Tower without the Armlet by doing the Armlet skip since it has been fixed. Sorry!
+- All known places where you usually can't go back and could potentially softlock now stay opened to be able to come back afterwards (e.g. Crypt, King Nole's Labyrinth raft sector, Swamp Shrine boss reward chest...)
 
 ### Misc details
 
+- Depressed shopkeeper in Mercator (giving Buyer's Card in vanilla game) is replaced by a chest in the shop backroom, since traders' sidequest is only available in a very limited timeframe in the game
+- By default, armors work as "armor upgrades", meaning you will always get them one tier after another (this can be disabled as an option)
 - The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
 - The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right before it. You can go straight to Kazalt without worrying about it.
+- Tibor trees connections can be optionally randomized
 
 ## Known issues / non-issues
 
 - Dex won't be in his map in Verla Mines for technical reasons. This is not a problem by itself, but can be surprising at first.
-- Trees next to Sun Stone cannot be cut using Axe Magic, only by the lumberjack using Einstein Whistle. This is the intended behavior in original game, and it's pretty convenient for the rando logic.
 
 ## Usage
 
+### Release versions
+
 You can use the online generator provided by Dilandau (thanks to him!) at this address: https://randstalker.ovh/
+The online generator always uses an up-to-date stable version of the tool, but sometimes not the very latest build (because it might be buggy / unstable).
 
-The online generator always uses an up-to-date stable version of the tool, but sometimes not the very latest build which might be buggy / unstable.
-To get the very last version, you can also compile and use the executable version on your own device.
-To do so, either launch randstalker.exe and follow the instructions, or execute it through the command line with the following syntax:
+Using the provided release packages (on the right panel of this webpage) is really straightforward since everything (excepted the original ROM) is included for you to start randomizing.
 
-`randstalker [options]`
+### Development versions
 
-With the following options being available:
+If you want to get the very last version, you can also compile and use the executable version on your own device.
+You will need CMake to do so, and then do:
+
+- On Windows, with Visual Studio 2019 installed, you can execute `build_win_vs2019.bat`
+- On Unix, you can execute `build_unix.sh`
+
+You will then need to execute the compiled binary it through the command line with the following options being available:
 
 - **--permalink=PERMALINK**: use the given permalink to populate all other settings. Permalinks are given at then end of a generation and allow for other generations of the exact same seed.
 - **--inputRom=PATH**: set the path to the ROM used as input (e.g. `--inputRom="myROM.md"`)
@@ -70,12 +76,3 @@ With the following options being available:
 - **--preset=PATH**: set the path where the JSON preset file containing settings is located (e.g. `--preset=preset.json`)
 - **--noPause**: if set, no "press any key" prompt will be put at the end of generation, especially useful for automated generators (e.g. `--noPause`)
 - **--ingameTracker**: adds greyed out key items in inventory to have a working in-game item tracker
-
-You can use the `example_preset.json` located at the root of the repository as a starting point for your own preset files.
-
-## Build instructions
-
-If you want to build the binary from the source code, you will need CMake.
-
-- On Windows, with Visual Studio 2019 installed, you can execute `build_win_vs2019.bat`
-- On Unix, you can execute `build_unix.sh`
