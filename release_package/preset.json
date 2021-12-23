@@ -19,7 +19,6 @@
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,
-        "itemSourcesWindow": 30,
         "spawnLocations": [
             "massan", "gumi", "kado", "waterfall", "ryuma", "mercator", "verla", "greenmaze", "destel"
         ],
