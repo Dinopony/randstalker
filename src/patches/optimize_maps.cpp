@@ -133,6 +133,10 @@ static void optimize_map_connections(World& world)
 
     world.map_connection(MAP_THIEVES_HIDEOUT_ENTRANCE_WATERLESS, MAP_THIEVES_HIDEOUT_POCKETS_CELL_ACCESS_1)
          .replace_map(MAP_THIEVES_HIDEOUT_ENTRANCE_WATERLESS, MAP_THIEVES_HIDEOUT_ENTRANCE);
+
+    // Replace direct solified magma variant reference by base version of Lake Shrine exterior map when leaving Lake Shrine
+    world.map_connection(MAP_LAKE_SHRINE_ENTRANCE, MAP_LAKE_SHRINE_EXTERIOR_WITH_MAGMA)
+        .replace_map(MAP_LAKE_SHRINE_EXTERIOR_WITH_MAGMA, MAP_LAKE_SHRINE_EXTERIOR);
 }
 
 static void remove_useless_map_variants(World& world)
