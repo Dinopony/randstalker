@@ -43,35 +43,22 @@ static uint32_t inject_func_handle_hints(md::ROM& rom, uint32_t hint_map_ids_add
     return rom.inject_code(func_handle_hints);
 }
 
-static uint16_t add_magic_fox(World& world, HintSource* hint_source)
+static void add_magic_fox(World& world, HintSource* hint_source, uint16_t map_id, uint8_t dialogue_id)
 {
-    // Add Magic Foxes speaker ID to the map speakers (former Kayla ID)
-    Map* parent_map = world.map(hint_source->map_ids()[0]);
-    while(parent_map->parent_map())
-        parent_map = parent_map->parent_map();
+    uint8_t entity_type_id = hint_source->high_palette() ? ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE : ENTITY_NPC_MAGIC_FOX;
+    uint8_t palette_id = hint_source->high_palette() ? 1 : 3;
 
-    parent_map->speaker_ids().emplace_back(0x2E);
-    uint8_t dialogue_id = parent_map->speaker_ids().size() - 1;
+    Map* map = world.map(map_id);
+    map->convert_global_masks_into_individual();
 
-    for(uint16_t map_id : hint_source->map_ids())
-    {
-        uint8_t entity_type_id = hint_source->high_palette() ? ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE : ENTITY_NPC_MAGIC_FOX;
-        uint8_t palette_id = hint_source->high_palette() ? 1 : 3;
-
-        Map* map = world.map(map_id);
-        map->convert_global_masks_into_individual();
-
-        map->add_entity(new Entity({
-            .type_id = entity_type_id,
-            .position = hint_source->position(),
-            .orientation = hint_source->orientation(),
-            .palette = palette_id,
-            .talkable = true,
-            .dialogue = dialogue_id,
-        }));
-    }
-
-    return parent_map->id();
+    map->add_entity(new Entity({
+        .type_id = entity_type_id,
+        .position = hint_source->position(),
+        .orientation = hint_source->orientation(),
+        .palette = palette_id,
+        .talkable = true,
+        .dialogue = dialogue_id,
+    }));
 }
 
 static void edit_fox_voice_and_name(md::ROM& rom)
@@ -147,20 +134,40 @@ static void inject_altered_fox_sprites(md::ROM& rom, World& world)
 
 void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
 {
+    constexpr uint8_t MAGIC_FOX_SPEAKER_ID = 0x2E;
+
+    UnsortedSet<uint16_t> processed_map_ids;
     ByteArray hint_map_ids_table;
     ByteArray command_words_table;
-    for(HintSource* source : world.used_hint_sources())
+
+    for(HintSource* hint_source : world.used_hint_sources())
     {
         // If hint source is special, it means it's not a fox
-        if(source->special())
+        if(hint_source->special())
             continue;
 
-        // Add the actual fox inside the map where it is meant to be
-        uint16_t parent_map_id = add_magic_fox(world, source);
-        hint_map_ids_table.add_word(parent_map_id);
+        for(uint16_t map_id : hint_source->map_ids())
+        {
+            // Add Magic Foxes speaker ID (former Kayla ID) to the list of speakers in parent map
+            Map* parent_map = world.map(map_id);
+            while(parent_map->parent_map())
+                parent_map = parent_map->parent_map();
 
-        // Add the command words table triggering one fox dialogue each
-        command_words_table.add_word(0xE000 | ((source->text_ids()[0] - 0x4D) & 0x1FFF));
+            if(!processed_map_ids.contains(parent_map->id()))
+            {
+                // Add the required data for the fox to actually talk
+                parent_map->speaker_ids().emplace_back(MAGIC_FOX_SPEAKER_ID);
+                hint_map_ids_table.add_word(parent_map->id());
+                command_words_table.add_word(0xE000 | ((hint_source->text_ids()[0] - 0x4D) & 0x1FFF));
+
+                processed_map_ids.insert(parent_map->id());
+            }
+
+            uint8_t dialogue_id = parent_map->speaker_ids().size() - 1;
+
+            // Add the actual fox inside the map where it is meant to be
+            add_magic_fox(world, hint_source, map_id, dialogue_id);
+        }
     }
 
     // Inject the LUT of map IDs to match with hints IDs
