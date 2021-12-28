@@ -28,7 +28,9 @@ void christmas_event(md::ROM& rom, World& world);
 inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options, const PersonalSettings& personal_settings)
 {
     optimize_maps(world);
-
+    alter_randomizer_credits(rom);
+    alter_randomizer_title(rom);
+    
     add_functions_to_items_on_use(rom, world, options.consumable_record_book());
     add_statue_of_jypta_effect(rom);
     alter_fahl_challenge(rom, world);
@@ -65,8 +67,6 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     make_falling_ribbon_not_story_dependant(world);
 
     alter_hint_provider_dialogues(rom);
-    alter_randomizer_credits(rom);
-    alter_randomizer_title(rom);
     apply_rando_world_edits(rom, world, options.fix_armlet_skip());
     replace_copy_save_by_show_hash(rom, options.hash_sentence());
     shorten_cutscenes(rom);
