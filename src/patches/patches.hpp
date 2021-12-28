@@ -22,6 +22,9 @@ void shorten_cutscenes(md::ROM& rom);
 // Not yet processed patches
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world);
 
+// Events
+void christmas_event(md::ROM& rom, World& world);
+
 inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options, const PersonalSettings& personal_settings)
 {
     optimize_maps(world);
@@ -71,4 +74,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     handle_fox_hints(rom, world);
     patch_rando_adaptations(rom, options, world);
     patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
+
+    if(options.christmas_event())
+        christmas_event(rom, world);
 }

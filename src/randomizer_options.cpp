@@ -221,6 +221,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _model_patch_hint_sources = model_patch_json.at("hintSources");
     }
 
+    _christmas_event = json.value("christmasEvent", false);
+
     if(json.contains("world"))
         _world_json = json.at("world");
 

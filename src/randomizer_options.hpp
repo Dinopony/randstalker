@@ -50,6 +50,9 @@ private:
     uint8_t _hint_distribution_item_requirement = 25;
     uint8_t _hint_distribution_item_location = 45;
 
+    // ------------- Events -------------
+    bool _christmas_event = false;
+
     // ------------- Plando world JSON -------------
     Json _world_json;
 
@@ -101,6 +104,9 @@ public:
     [[nodiscard]] double hint_distribution_region_requirement() const { return (double)_hint_distribution_region_requirement / 100.0; }
     [[nodiscard]] double hint_distribution_item_requirement() const { return (double)_hint_distribution_item_requirement / 100.0; }
     [[nodiscard]] double hint_distribution_item_location() const { return (double)_hint_distribution_item_location / 100.0; }
+
+    // Event
+    [[nodiscard]] bool christmas_event() const { return _christmas_event; }
 
     // Plando-specific options
     [[nodiscard]] const Json& world_json() const { return _world_json; }
