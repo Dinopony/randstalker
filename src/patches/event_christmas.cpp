@@ -7,6 +7,15 @@
 
 void christmas_event(md::ROM& rom, World& world)
 {
+    // Change title screen palette
+    ColorPalette<16> title_palette = ColorPalette<16>::from_rom(rom, 0x3DECA);
+    title_palette[8] = Color::from_bgr_word(0x22C);
+    title_palette[9] = Color::from_bgr_word(0x028);
+    title_palette[10] = Color::from_bgr_word(0x226);
+    title_palette[11] = Color::from_bgr_word(0x24E);
+    rom.set_bytes(0x3DECA, title_palette.to_bytes());
+
+    // Change map palettes for a more snowy mood
     std::vector<uint16_t> PALETTES_TO_PROCESS = {
             MAP_ROUTE_TO_RYUMA_1,
             MAP_ROUTE_GUMI_RYUMA_TIBOR_CROSSROADS,
@@ -39,6 +48,7 @@ void christmas_event(md::ROM& rom, World& world)
     // palette->at(4) = Color(0xA0, 0x40, 0x00);
     // palette->at(5) = Color(0xC0, 0x80, 0x20);
 
+    // Change money bags into presents
     constexpr uint32_t MONEYBAG_SPRITE_ADDR = 0x151CC4;
     Sprite moneybag_sprite = Sprite::decode_from(rom.iterator_at(MONEYBAG_SPRITE_ADDR));
     Sprite edited_moneybag = Sprite(CHRISTMAS_MONEYBAG, CHRISTMAS_MONEYBAG_SIZE, moneybag_sprite.subsprites());
