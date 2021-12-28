@@ -150,6 +150,15 @@ static void set_story_as_advanced(md::ROM& rom)
     rom.set_word(0x25324, 0x0000);
 }
 
+static void remove_verla_soldiers_on_verla_spawn(World& world)
+{
+    if(world.spawn_location().node_id() == "verla")
+    {
+        world.starting_flags().emplace_back(FLAG_VERLA_WHITE_KNIGHTS_KILLED);
+        world.starting_flags().emplace_back(FLAG_VERLA_GOLDEN_KNIGHT_KILLED);
+    }
+}
+
 static void untangle_verla_mines_flags(World& world)
 {
     // Make Slasher appearance not dependant on Marley being killed
@@ -194,6 +203,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     prevent_hint_item_save_scumming(rom);
     fix_crypt_softlocks(rom, world);
     alter_labyrinth_rafts(rom);
+    remove_verla_soldiers_on_verla_spawn(world);
     untangle_verla_mines_flags(world);
     put_dex_back_in_verla_mines(world);
 }

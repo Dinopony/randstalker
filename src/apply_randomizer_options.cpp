@@ -75,13 +75,6 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
         flags_to_add.emplace_back(Flag(0x25, 1));
     }
 
-    // Clear Verla soldiers if spawning in Verla
-    if(world.spawn_location().id() == "verla")
-    {
-        flags_to_add.emplace_back(Flag(0x26, 3));
-        flags_to_add.emplace_back(Flag(0x26, 4));
-    }
-
     // Mark the boulder as already removed at game start
     if(options.remove_gumi_boulder())
         flags_to_add.emplace_back(Flag(0x02, 6));
