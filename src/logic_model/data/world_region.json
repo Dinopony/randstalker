@@ -35,6 +35,8 @@
     },
     {
         "name": "Swamp Shrine",
+        "hintName": "in the swamp shrine",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "swamp_shrine"
         ],
@@ -135,6 +137,8 @@
     },
     {
         "name": "Mir Tower",
+        "hintName": "inside Mir Tower",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "mir_tower_pre_garlic",
             "mir_tower_post_garlic"

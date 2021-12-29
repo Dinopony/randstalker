@@ -30,7 +30,7 @@ private:
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
 
-    UnsortedSet<WorldRegion*> _hintable_regions;
+    UnsortedSet<WorldRegion*> _hintable_region_requirements;
     UnsortedSet<uint8_t> _hintable_item_requirements;
     UnsortedSet<uint8_t> _hintable_item_locations;
 
@@ -71,6 +71,7 @@ private:
     [[nodiscard]] Item* randomize_fortune_teller_hint();
     void randomize_oracle_stone_hint(Item* fortune_hinted_item);
     void randomize_fox_hints();
+    bool generate_dark_region_hint(HintSource* hint_source);
     void generate_region_requirement_hint(HintSource* hint_source);
     bool generate_item_requirement_hint(HintSource* hint_source);
     bool generate_item_position_hint(HintSource* hint_source);

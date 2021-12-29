@@ -521,11 +521,10 @@ void WorldShuffler::randomize_hints()
 void WorldShuffler::init_hint_collections()
 {
     // A shuffled list of regions, used for the "barren / useful node" hints
-    _hintable_regions;
     for(WorldRegion* region : _world.regions())
-        if(region->can_be_hinted())
-            _hintable_regions.emplace_back(region);
-    tools::shuffle(_hintable_regions, _rng);
+        if(region->can_be_hinted_as_required())
+            _hintable_region_requirements.emplace_back(region);
+    tools::shuffle(_hintable_region_requirements, _rng);
 
     // A shuffled list of potentially optional items, useful for the "this item will be useful / useless" hints
     _hintable_item_requirements = {
@@ -728,6 +727,8 @@ void WorldShuffler::randomize_fox_hints()
     if(foxes_pool.size() > hints_count)
         foxes_pool.resize(hints_count);
 
+    bool has_hinted_dark_region = false;
+
     // Put hints inside
     for (HintSource* hint_source : foxes_pool)
     {
@@ -740,12 +741,21 @@ void WorldShuffler::randomize_fox_hints()
         // Fallback in case none of the following options match.
         hint_source->text("I don't have anything to tell you. Move on.");
 
+        if(_options.hint_dark_region() && !has_hinted_dark_region)
+        {
+            if(generate_dark_region_hint(hint_source))
+            {
+                has_hinted_dark_region = true;
+                continue;
+            }
+        }
+
         double random_number = (double) _rng() / (double) std::mt19937::max();
         double current_tested_value = _options.hint_distribution_region_requirement();
         if(random_number < current_tested_value)
         {
             // "Barren / pleasant surprise"
-            if(!_hintable_regions.empty())
+            if(!_hintable_region_requirements.empty())
                 this->generate_region_requirement_hint(hint_source);
             continue;
         }
@@ -770,16 +780,28 @@ void WorldShuffler::randomize_fox_hints()
     }
 }
 
+bool WorldShuffler::generate_dark_region_hint(HintSource* hint_source)
+{
+    WorldRegion* region = _world.dark_region();
+    WorldSolver solver(_world);
+    solver.forbid_taking_items_from_nodes(region->nodes());
+    if(!solver.try_to_solve(_world.spawn_node(), hint_source->node(), _world.starting_inventory()))
+        return false;
+
+    hint_source->text("If you find yourself " + region->hint_name() + " without a lantern, all you will find is darkness.");
+    return true;
+}
+
 void WorldShuffler::generate_region_requirement_hint(HintSource* hint_source)
 {
-    WorldRegion* region = *_hintable_regions.begin();
+    WorldRegion* region = *_hintable_region_requirements.begin();
 
     if (this->is_region_avoidable(region))
         hint_source->text("What you are looking for is not " + region->hint_name() + ".");
     else
         hint_source->text("You might have a pleasant surprise wandering " + region->hint_name() + ".");
 
-    _hintable_regions.erase(region);
+    _hintable_region_requirements.erase(region);
 }
 
 bool WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)

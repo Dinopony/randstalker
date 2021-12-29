@@ -4,11 +4,12 @@
 #include "world_node.hpp"
 #include <landstalker_lib/model/item_source.hpp>
 
-WorldRegion::WorldRegion(std::string name, std::string hint_name, std::vector<WorldNode*> nodes, std::vector<uint16_t> dark_map_ids) :
-    _name           (std::move(name)),
-    _hint_name      (std::move(hint_name)),
-    _nodes          (std::move(nodes)),
-    _dark_map_ids   (std::move(dark_map_ids))
+WorldRegion::WorldRegion(std::string name, std::string hint_name, std::vector<WorldNode*> nodes, std::vector<uint16_t> dark_map_ids, bool can_be_hinted_as_required) :
+    _name                       (std::move(name)),
+    _hint_name                  (std::move(hint_name)),
+    _nodes                      (std::move(nodes)),
+    _dark_map_ids               (std::move(dark_map_ids)),
+    _can_be_hinted_as_required  (can_be_hinted_as_required)
 {
     for(WorldNode* node : _nodes)
         node->region(this);
@@ -34,7 +35,12 @@ Json WorldRegion::to_json() const
 WorldRegion* WorldRegion::from_json(const Json& json, const std::map<std::string, WorldNode*>& all_nodes)
 {
     std::string name = json.at("name");
+
     std::string hint_name = json.value("hintName", "");
+    if(hint_name.empty())
+        hint_name = "in " + name;
+
+    bool can_be_hinted_as_required = json.value("canBeHintedAsRequired", true);
 
     std::vector<WorldNode*> nodes;
     for(std::string node_id : json.at("nodeIds"))
@@ -44,7 +50,7 @@ WorldRegion* WorldRegion::from_json(const Json& json, const std::map<std::string
     if(json.contains("darkMapIds")) 
         json.at("darkMapIds").get_to(dark_map_ids);
 
-    return new WorldRegion(name, hint_name, nodes, dark_map_ids); 
+    return new WorldRegion(name, hint_name, nodes, dark_map_ids, can_be_hinted_as_required);
 }
 
 std::map<std::string, ItemSource*> WorldRegion::item_sources() const

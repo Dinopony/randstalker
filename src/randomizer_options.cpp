@@ -103,6 +103,7 @@ Json RandomizerOptions::to_json() const
         { "itemRequirement", _hint_distribution_item_requirement },
         { "itemLocation", _hint_distribution_item_location }
     };
+    json["randomizerSettings"]["hintDarkRegion"] = _hint_dark_region;
 
     if(!_model_patch_items.empty())
         json["modelPatch"]["items"] = _model_patch_items;
@@ -189,6 +190,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
         if(randomizer_settings_json.contains("hintsCount"))
             _hints_count = randomizer_settings_json.at("hintsCount");
+        if(randomizer_settings_json.contains("hintDarkRegion"))
+            _hint_dark_region = randomizer_settings_json.at("hintDarkRegion");
 
         if(randomizer_settings_json.contains("itemsDistribution"))
         {
@@ -298,6 +301,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_hint_distribution_region_requirement);
     bitpack.pack(_hint_distribution_item_requirement);
     bitpack.pack(_hint_distribution_item_location);
+    bitpack.pack(_hint_dark_region);
 
     bitpack.pack_vector(_possible_spawn_locations);
     bitpack.pack_map(_starting_items);
@@ -347,6 +351,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _hint_distribution_region_requirement = bitpack.unpack<uint8_t>();
     _hint_distribution_item_requirement = bitpack.unpack<uint8_t>();
     _hint_distribution_item_location = bitpack.unpack<uint8_t>();
+    _hint_dark_region = bitpack.unpack<bool>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 

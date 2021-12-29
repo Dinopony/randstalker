@@ -49,6 +49,7 @@ private:
     uint8_t _hint_distribution_region_requirement = 30;
     uint8_t _hint_distribution_item_requirement = 25;
     uint8_t _hint_distribution_item_location = 45;
+    bool _hint_dark_region = true;
 
     // ------------- Events -------------
     bool _christmas_event = false;
@@ -104,6 +105,7 @@ public:
     [[nodiscard]] double hint_distribution_region_requirement() const { return (double)_hint_distribution_region_requirement / 100.0; }
     [[nodiscard]] double hint_distribution_item_requirement() const { return (double)_hint_distribution_item_requirement / 100.0; }
     [[nodiscard]] double hint_distribution_item_location() const { return (double)_hint_distribution_item_location / 100.0; }
+    [[nodiscard]] bool hint_dark_region() const { return _hint_dark_region; }
 
     // Event
     [[nodiscard]] bool christmas_event() const { return _christmas_event; }
