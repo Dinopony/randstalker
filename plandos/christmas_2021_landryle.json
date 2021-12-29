@@ -1,0 +1,455 @@
+{
+    "gameSettings": {
+        "jewelCount": 5,
+        "startingItems": { "Spell Book": 0 }
+    },
+    "randomizerSettings": {
+        "allowSpoilerLog": true,
+        "spawnLocations": [ "mercator_zoo" ],
+        "hintsCount": 40
+    },
+    "christmasEvent": true,
+    "modelPatch": {
+        "spawnLocations": {
+            "mercator_zoo": {
+                "mapId": 681,
+                "posX": 19,
+                "posY": 19,
+                "orientation": 8,
+                "nodeId": "mercator",
+                "startingLife": 10
+            }
+        },
+        "hintSources": [
+            {
+                "description": "Foxy (in Kayla bedroom inside Mercator Castle)",
+                "entity": {
+                    "mapId": 98,
+                    "position": {
+                        "x": 20,
+                        "y": 22,
+                        "z": 0
+                    },
+                    "orientation": "se"
+                },
+                "nodeId": "mercator"
+            }
+        ]
+    },
+    "world": {
+        "hints": {
+            "Lithograph": "What a beautiful lithograph! If only it could give hints about the jewels locations...",
+            "King Nole's Cave sign": "The lithograph will maybe help you finding the jewels. It is in a town.",
+            "Mercator fortune teller": "\u001cI see... \u001aI see...\u001a\nI see a whistle on your path.",
+            "Oracle Stone": "You might find a very helpful item in Ryuma.",
+            "Foxy (on Mercator inn balcony)": "You might have a pleasant surprise wandering in Mercator Dungeon.",
+            "Foxy (near shortcut cavern entrance in Greenmaze after cutting trees)": "You might have a pleasant surprise in a shrine with a waterfall where Sagaz never goes.",
+            "Foxy (in Thieves Hideout entrance room)": "Why can't I stop thinking about Fahl...?",
+            "Foxy (looking at dead man in Thieves Hideout)": "Did you know that this guy died because Fahl touched him?",
+            "Foxy (in Thieves Hideout room with hidden door behind waterfall)": "I like to look at water. It makes me think about Fahl.",
+            "Foxy (in Thieves Hideout double chest room before goddess statue)": "Did I tell you that I'm admirative of a man named Fahl? Because I am.",
+            "Foxy (contemplating water near goddess statue in Thieves Hideout)": "Fahl did count to infinity. Three times.",
+            "Foxy (after timed trial in Thieves Hideout)": "Fahl did beat this plando in less than an hour. That's how strong he is.",
+            "Foxy (in hub room after Thieves Hideout keydoor)": "Fahl owns the most precious thing in the world. But you'll never be strong enough to beat him anyway.",
+            "Foxy (in reward room after Thieves Hideout moving balls riddle)": "Did you use the right trick to reach this room?",
+            "Foxy (room below Thieves Hideout summit)": "Thieves were stolen. There's nothing here. Move on.",
+            "Foxy (near Helga's Hut)": "Do you know Helga? She's a very kind person.",
+            "Foxy (in Helga's hut dungeon deepest room)": "LandRyle thanks you for coming here. It's really a nice place, isn't it?",
+            "Foxy (contemplating water near boatmaker house in route after Destel)": "You shall find Snow Spikes in a well.",
+            "Foxy (behind trees in Gumi)": "Did you know that Sagaz is a cheater?",
+            "Foxy (next to Mercator gates)": "I heard a good-looking woman is looking for you in Mercator.",
+            "Foxy (inside Mercator Crypt)": "Braves will be rewarded.",
+            "Foxy (in Mercator Castle library)": "I cannot read these books. It's too dark here. Did you bring light?",
+            "Foxy (atop Mercator Dungeon tower)": "I can see my house from here",
+            "Foxy (in Mercator casino)": "Gambling is bad!",
+            "Foxy (near Mercator Castle kitchen)": "I swear I'm not drunk!",
+            "Foxy (in Mir Tower library)": "Do you like movies about gladiators?",
+            "Foxy (in Mir Tower treasure room)": "The princess is in another castle.",
+            "Foxy (in triple chest room in Slasher sector of Verla Mines)": "What you are looking for is not in Destel Well.",
+            "Foxy (contemplating water near Greedly's teleport tree)": "A girl named Kayla gave me a message for you. She wants to meet you at her place.",
+            "Foxy (below Mountainous Area bridge)": "I would love to relax by the lake under the big tree",
+            "Foxy (in Zak arena inside Mountainous Area)": "Zak is such a weak guy. It is very easy to beat him.",
+            "Foxy (spying on house in Verla)": "Please don't tell anyone I'm a perv...",
+            "Foxy (next to Lake Shrine door)": "Dinopony will forever be the first!",
+            "Foxy (in empty isolated room inside King Nole's Cave)": "A girl named Kayla gave me a message for you. She wants to meet you at her place.",
+            "Foxy (in room at the bottom of ladders in Massan Cave)": "Gola is watching what you are looking for.",
+            "Foxy (in Mercator Castle left court)": "What you are looking is not in Kalva Harbor.",
+            "Foxy (inside Waterfall Shrine pit)": "There is no honey or surprise in Destel Well.",
+            "Foxy (in side room of Swamp Shrine accessible without Idol Stone)": "Robbers steal but they don't give anything.",
+            "Foxy (in ropes sector of Greenmaze)": "What a pity, Destel Well is dry.",
+            "Foxy (near teleport tree after Destel)": "Massan Cave is so boring, I wish I had never been there.",
+            "Foxy (in King Nole's Cave teleporter to Kazalt)": "If you use spell book now, you will have a wonderful surprise!",
+            "Foxy (in hands room inside King Nole's Labyrinth)" : "Watch out, I have my eye on you.",
+            "Foxy (in King Nole's Palace last chest room)": "Thank you for participating in this first Plando. I hope you enjoyed.",
+            "Foxy (in Kayla bedroom inside Mercator Castle)" : "Kayla was tired of waiting for you. She left you a message:\n\n\"Tower is blue, rocks are yellow, King Nole is red, lake is purple inside and green outside\""
+        },
+        "darkRegion": "Mercator Dungeon",
+        "fahlEnemies": [
+            "slime_white", "slime_white", "slime_white", "slime_white", "slime_white", 
+            "slime_white", "slime_white", "slime_white", "slime_white", "slime_white", 
+            "slime_white", "slime_white", "slime_white", "slime_white", "slime_white", 
+            "slime_white", "slime_white", "slime_white", "slime_white", "slime_white", 
+            "slime_white", "slime_white", "slime_white", "slime_white", "slime_white", 
+            "slime_blue", "slime_blue", "slime_blue", "slime_blue", "slime_blue", 
+            "slime_blue", "slime_blue", "slime_blue", "slime_blue", "slime_blue", 
+            "slime_brown", "slime_brown", "slime_brown", "slime_brown", "slime_brown", 
+            "slime_green", "slime_green", "slime_green", "slime_green", "slime_green", 
+            "slime_purple", "slime_purple", "slime_purple", "quake_gray",  "nole"
+        ],
+        "itemSources": {
+            "Massan": {
+                "Massan: chest triggered by dog statue": "EkeEke",
+                "Massan: chest in house nearest to elder house": "Life Stock",
+                "Massan: chest in middle house": "Life Stock",
+                "Massan: chest in house farthest from elder house": "Life Stock",
+                "Massan: Shop item #1": "Life Stock",
+                "Massan: Shop item #2": "Pawn Ticket",
+                "Massan: Shop item #3": "Dahl",
+                "Massan: Elder reward after freeing Fara in Swamp Shrine": "No Item"
+            },
+            "Massan Cave": {
+                "Massan Cave: right chest": "Healing Boots",
+                "Massan Cave: left chest": "Statue of Gaia",
+                "Massan Cave: item on ground in treasure room": "Statue of Gaia"
+            },
+            "Route between Massan and Gumi": {
+                "Route between Massan and Gumi: chest on cliff": "EkeEke"
+            },
+            "Waterfall Shrine": {
+                "Waterfall Shrine: chest under entrance hallway (open after reaching Prospero)": "Buyer's Card",
+                "Waterfall Shrine: chest near Prospero": "Life Stock",
+                "Waterfall Shrine: chest on right branch of biggest room": "Oracle Stone",
+                "Waterfall Shrine: upstairs chest": "Short Cake"
+            },
+            "Swamp Shrine": {
+                "Swamp Shrine (0F): chest in room to the right": "Life Stock",
+                "Swamp Shrine (0F): chest in carpet room": "30 golds",
+                "Swamp Shrine (0F): chest in left hallway (accessed by falling from upstairs)": "Gola's Horn",
+                "Swamp Shrine (0F): falling chest after beating orc": "72 golds",
+                "Swamp Shrine (0F): ekeeke chest in room connected to second entrance (without Idol Stone)": "EkeEke",
+                "Swamp Shrine (1F): lower chest in wooden bridges room": "Life Stock",
+                "Swamp Shrine (2F): upper chest in wooden bridges room": "Golden Statue",
+                "Swamp Shrine (2F): chest on spiked floor room balcony": "Life Stock",
+                "Swamp Shrine (3F): chest in boss arena": "Gola's Nail"
+            },
+            "Gumi": {
+                "Gumi: chest on top of bed in house": "Sword of Ice",
+                "Gumi: item on furniture in elder's house": "Detox Grass",
+                "Gumi: Inn item #1": "Life Stock",
+                "Gumi: Inn item #2": "Restoration",
+                "Gumi: chest in elder house after saving Fara": "Life Stock"
+            },
+            "Route between Gumi and Ryuma": {
+                "Route between Gumi and Ryuma: chest on the way to Swordsman Kado": "EkeEke",
+                "Route between Gumi and Ryuma: Swordsman Kado reward": "Saturn Stone"
+            },
+            "Tibor": {
+                "Tibor: reward chest after boss": "Dahl",
+                "Tibor: chest in spike balls room": "EkeEke",
+                "Tibor: left chest on 2 chest group": "Life Stock",
+                "Tibor: right chest on 2 chest group": "Life Stock"
+            },
+            "Ryuma": {
+                "Ryuma: chest in mayor's house": "EkeEke",
+                "Ryuma: Inn item": "Shell Breast",
+                "Ryuma: Shop item #1": "Life Stock",
+                "Ryuma: Shop item #2": "Pawn Ticket",
+                "Ryuma: Shop item #3": "Moon Stone",
+                "Ryuma: Shop item #4": "Lithograph",
+                "Ryuma: Shop item #5": "EkeEke",
+                "Ryuma: Mayor's first reward": "Mind Repair",
+                "Ryuma: Mayor's second reward": "Restoration",
+                "Ryuma: chest in repaired lighthouse": "99 golds"
+            },
+            "Thieves Hideout": {
+                "Thieves Hideout: chest under water in entrance room": "Life Stock",
+                "Thieves Hideout: left chest in Pockets cell": "45 golds",
+                "Thieves Hideout: right chest in Pockets cell": "EkeEke",
+                "Thieves Hideout: chest near entrance with rolling boulder": "Detox Grass",
+                "Thieves Hideout: left chest in double chest room after spiral climbing": "Life Stock",
+                "Thieves Hideout: right chest in double chest room after spiral climbing": "Golden Statue",
+                "Thieves Hideout (back): right chest in room under teal knight room": "Life Stock",
+                "Thieves Hideout (back): left chest in room under teal knight room": "No Item",
+                "Thieves Hideout (back): right chest in upper hallway after quick climb trial": "EkeEke",
+                "Thieves Hideout (back): left chest in upper hallway after quick climb trial": "Statue of Jypta",
+                "Thieves Hideout (back): chest in moving platforms room": "Life Stock",
+                "Thieves Hideout (back): chest in falling platforms room": "44 golds",
+                "Thieves Hideout (back): reward chest after moving balls room": "EkeEke",
+                "Thieves Hideout (back): left chest in room before boss": "Life Stock",
+                "Thieves Hideout (back): right chest in room before boss": "No Item",
+                "Thieves Hideout (back): chest #1 in boss reward room": "No Item",
+                "Thieves Hideout (back): chest #2 in boss reward room": "No Item",
+                "Thieves Hideout (back): chest #3 in boss reward room": "No Item",
+                "Thieves Hideout (back): chest #4 in boss reward room": "No Item",
+                "Thieves Hideout (back): chest #5 in boss reward room": "1 golds"
+            },
+            "Witch Helga's Hut": {
+                "Witch Helga's Hut: end chest": "Safety Pass",
+                "Witch Helga's Hut: item on furniture": "Spell Book"
+            },
+            "Mercator": {
+                "Mercator: castle kitchen chest": "Life Stock",
+                "Mercator: chest in special shop backroom": "EkeEke",
+                "Mercator: chest in castle tower (ladder revealed by slashing armor)": "Life Stock",
+                "Mercator: chest in Greenpea's house": "No Item",
+                "Mercator: chest in grandma's house (pot shelving trial)": "EkeEke",
+                "Mercator: falling item in castle court": "Blue Ribbon",
+                "Mercator: Shop item #1": "Life Stock",
+                "Mercator: Shop item #2": "EkeEke",
+                "Mercator: Shop item #3": "Detox Grass",
+                "Mercator: Shop item #4": "Steel Breast",
+                "Mercator: Shop item #5": "Restoration",
+                "Mercator: Shop item #6": "Mars Stone",
+                "Mercator: Docks shop item #1": "Restoration",
+                "Mercator: Docks shop item #2": "Golden Statue",
+                "Mercator: Docks shop item #3": "Life Stock",
+                "Mercator: Arthur reward (in castle throne room)": "Armlet",
+                "Mercator: Fahl's dojo challenge reward": "No Item",
+                "Mercator: hidden casino chest": "Snow Spikes",
+                "Mercator: Special shop item #1": "Life Stock",
+                "Mercator: Special shop item #2": "EkeEke",
+                "Mercator: Special shop item #3": "Sword of Gaia",
+                "Mercator: Special shop item #4": "Golden Statue"
+            },
+            "Crypt": {
+                "Crypt: chest in main room": "Thunder Sword",
+                "Crypt: reward chest": "Bell"
+            },
+            "Mercator Dungeon": {
+                "Mercator Dungeon (-1F): chest on elevated pathway": "Life Stock",
+                "Mercator Dungeon (-1F): chest in Moralis's cell": "Garlic",
+                "Mercator Dungeon (-1F): left chest in undeground double chest room": "49 golds",
+                "Mercator Dungeon (-1F): right chest in undeground double chest room": "Life Stock",
+                "Mercator Dungeon (1F): left chest in tower double chest room": "EkeEke",
+                "Mercator Dungeon (1F): right chest in tower double chest room": "Life Stock",
+                "Mercator Dungeon (4F): chest in topmost tower room": "Idol Stone"
+            },
+            "Mir Tower sector": {
+                "Route between Mercator and Verla: chest on cliff next to tree": "EkeEke",
+                "Route between Mercator and Verla: chest on cliff next to blocked cave": "52 golds",
+                "Route between Mercator and Verla: chest near Twinkle village": "29 golds",
+                "Route to Mir Tower: chest on cliff accessed by pressing hidden switch": "Dahl",
+                "Route to Mir Tower: chest behind first sacred tree": "No Item",
+                "Route to Mir Tower: chest behind second sacred tree": "No Item",
+                "Twinkle Village: first item on ground": "Mind Repair",
+                "Twinkle Village: second item on ground": "EkeEke",
+                "Twinkle Village: third item on ground": "Einstein Whistle"
+            },
+            "Mir Tower": {
+                "Mir Tower: timed jump trial chest": "66 golds",
+                "Mir Tower: chest after mimic room": "Blue Jewel",
+                "Mir Tower: mimic room chest #1": "Iron Boots",
+                "Mir Tower: mimic room chest #2": "EkeEke",
+                "Mir Tower: mimic room chest #3": "Life Stock",
+                "Mir Tower: mimic room chest #4": "Dahl",
+                "Mir Tower: chest in mushroom pit room": "Key",
+                "Mir Tower: chest in room next to mummy switch room": "24 golds",
+                "Mir Tower: chest in library accessible from teleporter maze": "Chrome Breast",
+                "Mir Tower: hidden chest in room before library": "Life Stock",
+                "Mir Tower: chest in falling spikeballs room": "Restoration",
+                "Mir Tower: chest in timed challenge room": "EkeEke",
+                "Mir Tower: chest in room where Miro closes the door": "Life Stock",
+                "Mir Tower: chest after room where Miro closes the door": "Life Stock",
+                "Mir Tower: reward chest": "EkeEke",
+                "Mir Tower: right chest in reward room": "Dahl",
+                "Mir Tower: left chest in reward room": "51 golds",
+                "Mir Tower: chest behind wall accessible after beating Mir": "Life Stock",
+                "Mir Tower: Priest room item #1": "Garlic",
+                "Mir Tower: Priest room item #2": "Mind Repair",
+                "Mir Tower: Priest room item #3": "Statue of Gaia"
+            },
+            "Greenmaze": {
+                "Greenmaze: chest on path to Cutter": "EkeEke",
+                "Greenmaze: chest on cliff appearing after pressing a button in swamp section": "EkeEke",
+                "Greenmaze: chest in mages room": "Life Stock",
+                "Greenmaze: left chest in elbow cave": "Dahl",
+                "Greenmaze: right chest in elbow cave": "Fireproof",
+                "Greenmaze: chest in waterfall cave": "85 golds",
+                "Greenmaze: left chest in hidden room behind waterfall": "Detox Grass",
+                "Greenmaze: right chest in hidden room behind waterfall": "Golden Statue",
+                "Greenmaze: Cutter reward for saving Einstein": "EkeEke",
+                "Greenmaze: dwarf hidden in the trees": "Life Stock",
+                "Greenmaze: chest between Sunstone and Massan shortcut": "Mind Repair",
+                "Greenmaze: item behind trees requiring Cutter": "Sun Stone"
+            },
+            "Verla Shore": {
+                "Verla Shore: chest on corner cliff after Verla tunnel": "Dahl",
+                "Verla Shore: chest on highest cliff after Verla tunnel (accessible through Verla mines)": "Life Stock",
+                "Verla Shore: chest behind cabin": "Pawn Ticket"
+            },
+            "Verla": {
+                "Verla: Shop item #1": "Life Stock",
+                "Verla: Shop item #2": "EkeEke",
+                "Verla: Shop item #3": "Detox Grass",
+                "Verla: Shop item #4": "Anti Paralyze",
+                "Verla: chest in well after beating Marley": "Gola's Eye",
+                "Verla: Shop item #5 (extra item after saving town)": "Life Stock"
+            },
+            "Verla Mines": {
+                "Verla Mines: right chest in double chest room near entrance": "15 golds",
+                "Verla Mines: left chest in double chest room near entrance": "Restoration",
+                "Verla Mines: chest on jar staircase room balcony": "Life Stock",
+                "Verla Mines: Dex reward chest": "Life Stock",
+                "Verla Mines: Slasher reward chest": "Logs",
+                "Verla Mines: left chest in triple chests room near Slasher": "Golden Statue",
+                "Verla Mines: middle chest in triple chests room near Slasher": "Life Stock",
+                "Verla Mines: right chest in triple chests room near Slasher": "Life Stock",
+                "Verla Mines: right chest in button room near elevator shaft leading to Marley": "EkeEke",
+                "Verla Mines: left chest in button room near elevator shaft leading to Marley": "Dahl",
+                "Verla Mines: item in the corner of lava filled room": "EkeEke",
+                "Verla Mines: chest in hidden room accessed by walking on lava": "Death Statue"
+            },
+            "Route between Verla and Destel": {
+                "Route to Destel: chest in map right after Verla mines exit": "No Item",
+                "Route to Destel: chest in small platform elevator map": "Golden Statue",
+                "Route to Destel: hidden chest in map right before Destel": "EkeEke",
+                "Route from Verla to Destel: Kelketo shop item #1": "Life Stock",
+                "Route from Verla to Destel: Kelketo shop item #2": "EkeEke",
+                "Route from Verla to Destel: Kelketo shop item #3": "Anti Paralyze",
+                "Route from Verla to Destel: Kelketo shop item #4": "Restoration",
+                "Route from Verla to Destel: Kelketo shop item #5": "Detox Grass"
+            },
+            "Destel": {
+                "Destel: chest in shop requiring to wait for the shopkeeper to move": "No Item",
+                "Destel: Inn item": "Pawn Ticket",
+                "Destel: Shop item #1": "EkeEke",
+                "Destel: Shop item #2": "Anti Paralyze",
+                "Destel: Shop item #3": "Restoration",
+                "Destel: Shop item #4": "Dahl",
+                "Destel: Shop item #5": "Golden Statue"
+            },
+            "Route after Destel": {
+                "Route after Destel: chest on tiny cliff": "Life Stock",
+                "Route after Destel: hidden chest in map after seeing Duke raft": "Green Jewel",
+                "Route after Destel: visible chest in map after seeing Duke raft": "EkeEke",
+                "Route after Destel: item on ground on the cliff": "No Item"
+            },
+            "Destel Well": {
+                "Destel Well (0F): 4 crates puzzle room chest": "Life Stock",
+                "Destel Well (1F): chest on small stairs": "Golden Statue",
+                "Destel Well (1F): chest on narrow floating ground": "Life Stock",
+                "Destel Well (1F): chest in spiky hallway": "EkeEke",
+                "Destel Well (2F): chest in ghosts room": "Restoration",
+                "Destel Well (2F): chest in falling platforms room": "Life Stock",
+                "Destel Well (2F): right chest in Pockets room": "EkeEke",
+                "Destel Well (2F): left chest in Pockets room": "Life Stock",
+                "Destel Well (3F): chest in first trapped arena": "Life Stock",
+                "Destel Well (3F): chest in trapped giants room": "20 golds",
+                "Destel Well (3F): chest in second trapped arena": "EkeEke",
+                "Destel Well (4F): top chest in room before boss": "EkeEke",
+                "Destel Well (4F): left chest in room before boss": "Life Stock",
+                "Destel Well (4F): bottom chest in room before boss": "Dahl",
+                "Destel Well (4F): right chest in room before boss": "Detox Grass",
+                "Destel Well: item on platform revealed after beating Quake": "Anti Paralyze"
+            },
+            "Route to Lake Shrine": {
+                "Route to Lake Shrine: chest on long cliff in crossroads map": "Axe Magic",
+                "Route to Lake Shrine: right chest in volcano": "EkeEke",
+                "Route to Lake Shrine: left chest in volcano": "Life Stock",
+                "Route to Lake Shrine: Greedly's shop item #1": "Life Stock",
+                "Route to Lake Shrine: Greedly's shop item #2": "EkeEke",
+                "Route to Lake Shrine: Greedly's shop item #3": "Anti Paralyze",
+                "Route to Lake Shrine: Greedly's shop item #4": "Dahl",
+                "Route to Lake Shrine: chest on middle cliff in crossroads map (reached from Mountainous Area)": "42 golds"
+            },
+            "Lake Shrine": {
+                "Lake Shrine (-1F): chest in blinking platform room near green golem spinner": "Dahl",
+                "Lake Shrine (-1F): chest in hallway after golem hopping room": "Life Stock",
+                "Lake Shrine (-1F): chest in spikeballs hallway near green golem spinner": "Life Stock",
+                "Lake Shrine (-1F): reward chest for golem hopping puzzle": "53 golds",
+                "Lake Shrine (-2F): chest on room corner accessed by falling from above": "EkeEke",
+                "Lake Shrine (-2F): front chest in throne room": "Life Stock",
+                "Lake Shrine (-2F): back chest in throne room": "Life Stock",
+                "Lake Shrine (-3F): chest on floating platform in white golems room": "52 golds",
+                "Lake Shrine (-3F): chest near Sword of Ice": "EkeEke",
+                "Lake Shrine (-3F): chest in snake trapping puzzle room": "EkeEke",
+                "Lake Shrine (-3F): chest on cube accessed by falling from upstairs": "27 golds",
+                "Lake Shrine (-3F): chest in watery archway room": "Life Stock",
+                "Lake Shrine (-3F): left reward chest in boss room": "No Item",
+                "Lake Shrine (-3F): middle reward chest in boss room": "Venus Stone",
+                "Lake Shrine (-3F): right reward chest in boss room": "Life Stock",
+                "Lake Shrine (-3F): chest near golden golems spinner": "Dahl",
+                "Lake Shrine (-3F): item on ground at the SE exit of the golden golems roundabout": "EkeEke",
+                "Lake Shrine (-3F): isolated item on ground requiring raised platform to reach": "EkeEke",
+                "Lake Shrine (-2F): north item on ground in quadruple items room": "Mind Repair",
+                "Lake Shrine (-2F): south item on ground in quadruple items room": "Mind Repair",
+                "Lake Shrine (-2F): west item on ground in quadruple items room": "Mind Repair",
+                "Lake Shrine (-2F): east item on ground in quadruple items room": "Mind Repair",
+                "Lake Shrine: Mir reward after beating Duke": "Purple Jewel"
+            },
+            "Mountainous Area": {
+                "Mountainous Area: chest near teleport tree": "No Item",
+                "Mountainous Area: chest on right side of the map right before the bridge": "Dahl",
+                "Mountainous Area: hidden chest in L-shaped path": "Dahl",
+                "Mountainous Area: hidden chest in back path": "Detox Grass",
+                "Mountainous Area: isolated chest on cliff in bridge map": "EkeEke",
+                "Mountainous Area: left chest on wall in bridge map": "Life Stock",
+                "Mountainous Area: right chest on wall in bridge map": "Life Stock",
+                "Mountainous Area: right chest in map before Zak arena": "Life Stock",
+                "Mountainous Area: left chest in map before Zak arena": "Restoration",
+                "Mountainous Area: chest hidden under rocky arch": "11 golds",
+                "Mountainous Area: chest in map in front of the statue under the bridge": "Casino Ticket",
+                "Mountainous Area Cave: chest in small hidden room": "EkeEke",
+                "Mountainous Area Cave: chest in small visible room": "Golden Statue",
+                "Mountainous Area cave: item on ground behind hidden path": "Yellow Jewel",
+                "Mountainous Area: Zak reward after fighting": "Magic Sword"
+            },
+            "King Nole's Cave": {
+                "King Nole's Cave: chest in second room": "40 golds",
+                "King Nole's Cave: first chest in third room": "Life Stock",
+                "King Nole's Cave: second chest in third room": "EkeEke",
+                "King Nole's Cave: chest in isolated room": "70 golds",
+                "King Nole's Cave: chest in crate room": "Life Stock",
+                "King Nole's Cave: boulder chase hallway chest": "Red Jewel"
+            },
+            "Kazalt": {
+                "Kazalt: Shop item #1": "Statue of Gaia",
+                "Kazalt: Shop item #2": "EkeEke",
+                "Kazalt: Shop item #3": "Statue of Gaia",
+                "Kazalt: Shop item #4": "Statue of Gaia",
+                "Kazalt: Shop item #5": "Statue of Gaia"
+            },
+            "King Nole's Labyrinth": {
+                "King Nole's Labyrinth (0F): chest in spike balls room": "Life Stock",
+                "King Nole's Labyrinth (-1F): chest in triple chest dark room (right side)": "Dahl",
+                "King Nole's Labyrinth (-1F): upper chest in lantern room": "Life Stock",
+                "King Nole's Labyrinth (-1F): lower chest in lantern room": "EkeEke",
+                "King Nole's Labyrinth (-1F): chest in ice shortcut room": "Life Stock",
+                "King Nole's Labyrinth (0F): left chest in room after key door": "50 golds",
+                "King Nole's Labyrinth (0F): right chest in room after key door": "Dahl",
+                "King Nole's Labyrinth (-1F): chest in maze room with healing tile": "Dahl",
+                "King Nole's Labyrinth (-1F): right chest in triple chest dark room (left side)": "56 golds",
+                "King Nole's Labyrinth (-1F): left chest in triple chest dark room (left side)": "Life Stock",
+                "King Nole's Labyrinth (-1F): chest in maze room with two buttons": "Life Stock",
+                "King Nole's Labyrinth (-2F): chest in save room": "EkeEke",
+                "King Nole's Labyrinth (-1F): chest in room with button and crates stairway": "EkeEke",
+                "King Nole's Labyrinth (-3F): first chest before Firedemon": "Life Stock",
+                "King Nole's Labyrinth (-3F): second chest before Firedemon": "Life Stock",
+                "King Nole's Labyrinth (-3F): reward chest for beating Firedemon": "Logs",
+                "King Nole's Labyrinth (-2F): chest in four buttons room": "Anti Paralyze",
+                "King Nole's Labyrinth (-3F): chest in hands room": "Life Stock",
+                "King Nole's Labyrinth (-1F): item on ground in ninjas room": "Statue of Gaia",
+                "King Nole's Labyrinth (-3F): item on floating hands": "Pawn Ticket",
+                "King Nole's Labyrinth (-3F): item on ground climbing back from Firedemon": "EkeEke",
+                "King Nole's Labyrinth (-3F): First item on ground before Firedemon": "Statue of Gaia",
+                "King Nole's Labyrinth (0F): chest in exterior room": "Detox Grass",
+                "King Nole's Labyrinth (-2F): item on ground after falling from exterior room": "EkeEke",
+                "King Nole's Labyrinth (-3F): chest before Miro": "19 golds",
+                "King Nole's Labyrinth (-3F): reward chest for beating Miro": "Hyper Breast",
+                "King Nole's Labyrinth (-3F): first chest after falling from raft": "EkeEke",
+                "King Nole's Labyrinth (-3F): left chest in double chest room before Spinner": "No Item",
+                "King Nole's Labyrinth (-3F): right chest in double chest room before Spinner": "52 golds",
+                "King Nole's Labyrinth (-3F): reward chest for beating Spinner": "Dahl",
+                "King Nole's Labyrinth (-3F): chest in room after Spinner": "EkeEke",
+                "King Nole's Labyrinth (-3F): item on ground behind waterfall after beating Spinner": "Lantern",
+                "King Nole's Labyrinth (-2F): Left item dropped by sacred tree": "Anti Paralyze",
+                "King Nole's Labyrinth (-2F): Right item dropped by sacred tree": "Golden Statue"
+            },
+            "King Nole's Palace": {
+                "King Nole's Palace: chest at entrance": "Life Stock",
+                "King Nole's Palace: chest along central pit": "Gola's Fang",
+                "King Nole's Palace: chest in floating button room": "Dahl"
+            }
+        }
+    }
+}
