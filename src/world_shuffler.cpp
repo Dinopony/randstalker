@@ -536,13 +536,18 @@ void WorldShuffler::init_hint_collections()
     vectools::shuffle(_hintable_item_requirements, _rng);
 
     // A shuffled list of items which location is interesting, useful for the "item X is in Y" hints
+    std::vector<uint8_t> prioritized_item_locations = {
+            ITEM_GOLA_EYE,          ITEM_GOLA_NAIL,      ITEM_GOLA_FANG,     ITEM_GOLA_HORN
+    };
+    vectools::shuffle(prioritized_item_locations, _rng);
+
     _hintable_item_locations = {
             ITEM_SPIKE_BOOTS,       ITEM_AXE_MAGIC,      ITEM_BUYER_CARD,    ITEM_GARLIC,
             ITEM_EINSTEIN_WHISTLE,  ITEM_ARMLET,         ITEM_IDOL_STONE,    ITEM_LANTERN,
-            ITEM_SUN_STONE,         ITEM_KEY,            ITEM_SAFETY_PASS,   ITEM_LOGS,
-            ITEM_GOLA_EYE,          ITEM_GOLA_NAIL,      ITEM_GOLA_FANG,     ITEM_GOLA_HORN
+            ITEM_SUN_STONE,         ITEM_KEY,            ITEM_SAFETY_PASS,   ITEM_LOGS
     };
     vectools::shuffle(_hintable_item_locations, _rng);
+    _hintable_item_locations.insert(_hintable_item_locations.begin(), prioritized_item_locations.begin(), prioritized_item_locations.end());
 }
 
 void WorldShuffler::randomize_lithograph_hint()
