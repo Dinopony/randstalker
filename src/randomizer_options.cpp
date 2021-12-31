@@ -3,10 +3,12 @@
 #include <iostream>
 
 #include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
 #include "tools/bitpack.hpp"
 #include "tools/base64.hpp"
+
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
@@ -266,7 +268,7 @@ std::vector<std::string> RandomizerOptions::hash_words() const
     };
 
     std::mt19937 rng(_seed);
-    tools::shuffle(words, rng);
+    vectools::shuffle(words, rng);
     return { words.begin(), words.begin()+4 };
 }
 

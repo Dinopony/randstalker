@@ -3,8 +3,6 @@
 #include <vector>
 #include <string>
 #include <random>
-
-#include <landstalker_lib/tools/unsorted_set.hpp>
 #include <landstalker_lib/model/world.hpp>
 
 #include "randomizer_options.hpp"
@@ -30,9 +28,9 @@ private:
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
 
-    UnsortedSet<WorldRegion*> _hintable_region_requirements;
-    UnsortedSet<uint8_t> _hintable_item_requirements;
-    UnsortedSet<uint8_t> _hintable_item_locations;
+    std::vector<WorldRegion*> _hintable_region_requirements;
+    std::vector<uint8_t> _hintable_item_requirements;
+    std::vector<uint8_t> _hintable_item_locations;
 
 public:
     WorldShuffler(RandomizerWorld& world, const RandomizerOptions& options);

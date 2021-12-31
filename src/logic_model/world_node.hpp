@@ -3,7 +3,6 @@
 #include <utility>
 #include <vector>
 
-#include <landstalker_lib/tools/unsorted_set.hpp>
 #include <landstalker_lib/model/item_source.hpp>
 
 #include "world_path.hpp"
@@ -17,7 +16,7 @@ private:
     std::string _name;
     std::vector<ItemSource*> _item_sources;
     std::vector<WorldPath*> _outgoing_paths;
-    std::vector<WorldPath*> _ingoing_paths;    
+    std::vector<WorldPath*> _ingoing_paths;
     std::vector<std::string> _hints;
     WorldRegion* _region = nullptr;
 
