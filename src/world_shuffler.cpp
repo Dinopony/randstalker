@@ -707,82 +707,86 @@ void WorldShuffler::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_i
 
 void WorldShuffler::randomize_fox_hints()
 {
-    uint8_t hints_count = _options.hints_count();
-    for(HintSource* source : _world.used_hint_sources())
-        if(source->has_entity())
-            --hints_count;
+    uint16_t remaining_item_requirement_hints = _options.hints_distribution_item_requirement();
+    uint16_t remaining_region_requirement_hints = _options.hints_distribution_region_requirement();
+    uint16_t remaining_dark_region_hints = _options.hints_distribution_dark_region();
+    uint16_t remaining_item_location_hints = _options.hints_distribution_item_location();
+    uint16_t remaining_joke_hints = _options.hints_distribution_joke();
 
-    // Pick a subset of all possible fox_hints trying to follow as much as possible the randomizer settings
     std::vector<HintSource*> foxes_pool;
     for(HintSource* hint_source : _world.hint_sources())
     {
-        // If source is already used (e.g. in plando context), don't add it to the pool
         if(std::find(_world.used_hint_sources().begin(), _world.used_hint_sources().end(), hint_source) != _world.used_hint_sources().end())
             continue;
+        if(hint_source->special())
+            continue;
 
-        if(hint_source->has_entity())
-            foxes_pool.emplace_back(hint_source);
+        foxes_pool.emplace_back(hint_source);
     }
-    tools::shuffle(foxes_pool, _rng);
-    if(foxes_pool.size() > hints_count)
-        foxes_pool.resize(hints_count);
 
-    bool has_hinted_dark_region = false;
+    tools::shuffle(foxes_pool, _rng);
+
+    if(_options.hints_count() > foxes_pool.size())
+    {
+        throw LandstalkerException("Hints count (" + std::to_string(_options.hints_count())
+                                   + ") is bigger than foxes pool size (" + std::to_string(foxes_pool.size()) +").");
+    }
+    foxes_pool.resize(_options.hints_count());
 
     // Put hints inside
-    for (HintSource* hint_source : foxes_pool)
+    for(HintSource* hint_source : foxes_pool)
     {
         _world.add_used_hint_source(hint_source);
 
-        // If hint source already contains text (e.g. through plando descriptor), ignore it
-        if(!hint_source->text().empty())
-            continue;
-
-        // Fallback in case none of the following options match.
-        hint_source->text("I don't have anything to tell you. Move on.");
-
-        if(_options.hint_dark_region() && !has_hinted_dark_region)
+        if(remaining_dark_region_hints > 0)
         {
-            if(generate_dark_region_hint(hint_source))
+            if(this->generate_dark_region_hint(hint_source))
             {
-                has_hinted_dark_region = true;
+                remaining_dark_region_hints--;
                 continue;
             }
         }
-
-        double random_number = (double) _rng() / (double) std::mt19937::max();
-        double current_tested_value = _options.hint_distribution_region_requirement();
-        if(random_number < current_tested_value)
+        if(remaining_item_requirement_hints > 0)
         {
-            // "Barren / pleasant surprise"
-            if(!_hintable_region_requirements.empty())
-                this->generate_region_requirement_hint(hint_source);
+            if(this->generate_item_requirement_hint(hint_source))
+            {
+                remaining_item_requirement_hints--;
+                continue;
+            }
+        }
+        if(remaining_region_requirement_hints > 0)
+        {
+            if(this->generate_region_requirement_hint(hint_source))
+            {
+                remaining_region_requirement_hints--;
+                continue;
+            }
+        }
+        if(remaining_item_location_hints > 0)
+        {
+            if(this->generate_item_location_hint(hint_source))
+            {
+                remaining_item_location_hints--;
+                continue;
+            }
+        }
+        if(remaining_joke_hints > 0)
+        {
+            hint_source->text("I don't have anything to tell you. Move on.");
+            remaining_joke_hints--;
             continue;
         }
 
-        current_tested_value += _options.hint_distribution_item_requirement();
-        if(random_number < current_tested_value)
-        {
-            // "You will / won't need {item} to finish"
-            if(!_hintable_item_requirements.empty())
-                this->generate_item_requirement_hint(hint_source);
-            continue;
-        }
-
-        current_tested_value += _options.hint_distribution_item_location();
-        if(random_number < current_tested_value)
-        {
-            // "You shall find {item} in {place}"
-            if(!_hintable_item_locations.empty())
-                this->generate_item_position_hint(hint_source);
-            continue;
-        }
+        // Fallback if none of the options above were matching
+        hint_source->text("I was meant to say something but... I forgot.");
     }
 }
 
 bool WorldShuffler::generate_dark_region_hint(HintSource* hint_source)
 {
     WorldRegion* region = _world.dark_region();
+
+    // Check that crossing the dark region is not mandatory to reach the hint source
     WorldSolver solver(_world);
     solver.forbid_taking_items_from_nodes(region->nodes());
     if(!solver.try_to_solve(_world.spawn_node(), hint_source->node(), _world.starting_inventory()))
@@ -792,16 +796,31 @@ bool WorldShuffler::generate_dark_region_hint(HintSource* hint_source)
     return true;
 }
 
-void WorldShuffler::generate_region_requirement_hint(HintSource* hint_source)
+bool WorldShuffler::generate_region_requirement_hint(HintSource* hint_source)
 {
-    WorldRegion* region = *_hintable_region_requirements.begin();
+    WorldRegion* hinted_region = nullptr;
+    for(WorldRegion* region : _hintable_region_requirements)
+    {
+        // Check that taking items from region is not mandatory to reach the hint source
+        WorldSolver solver(_world);
+        solver.forbid_taking_items_from_nodes(region->nodes());
+        if(!solver.try_to_solve(_world.spawn_node(), hint_source->node(), _world.starting_inventory()))
+            continue;
 
-    if (this->is_region_avoidable(region))
-        hint_source->text("What you are looking for is not " + region->hint_name() + ".");
+        hinted_region = region;
+        _hintable_region_requirements.erase(region);
+        break;
+    }
+
+    if(!hinted_region)
+        return false;
+
+    if (this->is_region_avoidable(hinted_region))
+        hint_source->text("What you are looking for is not " + hinted_region->hint_name() + ".");
     else
-        hint_source->text("You might have a pleasant surprise wandering " + region->hint_name() + ".");
+        hint_source->text("You might have a pleasant surprise wandering " + hinted_region->hint_name() + ".");
 
-    _hintable_region_requirements.erase(region);
+    return true;
 }
 
 bool WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)
@@ -811,15 +830,15 @@ bool WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)
     {
         Item* tested_item = _world.item(item_id);
 
+        // Check that item is not mandatory to reach the hint source
         WorldSolver solver(_world);
         solver.forbid_item_type(tested_item);
-        if(solver.try_to_solve(_world.spawn_node(), hint_source->node(), _world.starting_inventory()))
-        {
-            // If item is not mandatory to reach the hint source, we can hint it
-            hinted_item_requirement = tested_item;
-            _hintable_item_requirements.erase(item_id);
-            break;
-        }
+        if(!solver.try_to_solve(_world.spawn_node(), hint_source->node(), _world.starting_inventory()))
+            continue;
+
+        hinted_item_requirement = tested_item;
+        _hintable_item_requirements.erase(item_id);
+        break;
     }
 
     if(!hinted_item_requirement)
@@ -833,7 +852,7 @@ bool WorldShuffler::generate_item_requirement_hint(HintSource* hint_source)
     return true;
 }
 
-bool WorldShuffler::generate_item_position_hint(HintSource* hint_source)
+bool WorldShuffler::generate_item_location_hint(HintSource* hint_source)
 {
     Item* hinted_item_location = nullptr;
     for(uint8_t item_id : _hintable_item_locations)

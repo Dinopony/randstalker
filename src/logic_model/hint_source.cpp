@@ -48,10 +48,10 @@ void HintSource::apply_text(World& world)
         std::string& game_string = world.game_strings().at(_text_ids[0]);
         uint8_t textbox_size = _small_textbox ? 2 : 3;
 
-        if(this->has_entity())
-            game_string = GameText(_text, "Foxy", textbox_size).getOutput();
-        else
+        if(this->special())
             game_string = GameText(_text, textbox_size).getOutput();
+        else
+            game_string = GameText(_text, "Foxy", textbox_size).getOutput();
     }
 }
 
