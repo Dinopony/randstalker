@@ -25,7 +25,7 @@
         "shuffleTrees": false,
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
-        "treeCuttingGlitchInLogic": true,
+        "treeCuttingGlitchInLogic": false,
         "itemsDistribution": {},
         "hintsDistribution": {
             "regionRequirement": 6,
