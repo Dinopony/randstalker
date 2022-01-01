@@ -281,6 +281,8 @@ static void apply_options_on_item_distributions(const RandomizerOptions& options
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
+        world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
+        world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
     }
     else
     {
