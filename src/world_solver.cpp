@@ -2,7 +2,6 @@
 
 #include <landstalker_lib/model/item_source.hpp>
 #include <landstalker_lib/exceptions.hpp>
-
 #include "logic_model/world_node.hpp"
 
 WorldSolver::WorldSolver(const RandomizerWorld& world) : _world (world)
@@ -32,7 +31,7 @@ void WorldSolver::forbid_item_type(Item* item)
  * Setup a set of forbidden WorldNodes where no item will be taken while trying to solve the world.
  * @param forbidden_nodes the nodes to forbid
  */
-void WorldSolver::forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes)
+void WorldSolver::forbid_taking_items_from_nodes(const std::vector<WorldNode*>& forbidden_nodes)
 { 
     _forbidden_nodes_to_pick_items = forbidden_nodes;
 }
@@ -118,7 +117,7 @@ void WorldSolver::update_current_inventory()
     for(ItemSource* source : _reachable_item_sources)
     {
         // If item is located in forbidden node, don't take it
-        if(_forbidden_nodes_to_pick_items.contains(_world.node(source->node_id())))
+        if(vectools::contains(_forbidden_nodes_to_pick_items, _world.node(source->node_id())))
             continue;
 
         Item* item = source->item();
@@ -126,7 +125,7 @@ void WorldSolver::update_current_inventory()
             continue;
 
         // If item isn't useful for opening something, don't bother putting it in our inventory
-        if(!_relevant_items.contains(item))
+        if(!vectools::contains(_relevant_items, item))
             continue;
 
         if(forbidden_items_copy.count(item) && forbidden_items_copy.at(item) > 0)
@@ -172,7 +171,7 @@ bool WorldSolver::can_take_path(WorldPath* path) const
  */
 std::vector<Item*> WorldSolver::missing_items_to_take_path(WorldPath* path) const
 {
-    const UnsortedSet<Item*>& required_items = path->required_items();
+    const std::vector<Item*>& required_items = path->required_items();
     std::vector<Item*> inventory_copy = _inventory;
 
     std::vector<Item*> missing_items;
@@ -204,11 +203,11 @@ std::vector<Item*> WorldSolver::missing_items_to_take_path(WorldPath* path) cons
 std::vector<WorldNode*> WorldSolver::missing_nodes_to_take_path(WorldPath* path) const
 {
     std::vector<WorldNode*> missing_nodes;
-    const UnsortedSet<WorldNode*>& required_nodes = path->required_nodes();
+    const std::vector<WorldNode*>& required_nodes = path->required_nodes();
     for(WorldNode* node : required_nodes)
     {
         // A required node was not explored yet, path cannot be taken
-        if(!_explored_nodes.contains(node))
+        if(!vectools::contains(_explored_nodes, node))
             missing_nodes.emplace_back(node);
     }
 
@@ -239,7 +238,7 @@ std::vector<Item*> WorldSolver::find_minimal_inventory()
     for(Item* item : _inventory)
     {
         // Item is not a relevant item (e.g. an EkeEke in starting inventory), just ignore it
-        if(!_relevant_items.contains(item))
+        if(!vectools::contains(_relevant_items, item))
             continue;
 
         std::map<Item*, uint16_t> forbidden_items_plus_one = forbidden_items;
@@ -283,8 +282,12 @@ void WorldSolver::expand_exploration_zone()
     while (!_nodes_to_explore.empty())
     {
         WorldNode* node = *_nodes_to_explore.begin();
-        _nodes_to_explore.erase(node);
-        _explored_nodes.insert(node);
+        _nodes_to_explore.erase(_nodes_to_explore.begin());
+
+        if(vectools::contains(_explored_nodes, node))
+            throw LandstalkerException("Exploring the same node '" + node->name() + "' twice");
+        _explored_nodes.emplace_back(node);
+
         debug_log["exploration"].emplace_back("Explored " + node->id());
 
         // Process all outgoing paths
@@ -298,7 +301,7 @@ void WorldSolver::expand_exploration_zone()
             {
                 // If destination as already been explored or is already pending exploration, ignore it
                 WorldNode* destination = path->destination();
-                if (_explored_nodes.contains(destination) || _nodes_to_explore.contains(destination))
+                if (vectools::contains(_explored_nodes, destination) || vectools::contains(_nodes_to_explore, destination))
                     continue;
 
                 debug_log["exploration"].emplace_back("Found blocked path to " + path->destination()->id());
@@ -309,7 +312,8 @@ void WorldSolver::expand_exploration_zone()
                 // Add required items to the list of relevant items encountered
                 std::vector<Item*> required_items = path->required_items();
                 for(Item* item : required_items)
-                    _relevant_items.insert(item);
+                    if(!vectools::contains(_relevant_items, item))
+                        _relevant_items.emplace_back(item);
             }
         }
 
@@ -331,13 +335,13 @@ bool WorldSolver::try_unlocking_paths()
     Json& debug_log = this->debug_log_for_current_step();
 
     // Look for unlockable paths...
-    for (size_t i=0 ; i < _blocked_paths.size() ; ++i)
+    for (auto i=0 ; i < _blocked_paths.size() ; ++i)
     {
         WorldPath* path = _blocked_paths[i];
         if(this->can_take_path(path))
         {
             this->take_path(path);
-            _blocked_paths.erase(path);
+            _blocked_paths.erase(_blocked_paths.begin() + i);
             --i;
 
             opened_at_least_one_path = true;
@@ -356,9 +360,9 @@ bool WorldSolver::try_unlocking_paths()
 void WorldSolver::take_path(WorldPath* path)
 {
     WorldNode* destination = path->destination();
-    if (!_explored_nodes.contains(destination) && !_nodes_to_explore.contains(destination))
+    if (!vectools::contains(_explored_nodes, destination) && !vectools::contains(_nodes_to_explore, destination))
     {
-        _nodes_to_explore.insert(destination);
+        _nodes_to_explore.emplace_back(destination);
 
         Json& debug_log = this->debug_log_for_current_step();
         debug_log["exploration"].emplace_back("Added " + destination->id() + " to accessible nodes");

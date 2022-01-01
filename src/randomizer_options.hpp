@@ -45,10 +45,14 @@ private:
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
     std::map<uint8_t, uint16_t> _items_distribution;
-    uint8_t _hints_count = 20;
-    uint8_t _hint_distribution_region_requirement = 30;
-    uint8_t _hint_distribution_item_requirement = 25;
-    uint8_t _hint_distribution_item_location = 45;
+    uint16_t _hints_distribution_region_requirement = 6;
+    uint16_t _hints_distribution_item_requirement = 5;
+    uint16_t _hints_distribution_item_location = 8;
+    uint16_t _hints_distribution_dark_region = 1;
+    uint16_t _hints_distribution_joke = 0;
+
+    // ------------- Events -------------
+    bool _christmas_event = false;
 
     // ------------- Plando world JSON -------------
     Json _world_json;
@@ -97,10 +101,20 @@ public:
     [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
     [[nodiscard]] bool handle_tree_cutting_glitch_in_logic() const { return _tree_cutting_glitch_in_logic; }
     [[nodiscard]] const std::map<uint8_t, uint16_t>& items_distribution() const { return _items_distribution; }
-    [[nodiscard]] uint8_t hints_count() const { return _hints_count; }
-    [[nodiscard]] double hint_distribution_region_requirement() const { return (double)_hint_distribution_region_requirement / 100.0; }
-    [[nodiscard]] double hint_distribution_item_requirement() const { return (double)_hint_distribution_item_requirement / 100.0; }
-    [[nodiscard]] double hint_distribution_item_location() const { return (double)_hint_distribution_item_location / 100.0; }
+
+    [[nodiscard]] uint16_t hints_count() const { return _hints_distribution_region_requirement
+                                                     + _hints_distribution_item_requirement
+                                                     + _hints_distribution_item_location
+                                                     + _hints_distribution_dark_region
+                                                     + _hints_distribution_joke; }
+    [[nodiscard]] uint16_t hints_distribution_region_requirement() const { return _hints_distribution_region_requirement; }
+    [[nodiscard]] uint16_t hints_distribution_item_requirement() const { return _hints_distribution_item_requirement; }
+    [[nodiscard]] uint16_t hints_distribution_item_location() const { return _hints_distribution_item_location; }
+    [[nodiscard]] uint16_t hints_distribution_dark_region() const { return _hints_distribution_dark_region; }
+    [[nodiscard]] uint16_t hints_distribution_joke() const { return _hints_distribution_joke; }
+
+    // Event
+    [[nodiscard]] bool christmas_event() const { return _christmas_event; }
 
     // Plando-specific options
     [[nodiscard]] const Json& world_json() const { return _world_json; }

@@ -4,11 +4,13 @@
 #include <landstalker_lib/model/map.hpp>
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/constants/entity_type_codes.hpp>
-#include "landstalker_lib/tools/byte_array.hpp"
+#include <landstalker_lib/tools/byte_array.hpp>
+#include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/tools/huffman/symbols.hpp>
 #include <landstalker_lib/tools/sprite.hpp>
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
+
 
 constexpr uint32_t KAYLA_DIALOGUE_SCRIPT = 0x27222;
 constexpr uint32_t KAYLA_DIALOGUE_SCRIPT_END = 0x27260;
@@ -136,7 +138,7 @@ void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
 {
     constexpr uint8_t MAGIC_FOX_SPEAKER_ID = 0x2E;
 
-    UnsortedSet<uint16_t> processed_map_ids;
+    std::vector<uint16_t> processed_map_ids;
     ByteArray hint_map_ids_table;
     ByteArray command_words_table;
 
@@ -153,14 +155,14 @@ void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
             while(parent_map->parent_map())
                 parent_map = parent_map->parent_map();
 
-            if(!processed_map_ids.contains(parent_map->id()))
+            if(!vectools::contains(processed_map_ids, parent_map->id()))
             {
                 // Add the required data for the fox to actually talk
                 parent_map->speaker_ids().emplace_back(MAGIC_FOX_SPEAKER_ID);
                 hint_map_ids_table.add_word(parent_map->id());
                 command_words_table.add_word(0xE000 | ((hint_source->text_ids()[0] - 0x4D) & 0x1FFF));
 
-                processed_map_ids.insert(parent_map->id());
+                processed_map_ids.emplace_back(parent_map->id());
             }
 
             uint8_t dialogue_id = parent_map->speaker_ids().size() - 1;

@@ -3,10 +3,12 @@
 #include <iostream>
 
 #include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
 #include "tools/bitpack.hpp"
 #include "tools/base64.hpp"
+
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
@@ -97,11 +99,12 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
-    json["randomizerSettings"]["hintsCount"] = _hints_count;
     json["randomizerSettings"]["hintsDistribution"] = {
-        { "regionRequirement", _hint_distribution_region_requirement },
-        { "itemRequirement", _hint_distribution_item_requirement },
-        { "itemLocation", _hint_distribution_item_location }
+        { "regionRequirement", _hints_distribution_region_requirement },
+        { "itemRequirement", _hints_distribution_item_requirement },
+        { "itemLocation", _hints_distribution_item_location },
+        { "darkRegion", _hints_distribution_dark_region },
+        { "joke", _hints_distribution_joke }
     };
 
     if(!_model_patch_items.empty())
@@ -187,8 +190,6 @@ void RandomizerOptions::parse_json(const Json& json)
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
         if(randomizer_settings_json.contains("treeCuttingGlitchInLogic"))
             _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
-        if(randomizer_settings_json.contains("hintsCount"))
-            _hints_count = randomizer_settings_json.at("hintsCount");
 
         if(randomizer_settings_json.contains("itemsDistribution"))
         {
@@ -203,9 +204,17 @@ void RandomizerOptions::parse_json(const Json& json)
         if(randomizer_settings_json.contains("hintsDistribution"))
         {
             const Json& hints_distrib_json = randomizer_settings_json.at("hintsDistribution");
-            _hint_distribution_region_requirement = hints_distrib_json.value("regionRequirement", 0);
-            _hint_distribution_item_requirement = hints_distrib_json.value("itemRequirement", 0);
-            _hint_distribution_item_location = hints_distrib_json.value("itemLocation", 0);
+
+            if(hints_distrib_json.contains("regionRequirement"))
+                _hints_distribution_region_requirement = hints_distrib_json.at("regionRequirement");
+            if(hints_distrib_json.contains("itemRequirement"))
+                _hints_distribution_item_requirement = hints_distrib_json.at("itemRequirement");
+            if(hints_distrib_json.contains("itemLocation"))
+                _hints_distribution_item_location = hints_distrib_json.at("itemLocation");
+            if(hints_distrib_json.contains("darkRegion"))
+                _hints_distribution_dark_region = hints_distrib_json.at("darkRegion");
+            if(hints_distrib_json.contains("joke"))
+                _hints_distribution_joke = hints_distrib_json.at("joke");
         }
     }
 
@@ -220,6 +229,8 @@ void RandomizerOptions::parse_json(const Json& json)
         if(model_patch_json.contains("hintSources"))
             _model_patch_hint_sources = model_patch_json.at("hintSources");
     }
+
+    _christmas_event = json.value("christmasEvent", false);
 
     if(json.contains("world"))
         _world_json = json.at("world");
@@ -257,7 +268,7 @@ std::vector<std::string> RandomizerOptions::hash_words() const
     };
 
     std::mt19937 rng(_seed);
-    tools::shuffle(words, rng);
+    vectools::shuffle(words, rng);
     return { words.begin(), words.begin()+4 };
 }
 
@@ -291,13 +302,15 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemy_jumping_in_logic);
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
-    bitpack.pack(_hints_count);
     bitpack.pack_map(_items_distribution);
-    bitpack.pack(_hint_distribution_region_requirement);
-    bitpack.pack(_hint_distribution_item_requirement);
-    bitpack.pack(_hint_distribution_item_location);
+    bitpack.pack(_hints_distribution_region_requirement);
+    bitpack.pack(_hints_distribution_item_requirement);
+    bitpack.pack(_hints_distribution_item_location);
+    bitpack.pack(_hints_distribution_dark_region);
+    bitpack.pack(_hints_distribution_joke);
 
     bitpack.pack_vector(_possible_spawn_locations);
+
     bitpack.pack_map(_starting_items);
     bitpack.pack(_model_patch_items);
     bitpack.pack(_model_patch_spawns);
@@ -340,11 +353,12 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemy_jumping_in_logic = bitpack.unpack<bool>();
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
-    _hints_count = bitpack.unpack<uint8_t>();
     _items_distribution = bitpack.unpack_map<uint8_t, uint16_t>();
-    _hint_distribution_region_requirement = bitpack.unpack<uint8_t>();
-    _hint_distribution_item_requirement = bitpack.unpack<uint8_t>();
-    _hint_distribution_item_location = bitpack.unpack<uint8_t>();
+    _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
+    _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();
+    _hints_distribution_item_location = bitpack.unpack<uint16_t>();
+    _hints_distribution_dark_region = bitpack.unpack<uint16_t>();
+    _hints_distribution_joke = bitpack.unpack<uint16_t>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 

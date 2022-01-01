@@ -20,7 +20,6 @@
 #include <landstalker_lib/md_tools.hpp>
 #include <landstalker_lib/tools/argument_dictionary.hpp>
 #include <landstalker_lib/constants/offsets.hpp>
-#include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
 #include "tools/base64.hpp"

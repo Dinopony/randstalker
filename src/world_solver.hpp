@@ -2,10 +2,9 @@
 
 #include <vector>
 
-#include <landstalker_lib/tools/unsorted_set.hpp>
 #include <landstalker_lib/tools/json.hpp>
 #include <landstalker_lib/model/world.hpp>
-
+#include <landstalker_lib/tools/vectools.hpp>
 #include "logic_model/randomizer_world.hpp"
 
 class WorldNode;
@@ -31,15 +30,15 @@ private:
     WorldNode* _end_node = nullptr;
 
     std::map<Item*, uint16_t> _forbidden_items;
-    UnsortedSet<WorldNode*> _forbidden_nodes_to_pick_items;
+    std::vector<WorldNode*> _forbidden_nodes_to_pick_items;
 
-    UnsortedSet<WorldNode*> _explored_nodes;
-    UnsortedSet<WorldNode*> _nodes_to_explore;
-    
-    UnsortedSet<WorldPath*> _blocked_paths;
+    std::vector<WorldNode*> _explored_nodes;
+    std::vector<WorldNode*> _nodes_to_explore;
+
+    std::vector<WorldPath*> _blocked_paths;
     std::vector<ItemSource*> _reachable_item_sources;
 
-    UnsortedSet<Item*> _relevant_items;
+    std::vector<Item*> _relevant_items;
     
     std::vector<Item*> _starting_inventory;
     std::vector<Item*> _inventory;
@@ -54,7 +53,7 @@ public:
 
     void forbid_items(const std::map<Item*, uint16_t>& item_quantities);
     void forbid_item_type(Item* item);
-    void forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes);
+    void forbid_taking_items_from_nodes(const std::vector<WorldNode*>& forbidden_nodes);
 
     void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
     bool try_to_solve(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
@@ -64,7 +63,7 @@ public:
     void starting_inventory(const std::vector<Item*>& starting_inventory) { _starting_inventory = starting_inventory; }
     void update_current_inventory();
 
-    [[nodiscard]] const UnsortedSet<WorldPath*>& blocked_paths() const { return _blocked_paths; }
+    [[nodiscard]] const std::vector<WorldPath*>& blocked_paths() const { return _blocked_paths; }
     [[nodiscard]] const std::vector<ItemSource*>& reachable_item_sources() const { return _reachable_item_sources; }
     [[nodiscard]] std::vector<ItemSource*> empty_reachable_item_sources() const;
     [[nodiscard]] const std::vector<Item*>& inventory() const { return _inventory; }
@@ -75,7 +74,7 @@ public:
 
     [[nodiscard]] const std::vector<std::pair<Item*, std::vector<ItemSource*>>>& scheduled_item_placements() const { return _scheduled_item_placements; }
 
-    [[nodiscard]] bool reached_end() const { return _explored_nodes.contains(_end_node); }
+    [[nodiscard]] bool reached_end() const { return vectools::contains(_explored_nodes, _end_node); }
     [[nodiscard]] std::vector<Item*> find_minimal_inventory();
 
     [[nodiscard]] Json& debug_log() { return _debug_log; }

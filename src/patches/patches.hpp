@@ -22,10 +22,15 @@ void shorten_cutscenes(md::ROM& rom);
 // Not yet processed patches
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world);
 
+// Events
+void christmas_event(md::ROM& rom, World& world);
+
 inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options, const PersonalSettings& personal_settings)
 {
     optimize_maps(world);
-
+    alter_randomizer_credits(rom);
+    alter_randomizer_title(rom);
+    
     add_functions_to_items_on_use(rom, world, options.consumable_record_book());
     add_statue_of_jypta_effect(rom);
     alter_fahl_challenge(rom, world);
@@ -36,7 +41,6 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     fix_hud_tilemap(rom);
     fix_item_checks(rom);
     improve_engine(rom);
-    patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
     handle_additional_jewels(rom, world, options.jewel_count());
     make_sword_of_gaia_work_in_volcano(rom);
     normalize_special_enemies_hp(rom);
@@ -63,12 +67,14 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     make_falling_ribbon_not_story_dependant(world);
 
     alter_hint_provider_dialogues(rom);
-    alter_randomizer_credits(rom);
-    alter_randomizer_title(rom);
     apply_rando_world_edits(rom, world, options.fix_armlet_skip());
     replace_copy_save_by_show_hash(rom, options.hash_sentence());
     shorten_cutscenes(rom);
 
     handle_fox_hints(rom, world);
     patch_rando_adaptations(rom, options, world);
+    patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
+
+    if(options.christmas_event())
+        christmas_event(rom, world);
 }

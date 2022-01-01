@@ -58,6 +58,7 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
         FLAG_SAW_DUKE_ENTERING_LAKE_SHRINE,
         FLAG_SAW_DUKE_TAUNTING_IN_SHELL_BREAST_ROOM,
         FLAG_SECOND_RAFT_PLACED_IN_KNL,
+        FLAG_SAW_KID_LEAVING_MONSTER_ZOO,
 
         // Various keydoors...
         Flag(0x06, 6), Flag(0x06, 5), Flag(0x06, 4), Flag(0x06, 3), Flag(0x06, 2),
@@ -73,13 +74,6 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
             flags_to_add.emplace_back(Flag(0x23, bit));
         flags_to_add.emplace_back(Flag(0x25, 0));
         flags_to_add.emplace_back(Flag(0x25, 1));
-    }
-
-    // Clear Verla soldiers if spawning in Verla
-    if(world.spawn_location().id() == "verla")
-    {
-        flags_to_add.emplace_back(Flag(0x26, 3));
-        flags_to_add.emplace_back(Flag(0x26, 4));
     }
 
     // Mark the boulder as already removed at game start

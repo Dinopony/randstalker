@@ -28,7 +28,7 @@ public:
 
     [[nodiscard]] const std::string& description() const { return _description; }
     [[nodiscard]] WorldNode* node() const { return _node; }
-    [[nodiscard]] bool special() const { return !this->has_entity(); }
+    [[nodiscard]] bool special() const { return _map_ids.empty(); }
     [[nodiscard]] bool small_textbox() const { return _small_textbox; }
 
     [[nodiscard]] std::string text() const;
@@ -39,7 +39,6 @@ public:
     void text_id(uint16_t text_id) { _text_ids = { text_id }; }
     void text_ids(const std::vector<uint16_t>& text_ids) { _text_ids = text_ids; }
 
-    [[nodiscard]] bool has_entity() const { return !_map_ids.empty(); }
     [[nodiscard]] const std::vector<uint16_t>& map_ids() const { return _map_ids; }
     [[nodiscard]] Position position() const { return _position; }
     [[nodiscard]] uint8_t orientation() const { return _orientation; }

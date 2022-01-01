@@ -109,12 +109,11 @@ static void parse_dark_region_from_json(RandomizerWorld& world, const Json& json
     if(json.contains("darkRegion"))
     {
         const std::string& dark_region_name = json.at("darkRegion");
-        try {
-            world.dark_region(world.region(dark_region_name));
-        }
-        catch(std::out_of_range&) {
-                throw LandstalkerException("Dark region '" + dark_region_name + "' could not be found");
-        }
+
+        WorldRegion* region = world.region(dark_region_name);
+        if(!region)
+            throw LandstalkerException("Dark region '" + dark_region_name + "' could not be found");
+        world.dark_region(region);
     }
 }
 

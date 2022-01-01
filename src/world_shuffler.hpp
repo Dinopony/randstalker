@@ -3,8 +3,6 @@
 #include <vector>
 #include <string>
 #include <random>
-
-#include <landstalker_lib/tools/unsorted_set.hpp>
 #include <landstalker_lib/model/world.hpp>
 
 #include "randomizer_options.hpp"
@@ -30,9 +28,9 @@ private:
     std::vector<Item*> _minimal_items_to_complete;
     std::vector<ItemSource*> _logical_playthrough;
 
-    UnsortedSet<WorldRegion*> _hintable_regions;
-    UnsortedSet<uint8_t> _hintable_item_requirements;
-    UnsortedSet<uint8_t> _hintable_item_locations;
+    std::vector<WorldRegion*> _hintable_region_requirements;
+    std::vector<uint8_t> _hintable_item_requirements;
+    std::vector<uint8_t> _hintable_item_locations;
 
 public:
     WorldShuffler(RandomizerWorld& world, const RandomizerOptions& options);
@@ -71,9 +69,10 @@ private:
     [[nodiscard]] Item* randomize_fortune_teller_hint();
     void randomize_oracle_stone_hint(Item* fortune_hinted_item);
     void randomize_fox_hints();
-    void generate_region_requirement_hint(HintSource* hint_source);
+    bool generate_dark_region_hint(HintSource* hint_source);
+    bool generate_region_requirement_hint(HintSource* hint_source);
     bool generate_item_requirement_hint(HintSource* hint_source);
-    bool generate_item_position_hint(HintSource* hint_source);
+    bool generate_item_location_hint(HintSource* hint_source);
 
     [[nodiscard]] std::string random_hint_for_item(Item* item);
     [[nodiscard]] std::string random_hint_for_item_source(ItemSource* source);

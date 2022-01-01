@@ -1,7 +1,6 @@
 #pragma once
 
 #include <landstalker_lib/model/item.hpp>
-#include <landstalker_lib/tools/unsorted_set.hpp>
 
 class WorldNode;
 
@@ -31,7 +30,7 @@ public:
     [[nodiscard]] WorldNode* destination() const { return _to_node; }
 
     [[nodiscard]] const std::vector<WorldNode*>& required_nodes() const { return _required_nodes; }
-    [[nodiscard]] bool has_explored_required_nodes(const UnsortedSet<WorldNode*>& explored_nodes) const;
+    [[nodiscard]] bool has_explored_required_nodes(const std::vector<WorldNode*>& explored_nodes) const;
 
     [[nodiscard]] const std::vector<Item*>& items_placed_when_crossing() const { return _items_placed_when_crossing; }
     void add_item_placed_when_crossing(Item* item) { _items_placed_when_crossing.emplace_back(item); }

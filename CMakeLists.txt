@@ -30,12 +30,26 @@ wrapped_dependency(TEXT     src/logic_model/data/hint_source.json           HINT
 wrapped_dependency(TEXT     src/logic_model/data/spawn_location.json        SPAWN_LOCATIONS_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/item_distribution.json     ITEM_DISTRIBUTIONS_JSON)
 wrapped_dependency(TEXT     src/assets/game_strings.json                    GAME_STRINGS_JSON)
-wrapped_dependency(RAW      src/assets/edited_title_tileset.bin             EDITED_TITLE_TILESET)
+wrapped_dependency(RAW      src/assets/christmas_moneybag.bin               CHRISTMAS_MONEYBAG)
+
+wrapped_dependency(RAW      src/assets/titlescreen/title1_layout.rle        TITLE1_LAYOUT)
+wrapped_dependency(RAW      src/assets/titlescreen/title1_tiles.lz77        TITLE1_TILES)
+wrapped_dependency(RAW      src/assets/titlescreen/title2_layout.rle        TITLE2_LAYOUT)
+wrapped_dependency(RAW      src/assets/titlescreen/title2_tiles.lz77        TITLE2_TILES)
+wrapped_dependency(RAW      src/assets/titlescreen/title3_layout.rle        TITLE3_LAYOUT)
+wrapped_dependency(RAW      src/assets/titlescreen/title3_tiles.lz77        TITLE3_TILES)
 
 set(SOURCES
         # --- Auto-generated dependencies ----------------------------------------
         "src/assets/game_strings.json.hxx"
-        "src/assets/edited_title_tileset.bin.hxx"
+        "src/assets/christmas_moneybag.bin.hxx"
+        "src/assets/titlescreen/title1_layout.rle.hxx"
+        "src/assets/titlescreen/title1_tiles.lz77.hxx"
+        "src/assets/titlescreen/title2_layout.rle.hxx"
+        "src/assets/titlescreen/title2_tiles.lz77.hxx"
+        "src/assets/titlescreen/title3_layout.rle.hxx"
+        "src/assets/titlescreen/title3_tiles.lz77.hxx"
+
         "src/logic_model/data/world_node.json.hxx"
         "src/logic_model/data/world_path.json.hxx"
         "src/logic_model/data/world_region.json.hxx"
@@ -71,6 +85,7 @@ set(SOURCES
         "src/patches/rando_world_edits.cpp"
         "src/patches/replace_copy_by_hash.cpp"
         "src/patches/shorten_cutscenes.cpp"
+        "src/patches/event_christmas.cpp"
 
         "src/patches/patches.hpp"
         "src/patches/rando_adaptations.cpp"

@@ -1,5 +1,6 @@
 #include "world_path.hpp"
 #include "world_node.hpp"
+#include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 #include <utility>
 
@@ -44,10 +45,10 @@ std::vector<Item*> WorldPath::missing_items_to_cross(std::vector<Item*> player_i
     return missing_items;
 }
 
-bool WorldPath::has_explored_required_nodes(const UnsortedSet<WorldNode*>& explored_nodes) const
+bool WorldPath::has_explored_required_nodes(const std::vector<WorldNode*>& explored_nodes) const
 {
     for(WorldNode* node : _required_nodes)
-        if(!explored_nodes.contains(node))
+        if(!vectools::contains(explored_nodes, node))
             return false;
     return true;
 }
