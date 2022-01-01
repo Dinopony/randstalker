@@ -26,13 +26,13 @@
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
-        "hintsCount": 20,
         "itemsDistribution": {},
-        "hintDistribution": {
-            "regionRequirement": 30,
-            "itemRequirement": 25,
-            "itemLocation": 45
-        },
-        "hintDarkRegion": true
+        "hintsDistribution": {
+            "regionRequirement": 6,
+            "itemRequirement": 5,
+            "itemLocation": 8,
+            "darkRegion": 1,
+            "joke": 0
+        }
     }
 }
