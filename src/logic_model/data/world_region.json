@@ -19,6 +19,7 @@
     },
     {
         "name": "Route between Massan and Gumi",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "route_massan_gumi"
         ]
@@ -54,6 +55,7 @@
     },
     {
         "name": "Route between Gumi and Ryuma",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "route_gumi_ryuma"
         ]
@@ -158,6 +160,7 @@
     },
     {
         "name": "Verla Shore",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "verla_shore"
         ]
@@ -184,6 +187,7 @@
     },
     {
         "name": "Route between Verla and Destel",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "route_verla_destel"
         ]
@@ -197,6 +201,7 @@
     },
     {
         "name": "Route after Destel",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "route_after_destel"
         ]
@@ -213,6 +218,7 @@
     },
     {
         "name": "Route to Lake Shrine",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "route_lake_shrine",
             "route_lake_shrine_cliff"
