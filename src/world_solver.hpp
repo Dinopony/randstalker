@@ -1,9 +1,11 @@
 #pragma once
 
 #include <vector>
-#include "tools/unsorted_set.hpp"
-#include "extlibs/json.hpp"
-#include "world.hpp"
+
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/tools/vectools.hpp>
+#include "logic_model/randomizer_world.hpp"
 
 class WorldNode;
 class ItemSource;
@@ -22,73 +24,64 @@ class WorldPath;
 class WorldSolver
 {
 private:
-    WorldNode* _start_node;
-    WorldNode* _end_node;
-    std::vector<Item*> _forbidden_item_instances;
-    std::vector<Item*> _forbidden_item_types;
-    UnsortedSet<WorldNode*> _forbidden_nodes_to_pick_items;
+    const RandomizerWorld& _world;
 
-    UnsortedSet<WorldNode*> _explored_nodes;
-    UnsortedSet<WorldNode*> _nodes_to_explore;
-    
-    UnsortedSet<WorldPath*> _blocked_paths;
+    WorldNode* _start_node = nullptr;
+    WorldNode* _end_node = nullptr;
+
+    std::map<Item*, uint16_t> _forbidden_items;
+    std::vector<WorldNode*> _forbidden_nodes_to_pick_items;
+
+    std::vector<WorldNode*> _explored_nodes;
+    std::vector<WorldNode*> _nodes_to_explore;
+
+    std::vector<WorldPath*> _blocked_paths;
     std::vector<ItemSource*> _reachable_item_sources;
 
-    UnsortedSet<Item*> _relevant_items;
+    std::vector<Item*> _relevant_items;
     
     std::vector<Item*> _starting_inventory;
     std::vector<Item*> _inventory;
 
-    uint32_t _step_count;
+    std::vector<std::pair<Item*, std::vector<ItemSource*>>> _scheduled_item_placements;
+
+    uint32_t _step_count = 0;
     Json _debug_log;
 
 public:
-    WorldSolver()
-    {}
+    explicit WorldSolver(const RandomizerWorld& world);
 
-    WorldSolver(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory = {})
-    {
-        this->setup(start_node, end_node, starting_inventory);
-    }
+    void forbid_items(const std::map<Item*, uint16_t>& item_quantities);
+    void forbid_item_type(Item* item);
+    void forbid_taking_items_from_nodes(const std::vector<WorldNode*>& forbidden_nodes);
 
-    WorldSolver(const World& world)
-    {
-        this->setup(world);
-    }
-
-    void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory = {});
-    void setup(const World& world)
-    { 
-        this->setup(world.spawn_node(), world.end_node(), world.starting_inventory());
-    }
-
-    void forbid_item_instances(const std::vector<Item*>& forbidden_item_instances);
-    void forbid_item_types(const std::vector<Item*>& forbidden_item_types);
-    void forbid_taking_items_from_nodes(const UnsortedSet<WorldNode*>& forbidden_nodes);
-
-    bool try_to_solve();
+    void setup(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
+    bool try_to_solve(WorldNode* start_node, WorldNode* end_node, const std::vector<Item*>& starting_inventory);
     bool run_until_blocked();
 
-    const std::vector<Item*>& starting_inventory() const { return _starting_inventory; }
+    [[nodiscard]] const std::vector<Item*>& starting_inventory() const { return _starting_inventory; }
     void starting_inventory(const std::vector<Item*>& starting_inventory) { _starting_inventory = starting_inventory; }
     void update_current_inventory();
 
-    const UnsortedSet<WorldPath*>& blocked_paths() const { return _blocked_paths; }
-    const std::vector<ItemSource*>& reachable_item_sources() const { return _reachable_item_sources; }
-    std::vector<ItemSource*> empty_reachable_item_sources() const;
-    const std::vector<Item*>& inventory() const { return _inventory; }
+    [[nodiscard]] const std::vector<WorldPath*>& blocked_paths() const { return _blocked_paths; }
+    [[nodiscard]] const std::vector<ItemSource*>& reachable_item_sources() const { return _reachable_item_sources; }
+    [[nodiscard]] std::vector<ItemSource*> empty_reachable_item_sources() const;
+    [[nodiscard]] const std::vector<Item*>& inventory() const { return _inventory; }
 
-    bool can_take_path(WorldPath* path) const;
-    std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
-    std::vector<Item*> missing_items_to_take_path(WorldPath* path) const;
+    [[nodiscard]] bool can_take_path(WorldPath* path) const;
+    [[nodiscard]] std::vector<Item*> missing_items_to_take_path(WorldPath* path) const;
+    [[nodiscard]] std::vector<WorldNode*> missing_nodes_to_take_path(WorldPath* path) const;
 
-    bool reached_end() const { return _explored_nodes.contains(_end_node); }
-    std::vector<Item*> find_minimal_inventory();
+    [[nodiscard]] const std::vector<std::pair<Item*, std::vector<ItemSource*>>>& scheduled_item_placements() const { return _scheduled_item_placements; }
 
-    Json& debug_log() { return _debug_log; }
-    Json& debug_log_for_current_step() { return _debug_log["steps"][std::to_string(_step_count)]; }
+    [[nodiscard]] bool reached_end() const { return vectools::contains(_explored_nodes, _end_node); }
+    [[nodiscard]] std::vector<Item*> find_minimal_inventory();
+
+    [[nodiscard]] Json& debug_log() { return _debug_log; }
+    [[nodiscard]] Json& debug_log_for_current_step() { return _debug_log["steps"][std::to_string(_step_count)]; }
 
 private:
     void expand_exploration_zone();
     bool try_unlocking_paths();
+    void take_path(WorldPath* path);
 };

@@ -2,8 +2,9 @@
 
 # Randstalker
 
-Randstalker is a randomizer for the famous Megadrive / Genesis classic "Landstalker : The Treasure of King Nole".
-It works on a US ROM of the game by randomizing item sources and altering the game so that it is more enjoyable in a randomizer format.
+Randstalker is a randomizer for the famous Megadrive / Genesis classic "Landstalker : The Treasure of King Nole". It
+works on a US ROM of the game by randomizing item sources and altering the game so that it is more enjoyable in a
+randomizer format.
 
 ## Notable differences compared to original game
 
@@ -12,23 +13,29 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 - Game starts at a given spawn location (usually randomized) and intro is fully skipped.
 - Most cutscenes and scenario related checks / blockers are removed
 - You will need as many jewels as specified in the settings to use the teleporter to go to Kazalt
-- All other conditions from the original game stay as-is (Safety Pass to reach Mercator, Gola's Eye to reach King Nole's Cave, Axe Magic to cut trees, all three Gola pieces to reach King Nole's fight...)
-- The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked by having Buyer Card in your inventory
-- The **Key** is now a unique item and can open several doors without being consumed. All key doors are gone, except three of them : 
-	* the Mercator castle backdoor (giving access to Greenmaze sector) 
-	* Thieves Hideout middle door (cutting the level in half) 
-	* King Nole's Labyrinth door near entrance
+
+- All other conditions from the original game stay as-is (Safety Pass to reach Mercator, Gola's Eye to reach King Nole's
+  Cave, Axe Magic to cut trees, all three Gola pieces to reach King Nole's fight...)
+- The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked by having
+  Buyer Card in your inventory
+- The **Key** is now a unique item and can open several doors without being consumed. All key doors are gone, except
+  three of them :
+    * the Mercator castle backdoor (giving access to Greenmaze sector)
+    * Thieves Hideout middle door (cutting the level in half)
+    * King Nole's Labyrinth door near entrance
 
 ### New item features
 
 - On default settings, you start with two unusual items:
     - a **Record Book** allowing you to save anywhere and pontentially save time by strategically save-scumming
     - a **Spell Book** allowing you to warp back to your spawn point
-- You will also be able to find the **Statue of Jypta** which is reintroduced as a real item giving gold passively as you walk. Free riches!
+- You will also be able to find the **Statue of Jypta** which is reintroduced as a real item giving gold passively as
+  you walk. Free riches!
 
-### Hints 
+### Hints
 
-- Road signs which used to give directions now give hints instead
+- Hints are provided by Foxy, an ubiquitous wizard fox that can appear in more than a hundred of spots. Keep your eyes
+  wide open to find it wherever it appears (full list with screenshots [there](https://imgur.com/a/FnN7Akx))
 - Using the Lithograph will give you hints where to find both jewels
 - Using the Oracle Stone will give you a hint on an important item
 - The Fortune Teller in Mercator will give you a hint leading to one of the Gola items
@@ -36,43 +43,55 @@ It works on a US ROM of the game by randomizing item sources and altering the ga
 ### Fixes
 
 - You won't be able to go to Mir Tower without the Armlet by doing the Armlet skip since it has been fixed. Sorry!
-- All known places where you usually can't go back and could potentially softlock now stay opened to be able to come back afterwards (e.g. Crypt, King Nole's Labyrinth raft sector, Swamp Shrine boss reward chest...)
+- All known places where you usually can't go back and could potentially softlock now stay opened to be able to come
+  back afterwards (e.g. Crypt, King Nole's Labyrinth raft sector, Swamp Shrine boss reward chest...)
 
 ### Misc details
 
-- Depressed shopkeeper in Mercator (giving Buyer's Card in vanilla game) is replaced by a chest in the shop backroom, since traders' sidequest is only available in a very limited timeframe in the game
-- By default, armors work as "armor upgrades", meaning you will always get them one tier after another (this can be disabled as an option)
-- The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you approach him at the end of the level (no need to talk to him anymore).
-- The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right before it. You can go straight to Kazalt without worrying about it.
+- Depressed shopkeeper in Mercator (giving Buyer's Card in vanilla game) is replaced by a chest in the shop backroom,
+  since traders' sidequest is only available in a very limited timeframe in the game
+- By default, armors work as "armor upgrades", meaning you will always get them one tier after another (this can be
+  disabled as an option)
+- The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you
+  approach him at the end of the level (no need to talk to him anymore).
+- The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right
+  before it. You can go straight to Kazalt without worrying about it.
 - Tibor trees connections can be optionally randomized
 
-## Known issues / non-issues
-
-- Dex won't be in his map in Verla Mines for technical reasons. This is not a problem by itself, but can be surprising at first.
-
 ## Usage
+
+You can use the online generator provided by Dilandau (thanks to him!) at this address: https://randstalker.ovh/
+
+The online generator always uses an up-to-date stable version of the tool, but sometimes not the very latest build 
+(because it might be buggy / unstable).
 
 ### Release versions
 
 You can use the online generator provided by Dilandau (thanks to him!) at this address: https://randstalker.ovh/
-The online generator always uses an up-to-date stable version of the tool, but sometimes not the very latest build (because it might be buggy / unstable).
+The online generator always uses an up-to-date stable version of the tool, but sometimes not the very latest build 
+(because it might be buggy / unstable).
 
-Using the provided release packages (on the right panel of this webpage) is really straightforward since everything (excepted the original ROM) is included for you to start randomizing.
+Using the provided release packages (on the right panel of this webpage) is really straightforward since everything 
+(excepted the original ROM) is included for you to start randomizing.
 
 ### Development versions
 
-If you want to get the very last version, you can also compile and use the executable version on your own device.
-You will need CMake to do so, and then do:
+If you want to get the very last version, you can also compile and use the executable version on your own device. You
+will need CMake to do so, and then do:
 
 - On Windows, with Visual Studio 2019 installed, you can execute `build_win_vs2019.bat`
 - On Unix, you can execute `build_unix.sh`
 
-You will then need to execute the compiled binary it through the command line with the following options being available:
+You will then need to execute the compiled binary it through the command line with the following options being
+available:
 
-- **--permalink=PERMALINK**: use the given permalink to populate all other settings. Permalinks are given at then end of a generation and allow for other generations of the exact same seed.
+- **--permalink=PERMALINK**: use the given permalink to populate all other settings. Permalinks are given at then end of
+  a generation and allow for other generations of the exact same seed.
 - **--inputRom=PATH**: set the path to the ROM used as input (e.g. `--inputRom="myROM.md"`)
 - **--outputRom=PATH**: set the path where the randomized ROM will be outputted (e.g. `--outputROM="./seeds/"`)
 - **--outputLog=PATH**: set the path where the spoiler log will be outputted (e.g. `--outputLog=spoiler.log`)
-- **--preset=PATH**: set the path where the JSON preset file containing settings is located (e.g. `--preset=preset.json`)
-- **--noPause**: if set, no "press any key" prompt will be put at the end of generation, especially useful for automated generators (e.g. `--noPause`)
+- **--preset=PATH**: set the path where the JSON preset file containing settings is located (
+  e.g. `--preset=preset.json`)
+- **--noPause**: if set, no "press any key" prompt will be put at the end of generation, especially useful for automated
+  generators (e.g. `--noPause`)
 - **--ingameTracker**: adds greyed out key items in inventory to have a working in-game item tracker

@@ -13,26 +13,22 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#include <cstdint>
 #include <string>
 #include <iostream>
 
-#include "extlibs/base64.hpp"
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/md_tools.hpp>
+#include <landstalker_lib/tools/argument_dictionary.hpp>
+#include <landstalker_lib/constants/offsets.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
-#include "model/world_node.hpp"
-#include "model/item_source.hpp"
-
+#include "tools/base64.hpp"
 #include "patches/patches.hpp"
-
-#include "tools/megadrive/rom.hpp"
-#include "tools/argument_dictionary.hpp"
-#include "tools/tools.hpp"
-
-#include "exceptions.hpp"
-#include "offsets.hpp"
-#include "world.hpp"
-#include "world_writer.hpp"
-#include "world_randomizer.hpp"
+#include "apply_randomizer_options.hpp"
+#include "logic_model/hint_source.hpp"
+#include "logic_model/randomizer_world.hpp"
+#include "world_shuffler.hpp"
+#include "io/io.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {
@@ -55,114 +51,96 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
 {
     input_rom_path = args.get_string("inputrom", "./input.md");
     output_rom_path = args.get_string("outputrom", "./");
-    spoiler_log_path = args.get_string("outputlog");
+    spoiler_log_path = args.get_string("outputlog", "./");
 
-   // Clean output ROM path and determine if it's a directory or a file
+    // Clean output ROM path and determine if it's a directory or a file
     bool output_path_is_a_directory = true;
     if(!output_rom_path.empty())
     {
-        output_path_is_a_directory = !tools::ends_with(output_rom_path, ".md") && !tools::ends_with(output_rom_path, ".bin");
+        output_path_is_a_directory = !output_rom_path.ends_with(".md") && !output_rom_path.ends_with(".bin");
         if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
             output_rom_path += "/";
     }
 
     // Clean output log path and if it wasn't specified, give it an appropriate default value
-    if(spoiler_log_path.empty())
+    if(!args.contains("outputlog"))
     {
         if(output_path_is_a_directory && !output_rom_path.empty())
             spoiler_log_path = output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
         else
             spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
     }
-    if(!tools::ends_with(spoiler_log_path, ".json") && *spoiler_log_path.rbegin() != '/')
+    else if(!spoiler_log_path.empty() && !spoiler_log_path.ends_with(".json") && !spoiler_log_path.ends_with('/'))
         spoiler_log_path += "/";
 
     // Add the filename afterwards
     if(!output_rom_path.empty() && *output_rom_path.rbegin() == '/')
         output_rom_path += options.hash_sentence() + ".md";
-    if(*spoiler_log_path.rbegin() == '/')
+    if(!spoiler_log_path.empty() && *spoiler_log_path.rbegin() == '/')
         spoiler_log_path += options.hash_sentence() + ".json";
 }
 
-Json randomize(World& world, RandomizerOptions& options, const ArgumentDictionary& args)
+Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options, PersonalSettings& personal_settings, const ArgumentDictionary& args)
 {
     Json spoiler_json;
 
-    std::string permalink = options.permalink();
-    spoiler_json["permalink"] = permalink;
+    spoiler_json["permalink"] = options.permalink();
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
-    std::cout << "Permalink: " << permalink << "\n\n";
-    std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
+    // Apply randomizer options to alter World and RandomizerWorld accordingly before starting the actual randomization
+    apply_randomizer_options(options, world);
+
+    // Parse a potential "world" section inside the preset for plandos & half plandos
+    WorldJsonParser::parse_world_json(world, options.world_json());
 
     // In rando mode, we rock our little World and shuffle things around to make a brand new experience on each seed.
-    std::cout << "Randomizing world...\n";
-    WorldRandomizer randomizer(world, options);
-    randomizer.randomize();
+    std::cout << "\nRandomizing world...\n";
+    WorldShuffler shuffler(world, options);
+    shuffler.randomize();
+
+    // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
+    std::cout << "Applying game patches...\n\n";
+    apply_randomizer_patches(rom, world, options, personal_settings);
 
     std::string debug_log_path = args.get_string("debuglog");
     if (!debug_log_path.empty())
     {
         std::ofstream debug_log_file(debug_log_path);
-        debug_log_file << randomizer.debug_log_as_json().dump(4);
+        debug_log_file << shuffler.debug_log_as_json().dump(4);
         debug_log_file.close();
     }
 
-    spoiler_json.merge_patch(world.to_json());
-    spoiler_json["playthrough"] = randomizer.playthrough_as_json();
+    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
+    spoiler_json["playthrough"] = shuffler.playthrough_as_json();
 
-    return spoiler_json;
-}
-
-Json plandomize(World& world, RandomizerOptions& options, const ArgumentDictionary& args)
-{
-    std::cout << "Plandomizing world...\n";
-    Json spoiler_json;
-
-    // In plando mode, we parse the world from the file given as a plando input, without really randomizing anything.
-    // The software will act as a simple ROM patcher, without verifying the game is actually completable.
-
-    world.parse_json(options.input_plando_json());
-
-    spoiler_json.merge_patch(options.to_json());
-    spoiler_json.merge_patch(world.to_json());
-
-    // If --encodePlando is passed, the plando being processed is outputted in an encoded fashion
-    if (args.get_boolean("encodeplando") && options.is_plando())
+    // Output model if requested
+    if(args.get_boolean("dumpmodel"))
     {
-        std::ofstream encodedPlandoFile("./encoded_plando.json");
-        Json fileJson;
-        fileJson["plando_permalink"] = base64_encode(Json::to_msgpack(spoiler_json));
-        encodedPlandoFile << fileJson.dump(4);
-        encodedPlandoFile.close();
-
-        std::cout << "Plando encoded to './encoded_plando.json'" << std::endl;
-        exit(0);
+        if(options.allow_spoiler_log())
+        {
+            std::cout << "Outputting model...\n\n";
+            ModelWriter::write_world_model(world);
+            ModelWriter::write_logic_model(world);
+            std::cout << "Model dumped to './json_data/'" << std::endl;
+        }
+        else
+            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
 
     return spoiler_json;
-}
-
-void display_options(const RandomizerOptions& options)
-{
-    Json options_as_json = options.to_json();
-    if(!options.has_custom_mandatory_items())
-        options_as_json["randomizerSettings"]["mandatoryItems"] = "default";
-    if(!options.has_custom_filler_items())
-        options_as_json["randomizerSettings"]["fillerItems"] = "default";
-    std::cout << "Settings: " << options_as_json.dump(2) << "\n\n";
 }
 
 void generate(const ArgumentDictionary& args)
 {
     // Parse options from command-line args, preset file, plando file...
     RandomizerOptions options(args);
+    PersonalSettings personal_settings(args);
 
     // Parse various paths from args
     std::string input_rom_path, output_rom_path, spoiler_log_path;
     process_paths(args, options, input_rom_path, output_rom_path, spoiler_log_path);
- 
+
     // Output current preset
     if (args.get_boolean("writepreset"))
     {
@@ -180,52 +158,34 @@ void generate(const ArgumentDictionary& args)
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
     md::ROM* rom = get_input_rom(input_rom_path);
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
+    rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
+    rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
+    rom->mark_empty_chunk(0x148AB6, 0x14AA78); // Unused bird sprite
 
-    World world(*rom, options);
-    apply_world_edits(world, options, *rom);
+    std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
 
-    display_options(options);
+    std::cout << "Permalink: " << options.permalink() << "\n";
+    std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
-    Json spoiler_json;
-    if(options.is_plando())
-    {
-        spoiler_json = plandomize(world, options, args);
-    }
-    else
-    {
-        spoiler_json = randomize(world, options, args);
-    }
+    RandomizerWorld world(*rom);
+
+    Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
     
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
     {
         std::cout << "Writing world to ROM...\n";
-        WorldWriter::write_world_to_rom(*rom, world);
-
-        // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-        std::cout << "Applying game patches...\n\n";
-        apply_game_patches(*rom, options, world);
+        world.write_to_rom(*rom);
 
         std::ofstream output_rom_file(output_rom_path, std::ios::binary);
         if(!output_rom_file)
-            throw RandomizerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
+            throw LandstalkerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
 
         rom->write_to_file(output_rom_file);
-        std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n\n";
-    }
-
-    // Output current world model if requested
-    if (args.get_boolean("dumpmodel"))
-    {
-        if(options.allow_spoiler_log())
-        {
-            world.output_model();
-            std::cout << "Model dumped to './json_data/'" << std::endl;
-        }
-        else
-            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
+        std::cout << (rom->remaining_empty_bytes()/1000) << "Ko remaining of empty data" << std::endl;
+        std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n";
     }
 
     // Write a spoiler log to help the player
@@ -235,14 +195,14 @@ void generate(const ArgumentDictionary& args)
         {
             std::ofstream spoiler_file(spoiler_log_path);
             if(!spoiler_file)
-                throw RandomizerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
+                throw LandstalkerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
 
             spoiler_file << spoiler_json.dump(4);
             spoiler_file.close();
-            std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n\n";
+            std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n";
         }
         else
-            std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n\n";
+            std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n";
     }
 }
 
@@ -254,13 +214,21 @@ int main(int argc, char* argv[])
 
     std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
 
+    if(args.contains("permalink") && args.get_string("permalink").empty())
+    {
+        std::string permalink;
+        std::cout << "Please specify a permalink: ";
+        std::getline(std::cin, permalink);
+        args.set_string("permalink", permalink);
+    }
+
     try
     {
         int seed_count = args.get_integer("seedcount", 1);
         for(int i=0 ; i<seed_count ; ++i)
             generate(args);
     }
-    catch(RandomizerException& e) 
+    catch(LandstalkerException& e)
     {
         std::cerr << "ERROR: " << e.what() << std::endl;
         return_code = EXIT_FAILURE;
@@ -268,7 +236,7 @@ int main(int argc, char* argv[])
 
     if(args.get_boolean("pause", true))
     {
-        std::cout << "Press any key to exit.";
+        std::cout << "\nPress any key to exit.";
         std::string dummy;
         std::getline(std::cin, dummy);
     }

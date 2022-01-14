@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../extlibs/json.hpp"
-#include "bitfield.hpp"
+#include <landstalker_lib/tools/json.hpp>
+#include <landstalker_lib/tools/bitfield.hpp>
 
 class Bitpack;
 template<typename T> T unpack_from(Bitpack& bitpack);
@@ -21,7 +21,7 @@ public:
         _current_bit_index(0)
     {}
 
-    Bitpack(const std::vector<uint8_t>& bytes) : Bitpack()
+    explicit Bitpack(const std::vector<uint8_t>& bytes) : Bitpack()
     {
         uint8_t bits_count = bytes[0];
         uint8_t bit_bytes_size = bits_count / 8;
@@ -34,11 +34,11 @@ public:
         _bytes = std::vector<uint8_t>(bytes.begin() + 1 + bit_bytes_size, bytes.end());
     }
 
-    std::vector<uint8_t> to_bytes() const
+    [[nodiscard]] std::vector<uint8_t> to_bytes() const
     {
         std::vector<uint8_t> ret;
         
-        ret.push_back(_bits.size());
+        ret.emplace_back(_bits.size());
         std::vector<uint8_t> bit_bytes = _bits.to_bytes();
         ret.insert(ret.end(), bit_bytes.begin(), bit_bytes.end());
 
@@ -125,7 +125,7 @@ public:
 
         uint16_t vector_size = this->unpack<uint16_t>();
         for(uint16_t i=0 ; i<vector_size ; ++i)
-            ret.push_back(this->unpack<T>());
+            ret.emplace_back(this->unpack<T>());
 
         return ret;
     }

@@ -19,7 +19,9 @@
         // Arthur gift cutscene
         "497", "498", "499", "49a", "49b",
         // Fara discovering Nigel fallen from waterfall cutscene
-        "52e", "52f", "530", "531", "532", "533", "534", 
+        "52e", "52f", "530", "531", "532", "533", "534",
+        // Cutscene spying on Gumi ritual
+        "54d", "54e", "54f", "550", "551",
         // Kayla raft cutscene
         "572", "573", "574", "575", "576", "577", "578", 
         // Lithograph cutscene
@@ -69,6 +71,9 @@
     {
     //    "19_old": "You have finished \u001b%\nof this island...\u001e\nspoke the Oracle Stone.\u001e",
         "19": "The stone looks blurry. It looks like it won't be of any use...",
+
+    //    "1d_old": "DEBUG MENU",
+        "1d": "Got a useless trinket.\u001e",
 
     //    "21_old": "MAP MENU",
         "21": "This tablet seems of no use...",

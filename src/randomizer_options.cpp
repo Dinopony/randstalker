@@ -1,66 +1,19 @@
 #include "randomizer_options.hpp"
 
 #include <iostream>
-#include "extlibs/base64.hpp"
-#include "tools/tools.hpp"
-#include "exceptions.hpp"
+
+#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/tools/vectools.hpp>
+#include <landstalker_lib/exceptions.hpp>
+
 #include "tools/bitpack.hpp"
+#include "tools/base64.hpp"
 
-RandomizerOptions::RandomizerOptions() :
-    _jewel_count                    (2),
-    _use_armor_upgrades             (true),
-    _startingLife                   (0),
-    _startingGold                   (0),
-    _starting_items                 (),
-    _fix_armlet_skip                (true),
-    _fix_tree_cutting_glitch        (true),
-    _consumable_record_book         (false),
-    _remove_gumi_boulder            (false),
-    _remove_tibor_requirement       (false),
-    _all_trees_visited_at_start     (false),
-    _enemies_damage_factor          (100),
-    _enemies_health_factor          (100),
-    _enemies_armor_factor           (100),
-    _enemies_golds_factor           (100),
-    _enemies_drop_chance_factor     (100),
-
-    _seed                           (0),
-    _allow_spoiler_log              (true),
-    _item_sources_window            (30),
-    _shuffle_tibor_trees            (false), 
-    _ghost_jumping_in_logic         (false),
-    _damage_boosting_in_logic       (false),
-    _mandatory_items                (nullptr),
-    _filler_items                   (nullptr),
-
-    _add_ingame_item_tracker        (false),
-    _hud_color                      ("default"),
-
-    _plando_enabled                 (false),
-    _plando_json                    ()
-{}
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
-    std::string plando_path = args.get_string("plando");
-    if(!plando_path.empty())
-    {
-        _plando_enabled = true;
-
-        std::cout << "Reading plando file '" << plando_path << "'...\n\n";
-        std::ifstream plando_file(plando_path);
-        if(!plando_file)
-            throw RandomizerException("Could not open plando file at given path '" + plando_path + "'");
-
-        plando_file >> _plando_json;
-        if(_plando_json.contains("plando_permalink"))
-            _plando_json = Json::from_msgpack(base64_decode(_plando_json.at("plando_permalink")));
-
-        this->parse_json(_plando_json);
-    }
-
     std::string permalink_string = args.get_string("permalink");
-    if(!permalink_string.empty() && !_plando_enabled) 
+    if(!permalink_string.empty())
     {
         this->parse_permalink(permalink_string);
     }
@@ -75,11 +28,11 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         }
 
         std::string preset_path = args.get_string("preset");
-        if(!preset_path.empty() && !_plando_enabled)
+        if(!preset_path.empty())
         {
             std::ifstream preset_file(preset_path);
             if(!preset_file)
-                throw RandomizerException("Could not open preset file at given path '" + preset_path + "'");
+                throw LandstalkerException("Could not open preset file at given path '" + preset_path + "'");
 
             std::cout << "Reading preset file '" << preset_path << "'...\n\n";
 
@@ -91,16 +44,7 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : Randomize
         this->parse_arguments(args);
     }
 
-    this->parse_personal_settings(args);
     this->validate();
-}
-
-RandomizerOptions::~RandomizerOptions()
-{
-    if(_mandatory_items)
-        delete _mandatory_items;
-    if(_filler_items)
-        delete _filler_items;
 }
 
 void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
@@ -120,17 +64,8 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
     if(args.contains("nospellbook"))          _starting_items["Spell Book"] = 0;
     if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
-
-    if(args.contains("itemsourceswindow"))    _item_sources_window = args.get_integer("itemsourceswindow");
     if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
     if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
-}
-
-void RandomizerOptions::parse_personal_settings(const ArgumentDictionary& args)
-{
-    // Personal options (not included in permalink)
-    if(args.contains("ingametracker"))   _add_ingame_item_tracker = args.get_boolean("ingametracker");    
-    if(args.contains("hudcolor"))        _hud_color = args.get_string("hudcolor");
 }
 
 Json RandomizerOptions::to_json() const
@@ -143,7 +78,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["startingGold"] = _startingGold;
     json["gameSettings"]["startingItems"] = _starting_items;
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
-    json["gameSettings"]["fixTreeCuttingGlitch"] = _fix_tree_cutting_glitch;
+    json["gameSettings"]["removeTreeCuttingGlitchDrops"] = _remove_tree_cutting_glitch_drops;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
@@ -153,32 +88,43 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesArmorFactor"] = _enemies_armor_factor;
     json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
     json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
+    json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
     if(_startingLife > 0)
         json["gameSettings"]["startingLife"] = _startingLife;
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
-    json["randomizerSettings"]["itemSourcesWindow"] = _item_sources_window;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
-    json["randomizerSettings"]["ghostJumpingInLogic"] = _ghost_jumping_in_logic;
+    json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
-
-    if(_mandatory_items)
-        json["randomizerSettings"]["mandatoryItems"] = *_mandatory_items;
-    if(_filler_items)
-        json["randomizerSettings"]["fillerItems"] = *_filler_items;
+    json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
+    json["randomizerSettings"]["hintsDistribution"] = {
+        { "regionRequirement", _hints_distribution_region_requirement },
+        { "itemRequirement", _hints_distribution_item_requirement },
+        { "itemLocation", _hints_distribution_item_location },
+        { "darkRegion", _hints_distribution_dark_region },
+        { "joke", _hints_distribution_joke }
+    };
 
     if(!_model_patch_items.empty())
         json["modelPatch"]["items"] = _model_patch_items;
     if(!_model_patch_spawns.empty())
         json["modelPatch"]["spawnLocations"] = _model_patch_spawns;
+    if(!_model_patch_hint_sources.empty())
+        json["modelPatch"]["hintSources"] = _model_patch_hint_sources;
 
     return json;
 }
 
 void RandomizerOptions::parse_json(const Json& json)
 {
+    if(json.contains("permalink"))
+    {
+        this->parse_permalink(json.at("permalink"));
+        return;
+    }
+
     if(json.contains("gameSettings"))
     {
         const Json& game_settings_json = json.at("gameSettings");
@@ -193,8 +139,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _startingGold = game_settings_json.at("startingGold");
         if(game_settings_json.contains("fixArmletSkip"))
             _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
-        if(game_settings_json.contains("fixTreeCuttingGlitch"))
-            _fix_tree_cutting_glitch = game_settings_json.at("fixTreeCuttingGlitch");
+        if(game_settings_json.contains("removeTreeCuttingGlitchDrops"))
+            _remove_tree_cutting_glitch_drops = game_settings_json.at("removeTreeCuttingGlitchDrops");
         if(game_settings_json.contains("consumableRecordBook"))
             _consumable_record_book = game_settings_json.at("consumableRecordBook");
         if(game_settings_json.contains("removeGumiBoulder"))
@@ -213,6 +159,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _enemies_golds_factor = game_settings_json.at("enemiesGoldsFactor");
         if(game_settings_json.contains("enemiesDropChanceFactor"))    
             _enemies_drop_chance_factor = game_settings_json.at("enemiesDropChanceFactor");
+        if(game_settings_json.contains("healthGainedPerLifestock"))
+            _health_gained_per_lifestock = game_settings_json.at("healthGainedPerLifestock");
 
         if(game_settings_json.contains("startingItems"))
         {
@@ -222,14 +170,12 @@ void RandomizerOptions::parse_json(const Json& json)
         }
     }
 
-    if(json.contains("randomizerSettings") && !_plando_enabled)
+    if(json.contains("randomizerSettings"))
     {
         const Json& randomizer_settings_json = json.at("randomizerSettings");
 
         if(randomizer_settings_json.contains("allowSpoilerLog"))
             _allow_spoiler_log = randomizer_settings_json.at("allowSpoilerLog");
-        if(randomizer_settings_json.contains("itemSourcesWindow"))
-            _item_sources_window = randomizer_settings_json.at("itemSourcesWindow");
 
         if(randomizer_settings_json.contains("spawnLocations"))
             randomizer_settings_json.at("spawnLocations").get_to(_possible_spawn_locations);
@@ -238,30 +184,37 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("shuffleTrees"))
             _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
-        if(randomizer_settings_json.contains("ghostJumpingInLogic"))
-            _ghost_jumping_in_logic = randomizer_settings_json.at("ghostJumpingInLogic");
+        if(randomizer_settings_json.contains("enemyJumpingInLogic"))
+            _enemy_jumping_in_logic = randomizer_settings_json.at("enemyJumpingInLogic");
         if(randomizer_settings_json.contains("damageBoostingInLogic"))
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
+        if(randomizer_settings_json.contains("treeCuttingGlitchInLogic"))
+            _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
 
-        if(randomizer_settings_json.contains("mandatoryItems"))
+        if(randomizer_settings_json.contains("itemsDistribution"))
         {
-            try {            
-                _mandatory_items = new std::map<std::string, uint16_t>();
-                *(_mandatory_items) = randomizer_settings_json.at("mandatoryItems");
-            } 
-            catch(Json::exception) { 
-                throw RandomizerException("Error while parsing mandatory items from preset");
+            for(auto& [key, value] : randomizer_settings_json.at("itemsDistribution").items())
+            {
+                uint8_t item_id = (uint8_t)std::stoi(key);
+                uint16_t quantity = (uint16_t)std::stoi(std::string(value));
+                _items_distribution[item_id] = quantity;
             }
         }
 
-        if(randomizer_settings_json.contains("fillerItems"))
+        if(randomizer_settings_json.contains("hintsDistribution"))
         {
-            try {
-                _filler_items = new std::map<std::string, uint16_t>();
-                *(_filler_items) = randomizer_settings_json.at("fillerItems");
-            } catch (Json::exception) {
-                throw RandomizerException("Error while parsing filler items from preset");
-            }
+            const Json& hints_distrib_json = randomizer_settings_json.at("hintsDistribution");
+
+            if(hints_distrib_json.contains("regionRequirement"))
+                _hints_distribution_region_requirement = hints_distrib_json.at("regionRequirement");
+            if(hints_distrib_json.contains("itemRequirement"))
+                _hints_distribution_item_requirement = hints_distrib_json.at("itemRequirement");
+            if(hints_distrib_json.contains("itemLocation"))
+                _hints_distribution_item_location = hints_distrib_json.at("itemLocation");
+            if(hints_distrib_json.contains("darkRegion"))
+                _hints_distribution_dark_region = hints_distrib_json.at("darkRegion");
+            if(hints_distrib_json.contains("joke"))
+                _hints_distribution_joke = hints_distrib_json.at("joke");
         }
     }
 
@@ -273,26 +226,23 @@ void RandomizerOptions::parse_json(const Json& json)
             _model_patch_items = model_patch_json.at("items");
         if(model_patch_json.contains("spawnLocations"))
             _model_patch_spawns = model_patch_json.at("spawnLocations");
+        if(model_patch_json.contains("hintSources"))
+            _model_patch_hint_sources = model_patch_json.at("hintSources");
     }
 
-    if(json.contains("seed") && !_plando_enabled)
+    _christmas_event = json.value("christmasEvent", false);
+
+    if(json.contains("world"))
+        _world_json = json.at("world");
+
+    if(json.contains("seed"))
         _seed = json.at("seed");
 }
 
-Json RandomizerOptions::personal_settings_as_json() const
-{
-    Json json;
-
-    json["addIngameItemTracker"] = _add_ingame_item_tracker;
-    json["hudColor"] = _hud_color;
-
-    return json;
-}
-
-void RandomizerOptions::validate()
+void RandomizerOptions::validate() const
 {
     if(_jewel_count > 9)
-        throw RandomizerException("Jewel count must be between 0 and 9.");
+        throw LandstalkerException("Jewel count must be between 0 and 9.");
 }
 
 std::vector<std::string> RandomizerOptions::hash_words() const
@@ -318,8 +268,8 @@ std::vector<std::string> RandomizerOptions::hash_words() const
     };
 
     std::mt19937 rng(_seed);
-    tools::shuffle(words, rng);
-    return std::vector<std::string>(words.begin(), words.begin() + 4);
+    vectools::shuffle(words, rng);
+    return { words.begin(), words.begin()+4 };
 }
 
 std::string RandomizerOptions::permalink() const
@@ -336,29 +286,37 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemies_armor_factor);
     bitpack.pack(_enemies_golds_factor);
     bitpack.pack(_enemies_drop_chance_factor);
+    bitpack.pack(_health_gained_per_lifestock);
 
     bitpack.pack(_seed);
-    bitpack.pack(_item_sources_window);
 
     bitpack.pack(_use_armor_upgrades);
     bitpack.pack(_fix_armlet_skip);
-    bitpack.pack(_fix_tree_cutting_glitch);
+    bitpack.pack(_remove_tree_cutting_glitch_drops);
     bitpack.pack(_consumable_record_book);
     bitpack.pack(_remove_gumi_boulder);
     bitpack.pack(_remove_tibor_requirement);
     bitpack.pack(_all_trees_visited_at_start);
     bitpack.pack(_allow_spoiler_log);
     bitpack.pack(_shuffle_tibor_trees);
-    bitpack.pack(_ghost_jumping_in_logic);
+    bitpack.pack(_enemy_jumping_in_logic);
+    bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
+    bitpack.pack_map(_items_distribution);
+    bitpack.pack(_hints_distribution_region_requirement);
+    bitpack.pack(_hints_distribution_item_requirement);
+    bitpack.pack(_hints_distribution_item_location);
+    bitpack.pack(_hints_distribution_dark_region);
+    bitpack.pack(_hints_distribution_joke);
 
     bitpack.pack_vector(_possible_spawn_locations);
-    bitpack.pack(_mandatory_items ? Json(*_mandatory_items) : Json());
-    bitpack.pack(_filler_items ? Json(*_filler_items) : Json());
+
     bitpack.pack_map(_starting_items);
     bitpack.pack(_model_patch_items);
     bitpack.pack(_model_patch_spawns);
-    
+    bitpack.pack(_model_patch_hint_sources);
+    bitpack.pack(_world_json);
+
     return "l" + base64_encode(bitpack.to_bytes()) + "s";
 }
 
@@ -379,41 +337,34 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemies_armor_factor = bitpack.unpack<uint16_t>();
     _enemies_golds_factor = bitpack.unpack<uint16_t>();
     _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
+    _health_gained_per_lifestock = bitpack.unpack<uint8_t>();
 
     _seed = bitpack.unpack<uint32_t>();
-    _item_sources_window = bitpack.unpack<uint16_t>();
 
     _use_armor_upgrades = bitpack.unpack<bool>();
     _fix_armlet_skip = bitpack.unpack<bool>();
-    _fix_tree_cutting_glitch = bitpack.unpack<bool>();
+    _remove_tree_cutting_glitch_drops = bitpack.unpack<bool>();
     _consumable_record_book = bitpack.unpack<bool>();
     _remove_gumi_boulder = bitpack.unpack<bool>();
     _remove_tibor_requirement = bitpack.unpack<bool>();
     _all_trees_visited_at_start = bitpack.unpack<bool>();
     _allow_spoiler_log = bitpack.unpack<bool>();
     _shuffle_tibor_trees = bitpack.unpack<bool>();
-    _ghost_jumping_in_logic = bitpack.unpack<bool>();
+    _enemy_jumping_in_logic = bitpack.unpack<bool>();
+    _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
+    _items_distribution = bitpack.unpack_map<uint8_t, uint16_t>();
+    _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
+    _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();
+    _hints_distribution_item_location = bitpack.unpack<uint16_t>();
+    _hints_distribution_dark_region = bitpack.unpack<uint16_t>();
+    _hints_distribution_joke = bitpack.unpack<uint16_t>();
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
-
-    Json mandatory_items_json = bitpack.unpack<Json>();
-    if(!mandatory_items_json.is_null())
-    {
-        _mandatory_items = new std::map<std::string, uint16_t>();
-        mandatory_items_json.get_to(*_mandatory_items);
-    }
-    else _mandatory_items = nullptr;
-
-    Json filler_items_json = bitpack.unpack<Json>();
-    if(!filler_items_json.is_null())
-    {
-        _filler_items = new std::map<std::string, uint16_t>();
-        filler_items_json.get_to(*_filler_items); 
-    }
-    else _filler_items = nullptr;
 
     _starting_items = bitpack.unpack_map<std::string, uint8_t>();
     _model_patch_items = bitpack.unpack<Json>();
     _model_patch_spawns = bitpack.unpack<Json>();
+    _model_patch_hint_sources = bitpack.unpack<Json>();
+    _world_json = bitpack.unpack<Json>();
 }
