@@ -84,7 +84,7 @@ static void remove_tibor_requirement_to_use_trees(md::ROM& rom)
     rom.set_code(0x4E4A, md::Code().nop(5));
 }
 
-/*
+/**
  * Remove the "shop/church" flag on the priest room of Mir Tower to make its items on ground work everytime
  */
 static void fix_mir_tower_priest_room_items(md::ROM& rom)
@@ -94,6 +94,16 @@ static void fix_mir_tower_priest_room_items(md::ROM& rom)
         // Before:	0307
         // After:	7F7F
     rom.set_word(0x024E5A, 0x7F7F);
+}
+
+/**
+ * In the priest rom of King Nole's Labyrinth, there is a chest in the save room that has a unique behavior.
+ * It is "infinite" in vanilla game and can be open as many times as we want, to get as many EkeEke as we need
+ * to complete the game. This function removes this behavior by turning it into a regular chest.
+ */
+static void fix_knl_priest_room_infinite_chest(md::ROM& rom)
+{
+    rom.set_code(0x9EB9C, md::Code().nop(5));
 }
 
 static void prevent_hint_item_save_scumming(md::ROM& rom)
@@ -200,6 +210,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
         remove_tibor_requirement_to_use_trees(rom);
 
     fix_mir_tower_priest_room_items(rom);
+    fix_knl_priest_room_infinite_chest(rom);
     prevent_hint_item_save_scumming(rom);
     fix_crypt_softlocks(rom, world);
     alter_labyrinth_rafts(rom);
