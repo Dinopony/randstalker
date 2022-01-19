@@ -163,6 +163,7 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
     rom->mark_empty_chunk(0x148AB6, 0x14AA78); // Unused bird sprite
+    rom->mark_empty_chunk(0x1AF5FA, 0x1AF800); // Empty space
 
     std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
 
