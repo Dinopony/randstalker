@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-#include "landstalker_lib/tools/stringtools.hpp"
+#include <landstalker_lib/tools/stringtools.hpp>
 #include <landstalker_lib/tools/vectools.hpp>
+#include <landstalker_lib/tools/bitstream_writer.hpp>
+#include <landstalker_lib/tools/bitstream_reader.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
-#include "tools/bitpack.hpp"
 #include "tools/base64.hpp"
-
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
 {
@@ -274,7 +274,7 @@ std::vector<std::string> RandomizerOptions::hash_words() const
 
 std::string RandomizerOptions::permalink() const
 {
-    Bitpack bitpack;
+    BitstreamWriter bitpack;
 
     bitpack.pack(std::string(MAJOR_RELEASE));
     
@@ -312,18 +312,18 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack_vector(_possible_spawn_locations);
 
     bitpack.pack_map(_starting_items);
-    bitpack.pack(_model_patch_items);
-    bitpack.pack(_model_patch_spawns);
-    bitpack.pack(_model_patch_hint_sources);
-    bitpack.pack(_world_json);
+    bitpack.pack_vector(Json::to_msgpack(_model_patch_items));
+    bitpack.pack_vector(Json::to_msgpack(_model_patch_spawns));
+    bitpack.pack_vector(Json::to_msgpack(_model_patch_hint_sources));
+    bitpack.pack_vector(Json::to_msgpack(_world_json));
 
-    return "l" + base64_encode(bitpack.to_bytes()) + "s";
+    return "l" + base64_encode(bitpack.bytes()) + "s";
 }
 
 void RandomizerOptions::parse_permalink(const std::string& permalink)
 {
     std::vector<uint8_t> bytes = base64_decode(permalink.substr(1, permalink.size() - 2));
-    Bitpack bitpack(bytes);
+    BitstreamReader bitpack(bytes);
 
     std::string version = bitpack.unpack<std::string>();
     if(version != MAJOR_RELEASE)
@@ -363,8 +363,8 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 
     _starting_items = bitpack.unpack_map<std::string, uint8_t>();
-    _model_patch_items = bitpack.unpack<Json>();
-    _model_patch_spawns = bitpack.unpack<Json>();
-    _model_patch_hint_sources = bitpack.unpack<Json>();
-    _world_json = bitpack.unpack<Json>();
+    _model_patch_items = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    _model_patch_spawns = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    _model_patch_hint_sources = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    _world_json = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
 }
