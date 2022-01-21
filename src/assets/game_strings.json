@@ -91,21 +91,6 @@
         "cd": "\u001c...AHH...\u001e",
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //      ROAD SIGNS DEFAULT MESSAGES
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////    
-        "101": "This sign is severely damaged\nand cannot be read.\u0003",
-        "102": "This sign shows uninteresting\ndirections on the area.\u0003",
-        "103": "This sign is severely damaged\nand cannot be read.\u0003",
-        "104": "This sign shows uninteresting\ndirections on the area.\u0003",
-        "134": "This sign is severely damaged\nand cannot be read.\u0003",
-        "139": "This sign shows uninteresting\ndirections on the area.\u0003",
-        "13a": "This sign is severely damaged\nand cannot be read.\u0003",
-        "140": "This sign shows uninteresting\ndirections on the area.\u0003",
-        "141": "This sign is severely damaged\nand cannot be read.\u0003",
-        "142": "This sign shows uninteresting\ndirections on the area.\u0003",
-        "143": "This sign is severely damaged\nand cannot be read.\u0003",
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      MASSAN ELDER REWARD DIALOGUE
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //    "14d_old": "\u001cThe people of Massan\nare extremely thankful.\nPlease take this jewel, Nigel!\u001e",
@@ -140,17 +125,6 @@
         "495": "\u001cMy name is Arthur, ruler of Mercator.\u001e",
         "496": "\u001cPlease take this\n present from the city.\u001e",
         "49c": "\u001cTake care of thyself!\u0003",
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //      DESTEL BOATMAKER DIALOGUE
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //    "517_old": "\u001cDuke Mercator suddenly\nappeared and bought every\nlast raft I had!\u001e",
-    //    "518_old": "\u001cHe paid me a whole\n6 golds for them!  He said\nhe was going to the shrine.\u0003",
-    //    "519_old": "\u001cSorry!  All sold out...\nYou can still get to the\nshrine through the cave under\u001e",
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-        "517": "\u001cI've found a scroll that looks\nlike a map to an ancient\ntreasure. It says:\u001e",
-        "518": "\u001cFollow the path of the dragon.\u0003",
-        "519": "\u001cQuite mysterious, don't you think?\u001e",
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     //      NON-FITTING TEXTLINES MENTIONING ITEMS
