@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <landstalker_lib/tools/tools.hpp>
+#include "landstalker_lib/tools/stringtools.hpp"
 #include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
@@ -52,7 +52,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("spawnlocation"))
     {
         std::string spawn_name = args.get_string("spawnlocation");
-        tools::to_lower(spawn_name);
+        stringtools::to_lower(spawn_name);
         if(spawn_name == "random")
             _possible_spawn_locations = {};
         else

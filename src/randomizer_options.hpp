@@ -7,7 +7,7 @@
 #include <fstream>
 
 #include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/tools/tools.hpp>
+#include "landstalker_lib/tools/stringtools.hpp"
 #include <landstalker_lib/tools/argument_dictionary.hpp>
 
 class RandomizerOptions 
@@ -125,6 +125,6 @@ public:
     [[nodiscard]] const Json& hint_sources_model_patch() const { return _model_patch_hint_sources; }
 
     [[nodiscard]] std::vector<std::string> hash_words() const;
-    [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
+    [[nodiscard]] std::string hash_sentence() const { return stringtools::join(this->hash_words(), " "); }
     [[nodiscard]] std::string permalink() const;
 };

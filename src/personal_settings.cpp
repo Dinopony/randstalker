@@ -6,7 +6,7 @@
 static Color parse_color_from_name_or_hex(const std::string& string)
 {
     std::string lowered = string;
-    tools::to_lower(lowered);
+    stringtools::to_lower(lowered);
 
     if (lowered == "red")              return { "#A22" };
     else if (lowered == "darkred")     return { "#822" };

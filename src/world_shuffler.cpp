@@ -3,7 +3,7 @@
 #include <landstalker_lib/constants/entity_type_codes.hpp>
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/values.hpp>
-#include <landstalker_lib/tools/tools.hpp>
+#include "landstalker_lib/tools/stringtools.hpp"
 #include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/tools/game_text.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
@@ -681,7 +681,7 @@ void WorldShuffler::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_i
             }
             else
             {
-                tools::dump_json_to_file(_solver.debug_log(), "./debug.json");
+                dump_json_to_file(_solver.debug_log(), "./debug.json");
                 throw LandstalkerException("Could not find minimal inventory to reach Oracle Stone");
             }
         }

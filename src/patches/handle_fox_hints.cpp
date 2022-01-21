@@ -6,7 +6,7 @@
 #include <landstalker_lib/constants/entity_type_codes.hpp>
 #include <landstalker_lib/tools/byte_array.hpp>
 #include <landstalker_lib/tools/vectools.hpp>
-#include <landstalker_lib/tools/huffman/symbols.hpp>
+#include "landstalker_lib/constants/symbols.hpp"
 #include <landstalker_lib/tools/sprite.hpp>
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
