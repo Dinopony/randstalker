@@ -18,7 +18,6 @@ void ModelWriter::write_world_model(const RandomizerWorld& world)
     io::export_map_palettes_as_json(world, "./json_data/map_palette.json");
     io::export_teleport_trees_as_json(world, "./json_data/world_teleport_tree.json");
     io::export_game_strings_as_json(world, "./json_data/game_strings.json");
-    io::export_blocksets_as_csv(world, "./json_data/blocksets/");
 }
 
 void ModelWriter::write_logic_model(const RandomizerWorld& world)
