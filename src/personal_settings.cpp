@@ -81,4 +81,7 @@ void PersonalSettings::parse_json(const Json& json)
             _nigel_colors.second = _nigel_colors.first.subtract(0x40);
         }
     }
+
+    if(json.contains("removeMusic"))
+        _remove_music = json.at("removeMusic");
 }

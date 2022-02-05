@@ -197,6 +197,12 @@ static void put_dex_back_in_verla_mines(World& world)
     }));
 }
 
+void remove_music(md::ROM& rom)
+{
+    for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
+        rom.set_byte(addr, 0xFD);
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
