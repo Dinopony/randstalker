@@ -2,6 +2,7 @@
     "gameSettings": {
         "jewelCount": 5,
         "armorUpgrades": true,
+        "startingLife": 0,
         "startingGold": 0,
         "startingItems": {},
         "fixArmletSkip": true,
