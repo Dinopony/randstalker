@@ -206,8 +206,12 @@ void remove_music(md::ROM& rom)
     rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
-    // Duke music ?
-    // Zak Music ?
+    // Boss musics
+    rom.set_byte(0x9D6A1, MUSIC_SILENT);
+    rom.set_byte(0x9D747, MUSIC_SILENT);
+    rom.set_byte(0x9E195, MUSIC_SILENT);
+    rom.set_byte(0x9E2C1, MUSIC_SILENT);
+    rom.set_byte(0x9E57C, MUSIC_SILENT);
 }
 
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
