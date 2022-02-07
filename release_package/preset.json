@@ -4,7 +4,10 @@
         "armorUpgrades": true,
         "startingLife": 0,
         "startingGold": 0,
-        "startingItems": {},
+        "startingItems": {
+            "Record Book": 1,
+            "Spell Book": 1
+        },
         "fixArmletSkip": true,
         "removeTreeCuttingGlitchDrops": true,
         "consumableRecordBook": false,

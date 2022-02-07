@@ -19,8 +19,8 @@ private:
     // (included in permalink, presets & plandos)
     uint8_t _jewel_count = 2;
     bool _use_armor_upgrades = true;
-    uint8_t _startingLife = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
-    uint16_t _startingGold = 0;
+    uint8_t _starting_life = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
+    uint16_t _starting_gold = 0;
     std::map<std::string, uint8_t> _starting_items;
     bool _fix_armlet_skip = true;
     bool _remove_tree_cutting_glitch_drops = true;
@@ -77,8 +77,8 @@ public:
     [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
     [[nodiscard]] uint8_t jewel_count() const { return _jewel_count; }
     [[nodiscard]] bool use_armor_upgrades() const { return _use_armor_upgrades; }
-    [[nodiscard]] uint8_t starting_life() const { return _startingLife; }
-    [[nodiscard]] uint16_t starting_gold() const { return _startingGold; }
+    [[nodiscard]] uint8_t starting_life() const { return _starting_life; }
+    [[nodiscard]] uint16_t starting_gold() const { return _starting_gold; }
     [[nodiscard]] const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
     [[nodiscard]] bool fix_armlet_skip() const { return _fix_armlet_skip; }
     [[nodiscard]] bool remove_tree_cutting_glitch_drops() const { return _remove_tree_cutting_glitch_drops; }

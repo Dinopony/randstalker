@@ -63,7 +63,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
     if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
     if(args.contains("nospellbook"))          _starting_items["Spell Book"] = 0;
-    if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
+    if(args.contains("startinglife"))         _starting_life = args.get_integer("startinglife");
     if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
     if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
@@ -75,7 +75,8 @@ Json RandomizerOptions::to_json() const
     // Game settings 
     json["gameSettings"]["jewelCount"] = _jewel_count;
     json["gameSettings"]["armorUpgrades"] = _use_armor_upgrades;
-    json["gameSettings"]["startingGold"] = _startingGold;
+    json["gameSettings"]["startingGold"] = _starting_gold;
+    json["gameSettings"]["startingLife"] = _starting_life;
     json["gameSettings"]["startingItems"] = _starting_items;
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
     json["gameSettings"]["removeTreeCuttingGlitchDrops"] = _remove_tree_cutting_glitch_drops;
@@ -89,8 +90,6 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
     json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
     json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
-    if(_startingLife > 0)
-        json["gameSettings"]["startingLife"] = _startingLife;
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
@@ -134,9 +133,9 @@ void RandomizerOptions::parse_json(const Json& json)
         if(game_settings_json.contains("armorUpgrades"))
             _use_armor_upgrades = game_settings_json.at("armorUpgrades");
         if(game_settings_json.contains("startingLife"))
-            _startingLife = game_settings_json.at("startingLife");
+            _starting_life = game_settings_json.at("startingLife");
         if(game_settings_json.contains("startingGold"))
-            _startingGold = game_settings_json.at("startingGold");
+            _starting_gold = game_settings_json.at("startingGold");
         if(game_settings_json.contains("fixArmletSkip"))
             _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
         if(game_settings_json.contains("removeTreeCuttingGlitchDrops"))
@@ -279,8 +278,8 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(std::string(MAJOR_RELEASE));
     
     bitpack.pack(_jewel_count);
-    bitpack.pack(_startingLife);
-    bitpack.pack(_startingGold);
+    bitpack.pack(_starting_life);
+    bitpack.pack(_starting_gold);
     bitpack.pack(_enemies_damage_factor);
     bitpack.pack(_enemies_health_factor);
     bitpack.pack(_enemies_armor_factor);
@@ -330,8 +329,8 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
         throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + version + ").");
     
     _jewel_count = bitpack.unpack<uint8_t>();
-    _startingLife = bitpack.unpack<uint8_t>();
-    _startingGold = bitpack.unpack<uint16_t>();
+    _starting_life = bitpack.unpack<uint8_t>();
+    _starting_gold = bitpack.unpack<uint16_t>();
     _enemies_damage_factor = bitpack.unpack<uint16_t>();
     _enemies_health_factor = bitpack.unpack<uint16_t>();
     _enemies_armor_factor = bitpack.unpack<uint16_t>();
