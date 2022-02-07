@@ -97,19 +97,9 @@ static void patch_items(World& world, const RandomizerOptions& options)
     }
 
     // Process custom starting quantities for items
-    const std::map<std::string, uint8_t>& starting_items = options.starting_items();
-    for(auto& [item_name, quantity] : starting_items)
-    {
-        Item* item = world.item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Cannot set starting quantity of unknown item '" << item_name << "'";
-            throw LandstalkerException(msg.str());
-        }
-
-        item->starting_quantity(std::min<uint8_t>(quantity, 9));
-    }
+    const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+        world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
 
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
@@ -273,9 +263,9 @@ static void apply_options_on_hint_sources(const RandomizerOptions& options, Rand
 static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
-    std::map<uint8_t, uint16_t> distribution_param = options.items_distribution();
-    for(auto& [item_id, quantity] : distribution_param)
-        world.item_distribution(item_id)->quantity(quantity);
+    const std::array<uint8_t, ITEM_COUNT+1>& distribution_param = options.items_distribution();
+    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
+        world.item_distribution(i)->quantity(distribution_param[i]);
 
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)

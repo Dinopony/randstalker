@@ -15,7 +15,6 @@
 #include "data/spawn_location.json.hxx"
 #include "data/hint_source.json.hxx"
 #include "data/item.json.hxx"
-#include "data/item_distribution.json.hxx"
 #include "data/world_teleport_tree.json.hxx"
 
 #include <iostream>
@@ -28,7 +27,7 @@ RandomizerWorld::RandomizerWorld(const md::ROM& rom) : World(rom)
     this->load_regions();
     this->load_spawn_locations();
     this->load_hint_sources();
-    this->load_item_distributions();
+    this->init_item_distributions();
     this->load_teleport_trees();
 }
 
@@ -49,6 +48,16 @@ RandomizerWorld::~RandomizerWorld()
         delete tree_1;
         delete tree_2;
     }
+}
+
+std::array<std::string, ITEM_COUNT+1> RandomizerWorld::item_names() const
+{
+    std::array<std::string, ITEM_COUNT+1> item_names;
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+        item_names[i] = this->item(i)->name();
+    item_names[ITEM_COUNT] = "Golds";
+
+    return item_names;
 }
 
 void RandomizerWorld::load_nodes()
@@ -124,18 +133,13 @@ void RandomizerWorld::load_hint_sources()
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 }
 
-void RandomizerWorld::load_item_distributions()
+void RandomizerWorld::init_item_distributions()
 {
-    Json item_distributions_json = Json::parse(ITEM_DISTRIBUTIONS_JSON, nullptr, true, true);
-    for(auto& [item_id_str, item_distribution_json] : item_distributions_json.items())
-    {
-        uint8_t item_id = std::stoi(item_id_str);
-        if(_item_distributions.count(item_id))
-            throw LandstalkerException("Cannot load multiple item distributions for item id " + std::to_string((uint16_t)item_id));
-
-        _item_distributions[item_id] = ItemDistribution::from_json(item_distribution_json);
-    }
-    std::cout << _item_distributions.size() << " item distributions loaded." << std::endl;
+    const std::vector<uint8_t> ITEMS_FORBIDDEN_ON_GROUND = {
+        ITEM_PAWN_TICKET, ITEM_DAHL, ITEM_SHORT_CAKE, ITEM_LIFESTOCK, ITEM_GOLDS_START
+    };
+    for(uint8_t item_id : ITEMS_FORBIDDEN_ON_GROUND)
+        _item_distributions[item_id].allowed_on_ground(false);
 }
 
 void RandomizerWorld::load_teleport_trees()
@@ -216,11 +220,7 @@ std::map<uint8_t, uint16_t> RandomizerWorld::item_quantities() const
 {
     std::map<uint8_t, uint16_t> item_quantities;
     for(uint8_t i=0 ; i<=ITEM_GOLDS_START ; ++i)
-        item_quantities[i] = 0;
-
-    for(auto& [item_id, item_distrib] : _item_distributions)
-        item_quantities[item_id] = item_distrib->quantity();
-
+        item_quantities[i] = _item_distributions[i].quantity();
     return item_quantities;
 }
 

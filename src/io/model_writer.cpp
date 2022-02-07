@@ -67,7 +67,8 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
     dump_json_to_file(spawns_json, "./json_data/spawn_location.json");
 
     Json distribs_json = Json::object();
-    for(auto& [id, distrib] : world.item_distributions())
-        distribs_json[std::to_string(id)] = distrib->to_json();
+    auto item_names = world.item_names();
+    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
+        distribs_json[item_names[i]] = world.item_distribution(i)->to_json();
     dump_json_to_file(distribs_json, "./json_data/item_distribution.json");
 }
