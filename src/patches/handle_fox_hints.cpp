@@ -184,4 +184,7 @@ void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
     // Edit the voice used when foxes talk, as well as their name
     edit_fox_voice_and_name(rom);
     inject_altered_fox_sprites(rom, world);
+
+    // Set a height of 2 tiles for Foxies (like any other NPC in the game) instead of 2.5
+    rom.set_byte(0x1B05D, 0x20);
 }
