@@ -199,8 +199,15 @@ static void put_dex_back_in_verla_mines(World& world)
 
 void remove_music(md::ROM& rom)
 {
+    constexpr uint8_t MUSIC_SILENT = 0x20;
+
     for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
-        rom.set_byte(addr, 0xFD);
+        rom.set_byte(addr, MUSIC_SILENT);
+    rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
+    rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
+    rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
+    // Duke music ?
+    // Zak Music ?
 }
 
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
