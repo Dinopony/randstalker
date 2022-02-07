@@ -45,10 +45,10 @@ private:
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
     std::map<uint8_t, uint16_t> _items_distribution;
-    uint16_t _hints_distribution_region_requirement = 6;
-    uint16_t _hints_distribution_item_requirement = 5;
-    uint16_t _hints_distribution_item_location = 8;
-    uint16_t _hints_distribution_dark_region = 1;
+    uint16_t _hints_distribution_region_requirement = 0;
+    uint16_t _hints_distribution_item_requirement = 0;
+    uint16_t _hints_distribution_item_location = 0;
+    uint16_t _hints_distribution_dark_region = 0;
     uint16_t _hints_distribution_joke = 0;
 
     // ------------- Events -------------
