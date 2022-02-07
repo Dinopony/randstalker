@@ -271,32 +271,35 @@ static void apply_options_on_item_distributions(const RandomizerOptions& options
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
-        world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
-        world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+        if(world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
+        {
+            world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
+            world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+        }
     }
     else
     {
-        if(options.jewel_count() >= 1)
+        if(options.jewel_count() >= 1 && world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_RED_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 2)
+        if(options.jewel_count() >= 2 && world.item_distribution(ITEM_PURPLE_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 3)
+        if(options.jewel_count() >= 3 && world.item_distribution(ITEM_GREEN_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_GREEN_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 4)
+        if(options.jewel_count() >= 4 && world.item_distribution(ITEM_BLUE_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_BLUE_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 5)
+        if(options.jewel_count() >= 5 && world.item_distribution(ITEM_YELLOW_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
