@@ -14,6 +14,7 @@
 #include "data/world_region.json.hxx"
 #include "data/spawn_location.json.hxx"
 #include "data/hint_source.json.hxx"
+#include "data/item.json.hxx"
 #include "data/item_distribution.json.hxx"
 #include "data/world_teleport_tree.json.hxx"
 
@@ -21,6 +22,7 @@
 
 RandomizerWorld::RandomizerWorld(const md::ROM& rom) : World(rom)
 {
+    this->load_additional_item_data();
     this->load_nodes();
     this->load_paths();
     this->load_regions();
@@ -149,6 +151,16 @@ void RandomizerWorld::load_teleport_trees()
     std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
 }
 
+void RandomizerWorld::load_additional_item_data()
+{
+    Json items_json = Json::parse(ITEMS_JSON);
+    for(auto& [id_string, item_json] : items_json.items())
+    {
+        uint8_t id = std::stoi(id_string);
+        this->item(id)->apply_json(item_json);
+    }
+}
+
 WorldPath* RandomizerWorld::path(WorldNode* origin, WorldNode* destination)
 {
     return _paths.at(std::make_pair(origin, destination));
@@ -220,3 +232,4 @@ HintSource* RandomizerWorld::hint_source(const std::string& name) const
 
     throw LandstalkerException("Could not find hint source '" + name + "' as requested");
 }
+

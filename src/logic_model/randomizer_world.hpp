@@ -75,4 +75,5 @@ private:
     void load_hint_sources();
     void load_item_distributions();
     void load_teleport_trees();
+    void load_additional_item_data();
 };
