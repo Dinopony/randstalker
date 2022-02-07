@@ -3,7 +3,7 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/item.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include "logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/flags.hpp>
 #include <landstalker_lib/constants/values.hpp>

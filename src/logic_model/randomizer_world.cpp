@@ -1,6 +1,6 @@
 #include "randomizer_world.hpp"
 
-#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include "world_teleport_tree.hpp"
 #include <landstalker_lib/model/spawn_location.hpp>
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/exceptions.hpp>
@@ -15,6 +15,7 @@
 #include "data/spawn_location.json.hxx"
 #include "data/hint_source.json.hxx"
 #include "data/item_distribution.json.hxx"
+#include "data/world_teleport_tree.json.hxx"
 
 #include <iostream>
 
@@ -26,6 +27,7 @@ RandomizerWorld::RandomizerWorld(const md::ROM& rom) : World(rom)
     this->load_spawn_locations();
     this->load_hint_sources();
     this->load_item_distributions();
+    this->load_teleport_trees();
 }
 
 RandomizerWorld::~RandomizerWorld()
@@ -40,6 +42,11 @@ RandomizerWorld::~RandomizerWorld()
         delete hint_source;
     for (auto& [key, spawn_loc] : _available_spawn_locations)
         delete spawn_loc;
+    for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
+    {
+        delete tree_1;
+        delete tree_2;
+    }
 }
 
 void RandomizerWorld::load_nodes()
@@ -127,6 +134,19 @@ void RandomizerWorld::load_item_distributions()
         _item_distributions[item_id] = ItemDistribution::from_json(item_distribution_json);
     }
     std::cout << _item_distributions.size() << " item distributions loaded." << std::endl;
+}
+
+void RandomizerWorld::load_teleport_trees()
+{
+    Json trees_json = Json::parse(WORLD_TELEPORT_TREES_JSON);
+    for(const Json& tree_pair_json : trees_json)
+    {
+        WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0]);
+        WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1]);
+        _teleport_tree_pairs.emplace_back(std::make_pair(tree_1, tree_2));
+    }
+
+    std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
 }
 
 WorldPath* RandomizerWorld::path(WorldNode* origin, WorldNode* destination)

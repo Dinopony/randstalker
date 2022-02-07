@@ -8,7 +8,7 @@
 #include <landstalker_lib/tools/game_text.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
 #include <landstalker_lib/model/item_source.hpp>
-#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include "logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/model/spawn_location.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
@@ -97,26 +97,46 @@ void WorldShuffler::randomize_dark_rooms()
 void WorldShuffler::randomize_tibor_trees()
 {
     const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& tree_pairs = _world.teleport_tree_pairs();
-    
-    std::vector<std::pair<uint16_t, uint16_t>> map_id_pairs;
-    std::vector<WorldTeleportTree*> trees;
+
+    std::vector<uint16_t> tree_map_ids;
+    std::map<uint16_t, uint16_t> original_tree_map_for_exterior_maps;
+    std::map<uint16_t, std::string> exterior_map_names;
+    std::vector<std::pair<uint16_t, std::string>> exterior_map_and_node_list;
     for(auto& pair : tree_pairs)
     {
-        map_id_pairs.emplace_back(std::make_pair(pair.first->tree_map_id(), pair.second->tree_map_id()));
-        trees.emplace_back(pair.first);
-        trees.emplace_back(pair.second);
+        for(uint8_t i=0 ; i<2 ; ++i)
+        {
+            WorldTeleportTree* tree = (i==0) ? pair.first : pair.second;
+            tree_map_ids.emplace_back(tree->tree_map_id());
+            original_tree_map_for_exterior_maps[tree->exterior_map_id()] = tree->tree_map_id();
+            exterior_map_and_node_list.emplace_back(std::make_pair(tree->exterior_map_id(), tree->node_id()));
+            exterior_map_names[tree->exterior_map_id()] = tree->name();
+            delete tree;
+        }
     }
+    vectools::shuffle(exterior_map_and_node_list, _rng);
 
-    vectools::shuffle(trees, _rng);
+    // Create new pairs of teleport trees and update map connections
+    std::vector<WorldTeleportTree*> new_teleport_trees;
+    for(size_t i=0 ; i<exterior_map_and_node_list.size() ; ++i)
+    {
+        uint16_t exterior_map_id = exterior_map_and_node_list[i].first;
+        const std::string& name = exterior_map_names[exterior_map_id];
+        const std::string& node_id = exterior_map_and_node_list[i].second;
+
+        uint16_t old_tree_map_id = original_tree_map_for_exterior_maps[exterior_map_id];
+        uint16_t new_tree_map_id = tree_map_ids[i];
+
+        new_teleport_trees.emplace_back(new WorldTeleportTree(name, new_tree_map_id, exterior_map_id, node_id));
+
+        std::vector<MapConnection*> connections = _world.map_connections(exterior_map_id, old_tree_map_id);
+        for(MapConnection* conn : connections)
+            conn->replace_map(old_tree_map_id, new_tree_map_id);
+    }
 
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> new_pairs;
-    for(size_t i=0 ; i<trees.size() ; i+=2)
-    {
-        new_pairs.emplace_back(std::make_pair(trees[i], trees[i+1]));
-        const std::pair<uint16_t, uint16_t>& map_id_pair = map_id_pairs[i/2];
-        trees[i]->tree_map_id(map_id_pair.first);
-        trees[i+1]->tree_map_id(map_id_pair.second);
-    }
+    for(size_t i=1 ; i<new_teleport_trees.size() ; i+=2)
+        new_pairs.emplace_back(std::make_pair(new_teleport_trees[i-1], new_teleport_trees[i]));
 
     _world.teleport_tree_pairs(new_pairs);
 }

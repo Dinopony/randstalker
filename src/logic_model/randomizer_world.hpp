@@ -25,6 +25,8 @@ private:
     WorldNode* _spawn_node = nullptr;
     WorldRegion* _dark_region = nullptr;
 
+    std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
+
 public:
     explicit RandomizerWorld(const md::ROM& rom);
     ~RandomizerWorld();
@@ -62,6 +64,9 @@ public:
     [[nodiscard]] WorldRegion* dark_region() const { return _dark_region; }
     void dark_region(WorldRegion* region);
 
+    [[nodiscard]] const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
+    void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
+
 private:
     void load_nodes();
     void load_paths();
@@ -69,4 +74,5 @@ private:
     void load_spawn_locations();
     void load_hint_sources();
     void load_item_distributions();
+    void load_teleport_trees();
 };
