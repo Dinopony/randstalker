@@ -203,10 +203,13 @@ void remove_music(md::ROM& rom)
 
     for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
         rom.set_byte(addr, MUSIC_SILENT);
+
     rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
-    // Boss musics
+    rom.set_byte(0x9EBE3, MUSIC_SILENT); // Credits music
+
+    // Boss music
     rom.set_byte(0x9D6A1, MUSIC_SILENT);
     rom.set_byte(0x9D747, MUSIC_SILENT);
     rom.set_byte(0x9E195, MUSIC_SILENT);
