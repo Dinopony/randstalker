@@ -204,6 +204,7 @@ void remove_music(md::ROM& rom)
     for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
         rom.set_byte(addr, MUSIC_SILENT);
 
+    rom.set_byte(0x9E59A, MUSIC_SILENT); // Duke Fanfare before last boss
     rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
