@@ -218,6 +218,7 @@
     },
     "52": {
         "name": "Green Jewel",
+        "maxQuantity": 1,
         "goldValue": 500
     },
     "53": {
