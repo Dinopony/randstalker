@@ -76,6 +76,8 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patch_rando_adaptations(rom, options, world);
     patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
 
+    handle_items_renaming(rom, world);
+
     if(options.christmas_event())
         christmas_event(rom, world);
     if(personal_settings.remove_music())
