@@ -59,7 +59,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     make_pawn_ticket_consumable(rom);
     make_key_not_consumed_on_use(rom);
 
-    alter_item_order_in_menu(rom);
+    alter_item_order_in_menu(rom, personal_settings.inventory_order());
     quicken_gaia_effect(rom);
     quicken_pawn_ticket_effect(rom);
 

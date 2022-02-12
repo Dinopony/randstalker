@@ -1,7 +1,9 @@
 #include "personal_settings.hpp"
 #include <landstalker_lib/exceptions.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/tools/argument_dictionary.hpp>
 #include <iostream>
+#include <set>
 
 static Color parse_color_from_name_or_hex(const std::string& string)
 {
@@ -26,8 +28,33 @@ static Color parse_color_from_name_or_hex(const std::string& string)
     return { lowered };
 }
 
-PersonalSettings::PersonalSettings(const ArgumentDictionary& args)
+PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names)
 {
+    _item_names = item_names;
+
+    _inventory_order = {
+            ITEM_RECORD_BOOK,   ITEM_SPELL_BOOK,
+            ITEM_EKEEKE,        ITEM_DAHL,
+            ITEM_GOLDEN_STATUE, ITEM_GAIA_STATUE,
+            ITEM_RESTORATION,   ITEM_DETOX_GRASS,
+            ITEM_MIND_REPAIR,   ITEM_ANTI_PARALYZE,
+            ITEM_KEY,           ITEM_IDOL_STONE,
+            ITEM_GARLIC,        ITEM_LOGS,
+            ITEM_GOLA_EYE,      ITEM_GOLA_NAIL,
+            ITEM_GOLA_HORN,     ITEM_GOLA_FANG,
+            ITEM_DEATH_STATUE,  ITEM_CASINO_TICKET,
+            ITEM_SHORT_CAKE,    ITEM_PAWN_TICKET,
+            ITEM_ORACLE_STONE,  ITEM_LITHOGRAPH,
+            ITEM_RED_JEWEL,     ITEM_PURPLE_JEWEL,
+            ITEM_GREEN_JEWEL,   ITEM_BLUE_JEWEL,
+            ITEM_YELLOW_JEWEL,  ITEM_SAFETY_PASS,
+            ITEM_AXE_MAGIC,     ITEM_ARMLET,
+            ITEM_SUN_STONE,     ITEM_BUYER_CARD,
+            ITEM_LANTERN,       ITEM_EINSTEIN_WHISTLE,
+            ITEM_STATUE_JYPTA,  ITEM_BELL,
+            ITEM_BLUE_RIBBON,   0xFF
+    };
+
     // Read settings from personal_settings.json file is it's present
     std::ifstream personal_settings_file("./personal_settings.json");
     if(personal_settings_file)
@@ -84,4 +111,28 @@ void PersonalSettings::parse_json(const Json& json)
 
     if(json.contains("removeMusic"))
         _remove_music = json.at("removeMusic");
+
+    if(json.contains("inventoryOrder"))
+    {
+        _inventory_order.fill(0xFF);
+
+        std::set<uint8_t> mandatory_items = {
+            ITEM_KEY, ITEM_IDOL_STONE, ITEM_GARLIC, ITEM_LOGS, ITEM_GOLA_EYE, ITEM_EINSTEIN_WHISTLE
+        };
+
+        std::vector<std::string> items = json.at("inventoryOrder");
+        for(uint8_t i=0 ; i < items.size() && i < _inventory_order.size() ; ++i)
+        {
+            auto it = std::find(_item_names.begin(), _item_names.end(), items[i]);
+            if(it == _item_names.end())
+                throw LandstalkerException("Unknown item name '" + items[i] + "' in inventory order section of personal settings file.");
+            uint8_t item_id = std::distance(_item_names.begin(), it);
+            _inventory_order[i] = item_id;
+            if(mandatory_items.contains(item_id))
+                mandatory_items.erase(item_id);
+        }
+
+        if(!mandatory_items.empty())
+            throw LandstalkerException("Cannot omit " + _item_names[*mandatory_items.begin()] + " from inventory order since it could make seeds uncompletable");
+    }
 }

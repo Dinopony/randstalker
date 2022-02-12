@@ -147,7 +147,7 @@ void generate(const ArgumentDictionary& args)
 
     // Parse options from command-line args, preset file, plando file...
     RandomizerOptions options(args, world.item_names());
-    PersonalSettings personal_settings(args);
+    PersonalSettings personal_settings(args, world.item_names());
 
     std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
 

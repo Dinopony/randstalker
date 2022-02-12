@@ -26,7 +26,7 @@ private:
     bool _use_armor_upgrades = true;
     uint8_t _starting_life = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
     uint16_t _starting_gold = 0;
-    std::array<uint8_t, ITEM_COUNT> _starting_items;
+    std::array<uint8_t, ITEM_COUNT> _starting_items {};
     bool _fix_armlet_skip = true;
     bool _remove_tree_cutting_glitch_drops = true;
     bool _consumable_record_book = false;
@@ -49,7 +49,7 @@ private:
     bool _enemy_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
-    std::array<uint8_t, ITEM_COUNT+1> _items_distribution;
+    std::array<uint8_t, ITEM_COUNT+1> _items_distribution {};
     uint16_t _hints_distribution_region_requirement = 0;
     uint16_t _hints_distribution_item_requirement = 0;
     uint16_t _hints_distribution_item_location = 0;
