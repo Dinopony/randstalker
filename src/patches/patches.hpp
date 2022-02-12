@@ -18,6 +18,10 @@ void handle_fox_hints(md::ROM& rom, RandomizerWorld& world);
 void optimize_maps(World& world);
 void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_sentence);
 void shorten_cutscenes(md::ROM& rom);
+void handle_record_book_save(md::ROM& rom, World& world, bool consumable_record_book);
+void handle_spell_book_teleport(md::ROM& rom, World& world);
+void handle_lithograph_hint(md::ROM& rom, RandomizerWorld& world);
+void handle_oracle_stone_hint(md::ROM& rom, RandomizerWorld& world);
 
 // Not yet processed patches
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world);
@@ -31,8 +35,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     optimize_maps(world);
     alter_randomizer_credits(rom);
     alter_randomizer_title(rom);
-    
-    add_functions_to_items_on_use(rom, world, options.consumable_record_book());
+
     add_statue_of_jypta_effect(rom);
     alter_fahl_challenge(rom, world);
     alter_gold_rewards_handling(rom, world);
@@ -75,6 +78,13 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     handle_fox_hints(rom, world);
     patch_rando_adaptations(rom, options, world);
     patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
+
+    handle_record_book_save(rom, world, options.consumable_record_book());
+    handle_spell_book_teleport(rom, world);
+    handle_lithograph_hint(rom, world);
+    handle_oracle_stone_hint(rom, world);
+    // This one needs to be called after all values for "pre_use_address" and "post_use_address" have been correctly set
+    add_functions_to_items_on_use(rom, world);
 
     handle_items_renaming(rom, world);
 

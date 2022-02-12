@@ -1,16 +1,10 @@
 [
     {
         "description": "Lithograph",
-        "textIds": [
-            33
-        ],
         "smallTextbox": true
     },
     {
         "description": "Oracle Stone",
-        "textIds": [
-            25
-        ],
         "smallTextbox": true
     },
     {

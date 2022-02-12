@@ -84,12 +84,15 @@ set(SOURCES
         "src/patches/alter_randomizer_credits.cpp"
         "src/patches/alter_randomizer_title.cpp"
         "src/patches/handle_fox_hints.cpp"
+        "src/patches/handle_record_book.cpp"
+        "src/patches/handle_spell_book_teleport.cpp"
+        "src/patches/handle_hint_providing_items.cpp"
         "src/patches/optimize_maps.cpp"
         "src/patches/rando_world_edits.cpp"
         "src/patches/replace_copy_by_hash.cpp"
         "src/patches/shorten_cutscenes.cpp"
         "src/patches/event_christmas.cpp"
-
+        
         "src/patches/patches.hpp"
         "src/patches/rando_adaptations.cpp"
 
