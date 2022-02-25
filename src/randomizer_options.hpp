@@ -7,21 +7,26 @@
 #include <fstream>
 
 #include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/constants/values.hpp>
+#include <landstalker_lib/tools/stringtools.hpp>
 #include <landstalker_lib/tools/argument_dictionary.hpp>
+
+class Item;
 
 class RandomizerOptions 
 {
 private:
     static constexpr uint8_t STARTING_LIFE_USE_SPAWN_LOCATION_VALUE = 0;
 
+    std::array<std::string, ITEM_COUNT+1> _item_names;
+
     // ------------- Game patching settings -------------
     // (included in permalink, presets & plandos)
     uint8_t _jewel_count = 2;
     bool _use_armor_upgrades = true;
-    uint8_t _startingLife = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
-    uint16_t _startingGold = 0;
-    std::map<std::string, uint8_t> _starting_items;
+    uint8_t _starting_life = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
+    uint16_t _starting_gold = 0;
+    std::array<uint8_t, ITEM_COUNT> _starting_items {};
     bool _fix_armlet_skip = true;
     bool _remove_tree_cutting_glitch_drops = true;
     bool _consumable_record_book = false;
@@ -44,11 +49,11 @@ private:
     bool _enemy_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
-    std::map<uint8_t, uint16_t> _items_distribution;
-    uint16_t _hints_distribution_region_requirement = 6;
-    uint16_t _hints_distribution_item_requirement = 5;
-    uint16_t _hints_distribution_item_location = 8;
-    uint16_t _hints_distribution_dark_region = 1;
+    std::array<uint8_t, ITEM_COUNT+1> _items_distribution {};
+    uint16_t _hints_distribution_region_requirement = 0;
+    uint16_t _hints_distribution_item_requirement = 0;
+    uint16_t _hints_distribution_item_location = 0;
+    uint16_t _hints_distribution_dark_region = 0;
     uint16_t _hints_distribution_joke = 0;
 
     // ------------- Events -------------
@@ -63,8 +68,7 @@ private:
     Json _model_patch_hint_sources;
 
 public:
-    RandomizerOptions() = default;
-    explicit RandomizerOptions(const ArgumentDictionary& args);
+    explicit RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names);
     
     void parse_permalink(const std::string& permalink);
     void parse_arguments(const ArgumentDictionary& args);
@@ -77,9 +81,9 @@ public:
     [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
     [[nodiscard]] uint8_t jewel_count() const { return _jewel_count; }
     [[nodiscard]] bool use_armor_upgrades() const { return _use_armor_upgrades; }
-    [[nodiscard]] uint8_t starting_life() const { return _startingLife; }
-    [[nodiscard]] uint16_t starting_gold() const { return _startingGold; }
-    [[nodiscard]] const std::map<std::string, uint8_t>& starting_items() const { return _starting_items; }
+    [[nodiscard]] uint8_t starting_life() const { return _starting_life; }
+    [[nodiscard]] uint16_t starting_gold() const { return _starting_gold; }
+    [[nodiscard]] const std::array<uint8_t, ITEM_COUNT>& starting_items() const { return _starting_items; }
     [[nodiscard]] bool fix_armlet_skip() const { return _fix_armlet_skip; }
     [[nodiscard]] bool remove_tree_cutting_glitch_drops() const { return _remove_tree_cutting_glitch_drops; }
     [[nodiscard]] bool consumable_record_book() const { return _consumable_record_book; }
@@ -100,7 +104,7 @@ public:
     [[nodiscard]] bool handle_enemy_jumping_in_logic() const { return _enemy_jumping_in_logic; }
     [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
     [[nodiscard]] bool handle_tree_cutting_glitch_in_logic() const { return _tree_cutting_glitch_in_logic; }
-    [[nodiscard]] const std::map<uint8_t, uint16_t>& items_distribution() const { return _items_distribution; }
+    [[nodiscard]] const std::array<uint8_t, ITEM_COUNT+1>& items_distribution() const { return _items_distribution; }
 
     [[nodiscard]] uint16_t hints_count() const { return _hints_distribution_region_requirement
                                                      + _hints_distribution_item_requirement
@@ -125,6 +129,6 @@ public:
     [[nodiscard]] const Json& hint_sources_model_patch() const { return _model_patch_hint_sources; }
 
     [[nodiscard]] std::vector<std::string> hash_words() const;
-    [[nodiscard]] std::string hash_sentence() const { return tools::join(this->hash_words(), " "); }
+    [[nodiscard]] std::string hash_sentence() const { return stringtools::join(this->hash_words(), " "); }
     [[nodiscard]] std::string permalink() const;
 };

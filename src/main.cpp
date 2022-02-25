@@ -46,10 +46,8 @@ md::ROM* get_input_rom(std::string input_rom_path)
     return rom;
 }
 
-void process_paths(const ArgumentDictionary& args, const RandomizerOptions& options,
-                    std::string& input_rom_path, std::string& output_rom_path, std::string& spoiler_log_path)
+void process_paths(const ArgumentDictionary& args, const RandomizerOptions& options, std::string& output_rom_path, std::string& spoiler_log_path)
 {
-    input_rom_path = args.get_string("inputrom", "./input.md");
     output_rom_path = args.get_string("outputrom", "./");
     spoiler_log_path = args.get_string("outputlog", "./");
 
@@ -133,27 +131,7 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
 void generate(const ArgumentDictionary& args)
 {
-    // Parse options from command-line args, preset file, plando file...
-    RandomizerOptions options(args);
-    PersonalSettings personal_settings(args);
-
-    // Parse various paths from args
-    std::string input_rom_path, output_rom_path, spoiler_log_path;
-    process_paths(args, options, input_rom_path, output_rom_path, spoiler_log_path);
-
-    // Output current preset
-    if (args.get_boolean("writepreset"))
-    {
-        Json json = options.to_json();
-
-        std::ofstream presetFile("./preset.json");
-        if(presetFile)
-            presetFile << json.dump(4);
-        presetFile.close();
-
-        std::cout << "Preset written to './preset.json'" << std::endl;
-        return;
-    }
+    std::string input_rom_path = args.get_string("inputrom", "./input.md");
 
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
     md::ROM* rom = get_input_rom(input_rom_path);
@@ -163,16 +141,25 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
     rom->mark_empty_chunk(0x148AB6, 0x14AA78); // Unused bird sprite
+    rom->mark_empty_chunk(0x1AF5FA, 0x1AF800); // Empty space
+
+    RandomizerWorld world(*rom);
+
+    // Parse options from command-line args, preset file, plando file...
+    RandomizerOptions options(args, world.item_names());
+    PersonalSettings personal_settings(args, world.item_names());
 
     std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
 
     std::cout << "Permalink: " << options.permalink() << "\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
-    RandomizerWorld world(*rom);
-
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
-    
+
+    // Parse output paths from args
+    std::string output_rom_path, spoiler_log_path;
+    process_paths(args, options, output_rom_path, spoiler_log_path);
+
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
     {

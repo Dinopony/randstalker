@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.5)
 
-project(randstalker VERSION 1.6.0 LANGUAGES CXX)
+project(randstalker VERSION 1.7.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,7 +28,8 @@ wrapped_dependency(TEXT     src/logic_model/data/world_path.json            WORL
 wrapped_dependency(TEXT     src/logic_model/data/world_region.json          WORLD_REGIONS_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/hint_source.json           HINT_SOURCES_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/spawn_location.json        SPAWN_LOCATIONS_JSON)
-wrapped_dependency(TEXT     src/logic_model/data/item_distribution.json     ITEM_DISTRIBUTIONS_JSON)
+wrapped_dependency(TEXT     src/logic_model/data/item.json                  ITEMS_JSON)
+wrapped_dependency(TEXT     src/logic_model/data/world_teleport_tree.json   WORLD_TELEPORT_TREES_JSON)
 wrapped_dependency(TEXT     src/assets/game_strings.json                    GAME_STRINGS_JSON)
 wrapped_dependency(RAW      src/assets/christmas_moneybag.bin               CHRISTMAS_MONEYBAG)
 
@@ -55,7 +56,8 @@ set(SOURCES
         "src/logic_model/data/world_region.json.hxx"
         "src/logic_model/data/hint_source.json.hxx"
         "src/logic_model/data/spawn_location.json.hxx"
-        "src/logic_model/data/item_distribution.json.hxx"
+        "src/logic_model/data/item.json.hxx"
+        "src/logic_model/data/world_teleport_tree.json.hxx"
 
         # --- I/O ----------------------------------------
         "src/io/io.hpp"
@@ -73,6 +75,7 @@ set(SOURCES
         "src/logic_model/world_path.cpp"
         "src/logic_model/world_region.hpp"
         "src/logic_model/world_region.cpp"
+        "src/logic_model/world_teleport_tree.hpp"
         "src/logic_model/randomizer_world.hpp"
         "src/logic_model/randomizer_world.cpp"
 
@@ -81,12 +84,15 @@ set(SOURCES
         "src/patches/alter_randomizer_credits.cpp"
         "src/patches/alter_randomizer_title.cpp"
         "src/patches/handle_fox_hints.cpp"
+        "src/patches/handle_record_book.cpp"
+        "src/patches/handle_spell_book_teleport.cpp"
+        "src/patches/handle_hint_providing_items.cpp"
         "src/patches/optimize_maps.cpp"
         "src/patches/rando_world_edits.cpp"
         "src/patches/replace_copy_by_hash.cpp"
         "src/patches/shorten_cutscenes.cpp"
         "src/patches/event_christmas.cpp"
-
+        
         "src/patches/patches.hpp"
         "src/patches/rando_adaptations.cpp"
 

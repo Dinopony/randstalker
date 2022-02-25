@@ -6,7 +6,7 @@
 #include <landstalker_lib/model/map.hpp>
 #include <landstalker_lib/model/map_connection.hpp>
 #include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/tools/tools.hpp>
+#include "landstalker_lib/tools/stringtools.hpp"
 #include <landstalker_lib/tools/json.hpp>
 
 #include "../logic_model/data/world_path.json.hxx"
@@ -51,7 +51,7 @@ void output_logic_as_dot(const RandomizerWorld& world, const std::string& path)
             const char* current_color = COLORS[path_i % COLORS_SIZE];
             graphviz << "color=" << current_color << " ";
             graphviz << "fontcolor=" << current_color << " ";
-            graphviz << "label=\"" << tools::join(required_names, "\\n") << "\" ";
+            graphviz << "label=\"" << stringtools::join(required_names, "\\n") << "\" ";
         }
 
         graphviz << "]\n";

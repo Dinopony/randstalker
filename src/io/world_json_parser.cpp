@@ -5,7 +5,7 @@
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
 #include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/tools/tools.hpp>
+#include "landstalker_lib/tools/stringtools.hpp"
 #include <landstalker_lib/exceptions.hpp>
 
 static Item* parse_item_from_name_in_json(const std::string& item_name, RandomizerWorld& world)
@@ -76,7 +76,7 @@ static void parse_hints_from_json(RandomizerWorld& world, const Json& json)
                 std::vector<std::string> hint_lines;
                 for(std::string line : contents)
                     hint_lines.emplace_back(line);
-                std::string hint = tools::join(hint_lines, "\n");
+                std::string hint = stringtools::join(hint_lines, "\n");
                 source->text(hint);
             }
             else source->text(contents);

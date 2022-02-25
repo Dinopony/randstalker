@@ -3,7 +3,7 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/item.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include "logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/flags.hpp>
 #include <landstalker_lib/constants/values.hpp>
@@ -97,19 +97,9 @@ static void patch_items(World& world, const RandomizerOptions& options)
     }
 
     // Process custom starting quantities for items
-    const std::map<std::string, uint8_t>& starting_items = options.starting_items();
-    for(auto& [item_name, quantity] : starting_items)
-    {
-        Item* item = world.item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Cannot set starting quantity of unknown item '" << item_name << "'";
-            throw LandstalkerException(msg.str());
-        }
-
-        item->starting_quantity(std::min<uint8_t>(quantity, 9));
-    }
+    const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+        world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
 
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
@@ -273,40 +263,43 @@ static void apply_options_on_hint_sources(const RandomizerOptions& options, Rand
 static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
-    std::map<uint8_t, uint16_t> distribution_param = options.items_distribution();
-    for(auto& [item_id, quantity] : distribution_param)
-        world.item_distribution(item_id)->quantity(quantity);
+    const std::array<uint8_t, ITEM_COUNT+1>& distribution_param = options.items_distribution();
+    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
+        world.item_distribution(i)->quantity(distribution_param[i]);
 
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
-        world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
-        world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+        if(world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
+        {
+            world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
+            world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+        }
     }
     else
     {
-        if(options.jewel_count() >= 1)
+        if(options.jewel_count() >= 1 && world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_RED_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 2)
+        if(options.jewel_count() >= 2 && world.item_distribution(ITEM_PURPLE_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 3)
+        if(options.jewel_count() >= 3 && world.item_distribution(ITEM_GREEN_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_GREEN_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 4)
+        if(options.jewel_count() >= 4 && world.item_distribution(ITEM_BLUE_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_BLUE_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 5)
+        if(options.jewel_count() >= 5 && world.item_distribution(ITEM_YELLOW_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);

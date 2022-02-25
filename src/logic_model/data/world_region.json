@@ -129,7 +129,8 @@
     },
     {
         "name": "Mir Tower sector",
-        "hintName": "around Mir Tower",
+        "hintName": "near Mir Tower",
+        "canBeHintedAsRequired": false,
         "nodeIds": [
             "mir_tower_sector",
             "mir_tower_sector_tree_ledge",

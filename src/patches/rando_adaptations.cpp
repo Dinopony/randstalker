@@ -197,6 +197,27 @@ static void put_dex_back_in_verla_mines(World& world)
     }));
 }
 
+void remove_music(md::ROM& rom)
+{
+    constexpr uint8_t MUSIC_SILENT = 0x20;
+
+    for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
+        rom.set_byte(addr, MUSIC_SILENT);
+
+    rom.set_byte(0x9E59A, MUSIC_SILENT); // Duke Fanfare before last boss
+    rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
+    rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
+    rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
+    rom.set_byte(0x9EBE3, MUSIC_SILENT); // Credits music
+
+    // Boss music
+    rom.set_byte(0x9D6A1, MUSIC_SILENT);
+    rom.set_byte(0x9D747, MUSIC_SILENT);
+    rom.set_byte(0x9E195, MUSIC_SILENT);
+    rom.set_byte(0x9E2C1, MUSIC_SILENT);
+    rom.set_byte(0x9E57C, MUSIC_SILENT);
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
