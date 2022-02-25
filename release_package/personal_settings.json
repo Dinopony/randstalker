@@ -1,5 +1,6 @@
 {
     "inGameTracker": false,
     "hudColor": "#428",
-    "nigelColor": [ "#0A8", "#042" ]
+    "nigelColor": [ "#0A8", "#042" ],
+    "removeMusic": false
 }
