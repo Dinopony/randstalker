@@ -56,7 +56,11 @@ PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::ar
     };
 
     // Read settings from personal_settings.json file is it's present
-    std::ifstream personal_settings_file("./personal_settings.json");
+    std::string settings_path = args.get_string("personalsettings");
+    if(settings_path.empty())
+        settings_path = "./personal_settings.json";
+
+    std::ifstream personal_settings_file(settings_path);
     if(personal_settings_file)
     {
         std::cout << "Reading preset file 'personal_settings.json'...\n";
@@ -66,7 +70,7 @@ PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::ar
     }
     else
     {
-        std::cout << "Could not open 'personal_settings.json', will use default values.\n";
+        std::cout << "Could not open '"<< settings_path << "', will use default values.\n";
     }
 
     // Parse arguments from command line
