@@ -210,6 +210,21 @@ void RandomizerWorld::dark_region(WorldRegion* region)
     }
 }
 
+void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
+{
+    std::vector<WorldNode*> required_nodes;
+    if(require_tibor_access)
+        required_nodes = { this->node("tibor") };
+
+    for(auto& pair : _teleport_tree_pairs)
+    {
+        WorldNode* first_node = this->node(pair.first->node_id());
+        WorldNode* second_node = this->node(pair.second->node_id());
+        this->add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
+        this->add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
+    }
+}
+
 void RandomizerWorld::spawn_location(const SpawnLocation& spawn)
 {
     World::spawn_location(spawn);

@@ -70,6 +70,8 @@ public:
     [[nodiscard]] const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
 
+    void add_paths_for_tree_connections(bool require_tibor_access);
+
 private:
     void load_nodes();
     void load_paths();

@@ -220,21 +220,6 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
         if(options.jewel_count() >= 5)
             path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
     }
-
-    if(options.all_trees_visited_at_start())
-    {
-        std::vector<WorldNode*> required_nodes;
-        if(!options.remove_tibor_requirement())
-            required_nodes = { world.node("tibor") };
-
-        for(auto& pair : world.teleport_tree_pairs())
-        {
-            WorldNode* first_node = world.node(pair.first->node_id());
-            WorldNode* second_node = world.node(pair.second->node_id());
-            world.add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
-            world.add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
-        }
-    }
 }
 
 static void apply_options_on_spawn_locations(const RandomizerOptions& options, RandomizerWorld& world)
