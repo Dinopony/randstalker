@@ -818,6 +818,7 @@ bool WorldShuffler::generate_dark_region_hint(HintSource* hint_source)
     // Check that crossing the dark region is not mandatory to reach the hint source
     WorldSolver solver(_world);
     solver.forbid_taking_items_from_nodes(region->nodes());
+    solver.forbid_item_type(_world.item(ITEM_LANTERN));
     if(!solver.try_to_solve(_world.spawn_node(), hint_source->node(), _world.starting_inventory()))
         return false;
 
