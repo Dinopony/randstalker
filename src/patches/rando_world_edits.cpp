@@ -263,6 +263,20 @@ void put_back_giants_in_verla_mines_keydoor_map(World& world)
     map->remove_entity(0);
 }
 
+/**
+ * In the original game, having the keydoor open near Lake Shrine entrance remove permanently the green golems
+ * from the room. In rando, this door is always open through the flag and therefore golems were never there, leaving
+ * a useless switch in the room. This patch makes them come back, even when the door is open.
+ */
+void put_back_golems_in_lake_shrine_keydoor_map(World& world)
+{
+    Map* map = world.map(MAP_LAKE_SHRINE_0F_KEYDOOR);
+    map->global_entity_mask_flags().clear();
+    map->key_door_mask_flags().clear();
+    map->entity(4)->mask_flags().emplace_back(EntityMaskFlag(false, 7, 5));
+}
+
+
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
 {
     put_orcs_back_in_room_before_boss_swamp_shrine(world);
@@ -283,7 +297,8 @@ void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
     make_pockets_always_in_thieves_hideout_cell(world);
     remove_pockets_from_gumi(world);
     put_back_giants_in_verla_mines_keydoor_map(world);
-    
+    put_back_golems_in_lake_shrine_keydoor_map(world);
+
     if(fix_armlet_skip)
         prevent_armlet_skip(world);
 }
