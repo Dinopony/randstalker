@@ -153,6 +153,7 @@ void generate(const ArgumentDictionary& args)
     std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
 
     std::cout << "Permalink: " << options.permalink() << "\n";
+    std::cout << "Hash sentence: " << options.hash_sentence() << "\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
