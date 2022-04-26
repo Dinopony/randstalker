@@ -163,7 +163,8 @@
         "name": "Verla Shore",
         "canBeHintedAsRequired": false,
         "nodeIds": [
-            "verla_shore"
+            "verla_shore",
+            "verla_shore_cliff"
         ]
     },
     {
