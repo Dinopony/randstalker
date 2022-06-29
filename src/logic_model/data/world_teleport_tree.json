@@ -58,14 +58,14 @@
     [
         {
             "name": "Greenmaze entrance tree",
-            "treeMapId": 511,
-            "exteriorMapId": 564,
+            "treeMapId": 510,
+            "exteriorMapId": 561,
             "nodeId": "greenmaze_pre_whistle"
         },
         {
             "name": "Greenmaze end tree",
-            "treeMapId": 510,
-            "exteriorMapId": 561,
+            "treeMapId": 511,
+            "exteriorMapId": 564,
             "nodeId": "greenmaze_post_whistle"
         }
     ]
