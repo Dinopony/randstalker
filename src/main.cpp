@@ -52,26 +52,30 @@ void process_paths(const ArgumentDictionary& args, const RandomizerOptions& opti
     spoiler_log_path = args.get_string("outputlog", "./");
 
     // Clean output ROM path and determine if it's a directory or a file
-    bool output_path_is_a_directory = true;
-    if(!output_rom_path.empty())
-    {
-        output_path_is_a_directory = !output_rom_path.ends_with(".md") && !output_rom_path.ends_with(".bin");
-        if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
-            output_rom_path += "/";
-    }
+    if(output_rom_path.empty())
+        output_rom_path = "./";
 
-    // Clean output log path and if it wasn't specified, give it an appropriate default value
+    bool output_path_is_a_directory = !output_rom_path.ends_with(".md") && !output_rom_path.ends_with(".bin");
+    if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
+        output_rom_path += "/";
+
+    // If output log path wasn't specified, put it along with the ROM
     if(!args.contains("outputlog"))
     {
-        if(output_path_is_a_directory && !output_rom_path.empty())
-            spoiler_log_path = output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
-        else
-            spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
+        // outputRomPath points to a directory, use the same for the spoiler log
+        if(output_path_is_a_directory)
+            spoiler_log_path = output_rom_path;
+
+        // outputRomPath points to a file, change its extension to ".json"
+        else if(output_rom_path.ends_with(".md"))
+            spoiler_log_path = output_rom_path.substr(0, output_rom_path.size() - 2) + "json";
+        else if(output_rom_path.ends_with(".bin"))
+            spoiler_log_path = output_rom_path.substr(0, output_rom_path.size() - 3) + "json";
     }
     else if(!spoiler_log_path.empty() && !spoiler_log_path.ends_with(".json") && !spoiler_log_path.ends_with('/'))
         spoiler_log_path += "/";
 
-    // Add the filename afterwards
+    // Add the filename afterwards if required
     if(!output_rom_path.empty() && *output_rom_path.rbegin() == '/')
         output_rom_path += options.hash_sentence() + ".md";
     if(!spoiler_log_path.empty() && *spoiler_log_path.rbegin() == '/')
