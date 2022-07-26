@@ -26,6 +26,7 @@ void handle_oracle_stone_hint(md::ROM& rom, RandomizerWorld& world);
 // Not yet processed patches
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world);
 void remove_music(md::ROM& rom);
+void swap_overworld_music(md::ROM& rom);
 
 // Events
 void christmas_event(md::ROM& rom, World& world);
@@ -92,4 +93,6 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
         christmas_event(rom, world);
     if(personal_settings.remove_music())
         remove_music(rom);
+    if(personal_settings.swap_overworld_music())
+        swap_overworld_music(rom);
 }

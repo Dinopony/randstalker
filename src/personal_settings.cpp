@@ -116,6 +116,9 @@ void PersonalSettings::parse_json(const Json& json)
     if(json.contains("removeMusic"))
         _remove_music = json.at("removeMusic");
 
+    if(json.contains("swapOverworldMusic"))
+        _swap_overworld_music = json.at("swapOverworldMusic");
+
     if(json.contains("inventoryOrder"))
     {
         _inventory_order.fill(0xFF);

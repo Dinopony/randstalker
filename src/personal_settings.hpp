@@ -17,6 +17,7 @@ private:
     Color _hud_color = Color(0x40, 0x20, 0x80);
     std::pair<Color, Color> _nigel_colors = std::make_pair(Color(0x00, 0xA0, 0x80), Color(0x00, 0x40, 0x20));
     bool _remove_music = false;
+    bool _swap_overworld_music = false;
     std::array<uint8_t, 40> _inventory_order;
 
 public:
@@ -27,6 +28,7 @@ public:
     [[nodiscard]] Color hud_color() const { return _hud_color; }
     [[nodiscard]] const std::pair<Color, Color>& nigel_colors() const { return _nigel_colors; }
     [[nodiscard]] bool remove_music() const { return _remove_music; }
+    [[nodiscard]] bool swap_overworld_music() const { return _swap_overworld_music; }
     [[nodiscard]] const std::array<uint8_t, 40>& inventory_order() const { return _inventory_order; }
 
     void parse_json(const Json& json);

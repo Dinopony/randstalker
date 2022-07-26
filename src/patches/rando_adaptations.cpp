@@ -218,6 +218,16 @@ void remove_music(md::ROM& rom)
     rom.set_byte(0x9E57C, MUSIC_SILENT);
 }
 
+/**
+ * Swap the two overworld music in the game (the one before taking ship to Verla, and the one after).
+ * This enables having the "hype music" even in settings where sailing to Verla is very unlikely.
+ */
+void swap_overworld_music(md::ROM& rom)
+{
+    // Transform the BEQ into a BNE to invert the test result deciding which overworld music to play
+    rom.set_byte(0x2A20, 0x66);
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
