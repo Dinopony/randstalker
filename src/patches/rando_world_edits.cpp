@@ -191,12 +191,31 @@ void remove_mercator_castle_backdoor_guard(World& world)
 }
 
 /**
- * Make entering the fountain tunnel automatically trigger the fountain button to prevent 
- * any softlock by coming from Greenmaze without having opened the passage.
+ * Fix potential softlocks by taking Mercator fountain secret passage in reverse, and clipping inside the fountain
+ * with no way out.
+ * This adds platforms on the other side of the tunnel preventing the player from taking that path altogether as long
+ * as fountain has not been opened.
  */
 void fix_reverse_greenmaze_fountain_softlock(World& world)
 {
-    world.map(MAP_MERCATOR_TUNNEL_TO_GREENMAZE)->visited_flag(Flag(0xE, 1));
+    Flag is_mercator_fountain_open(0xE, 1);
+
+    Entity* platform_1 = new Entity({
+        .type_id = ENTITY_SMALL_YELLOW_PLATFORM,
+        .position = Position(21, 22, 0, false, false, false),
+        .palette = 2
+    });
+    platform_1->remove_when_flag_is_set(is_mercator_fountain_open);
+
+    Entity* platform_2 = new Entity({
+        .type_id = ENTITY_SMALL_YELLOW_PLATFORM,
+        .position = Position(21, 23, 0, false, false, false),
+        .palette = 2
+    });
+    platform_2->remove_when_flag_is_set(is_mercator_fountain_open);
+
+    world.map(MAP_460)->add_entity(platform_1);
+    world.map(MAP_460)->add_entity(platform_2);
 }
 
 /**

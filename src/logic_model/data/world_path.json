@@ -198,10 +198,6 @@
     },
     {
         "fromId": "greenmaze_pre_whistle",
-        "toId": "mercator"
-    },
-    {
-        "fromId": "greenmaze_pre_whistle",
         "toId": "greenmaze_post_whistle",
         "requiredItems": [
             "Einstein Whistle"
