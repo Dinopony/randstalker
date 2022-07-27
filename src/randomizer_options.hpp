@@ -49,6 +49,7 @@ private:
     bool _enemy_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
+    bool _allow_whistle_usage_behind_trees = false;
     std::array<uint8_t, ITEM_COUNT+1> _items_distribution {};
     uint16_t _hints_distribution_region_requirement = 0;
     uint16_t _hints_distribution_item_requirement = 0;
@@ -104,6 +105,7 @@ public:
     [[nodiscard]] bool handle_enemy_jumping_in_logic() const { return _enemy_jumping_in_logic; }
     [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
     [[nodiscard]] bool handle_tree_cutting_glitch_in_logic() const { return _tree_cutting_glitch_in_logic; }
+    [[nodiscard]] bool allow_whistle_usage_behind_trees() const { return _allow_whistle_usage_behind_trees; }
     [[nodiscard]] const std::array<uint8_t, ITEM_COUNT+1>& items_distribution() const { return _items_distribution; }
 
     [[nodiscard]] uint16_t hints_count() const { return _hints_distribution_region_requirement

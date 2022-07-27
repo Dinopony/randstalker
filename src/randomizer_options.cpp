@@ -110,6 +110,7 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
+    json["randomizerSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
     json["randomizerSettings"]["hintsDistribution"] = {
         { "regionRequirement", _hints_distribution_region_requirement },
         { "itemRequirement", _hints_distribution_item_requirement },
@@ -207,6 +208,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
         if(randomizer_settings_json.contains("treeCuttingGlitchInLogic"))
             _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
+        if(randomizer_settings_json.contains("allowWhistleUsageBehindTrees"))
+            _allow_whistle_usage_behind_trees = randomizer_settings_json.at("allowWhistleUsageBehindTrees");
 
         if(randomizer_settings_json.contains("itemsDistribution"))
         {
@@ -322,6 +325,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemy_jumping_in_logic);
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
+    bitpack.pack(_allow_whistle_usage_behind_trees);
     bitpack.pack_array(_items_distribution);
     bitpack.pack(_hints_distribution_region_requirement);
     bitpack.pack(_hints_distribution_item_requirement);
@@ -373,6 +377,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemy_jumping_in_logic = bitpack.unpack<bool>();
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
+    _allow_whistle_usage_behind_trees = bitpack.unpack<bool>();
     _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT+1>();
     _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
     _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();

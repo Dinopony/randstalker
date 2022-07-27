@@ -201,6 +201,17 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
         }
     }
 
+    // If using Einstein Whistle behind trees is allowed, add a new logic path there to reflect that change
+    if(options.allow_whistle_usage_behind_trees())
+    {
+        world.add_path(new WorldPath(
+            world.node("greenmaze_post_whistle"),
+            world.node("greenmaze_pre_whistle"),
+            1,
+            { world.item(ITEM_EINSTEIN_WHISTLE) }
+        ));
+    }
+
     // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
     WorldPath* path_to_kazalt = world.path("king_nole_cave", "kazalt");
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
