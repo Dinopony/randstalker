@@ -12,6 +12,7 @@ class RandomizerWorld;
 // Randomizer patches
 void alter_hint_provider_dialogues(md::ROM& rom);
 void alter_randomizer_credits(md::ROM& rom);
+void alter_credits_palette_on_specific_condition(md::ROM& rom);
 void alter_randomizer_title(md::ROM& rom);
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip);
 void handle_fox_hints(md::ROM& rom, RandomizerWorld& world);
@@ -35,6 +36,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
 {
     optimize_maps(world);
     alter_randomizer_credits(rom);
+    alter_credits_palette_on_specific_condition(rom);
     alter_randomizer_title(rom);
 
     add_statue_of_jypta_effect(rom);
