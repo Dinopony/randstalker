@@ -89,6 +89,9 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
 
     handle_items_renaming(rom, world);
 
+    if(options.fast_menu_transitions())
+        quicken_pause_menu_transitions(rom);
+
     if(options.christmas_event())
         christmas_event(rom, world);
     if(personal_settings.remove_music())

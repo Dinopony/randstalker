@@ -102,6 +102,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
     json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
     json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
+    json["gameSettings"]["fastMenuTransitions"] = _fast_menu_transitions;
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
@@ -173,6 +174,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _enemies_drop_chance_factor = game_settings_json.at("enemiesDropChanceFactor");
         if(game_settings_json.contains("healthGainedPerLifestock"))
             _health_gained_per_lifestock = game_settings_json.at("healthGainedPerLifestock");
+        if(game_settings_json.contains("fastMenuTransitions"))
+            _fast_menu_transitions = game_settings_json.at("fastMenuTransitions");
 
         if(game_settings_json.contains("startingItems"))
         {
@@ -310,6 +313,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemies_golds_factor);
     bitpack.pack(_enemies_drop_chance_factor);
     bitpack.pack(_health_gained_per_lifestock);
+    bitpack.pack(_fast_menu_transitions);
 
     bitpack.pack(_seed);
 
@@ -362,6 +366,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemies_golds_factor = bitpack.unpack<uint16_t>();
     _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
     _health_gained_per_lifestock = bitpack.unpack<uint8_t>();
+    _fast_menu_transitions = bitpack.unpack<bool>();
 
     _seed = bitpack.unpack<uint32_t>();
 

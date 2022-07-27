@@ -39,6 +39,7 @@ private:
     uint16_t _enemies_golds_factor = 100;
     uint16_t _enemies_drop_chance_factor = 100;
     uint8_t _health_gained_per_lifestock = 1;
+    bool _fast_menu_transitions = true;
 
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)
@@ -78,8 +79,7 @@ public:
     [[nodiscard]] Json to_json() const;
     void parse_json(const Json& json);
 
-    // Game patching options 
-    [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
+    // Game patching options
     [[nodiscard]] uint8_t jewel_count() const { return _jewel_count; }
     [[nodiscard]] bool use_armor_upgrades() const { return _use_armor_upgrades; }
     [[nodiscard]] uint8_t starting_life() const { return _starting_life; }
@@ -97,9 +97,11 @@ public:
     [[nodiscard]] double enemies_golds_factor() const { return (double)_enemies_golds_factor / 100.0; }
     [[nodiscard]] double enemies_drop_chance_factor() const { return (double)_enemies_drop_chance_factor / 100.0; }
     [[nodiscard]] uint8_t health_gained_per_lifestock() const { return _health_gained_per_lifestock; }
+    [[nodiscard]] bool fast_menu_transitions() const { return _fast_menu_transitions; }
 
     // Randomization options
     [[nodiscard]] uint32_t seed() const { return _seed; }
+    [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
     [[nodiscard]] bool allow_spoiler_log() const { return _allow_spoiler_log; }
     [[nodiscard]] bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
     [[nodiscard]] bool handle_enemy_jumping_in_logic() const { return _enemy_jumping_in_logic; }

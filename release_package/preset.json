@@ -19,7 +19,8 @@
         "enemiesArmorFactor": 100,
         "enemiesGoldsFactor": 100,
         "enemiesDropChanceFactor": 100,
-        "healthGainedPerLifestock": 1
+        "healthGainedPerLifestock": 1,
+        "fastMenuTransitions": true
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,
