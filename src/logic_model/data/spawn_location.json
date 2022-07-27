@@ -28,11 +28,11 @@
 
     "waterfall": {
         "mapId": 532,
-        "posX": 56,
-        "posY": 26,
-        "orientation": 72,
-        "nodeId": "route_massan_gumi",
-        "startingLife": 4
+        "posX": 40,
+        "posY": 23,
+        "orientation": 136,
+        "nodeId": "greenmaze_post_whistle",
+        "startingLife": 10
     },
 
     "kado": {
