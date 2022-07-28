@@ -105,29 +105,28 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
     std::cout << "Applying game patches...\n\n";
     apply_randomizer_patches(rom, world, options, personal_settings);
 
-    std::string debug_log_path = args.get_string("debuglog");
-    if (!debug_log_path.empty())
+    if(options.allow_spoiler_log())
     {
-        std::ofstream debug_log_file(debug_log_path);
-        debug_log_file << shuffler.debug_log_as_json().dump(4);
-        debug_log_file.close();
-    }
+        spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
+        spoiler_json["playthrough"] = shuffler.playthrough_as_json();
 
-    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
-    spoiler_json["playthrough"] = shuffler.playthrough_as_json();
+        // Output debug log if requested, only if spoiler log is authorized
+        std::string debug_log_path = args.get_string("debuglog");
+        if (!debug_log_path.empty())
+        {
+            std::ofstream debug_log_file(debug_log_path);
+            debug_log_file << shuffler.debug_log_as_json().dump(4);
+            debug_log_file.close();
+        }
 
-    // Output model if requested
-    if(args.get_boolean("dumpmodel"))
-    {
-        if(options.allow_spoiler_log())
+        // Output model if requested, only if spoiler log is authorized
+        if(args.get_boolean("dumpmodel"))
         {
             std::cout << "Outputting model...\n\n";
             ModelWriter::write_world_model(world);
             ModelWriter::write_logic_model(world);
             std::cout << "Model dumped to './json_data/'" << std::endl;
         }
-        else
-            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
 
     return spoiler_json;
@@ -184,18 +183,16 @@ void generate(const ArgumentDictionary& args)
     // Write a spoiler log to help the player
     if(!spoiler_log_path.empty())
     {
-        if(options.allow_spoiler_log())
-        {
-            std::ofstream spoiler_file(spoiler_log_path);
-            if(!spoiler_file)
-                throw LandstalkerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
+        std::ofstream spoiler_file(spoiler_log_path);
+        if(!spoiler_file)
+            throw LandstalkerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
 
-            spoiler_file << spoiler_json.dump(4);
-            spoiler_file.close();
+        spoiler_file << spoiler_json.dump(4);
+        spoiler_file.close();
+        if(options.allow_spoiler_log())
             std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n";
-        }
         else
-            std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n";
+            std::cout << "Generation log written into \"" << spoiler_log_path << "\".\n";
     }
 }
 

@@ -113,6 +113,17 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
     json["randomizerSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
+
+    std::map<std::string, uint8_t> items_distribution_with_names;
+    for(size_t i=0 ; i < _items_distribution.size() ; ++i)
+    {
+        uint8_t amount = _items_distribution[i];
+        const std::string& item_name = _item_names[i];
+        if(amount > 0)
+            items_distribution_with_names[item_name] = amount;
+    }
+    json["randomizerSettings"]["itemsDistributions"] = items_distribution_with_names;
+
     json["randomizerSettings"]["hintsDistribution"] = {
         { "regionRequirement", _hints_distribution_region_requirement },
         { "itemRequirement", _hints_distribution_item_requirement },
