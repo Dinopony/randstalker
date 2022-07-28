@@ -93,6 +93,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
     json["gameSettings"]["removeTreeCuttingGlitchDrops"] = _remove_tree_cutting_glitch_drops;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
+    json["gameSettings"]["consumableSpellBook"] = _consumable_spell_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
@@ -156,6 +157,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _remove_tree_cutting_glitch_drops = game_settings_json.at("removeTreeCuttingGlitchDrops");
         if(game_settings_json.contains("consumableRecordBook"))
             _consumable_record_book = game_settings_json.at("consumableRecordBook");
+        if(game_settings_json.contains("consumableSpellBook"))
+            _consumable_spell_book = game_settings_json.at("consumableSpellBook");
         if(game_settings_json.contains("removeGumiBoulder"))
             _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
         if(game_settings_json.contains("removeTiborRequirement"))
@@ -321,6 +324,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_fix_armlet_skip);
     bitpack.pack(_remove_tree_cutting_glitch_drops);
     bitpack.pack(_consumable_record_book);
+    bitpack.pack(_consumable_spell_book);
     bitpack.pack(_remove_gumi_boulder);
     bitpack.pack(_remove_tibor_requirement);
     bitpack.pack(_all_trees_visited_at_start);
@@ -374,6 +378,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _fix_armlet_skip = bitpack.unpack<bool>();
     _remove_tree_cutting_glitch_drops = bitpack.unpack<bool>();
     _consumable_record_book = bitpack.unpack<bool>();
+    _consumable_spell_book = bitpack.unpack<bool>();
     _remove_gumi_boulder = bitpack.unpack<bool>();
     _remove_tibor_requirement = bitpack.unpack<bool>();
     _all_trees_visited_at_start = bitpack.unpack<bool>();

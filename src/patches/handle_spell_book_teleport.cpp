@@ -4,7 +4,7 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/item.hpp>
 
-void handle_spell_book_teleport(md::ROM& rom, World& world)
+void handle_spell_book_teleport(md::ROM& rom, World& world, bool consumable_spell_book)
 {
     uint16_t spawn_x = world.spawn_location().position_x();
     uint16_t spawn_y = world.spawn_location().position_y();
@@ -35,5 +35,14 @@ void handle_spell_book_teleport(md::ROM& rom, World& world)
 
     // Replace "consume Spell Book" by a return indicating success and signaling there is a post-use effect
     // to handle.
-    rom.set_code(0x88C6, md::Code().jmp(offsets::PROC_ITEM_USE_RETURN_SUCCESS_HAS_POST_USE));
+    md::Code func_pre_use;
+    if(consumable_spell_book)
+    {
+        func_pre_use.moveb(reg_D0, addr_(0xFF1152));
+        func_pre_use.jsr(0x8B98); // ConsumeItem
+    }
+    func_pre_use.jmp(offsets::PROC_ITEM_USE_RETURN_SUCCESS_HAS_POST_USE);
+    uint32_t func_pre_use_addr = rom.inject_code(func_pre_use);
+
+    world.item(ITEM_SPELL_BOOK)->pre_use_address(func_pre_use_addr);
 }

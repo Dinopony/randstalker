@@ -20,7 +20,7 @@ void optimize_maps(World& world);
 void replace_copy_save_by_show_hash(md::ROM& rom, const std::string& seed_hash_sentence);
 void shorten_cutscenes(md::ROM& rom);
 void handle_record_book_save(md::ROM& rom, World& world, bool consumable_record_book);
-void handle_spell_book_teleport(md::ROM& rom, World& world);
+void handle_spell_book_teleport(md::ROM& rom, World& world, bool consumable_spell_book);
 void handle_lithograph_hint(md::ROM& rom, RandomizerWorld& world);
 void handle_oracle_stone_hint(md::ROM& rom, RandomizerWorld& world);
 
@@ -83,7 +83,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patch_game_init(rom, world, personal_settings.add_ingame_item_tracker());
 
     handle_record_book_save(rom, world, options.consumable_record_book());
-    handle_spell_book_teleport(rom, world);
+    handle_spell_book_teleport(rom, world, options.consumable_spell_book());
     handle_lithograph_hint(rom, world);
     handle_oracle_stone_hint(rom, world);
     // This one needs to be called after all values for "pre_use_address" and "post_use_address" have been correctly set
