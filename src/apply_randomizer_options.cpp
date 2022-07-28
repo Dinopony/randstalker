@@ -123,6 +123,13 @@ static void patch_items(World& world, const RandomizerOptions& options)
         uint16_t currentPrice = world.item(ITEM_RECORD_BOOK)->gold_value();
         world.item(ITEM_RECORD_BOOK)->gold_value(currentPrice / 5);
     }
+
+    if (options.consumable_spell_book())
+    {
+        world.item(ITEM_SPELL_BOOK)->max_quantity(9);
+        uint16_t currentPrice = world.item(ITEM_SPELL_BOOK)->gold_value();
+        world.item(ITEM_SPELL_BOOK)->gold_value(currentPrice / 5);
+    }
 }
 
 static void patch_entity_types(World& world, const RandomizerOptions& options)
