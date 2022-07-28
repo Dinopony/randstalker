@@ -59,6 +59,7 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
         FLAG_SAW_DUKE_TAUNTING_IN_SHELL_BREAST_ROOM,
         FLAG_SECOND_RAFT_PLACED_IN_KNL,
         FLAG_SAW_KID_LEAVING_MONSTER_ZOO,
+        FLAG_PROSPERO_NOISY_BOY_TEXTLINE_READ,
 
         // Various keydoors...
         Flag(0x06, 6), Flag(0x06, 5), Flag(0x06, 4), Flag(0x06, 3), Flag(0x06, 2),

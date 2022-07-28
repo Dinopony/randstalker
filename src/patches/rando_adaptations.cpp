@@ -21,18 +21,6 @@ static void alter_lifestock_handling_in_shops(md::ROM& rom)
 }
 
 /**
- * Change Waterfall Shrine entrance check from "Talked to Prospero" to "What a noisy boy!", removing the need*
- * of talking to Prospero (which we couldn't do anyway because of the story flags).
- */
-static void alter_waterfall_shrine_secret_stairs_check(md::ROM& rom)
-{
-    // 0x005014:
-        // Before:	00 08 (bit 0 of FF1000)
-        // After:	02 09 (bit 1 of FF1002)
-    rom.set_word(0x005014, 0x0209);
-}
-
-/**
  * Change the flag checked for teleporter appearance from "saw the duke Kazalt cutscene" to "has visited four white golems room in King Nole's Cave"
  */
 static void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom, const World& world)
@@ -256,7 +244,6 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     set_story_as_advanced(rom);
 
     alter_lifestock_handling_in_shops(rom);
-    alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom, world);
     make_ryuma_mayor_saveable(rom);
     fix_ryuma_mayor_reward(rom);

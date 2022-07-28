@@ -11,7 +11,7 @@ randomizer format.
 ### Game flow
 
 - Game starts at a given spawn location (usually randomized) and intro is fully skipped.
-- Most cutscenes and scenario related checks / blockers are removed
+- Most cutscenes and scenario related checks / blockers are removed to put the focus on gameplay & exploration
 - You will need as many jewels as specified in the settings to use the teleporter to go to Kazalt
 - All other conditions from the original game stay as-is (Safety Pass to reach Mercator, Gola's Eye to reach King Nole's
   Cave, Axe Magic to cut trees, all three Gola pieces to reach King Nole's fight...)
@@ -51,8 +51,6 @@ randomizer format.
   since traders' sidequest is only available in a very limited timeframe in the game
 - By default, armors work as "armor upgrades", meaning you will always get them one tier after another (this can be
   disabled as an option)
-- The "secret" stairs at the entrance of Waterfall Shrine now appears with Prospero saying "What a noisy boy!" as you
-  approach him at the end of the level (no need to talk to him anymore).
 - The teleporter between Mercator and King Nole's Cave appears as soon as you enter the room with white golems right
   before it. You can go straight to Kazalt without worrying about it.
 - Tibor trees connections can be optionally randomized
