@@ -72,10 +72,6 @@ private:
 
 public:
     explicit RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names);
-    
-    void parse_permalink(const std::string& permalink);
-    void parse_arguments(const ArgumentDictionary& args);
-    void validate() const;
 
     [[nodiscard]] Json to_json() const;
     void parse_json(const Json& json);
@@ -137,4 +133,9 @@ public:
     [[nodiscard]] std::vector<std::string> hash_words() const;
     [[nodiscard]] std::string hash_sentence() const { return stringtools::join(this->hash_words(), " "); }
     [[nodiscard]] std::string permalink() const;
+
+private:
+    void parse_permalink(std::string permalink);
+    void parse_arguments(const ArgumentDictionary& args);
+    void validate() const;
 };

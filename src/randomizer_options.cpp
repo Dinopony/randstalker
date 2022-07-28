@@ -305,7 +305,7 @@ std::string RandomizerOptions::permalink() const
 {
     BitstreamWriter bitpack;
 
-    bitpack.pack(std::string(MAJOR_RELEASE));
+    bitpack.pack((uint8_t)MAJOR_RELEASE);
     
     bitpack.pack(_jewel_count);
     bitpack.pack(_starting_life);
@@ -352,14 +352,18 @@ std::string RandomizerOptions::permalink() const
     return "l" + base64_encode(bitpack.bytes()) + "s";
 }
 
-void RandomizerOptions::parse_permalink(const std::string& permalink)
+void RandomizerOptions::parse_permalink(std::string permalink)
 {
+    stringtools::trim(permalink);
+    if(!permalink.starts_with("l") || !permalink.ends_with("s"))
+        throw LandstalkerException("This permalink is malformed, please make sure you copied the full permalink string.");
+
     std::vector<uint8_t> bytes = base64_decode(permalink.substr(1, permalink.size() - 2));
     BitstreamReader bitpack(bytes);
 
-    std::string version = bitpack.unpack<std::string>();
-    if(version != MAJOR_RELEASE)
-        throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + version + ").");
+    uint8_t version = bitpack.unpack<uint8_t>();
+    if(version != (uint8_t)MAJOR_RELEASE)
+        throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + std::to_string(version) + ").");
     
     _jewel_count = bitpack.unpack<uint8_t>();
     _starting_life = bitpack.unpack<uint8_t>();
