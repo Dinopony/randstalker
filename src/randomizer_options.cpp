@@ -304,7 +304,9 @@ std::vector<std::string> RandomizerOptions::hash_words() const
         "Friday",   "Short",       "Cake",       "Life",      "Stock",      "Zak",       "Duke",       "Dex", 
         "Slasher",  "Marley",      "Nigel",      "Ninja",     "Ghost",      "Tibor",     "Knight",     "Pockets", 
         "Arthur",   "Crypt",       "Mummy",      "Poison",    "Labyrinth",  "Lake",      "Volcano",    "Crate", 
-        "Jar",      "Mayor",       "Dexter",     "Treasure",  "Chest"
+        "Jar",      "Mayor",       "Dexter",     "Treasure",  "Chest",      "Ludwig",    "Quake",      "Hyper",
+        "Shell",    "Chrome",      "Steel",      "Boots",     "Sword",      "Teller",    "Marty",      "Cutter",
+        "Greenpea", "Kelketo",     "Unicorn",    "Lizard",    "Tree",       "Cave",      "Kan",        "Foxy"
     };
 
     std::mt19937 rng(_seed);
