@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.5)
+cmake_minimum_required(VERSION 3.21)
 
 project(randstalker VERSION 1.7.0 LANGUAGES CXX)
 
