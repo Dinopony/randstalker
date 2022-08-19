@@ -2,6 +2,7 @@
 
 #include <landstalker_lib/constants/offsets.hpp>
 #include <landstalker_lib/exceptions.hpp>
+#include "landstalker_lib/tools/byte_array.hpp"
 
 void alter_randomizer_credits(md::ROM& rom)
 {
@@ -83,19 +84,20 @@ void alter_randomizer_credits(md::ROM& rom)
 
 void alter_credits_palette_on_specific_condition(md::ROM& rom)
 {
-    std::vector<uint8_t> alternate_credits_palette = {
-        0x00, 0x00,
-        0x0E, 0x8E,
-        0x0C, 0x6C,
-        0x0A, 0x4A
-    };
-    uint32_t alternate_palette_addr = rom.inject_bytes(alternate_credits_palette);
+    ByteArray blue_credits_palette;
+    blue_credits_palette.add_word(0x000);
+    blue_credits_palette.add_word(0xE66);
+    blue_credits_palette.add_word(0xC44);
+    blue_credits_palette.add_word(0xA22);
+    uint32_t blue_credits_palette_addr = rom.inject_bytes(blue_credits_palette);
 
     md::Code func;
     func.lea(0xFF0080, reg_A1); // instruction erased by the jsr
     func.btst(1, addr_(0xFF104C));
     func.beq("ret");
-    func.lea(alternate_palette_addr, reg_A0); // Use alternate credits palette if condition is met
+    {
+        func.lea(blue_credits_palette_addr, reg_A0); // Use blue credits palette if blue ribbon is held
+    }
     func.label("ret");
     func.rts();
     uint32_t func_addr = rom.inject_code(func);
