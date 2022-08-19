@@ -45,18 +45,21 @@ void alter_randomizer_credits(md::ROM& rom)
         // "DILANDAU"
         0x08, 0xFF,
         0x05, 0x0A, 0x0D, 0x02, 0x0F, 0x05, 0x02, 0x16, 0x00,
-        // testing
+        // "testing"
         0x04, 0xFF, 0x81,
         0x2F, 0x20, 0x2E, 0x2F, 0x24, 0x29, 0x22, 0x00,
-        // SAGAZ
+        // "SAGAZ"
         0x03, 0xFF,
         0x14, 0x02, 0x08, 0x02, 0x1B, 0x00,
-        // STIK
+        // "STIK"
         0x03, 0xFF,
         0x14, 0x15, 0x0A, 0x0C, 0x00,
-        // LANDRYLE
+        // "LANDRYLE"
+        0x03, 0xFF,
+        0x0D, 0x02, 0x0F, 0x05, 0x13, 0x1A, 0x0D, 0x06, 0x00,
+        // "SORCIER"
         0x08, 0xFF,
-        0x0D, 0x02, 0x0F, 0x05, 0x13, 0x1A, 0x0D, 0x06, 0x00
+        0x14, 0x10, 0x13, 0x04, 0x0A, 0x06, 0x13, 0x00
     };
     new_credits_text.insert(new_credits_text.end(), rando_credits.begin(), rando_credits.end());
 
@@ -70,6 +73,9 @@ void alter_randomizer_credits(md::ROM& rom)
     for(uint32_t addr = offsets::CREDITS_TEXT ; addr < offsets::CREDITS_TEXT_END ; ++addr)
         rom.set_byte(addr, 0x00);
     rom.set_bytes(offsets::CREDITS_TEXT, new_credits_text);
+
+    // Make the waiting time after "The End" of only 30 seconds instead of 3 minutes before coming back to main menu
+    rom.set_word(0x9ECC4, 0x0708);
 
     // Credits debug code, uncomment to launch credits when opening inventory menu
     // rom.set_code(0x7654, md::Code().jsr(0xEAEA).rts());

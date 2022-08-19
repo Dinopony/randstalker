@@ -141,7 +141,7 @@ void generate(const ArgumentDictionary& args)
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space
-    rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
+//    rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
     rom->set_code(0x16F0, md::Code().nop(4)); // Debug menu related calls
     rom->mark_empty_chunk(0x148AB6, 0x14AA78); // Unused bird sprite
