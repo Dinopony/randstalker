@@ -2,16 +2,21 @@
 
 #include <iostream>
 
-#include <landstalker_lib/tools/tools.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
+#include <landstalker_lib/tools/stringtools.hpp>
 #include <landstalker_lib/tools/vectools.hpp>
+#include <landstalker_lib/tools/bitstream_writer.hpp>
+#include <landstalker_lib/tools/bitstream_reader.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
-#include "tools/bitpack.hpp"
 #include "tools/base64.hpp"
 
-
-RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args) : RandomizerOptions()
+RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names)
 {
+    _item_names = item_names;
+    _starting_items.fill(0);
+    _items_distribution.fill(0);
+
     std::string permalink_string = args.get_string("permalink");
     if(!permalink_string.empty())
     {
@@ -52,7 +57,7 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
     if(args.contains("spawnlocation"))
     {
         std::string spawn_name = args.get_string("spawnlocation");
-        tools::to_lower(spawn_name);
+        stringtools::to_lower(spawn_name);
         if(spawn_name == "random")
             _possible_spawn_locations = {};
         else
@@ -61,9 +66,9 @@ void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
 
     if(args.contains("jewelcount"))           _jewel_count = args.get_integer("jewelcount");
     if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
-    if(args.contains("norecordbook"))         _starting_items["Record Book"] = 0;
-    if(args.contains("nospellbook"))          _starting_items["Spell Book"] = 0;
-    if(args.contains("startinglife"))         _startingLife = args.get_integer("startinglife");
+    if(args.contains("norecordbook"))         _starting_items[ITEM_RECORD_BOOK] = 0;
+    if(args.contains("nospellbook"))          _starting_items[ITEM_SPELL_BOOK] = 0;
+    if(args.contains("startinglife"))         _starting_life = args.get_integer("startinglife");
     if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
     if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
@@ -75,11 +80,20 @@ Json RandomizerOptions::to_json() const
     // Game settings 
     json["gameSettings"]["jewelCount"] = _jewel_count;
     json["gameSettings"]["armorUpgrades"] = _use_armor_upgrades;
-    json["gameSettings"]["startingGold"] = _startingGold;
-    json["gameSettings"]["startingItems"] = _starting_items;
+    json["gameSettings"]["startingGold"] = _starting_gold;
+    json["gameSettings"]["startingLife"] = _starting_life;
+
+    json["gameSettings"]["startingItems"] = Json::object();
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+    {
+        if(_starting_items[i] > 0)
+            json["gameSettings"]["startingItems"][_item_names[i]] = _starting_items[i];
+    }
+
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
     json["gameSettings"]["removeTreeCuttingGlitchDrops"] = _remove_tree_cutting_glitch_drops;
     json["gameSettings"]["consumableRecordBook"] = _consumable_record_book;
+    json["gameSettings"]["consumableSpellBook"] = _consumable_spell_book;
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
@@ -89,8 +103,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesGoldsFactor"] = _enemies_golds_factor;
     json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
     json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
-    if(_startingLife > 0)
-        json["gameSettings"]["startingLife"] = _startingLife;
+    json["gameSettings"]["fastTransitions"] = _fast_transitions;
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
@@ -99,6 +112,18 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
+    json["randomizerSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
+
+    std::map<std::string, uint8_t> items_distribution_with_names;
+    for(size_t i=0 ; i < _items_distribution.size() ; ++i)
+    {
+        uint8_t amount = _items_distribution[i];
+        const std::string& item_name = _item_names[i];
+        if(amount > 0)
+            items_distribution_with_names[item_name] = amount;
+    }
+    json["randomizerSettings"]["itemsDistributions"] = items_distribution_with_names;
+
     json["randomizerSettings"]["hintsDistribution"] = {
         { "regionRequirement", _hints_distribution_region_requirement },
         { "itemRequirement", _hints_distribution_item_requirement },
@@ -134,15 +159,17 @@ void RandomizerOptions::parse_json(const Json& json)
         if(game_settings_json.contains("armorUpgrades"))
             _use_armor_upgrades = game_settings_json.at("armorUpgrades");
         if(game_settings_json.contains("startingLife"))
-            _startingLife = game_settings_json.at("startingLife");
+            _starting_life = game_settings_json.at("startingLife");
         if(game_settings_json.contains("startingGold"))
-            _startingGold = game_settings_json.at("startingGold");
+            _starting_gold = game_settings_json.at("startingGold");
         if(game_settings_json.contains("fixArmletSkip"))
             _fix_armlet_skip = game_settings_json.at("fixArmletSkip");
         if(game_settings_json.contains("removeTreeCuttingGlitchDrops"))
             _remove_tree_cutting_glitch_drops = game_settings_json.at("removeTreeCuttingGlitchDrops");
         if(game_settings_json.contains("consumableRecordBook"))
             _consumable_record_book = game_settings_json.at("consumableRecordBook");
+        if(game_settings_json.contains("consumableSpellBook"))
+            _consumable_spell_book = game_settings_json.at("consumableSpellBook");
         if(game_settings_json.contains("removeGumiBoulder"))
             _remove_gumi_boulder = game_settings_json.at("removeGumiBoulder");
         if(game_settings_json.contains("removeTiborRequirement"))
@@ -161,12 +188,20 @@ void RandomizerOptions::parse_json(const Json& json)
             _enemies_drop_chance_factor = game_settings_json.at("enemiesDropChanceFactor");
         if(game_settings_json.contains("healthGainedPerLifestock"))
             _health_gained_per_lifestock = game_settings_json.at("healthGainedPerLifestock");
+        if(game_settings_json.contains("fastTransitions"))
+            _fast_transitions = game_settings_json.at("fastTransitions");
 
         if(game_settings_json.contains("startingItems"))
         {
-            std::map<std::string, uint8_t> startingItems = game_settings_json.at("startingItems");
-            for(auto& [itemName, quantity] : startingItems)
-                _starting_items[itemName] = quantity;
+            std::map<std::string, uint8_t> starting_items = game_settings_json.at("startingItems");
+            for(auto& [item_name, quantity] : starting_items)
+            {
+                auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
+                if(it == _item_names.end())
+                    throw LandstalkerException("Unknown item name '" + item_name + "' in starting items section of preset file.");
+                uint8_t item_id = std::distance(_item_names.begin(), it);
+                _starting_items[item_id] = quantity;
+            }
         }
     }
 
@@ -190,13 +225,18 @@ void RandomizerOptions::parse_json(const Json& json)
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
         if(randomizer_settings_json.contains("treeCuttingGlitchInLogic"))
             _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
+        if(randomizer_settings_json.contains("allowWhistleUsageBehindTrees"))
+            _allow_whistle_usage_behind_trees = randomizer_settings_json.at("allowWhistleUsageBehindTrees");
 
         if(randomizer_settings_json.contains("itemsDistribution"))
         {
-            for(auto& [key, value] : randomizer_settings_json.at("itemsDistribution").items())
+            std::map<std::string, uint8_t> items_distribution = randomizer_settings_json.at("itemsDistribution");
+            for(auto& [item_name, quantity] : items_distribution)
             {
-                uint8_t item_id = (uint8_t)std::stoi(key);
-                uint16_t quantity = (uint16_t)std::stoi(std::string(value));
+                auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
+                if(it == _item_names.end())
+                    throw LandstalkerException("Unknown item name '" + item_name + "' in items distribution section of preset file.");
+                uint8_t item_id = std::distance(_item_names.begin(), it);
                 _items_distribution[item_id] = quantity;
             }
         }
@@ -264,7 +304,9 @@ std::vector<std::string> RandomizerOptions::hash_words() const
         "Friday",   "Short",       "Cake",       "Life",      "Stock",      "Zak",       "Duke",       "Dex", 
         "Slasher",  "Marley",      "Nigel",      "Ninja",     "Ghost",      "Tibor",     "Knight",     "Pockets", 
         "Arthur",   "Crypt",       "Mummy",      "Poison",    "Labyrinth",  "Lake",      "Volcano",    "Crate", 
-        "Jar",      "Mayor",       "Dexter",     "Treasure",  "Chest"
+        "Jar",      "Mayor",       "Dexter",     "Treasure",  "Chest",      "Ludwig",    "Quake",      "Hyper",
+        "Shell",    "Chrome",      "Steel",      "Boots",     "Sword",      "Teller",    "Marty",      "Cutter",
+        "Greenpea", "Kelketo",     "Unicorn",    "Lizard",    "Tree",       "Cave",      "Kan",        "Foxy"
     };
 
     std::mt19937 rng(_seed);
@@ -274,19 +316,20 @@ std::vector<std::string> RandomizerOptions::hash_words() const
 
 std::string RandomizerOptions::permalink() const
 {
-    Bitpack bitpack;
+    BitstreamWriter bitpack;
 
-    bitpack.pack(std::string(MAJOR_RELEASE));
+    bitpack.pack((uint8_t)MAJOR_RELEASE);
     
     bitpack.pack(_jewel_count);
-    bitpack.pack(_startingLife);
-    bitpack.pack(_startingGold);
+    bitpack.pack(_starting_life);
+    bitpack.pack(_starting_gold);
     bitpack.pack(_enemies_damage_factor);
     bitpack.pack(_enemies_health_factor);
     bitpack.pack(_enemies_armor_factor);
     bitpack.pack(_enemies_golds_factor);
     bitpack.pack(_enemies_drop_chance_factor);
     bitpack.pack(_health_gained_per_lifestock);
+    bitpack.pack(_fast_transitions);
 
     bitpack.pack(_seed);
 
@@ -294,6 +337,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_fix_armlet_skip);
     bitpack.pack(_remove_tree_cutting_glitch_drops);
     bitpack.pack(_consumable_record_book);
+    bitpack.pack(_consumable_spell_book);
     bitpack.pack(_remove_gumi_boulder);
     bitpack.pack(_remove_tibor_requirement);
     bitpack.pack(_all_trees_visited_at_start);
@@ -302,7 +346,8 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_enemy_jumping_in_logic);
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
-    bitpack.pack_map(_items_distribution);
+    bitpack.pack(_allow_whistle_usage_behind_trees);
+    bitpack.pack_array(_items_distribution);
     bitpack.pack(_hints_distribution_region_requirement);
     bitpack.pack(_hints_distribution_item_requirement);
     bitpack.pack(_hints_distribution_item_location);
@@ -311,33 +356,38 @@ std::string RandomizerOptions::permalink() const
 
     bitpack.pack_vector(_possible_spawn_locations);
 
-    bitpack.pack_map(_starting_items);
-    bitpack.pack(_model_patch_items);
-    bitpack.pack(_model_patch_spawns);
-    bitpack.pack(_model_patch_hint_sources);
-    bitpack.pack(_world_json);
+    bitpack.pack_array(_starting_items);
+    bitpack.pack_vector(Json::to_msgpack(_model_patch_items));
+    bitpack.pack_vector(Json::to_msgpack(_model_patch_spawns));
+    bitpack.pack_vector(Json::to_msgpack(_model_patch_hint_sources));
+    bitpack.pack_vector(Json::to_msgpack(_world_json));
 
-    return "l" + base64_encode(bitpack.to_bytes()) + "s";
+    return "l" + base64_encode(bitpack.bytes()) + "s";
 }
 
-void RandomizerOptions::parse_permalink(const std::string& permalink)
+void RandomizerOptions::parse_permalink(std::string permalink)
 {
-    std::vector<uint8_t> bytes = base64_decode(permalink.substr(1, permalink.size() - 2));
-    Bitpack bitpack(bytes);
+    stringtools::trim(permalink);
+    if(!permalink.starts_with("l") || !permalink.ends_with("s"))
+        throw LandstalkerException("This permalink is malformed, please make sure you copied the full permalink string.");
 
-    std::string version = bitpack.unpack<std::string>();
-    if(version != MAJOR_RELEASE)
-        throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + version + ").");
+    std::vector<uint8_t> bytes = base64_decode(permalink.substr(1, permalink.size() - 2));
+    BitstreamReader bitpack(bytes);
+
+    uint8_t version = bitpack.unpack<uint8_t>();
+    if(version != (uint8_t)MAJOR_RELEASE)
+        throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + std::to_string(version) + ").");
     
     _jewel_count = bitpack.unpack<uint8_t>();
-    _startingLife = bitpack.unpack<uint8_t>();
-    _startingGold = bitpack.unpack<uint16_t>();
+    _starting_life = bitpack.unpack<uint8_t>();
+    _starting_gold = bitpack.unpack<uint16_t>();
     _enemies_damage_factor = bitpack.unpack<uint16_t>();
     _enemies_health_factor = bitpack.unpack<uint16_t>();
     _enemies_armor_factor = bitpack.unpack<uint16_t>();
     _enemies_golds_factor = bitpack.unpack<uint16_t>();
     _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
     _health_gained_per_lifestock = bitpack.unpack<uint8_t>();
+    _fast_transitions = bitpack.unpack<bool>();
 
     _seed = bitpack.unpack<uint32_t>();
 
@@ -345,6 +395,7 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _fix_armlet_skip = bitpack.unpack<bool>();
     _remove_tree_cutting_glitch_drops = bitpack.unpack<bool>();
     _consumable_record_book = bitpack.unpack<bool>();
+    _consumable_spell_book = bitpack.unpack<bool>();
     _remove_gumi_boulder = bitpack.unpack<bool>();
     _remove_tibor_requirement = bitpack.unpack<bool>();
     _all_trees_visited_at_start = bitpack.unpack<bool>();
@@ -353,7 +404,8 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
     _enemy_jumping_in_logic = bitpack.unpack<bool>();
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
-    _items_distribution = bitpack.unpack_map<uint8_t, uint16_t>();
+    _allow_whistle_usage_behind_trees = bitpack.unpack<bool>();
+    _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT+1>();
     _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
     _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();
     _hints_distribution_item_location = bitpack.unpack<uint16_t>();
@@ -362,9 +414,9 @@ void RandomizerOptions::parse_permalink(const std::string& permalink)
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 
-    _starting_items = bitpack.unpack_map<std::string, uint8_t>();
-    _model_patch_items = bitpack.unpack<Json>();
-    _model_patch_spawns = bitpack.unpack<Json>();
-    _model_patch_hint_sources = bitpack.unpack<Json>();
-    _world_json = bitpack.unpack<Json>();
+    _starting_items = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
+    _model_patch_items = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    _model_patch_spawns = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    _model_patch_hint_sources = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    _world_json = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
 }

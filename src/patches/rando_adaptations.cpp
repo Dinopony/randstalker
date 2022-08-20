@@ -21,18 +21,6 @@ static void alter_lifestock_handling_in_shops(md::ROM& rom)
 }
 
 /**
- * Change Waterfall Shrine entrance check from "Talked to Prospero" to "What a noisy boy!", removing the need*
- * of talking to Prospero (which we couldn't do anyway because of the story flags).
- */
-static void alter_waterfall_shrine_secret_stairs_check(md::ROM& rom)
-{
-    // 0x005014:
-        // Before:	00 08 (bit 0 of FF1000)
-        // After:	02 09 (bit 1 of FF1002)
-    rom.set_word(0x005014, 0x0209);
-}
-
-/**
  * Change the flag checked for teleporter appearance from "saw the duke Kazalt cutscene" to "has visited four white golems room in King Nole's Cave"
  */
 static void alter_king_nole_cave_teleporter_to_mercator_condition(md::ROM& rom, const World& world)
@@ -197,12 +185,65 @@ static void put_dex_back_in_verla_mines(World& world)
     }));
 }
 
+void remove_music(md::ROM& rom)
+{
+    constexpr uint8_t MUSIC_SILENT = 0x20;
+
+    for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
+        rom.set_byte(addr, MUSIC_SILENT);
+
+    rom.set_byte(0x9E59A, MUSIC_SILENT); // Duke Fanfare before last boss
+    rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
+    rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
+    rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
+    rom.set_byte(0x9EBE3, MUSIC_SILENT); // Credits music
+
+    // Boss music
+    rom.set_byte(0x9D6A1, MUSIC_SILENT);
+    rom.set_byte(0x9D747, MUSIC_SILENT);
+    rom.set_byte(0x9E195, MUSIC_SILENT);
+    rom.set_byte(0x9E2C1, MUSIC_SILENT);
+    rom.set_byte(0x9E57C, MUSIC_SILENT);
+}
+
+/**
+ * Swap the two overworld music in the game (the one before taking ship to Verla, and the one after).
+ * This enables having the "hype music" even in settings where sailing to Verla is very unlikely.
+ */
+void swap_overworld_music(md::ROM& rom)
+{
+    // Transform the BEQ into a BNE to invert the test result deciding which overworld music to play
+    rom.set_byte(0x2A20, 0x66);
+}
+
+/**
+ * Usually, Einstein Whistle can only be used in front of the sacred trees at the end of Greenmaze in order to cut them.
+ * This patch extends the zone where the item can be used to make it usable from behind the trees, which allows for new
+ * routing options.
+ */
+void allow_using_whistle_from_behind_trees(md::ROM& rom)
+{
+    // Alter the bounds of the zone where we can use Einstein Whistle, to make it usable from behind the trees
+    rom.set_byte(0x889F, 0x06); // X width
+    rom.set_byte(0x88AD, 0x1A); // Y min
+    rom.set_byte(0x88B1, 0x08); // Y width
+
+    // Inside the "post use" function for Einstein Whistle, disable the cutscene where Friday sees the item above the
+    // trees since it would trigger AFTER trees would be cut in the case of using  the new backwards route
+    md::Code func_remove_friday_cutscene;
+    func_remove_friday_cutscene.bset(0, addr_(0xFF1026));       // Old instruction that was scrapped to call this injected proc
+    func_remove_friday_cutscene.movew(0x0000, addr_(0xFF57AA)); // Remove Friday cutscene
+    func_remove_friday_cutscene.rts();
+    uint32_t func_addr = rom.inject_code(func_remove_friday_cutscene);
+
+    rom.set_code(0x8C72, md::Code().nop().jsr(func_addr));
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
 
     alter_lifestock_handling_in_shops(rom);
-    alter_waterfall_shrine_secret_stairs_check(rom);
     alter_king_nole_cave_teleporter_to_mercator_condition(rom, world);
     make_ryuma_mayor_saveable(rom);
     fix_ryuma_mayor_reward(rom);
@@ -217,5 +258,8 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     remove_verla_soldiers_on_verla_spawn(world);
     untangle_verla_mines_flags(world);
     put_dex_back_in_verla_mines(world);
+
+    if(options.allow_whistle_usage_behind_trees())
+        allow_using_whistle_from_behind_trees(rom);
 }
 

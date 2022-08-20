@@ -212,6 +212,13 @@
             "near the town of Verla"
         ]
     },
+    "verla_shore_cliff": {
+        "name": "Verla shore cliff (accessible from Verla Mines)",
+        "hints": [
+            "on a route",
+            "near the town of Verla"
+        ]
+    },
     "verla": {
         "name": "Verla",
         "hints": [

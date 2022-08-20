@@ -46,34 +46,36 @@ md::ROM* get_input_rom(std::string input_rom_path)
     return rom;
 }
 
-void process_paths(const ArgumentDictionary& args, const RandomizerOptions& options,
-                    std::string& input_rom_path, std::string& output_rom_path, std::string& spoiler_log_path)
+void process_paths(const ArgumentDictionary& args, const RandomizerOptions& options, std::string& output_rom_path, std::string& spoiler_log_path)
 {
-    input_rom_path = args.get_string("inputrom", "./input.md");
     output_rom_path = args.get_string("outputrom", "./");
     spoiler_log_path = args.get_string("outputlog", "./");
 
     // Clean output ROM path and determine if it's a directory or a file
-    bool output_path_is_a_directory = true;
-    if(!output_rom_path.empty())
-    {
-        output_path_is_a_directory = !output_rom_path.ends_with(".md") && !output_rom_path.ends_with(".bin");
-        if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
-            output_rom_path += "/";
-    }
+    if(output_rom_path.empty())
+        output_rom_path = "./";
 
-    // Clean output log path and if it wasn't specified, give it an appropriate default value
+    bool output_path_is_a_directory = !output_rom_path.ends_with(".md") && !output_rom_path.ends_with(".bin");
+    if(output_path_is_a_directory && *output_rom_path.rbegin() != '/')
+        output_rom_path += "/";
+
+    // If output log path wasn't specified, put it along with the ROM
     if(!args.contains("outputlog"))
     {
-        if(output_path_is_a_directory && !output_rom_path.empty())
-            spoiler_log_path = output_rom_path; // outputRomPath points to a directory, use the same for the spoiler log
-        else
-            spoiler_log_path = "./"; // outputRomPath points to a file, use cwd for the spoiler log
+        // outputRomPath points to a directory, use the same for the spoiler log
+        if(output_path_is_a_directory)
+            spoiler_log_path = output_rom_path;
+
+        // outputRomPath points to a file, change its extension to ".json"
+        else if(output_rom_path.ends_with(".md"))
+            spoiler_log_path = output_rom_path.substr(0, output_rom_path.size() - 2) + "json";
+        else if(output_rom_path.ends_with(".bin"))
+            spoiler_log_path = output_rom_path.substr(0, output_rom_path.size() - 3) + "json";
     }
     else if(!spoiler_log_path.empty() && !spoiler_log_path.ends_with(".json") && !spoiler_log_path.ends_with('/'))
         spoiler_log_path += "/";
 
-    // Add the filename afterwards
+    // Add the filename afterwards if required
     if(!output_rom_path.empty() && *output_rom_path.rbegin() == '/')
         output_rom_path += options.hash_sentence() + ".md";
     if(!spoiler_log_path.empty() && *spoiler_log_path.rbegin() == '/')
@@ -103,29 +105,28 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
     std::cout << "Applying game patches...\n\n";
     apply_randomizer_patches(rom, world, options, personal_settings);
 
-    std::string debug_log_path = args.get_string("debuglog");
-    if (!debug_log_path.empty())
+    if(options.allow_spoiler_log())
     {
-        std::ofstream debug_log_file(debug_log_path);
-        debug_log_file << shuffler.debug_log_as_json().dump(4);
-        debug_log_file.close();
-    }
+        spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
+        spoiler_json["playthrough"] = shuffler.playthrough_as_json();
 
-    spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
-    spoiler_json["playthrough"] = shuffler.playthrough_as_json();
+        // Output debug log if requested, only if spoiler log is authorized
+        std::string debug_log_path = args.get_string("debuglog");
+        if (!debug_log_path.empty())
+        {
+            std::ofstream debug_log_file(debug_log_path);
+            debug_log_file << shuffler.debug_log_as_json().dump(4);
+            debug_log_file.close();
+        }
 
-    // Output model if requested
-    if(args.get_boolean("dumpmodel"))
-    {
-        if(options.allow_spoiler_log())
+        // Output model if requested, only if spoiler log is authorized
+        if(args.get_boolean("dumpmodel"))
         {
             std::cout << "Outputting model...\n\n";
             ModelWriter::write_world_model(world);
             ModelWriter::write_logic_model(world);
             std::cout << "Model dumped to './json_data/'" << std::endl;
         }
-        else
-            std::cout << "Dumping model is not authorized on seeds with spoiler log disabled, it won't be generated.\n\n";
     }
 
     return spoiler_json;
@@ -133,46 +134,37 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
 void generate(const ArgumentDictionary& args)
 {
-    // Parse options from command-line args, preset file, plando file...
-    RandomizerOptions options(args);
-    PersonalSettings personal_settings(args);
-
-    // Parse various paths from args
-    std::string input_rom_path, output_rom_path, spoiler_log_path;
-    process_paths(args, options, input_rom_path, output_rom_path, spoiler_log_path);
-
-    // Output current preset
-    if (args.get_boolean("writepreset"))
-    {
-        Json json = options.to_json();
-
-        std::ofstream presetFile("./preset.json");
-        if(presetFile)
-            presetFile << json.dump(4);
-        presetFile.close();
-
-        std::cout << "Preset written to './preset.json'" << std::endl;
-        return;
-    }
+    std::string input_rom_path = args.get_string("inputrom", "./input.md");
 
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
     md::ROM* rom = get_input_rom(input_rom_path);
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space
-    rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
+//    rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
+    rom->set_code(0x16F0, md::Code().nop(4)); // Debug menu related calls
     rom->mark_empty_chunk(0x148AB6, 0x14AA78); // Unused bird sprite
+    rom->mark_empty_chunk(0x1AF5FA, 0x1AF800); // Empty space
+
+    RandomizerWorld world(*rom);
+
+    // Parse options from command-line args, preset file, plando file...
+    RandomizerOptions options(args, world.item_names());
+    PersonalSettings personal_settings(args, world.item_names());
 
     std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
 
     std::cout << "Permalink: " << options.permalink() << "\n";
+    std::cout << "Hash sentence: " << options.hash_sentence() << "\n";
     std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 
-    RandomizerWorld world(*rom);
-
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
-    
+
+    // Parse output paths from args
+    std::string output_rom_path, spoiler_log_path;
+    process_paths(args, options, output_rom_path, spoiler_log_path);
+
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
     {
@@ -191,18 +183,16 @@ void generate(const ArgumentDictionary& args)
     // Write a spoiler log to help the player
     if(!spoiler_log_path.empty())
     {
-        if(options.allow_spoiler_log())
-        {
-            std::ofstream spoiler_file(spoiler_log_path);
-            if(!spoiler_file)
-                throw LandstalkerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
+        std::ofstream spoiler_file(spoiler_log_path);
+        if(!spoiler_file)
+            throw LandstalkerException("Could not open output log file for writing at path '" + spoiler_log_path + "'");
 
-            spoiler_file << spoiler_json.dump(4);
-            spoiler_file.close();
+        spoiler_file << spoiler_json.dump(4);
+        spoiler_file.close();
+        if(options.allow_spoiler_log())
             std::cout << "Spoiler log written into \"" << spoiler_log_path << "\".\n";
-        }
         else
-            std::cout << "Spoiler log is not authorized under these settings, it won't be generated.\n";
+            std::cout << "Generation log written into \"" << spoiler_log_path << "\".\n";
     }
 }
 

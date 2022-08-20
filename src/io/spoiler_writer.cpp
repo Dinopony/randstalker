@@ -1,7 +1,7 @@
 #include "io.hpp"
 
 #include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include "../logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/model/entity_type.hpp>
 
 #include "../logic_model/world_region.hpp"
@@ -25,7 +25,11 @@ Json SpoilerWriter::build_spoiler_json(const RandomizerWorld& world, const Rando
     {
         json["tiborTrees"] = Json::array();
         for(auto& pair : world.teleport_tree_pairs())
-            json["tiborTrees"].emplace_back(pair.first->name() + " <--> " + pair.second->name());
+        {
+            const std::string& node_1_name = pair.first->name();
+            const std::string& node_2_name = pair.second->name();
+            json["tiborTrees"].emplace_back(node_1_name + " <--> " + node_2_name);
+        }
     }
 
     // Export item sources

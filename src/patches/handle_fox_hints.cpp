@@ -6,7 +6,7 @@
 #include <landstalker_lib/constants/entity_type_codes.hpp>
 #include <landstalker_lib/tools/byte_array.hpp>
 #include <landstalker_lib/tools/vectools.hpp>
-#include <landstalker_lib/tools/huffman/symbols.hpp>
+#include "landstalker_lib/constants/symbols.hpp"
 #include <landstalker_lib/tools/sprite.hpp>
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
@@ -184,4 +184,7 @@ void handle_fox_hints(md::ROM& rom, RandomizerWorld& world)
     // Edit the voice used when foxes talk, as well as their name
     edit_fox_voice_and_name(rom);
     inject_altered_fox_sprites(rom, world);
+
+    // Set a height of 2 tiles for Foxies (like any other NPC in the game) instead of 2.5
+    rom.set_byte(0x1B05D, 0x20);
 }

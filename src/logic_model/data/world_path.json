@@ -125,7 +125,7 @@
         "toId": "mercator_special_shop",
         "twoWay": true,
         "requiredItems": [
-            "Buyer's Card"
+            "Buyer Card"
         ]
     },
     {
@@ -198,10 +198,6 @@
     },
     {
         "fromId": "greenmaze_pre_whistle",
-        "toId": "mercator"
-    },
-    {
-        "fromId": "greenmaze_pre_whistle",
         "toId": "greenmaze_post_whistle",
         "requiredItems": [
             "Einstein Whistle"
@@ -237,8 +233,21 @@
         "twoWay": true
     },
     {
+        "fromId": "verla_mines",
+        "toId": "verla_shore_cliff",
+        "twoWay": true
+    },
+    {
+        "fromId": "verla_shore_cliff",
+        "toId": "verla_shore"
+    },
+    {
         "fromId": "verla_shore",
-        "toId": "mir_tower_sector"
+        "toId": "mir_tower_sector",
+        "requiredNodes": [
+            "verla_mines"
+        ],
+        "twoWay": true
     },
     {
         "fromId": "verla_mines",

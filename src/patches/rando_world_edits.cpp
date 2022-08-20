@@ -191,12 +191,31 @@ void remove_mercator_castle_backdoor_guard(World& world)
 }
 
 /**
- * Make entering the fountain tunnel automatically trigger the fountain button to prevent 
- * any softlock by coming from Greenmaze without having opened the passage.
+ * Fix potential softlocks by taking Mercator fountain secret passage in reverse, and clipping inside the fountain
+ * with no way out.
+ * This adds platforms on the other side of the tunnel preventing the player from taking that path altogether as long
+ * as fountain has not been opened.
  */
 void fix_reverse_greenmaze_fountain_softlock(World& world)
 {
-    world.map(MAP_MERCATOR_TUNNEL_TO_GREENMAZE)->visited_flag(Flag(0xE, 1));
+    Flag is_mercator_fountain_open(0xE, 1);
+
+    Entity* platform_1 = new Entity({
+        .type_id = ENTITY_SMALL_YELLOW_PLATFORM,
+        .position = Position(21, 22, 0, false, false, false),
+        .palette = 2
+    });
+    platform_1->remove_when_flag_is_set(is_mercator_fountain_open);
+
+    Entity* platform_2 = new Entity({
+        .type_id = ENTITY_SMALL_YELLOW_PLATFORM,
+        .position = Position(21, 23, 0, false, false, false),
+        .palette = 2
+    });
+    platform_2->remove_when_flag_is_set(is_mercator_fountain_open);
+
+    world.map(MAP_460)->add_entity(platform_1);
+    world.map(MAP_460)->add_entity(platform_2);
 }
 
 /**
@@ -263,6 +282,20 @@ void put_back_giants_in_verla_mines_keydoor_map(World& world)
     map->remove_entity(0);
 }
 
+/**
+ * In the original game, having the keydoor open near Lake Shrine entrance remove permanently the green golems
+ * from the room. In rando, this door is always open through the flag and therefore golems were never there, leaving
+ * a useless switch in the room. This patch makes them come back, even when the door is open.
+ */
+void put_back_golems_in_lake_shrine_keydoor_map(World& world)
+{
+    Map* map = world.map(MAP_LAKE_SHRINE_0F_KEYDOOR);
+    map->global_entity_mask_flags().clear();
+    map->key_door_mask_flags().clear();
+    map->entity(4)->mask_flags().emplace_back(EntityMaskFlag(false, 7, 5));
+}
+
+
 void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
 {
     put_orcs_back_in_room_before_boss_swamp_shrine(world);
@@ -283,7 +316,8 @@ void apply_rando_world_edits(md::ROM& rom, World& world, bool fix_armlet_skip)
     make_pockets_always_in_thieves_hideout_cell(world);
     remove_pockets_from_gumi(world);
     put_back_giants_in_verla_mines_keydoor_map(world);
-    
+    put_back_golems_in_lake_shrine_keydoor_map(world);
+
     if(fix_armlet_skip)
         prevent_armlet_skip(world);
 }

@@ -1,0 +1,270 @@
+{
+    "0": {
+        "name": "EkeEke",
+        "goldValue": 20
+    },
+    "1": {
+        "name": "Magic Sword",
+        "goldValue": 300
+    },
+    "2": {
+        "name": "Sword of Ice",
+        "goldValue": 300
+    },
+    "3": {
+        "name": "Thunder Sword",
+        "goldValue": 500
+    },
+    "4": {
+        "name": "Sword of Gaia",
+        "goldValue": 300
+    },
+    "5": {
+        "name": "Fireproof",
+        "goldValue": 150
+    },
+    "6": {
+        "name": "Iron Boots",
+        "goldValue": 150
+    },
+    "7": {
+        "name": "Healing Boots",
+        "goldValue": 300
+    },
+    "8": {
+        "name": "Snow Spikes",
+        "goldValue": 400
+    },
+    "9": {
+        "name": "Steel Breast",
+        "goldValue": 250
+    },
+    "10": {
+        "name": "Chrome Breast",
+        "goldValue": 250
+    },
+    "11": {
+        "name": "Shell Breast",
+        "goldValue": 250
+    },
+    "12": {
+        "name": "Hyper Breast",
+        "goldValue": 250
+    },
+    "13": {
+        "name": "Mars Stone",
+        "goldValue": 150
+    },
+    "14": {
+        "name": "Moon Stone",
+        "goldValue": 150
+    },
+    "15": {
+        "name": "Saturn Stone",
+        "goldValue": 200
+    },
+    "16": {
+        "name": "Venus Stone",
+        "goldValue": 300
+    },
+    "17": {
+        "name": "Awakening Book",
+        "goldValue": 15
+    },
+    "18": {
+        "name": "Detox Grass",
+        "goldValue": 25
+    },
+    "19": {
+        "name": "Statue of Gaia",
+        "goldValue": 75
+    },
+    "20": {
+        "name": "Golden Statue",
+        "goldValue": 150
+    },
+    "21": {
+        "name": "Mind Repair",
+        "goldValue": 25
+    },
+    "22": {
+        "name": "Casino Ticket",
+        "maxQuantity": 1,
+        "goldValue": 50
+    },
+    "23": {
+        "name": "Axe Magic",
+        "goldValue": 400
+    },
+    "24": {
+        "name": "Blue Ribbon",
+        "goldValue": 50
+    },
+    "25": {
+        "name": "Buyer Card",
+        "goldValue": 150
+    },
+    "26": {
+        "name": "Lantern",
+        "goldValue": 200
+    },
+    "27": {
+        "name": "Garlic",
+        "goldValue": 150
+    },
+    "28": {
+        "name": "Anti Paralyze",
+        "goldValue": 20
+    },
+    "29": {
+        "name": "Statue of Jypta",
+        "goldValue": 250
+    },
+    "30": {
+        "name": "Sun Stone",
+        "goldValue": 300
+    },
+    "31": {
+        "name": "Armlet",
+        "goldValue": 300
+    },
+    "32": {
+        "name": "Einstein Whistle",
+        "goldValue": 200
+    },
+    "33": {
+        "name": "Blue Jewel",
+        "goldValue": 500
+    },
+    "34": {
+        "name": "Yellow Jewel",
+        "goldValue": 500
+    },
+    "35": {
+        "name": "Record Book",
+        "goldValue": 200
+    },
+    "36": {
+        "name": "Spell Book",
+        "goldValue": 200
+    },
+    "37": {
+        "name": "Hotel Register",
+        "goldValue": 15
+    },
+    "38": {
+        "name": "Island Map",
+        "maxQuantity": 0,
+        "goldValue": 0
+    },
+    "39": {
+        "name": "Lithograph",
+        "goldValue": 250
+    },
+    "40": {
+        "name": "Red Jewel",
+        "goldValue": 500
+    },
+    "41": {
+        "name": "Pawn Ticket",
+        "maxQuantity": 9,
+        "goldValue": 200
+    },
+    "42": {
+        "name": "Purple Jewel",
+        "goldValue": 500
+    },
+    "43": {
+        "name": "Gola's Eye",
+        "goldValue": 400
+    },
+    "44": {
+        "name": "Death Statue",
+        "maxQuantity": 9,
+        "goldValue": 150
+    },
+    "45": {
+        "name": "Dahl",
+        "maxQuantity": 9,
+        "goldValue": 100
+    },
+    "46": {
+        "name": "Restoration",
+        "maxQuantity": 9,
+        "goldValue": 40
+    },
+    "47": {
+        "name": "Logs",
+        "maxQuantity": 1,
+        "goldValue": 100
+    },
+    "48": {
+        "name": "Oracle Stone",
+        "maxQuantity": 1,
+        "goldValue": 250
+    },
+    "49": {
+        "name": "Idol Stone",
+        "goldValue": 200
+    },
+    "50": {
+        "name": "Key",
+        "maxQuantity": 1,
+        "goldValue": 150
+    },
+    "51": {
+        "name": "Safety Pass",
+        "goldValue": 250
+    },
+    "52": {
+        "name": "Green Jewel",
+        "maxQuantity": 1,
+        "goldValue": 500
+    },
+    "53": {
+        "name": "Bell",
+        "goldValue": 200
+    },
+    "54": {
+        "name": "Short Cake",
+        "maxQuantity": 9,
+        "goldValue": 250
+    },
+    "55": {
+        "name": "Gola's Nail",
+        "goldValue": 800
+    },
+    "56": {
+        "name": "Gola's Horn",
+        "goldValue": 800
+    },
+    "57": {
+        "name": "Gola's Fang",
+        "goldValue": 800
+    },
+    "58": {
+        "name": "Broad Sword",
+        "goldValue": 0
+    },
+    "59": {
+        "name": "Leather Breast",
+        "goldValue": 0
+    },
+    "60": {
+        "name": "Leather Boots",
+        "goldValue": 0
+    },
+    "61": {
+        "name": "No Ring",
+        "goldValue": 0
+    },
+    "62": {
+        "name": "Life Stock",
+        "goldValue": 250
+    },
+    "63": {
+        "name": "No Item",
+        "maxQuantity": 0,
+        "goldValue": 0
+    }
+}

@@ -4,12 +4,12 @@
 #include <vector>
 #include <string>
 #include <landstalker_lib/model/world.hpp>
+#include "item_distribution.hpp"
 
 class WorldNode;
 class WorldPath;
 class WorldRegion;
 class HintSource;
-class ItemDistribution;
 
 class RandomizerWorld : public World {
 private:
@@ -17,7 +17,7 @@ private:
     std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*> _paths;
     std::vector<WorldRegion*> _regions;
     std::map<std::string, SpawnLocation*> _available_spawn_locations;
-    std::map<uint8_t, ItemDistribution*> _item_distributions;
+    std::array<ItemDistribution, ITEM_COUNT+1> _item_distributions;
 
     std::vector<HintSource*> _hint_sources;
     std::vector<HintSource*> _used_hint_sources;
@@ -25,9 +25,13 @@ private:
     WorldNode* _spawn_node = nullptr;
     WorldRegion* _dark_region = nullptr;
 
+    std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
+
 public:
     explicit RandomizerWorld(const md::ROM& rom);
     ~RandomizerWorld();
+
+    [[nodiscard]] std::array<std::string, ITEM_COUNT+1> item_names() const;
 
     [[nodiscard]] const std::map<std::string, WorldNode*>& nodes() const { return _nodes; }
     [[nodiscard]] WorldNode* node(const std::string& id) const { return _nodes.at(id); }
@@ -46,8 +50,9 @@ public:
     [[nodiscard]] const SpawnLocation& spawn_location() const override { return World::spawn_location(); }
     void spawn_location(const SpawnLocation& spawn) override;
 
-    [[nodiscard]] const std::map<uint8_t, ItemDistribution*>& item_distributions() const { return _item_distributions; }
-    [[nodiscard]] ItemDistribution* item_distribution(uint8_t item_id) const { return _item_distributions.at(item_id); }
+    [[nodiscard]] const std::array<ItemDistribution, ITEM_COUNT+1>& item_distributions() const { return _item_distributions; }
+    [[nodiscard]] const ItemDistribution* item_distribution(uint8_t item_id) const { return &_item_distributions[item_id]; }
+    [[nodiscard]] ItemDistribution* item_distribution(uint8_t item_id) { return &_item_distributions[item_id]; }
     [[nodiscard]] std::map<uint8_t, uint16_t> item_quantities() const;
 
     [[nodiscard]] const std::vector<HintSource*>& hint_sources() const { return _hint_sources; }
@@ -62,11 +67,18 @@ public:
     [[nodiscard]] WorldRegion* dark_region() const { return _dark_region; }
     void dark_region(WorldRegion* region);
 
+    [[nodiscard]] const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
+    void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
+
+    void add_paths_for_tree_connections(bool require_tibor_access);
+
 private:
     void load_nodes();
     void load_paths();
     void load_regions();
     void load_spawn_locations();
     void load_hint_sources();
-    void load_item_distributions();
+    void init_item_distributions();
+    void load_teleport_trees();
+    void load_additional_item_data();
 };

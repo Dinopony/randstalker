@@ -3,7 +3,7 @@
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/model/item.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/model/world_teleport_tree.hpp>
+#include "logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/flags.hpp>
 #include <landstalker_lib/constants/values.hpp>
@@ -59,6 +59,7 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
         FLAG_SAW_DUKE_TAUNTING_IN_SHELL_BREAST_ROOM,
         FLAG_SECOND_RAFT_PLACED_IN_KNL,
         FLAG_SAW_KID_LEAVING_MONSTER_ZOO,
+        FLAG_PROSPERO_NOISY_BOY_TEXTLINE_READ,
 
         // Various keydoors...
         Flag(0x06, 6), Flag(0x06, 5), Flag(0x06, 4), Flag(0x06, 3), Flag(0x06, 2),
@@ -97,19 +98,9 @@ static void patch_items(World& world, const RandomizerOptions& options)
     }
 
     // Process custom starting quantities for items
-    const std::map<std::string, uint8_t>& starting_items = options.starting_items();
-    for(auto& [item_name, quantity] : starting_items)
-    {
-        Item* item = world.item(item_name);
-        if(!item)
-        {
-            std::stringstream msg;
-            msg << "Cannot set starting quantity of unknown item '" << item_name << "'";
-            throw LandstalkerException(msg.str());
-        }
-
-        item->starting_quantity(std::min<uint8_t>(quantity, 9));
-    }
+    const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+        world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
 
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
@@ -132,6 +123,13 @@ static void patch_items(World& world, const RandomizerOptions& options)
         world.item(ITEM_RECORD_BOOK)->max_quantity(9);
         uint16_t currentPrice = world.item(ITEM_RECORD_BOOK)->gold_value();
         world.item(ITEM_RECORD_BOOK)->gold_value(currentPrice / 5);
+    }
+
+    if (options.consumable_spell_book())
+    {
+        world.item(ITEM_SPELL_BOOK)->max_quantity(9);
+        uint16_t currentPrice = world.item(ITEM_SPELL_BOOK)->gold_value();
+        world.item(ITEM_SPELL_BOOK)->gold_value(currentPrice / 5);
     }
 }
 
@@ -211,6 +209,17 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
         }
     }
 
+    // If using Einstein Whistle behind trees is allowed, add a new logic path there to reflect that change
+    if(options.allow_whistle_usage_behind_trees())
+    {
+        world.add_path(new WorldPath(
+            world.node("greenmaze_post_whistle"),
+            world.node("greenmaze_pre_whistle"),
+            1,
+            { world.item(ITEM_EINSTEIN_WHISTLE) }
+        ));
+    }
+
     // Determine the list of required jewels to go from King Nole's Cave to Kazalt depending on settings
     WorldPath* path_to_kazalt = world.path("king_nole_cave", "kazalt");
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
@@ -229,21 +238,6 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
             path_to_kazalt->add_required_item(world.item(ITEM_BLUE_JEWEL));
         if(options.jewel_count() >= 5)
             path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
-    }
-
-    if(options.all_trees_visited_at_start())
-    {
-        std::vector<WorldNode*> required_nodes;
-        if(!options.remove_tibor_requirement())
-            required_nodes = { world.node("tibor") };
-
-        for(auto& pair : world.teleport_tree_pairs())
-        {
-            WorldNode* first_node = world.node(pair.first->node_id());
-            WorldNode* second_node = world.node(pair.second->node_id());
-            world.add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
-            world.add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
-        }
     }
 }
 
@@ -273,40 +267,43 @@ static void apply_options_on_hint_sources(const RandomizerOptions& options, Rand
 static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
-    std::map<uint8_t, uint16_t> distribution_param = options.items_distribution();
-    for(auto& [item_id, quantity] : distribution_param)
-        world.item_distribution(item_id)->quantity(quantity);
+    const std::array<uint8_t, ITEM_COUNT+1>& distribution_param = options.items_distribution();
+    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
+        world.item_distribution(i)->quantity(distribution_param[i]);
 
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
-        world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
-        world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+        if(world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
+        {
+            world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
+            world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+        }
     }
     else
     {
-        if(options.jewel_count() >= 1)
+        if(options.jewel_count() >= 1 && world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_RED_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 2)
+        if(options.jewel_count() >= 2 && world.item_distribution(ITEM_PURPLE_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 3)
+        if(options.jewel_count() >= 3 && world.item_distribution(ITEM_GREEN_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_GREEN_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 4)
+        if(options.jewel_count() >= 4 && world.item_distribution(ITEM_BLUE_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_BLUE_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);
         }
-        if(options.jewel_count() >= 5)
+        if(options.jewel_count() >= 5 && world.item_distribution(ITEM_YELLOW_JEWEL)->quantity() == 0)
         {
             world.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
             world.item_distribution(ITEM_NONE)->remove(1);

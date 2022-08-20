@@ -4,6 +4,7 @@
 #include <utility>
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/tools/game_text.hpp>
+#include <landstalker_lib/tools/stringtools.hpp>
 
 HintSource::HintSource(std::vector<uint16_t> text_ids, std::string description,
         WorldNode* node, bool small_textbox,
@@ -32,26 +33,47 @@ std::string HintSource::text() const
 
 void HintSource::apply_text(World& world)
 {
-    // Edit the game string contained in World referenced by the text id
-    if(!_text.empty())
+    uint8_t textbox_size = _small_textbox ? 2 : 3;
+
+    std::string initial_game_string;
+    if(this->special())
+        initial_game_string = GameText(_text, textbox_size).getOutput();
+    else
+        initial_game_string = GameText(_text, "Foxy", textbox_size).getOutput();
+
+    std::vector<std::string> final_strings;
+    if(initial_game_string.size() <= 253)
     {
-        if(text_ids().empty())
+        final_strings.emplace_back(initial_game_string);
+    }
+    else
+    {
+        std::vector<std::string> split_string = stringtools::split(initial_game_string, "\n");
+        while(!split_string.empty())
         {
-            // Associate an empty game_string ID with this hint source (take it from 0x4D since strings below 0x4D
-            // cannot be referenced by dialogue script commands)
-            _text_ids = { world.first_empty_game_string_id(0x4D) };
+            std::string current_string = split_string[0];
+            int i;
+            for(i=1 ; i < split_string.size() ; ++i)
+            {
+                std::string extended_string = current_string + '\n';
+                extended_string += split_string[i];
+                if(extended_string.size() > 253)
+                    break;
+
+                current_string = extended_string;
+            }
+
+            split_string.erase(split_string.begin(), split_string.begin() + i);
+            final_strings.emplace_back(current_string);
         }
+    }
 
-        for(uint16_t text_id : _text_ids)
-            world.game_strings()[text_id].clear();
+    for(size_t i=0 ; i<final_strings.size() ; ++i)
+    {
+        if(i >= _text_ids.size())
+            _text_ids.emplace_back(world.first_empty_game_string_id(0x4D));
 
-        std::string& game_string = world.game_strings().at(_text_ids[0]);
-        uint8_t textbox_size = _small_textbox ? 2 : 3;
-
-        if(this->special())
-            game_string = GameText(_text, textbox_size).getOutput();
-        else
-            game_string = GameText(_text, "Foxy", textbox_size).getOutput();
+        world.game_strings()[_text_ids[i]] = final_strings[i];
     }
 }
 
