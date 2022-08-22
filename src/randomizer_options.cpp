@@ -20,57 +20,47 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::
     std::string permalink_string = args.get_string("permalink");
     if(!permalink_string.empty())
     {
+        // Permalink case: unpack it to find the preset and seed and generate the same world
         this->parse_permalink(permalink_string);
     }
     else
     {
-        // Parse seed from args, or generate a random one if it's missing
-        std::string seed_string = args.get_string("seed", "random");
-        try {
-            _seed = (uint32_t) std::stoul(seed_string);
-        } catch (std::invalid_argument&) {
-            _seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
-        }
+        // Regular case: pick a random seed, read a preset file to get the config and generate a new world
+        _seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
 
-        std::string preset_path = args.get_string("preset");
-        if(!preset_path.empty())
+        std::string preset_name = args.get_string("preset");
+        stringtools::trim(preset_name);
+        if(preset_name.empty())
         {
-            std::ifstream preset_file(preset_path);
-            if(!preset_file)
-                throw LandstalkerException("Could not open preset file at given path '" + preset_path + "'");
+            std::cout << "Please specify a preset name (name of a file inside the 'presets' folder, leave empty for default): ";
+            std::getline(std::cin, preset_name);
+            stringtools::trim(preset_name);
 
-            std::cout << "Reading preset file '" << preset_path << "'...\n\n";
-
-            Json preset_json;
-            preset_file >> preset_json;
-            this->parse_json(preset_json);
+            if(preset_name.empty())
+                preset_name = "default";
         }
 
-        this->parse_arguments(args);
+        // If a path was given, filter any kind of directories only keeping the last part of the path
+        std::vector<std::string> split_preset_path = stringtools::split(preset_name, "/");
+        if(split_preset_path.size() >= 2)
+            preset_name = *split_preset_path.rbegin();
+
+        if(!preset_name.ends_with(".json"))
+            preset_name += ".json";
+
+        std::string preset_path = "./presets/" + preset_name;
+        std::ifstream preset_file(preset_path);
+        if(!preset_file)
+            throw LandstalkerException("Could not open preset file at given path '" + preset_path + "'");
+
+        std::cout << "Preset: '" << preset_path << "'\n";
+
+        Json preset_json;
+        preset_file >> preset_json;
+        this->parse_json(preset_json);
     }
 
     this->validate();
-}
-
-void RandomizerOptions::parse_arguments(const ArgumentDictionary& args)
-{
-    if(args.contains("spawnlocation"))
-    {
-        std::string spawn_name = args.get_string("spawnlocation");
-        stringtools::to_lower(spawn_name);
-        if(spawn_name == "random")
-            _possible_spawn_locations = {};
-        else
-            _possible_spawn_locations = { spawn_name };
-    }
-
-    if(args.contains("jewelcount"))           _jewel_count = args.get_integer("jewelcount");
-    if(args.contains("armorupgrades"))        _use_armor_upgrades = args.get_boolean("armorupgrades");
-    if(args.contains("norecordbook"))         _starting_items[ITEM_RECORD_BOOK] = 0;
-    if(args.contains("nospellbook"))          _starting_items[ITEM_SPELL_BOOK] = 0;
-    if(args.contains("startinglife"))         _starting_life = args.get_integer("startinglife");
-    if(args.contains("shuffletrees"))         _shuffle_tibor_trees = args.get_boolean("shuffletrees");
-    if(args.contains("allowspoilerlog"))      _allow_spoiler_log = args.get_boolean("allowspoilerlog");
 }
 
 Json RandomizerOptions::to_json() const
