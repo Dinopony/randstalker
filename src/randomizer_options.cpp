@@ -87,6 +87,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
+    json["gameSettings"]["ekeekeAutoRevive"] = _ekeeke_auto_revive;
     json["gameSettings"]["enemiesDamageFactor"] = _enemies_damage_factor;
     json["gameSettings"]["enemiesHealthFactor"] = _enemies_health_factor;
     json["gameSettings"]["enemiesArmorFactor"] = _enemies_armor_factor;
@@ -166,6 +167,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _remove_tibor_requirement = game_settings_json.at("removeTiborRequirement");
         if(game_settings_json.contains("allTreesVisitedAtStart"))
             _all_trees_visited_at_start = game_settings_json.at("allTreesVisitedAtStart");
+        if(game_settings_json.contains("ekeekeAutoRevive"))
+            _ekeeke_auto_revive = game_settings_json.at("ekeekeAutoRevive");
         if(game_settings_json.contains("enemiesDamageFactor"))
             _enemies_damage_factor = game_settings_json.at("enemiesDamageFactor");
         if(game_settings_json.contains("enemiesHealthFactor"))
@@ -331,6 +334,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_remove_gumi_boulder);
     bitpack.pack(_remove_tibor_requirement);
     bitpack.pack(_all_trees_visited_at_start);
+    bitpack.pack(_ekeeke_auto_revive);
     bitpack.pack(_allow_spoiler_log);
     bitpack.pack(_shuffle_tibor_trees);
     bitpack.pack(_enemy_jumping_in_logic);
@@ -389,6 +393,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _remove_gumi_boulder = bitpack.unpack<bool>();
     _remove_tibor_requirement = bitpack.unpack<bool>();
     _all_trees_visited_at_start = bitpack.unpack<bool>();
+    _ekeeke_auto_revive = bitpack.unpack<bool>();
     _allow_spoiler_log = bitpack.unpack<bool>();
     _shuffle_tibor_trees = bitpack.unpack<bool>();
     _enemy_jumping_in_logic = bitpack.unpack<bool>();

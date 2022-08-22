@@ -239,6 +239,16 @@ void allow_using_whistle_from_behind_trees(md::ROM& rom)
     rom.set_code(0x8C72, md::Code().nop().jsr(func_addr));
 }
 
+/**
+ * This patch removes the core feature of the game where Friday revives Nigel using an EkeEke if he dies.
+ * Disabling this makes the game significantly harder and more frustrating.
+ */
+static void remove_ekeeke_auto_revive(md::ROM& rom)
+{
+    // Change the BEQ into a BRA, making death always a game over
+    rom.set_byte(0x10BFA, 0x60);
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
@@ -261,5 +271,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
 
     if(options.allow_whistle_usage_behind_trees())
         allow_using_whistle_from_behind_trees(rom);
+    if(!options.ekeeke_auto_revive())
+        remove_ekeeke_auto_revive(rom);
 }
 

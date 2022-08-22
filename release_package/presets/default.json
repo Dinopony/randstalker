@@ -15,6 +15,7 @@
         "removeGumiBoulder": false,
         "removeTiborRequirement": false,
         "allTreesVisitedAtStart": false,
+        "ekeekeAutoRevive": true,
         "enemiesDamageFactor": 100,
         "enemiesHealthFactor": 100,
         "enemiesArmorFactor": 100,
