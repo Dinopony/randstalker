@@ -32,7 +32,7 @@
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
-        "allowWhistleUsageBehindTrees": false,
+        "allowWhistleUsageBehindTrees": true,
         "itemsDistribution": {
             "EkeEke": 58,
             "Magic Sword": 1,
