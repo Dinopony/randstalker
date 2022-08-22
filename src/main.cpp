@@ -119,6 +119,7 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
             debug_log_file.close();
         }
 
+#ifdef DEBUG
         // Output model if requested, only if spoiler log is authorized
         if(args.get_boolean("dumpmodel"))
         {
@@ -127,6 +128,7 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
             ModelWriter::write_logic_model(world);
             std::cout << "Model dumped to './json_data/'" << std::endl;
         }
+#endif
     }
 
     return spoiler_json;

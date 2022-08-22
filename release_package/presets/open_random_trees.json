@@ -13,8 +13,8 @@
         "consumableRecordBook": false,
         "consumableSpellBook": false,
         "removeGumiBoulder": false,
-        "removeTiborRequirement": false,
-        "allTreesVisitedAtStart": false,
+        "removeTiborRequirement": true,
+        "allTreesVisitedAtStart": true,
         "enemiesDamageFactor": 100,
         "enemiesHealthFactor": 100,
         "enemiesArmorFactor": 100,
@@ -28,7 +28,7 @@
         "spawnLocations": [
             "massan", "gumi", "kado", "waterfall", "ryuma", "mercator", "verla", "greenmaze", "destel"
         ],
-        "shuffleTrees": false,
+        "shuffleTrees": true,
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
