@@ -103,6 +103,7 @@ set(SOURCES
         # --- Tools ----------------------------------------
         "src/tools/base64.hpp"
         "src/tools/base64.cpp"
+        "src/tools/extract_nigel_sprites.hpp"
 
         # --- Project root ----------------------------------------
         "src/apply_randomizer_options.hpp"
