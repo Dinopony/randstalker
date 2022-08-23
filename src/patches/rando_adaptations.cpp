@@ -221,7 +221,7 @@ void swap_overworld_music(md::ROM& rom)
  * This patch extends the zone where the item can be used to make it usable from behind the trees, which allows for new
  * routing options.
  */
-void allow_using_whistle_from_behind_trees(md::ROM& rom)
+static void allow_using_whistle_from_behind_trees(md::ROM& rom)
 {
     // Alter the bounds of the zone where we can use Einstein Whistle, to make it usable from behind the trees
     rom.set_byte(0x889F, 0x06); // X width
@@ -249,6 +249,27 @@ static void remove_ekeeke_auto_revive(md::ROM& rom)
     rom.set_byte(0x10BFA, 0x60);
 }
 
+/**
+ * There is a problem in Mercator castle court with the falling item.
+ * When the falling item is an item using an uncompressed sprite, sprite is reloaded and turns into an EkeEke for some
+ * reason mid-animation. This patch adds a mapsetup for this map setting a byte to force the "compressed sprite behavior".
+ */
+static void fix_castle_falling_cutscene_with_uncompressed_sprites(md::ROM& rom)
+{
+    // Replace the casino mapsetup easter egg where you can turn chickens into enemies
+    md::Code func;
+    func.cmpiw(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT, addr_(0xFF1204));
+    func.bne("next_map");
+    {
+        func.bset(0, addr_(0xFF550C));
+        func.rts();
+    }
+    func.label("next_map");
+    func.jmp(0x1A1A6);
+
+    rom.set_code(0x1A0F2, func);
+}
+
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
 {
     set_story_as_advanced(rom);
@@ -268,6 +289,7 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     remove_verla_soldiers_on_verla_spawn(world);
     untangle_verla_mines_flags(world);
     put_dex_back_in_verla_mines(world);
+    fix_castle_falling_cutscene_with_uncompressed_sprites(rom);
 
     if(options.allow_whistle_usage_behind_trees())
         allow_using_whistle_from_behind_trees(rom);
