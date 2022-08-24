@@ -1,12 +1,12 @@
 {
     "gameSettings": {
-        "jewelCount": 5,
+        "jewelCount": 2,
         "armorUpgrades": true,
         "startingLife": 0,
-        "startingGold": 0,
         "startingItems": {
             "Record Book": 1,
-            "Spell Book": 1
+            "Spell Book": 1,
+            "EkeEke": 2
         },
         "fixArmletSkip": true,
         "removeTreeCuttingGlitchDrops": true,
@@ -16,24 +16,24 @@
         "removeTiborRequirement": false,
         "allTreesVisitedAtStart": false,
         "ekeekeAutoRevive": true,
-        "enemiesDamageFactor": 100,
-        "enemiesHealthFactor": 100,
+        "enemiesDamageFactor": 80,
+        "enemiesHealthFactor": 80,
         "enemiesArmorFactor": 100,
-        "enemiesGoldsFactor": 100,
-        "enemiesDropChanceFactor": 100,
+        "enemiesGoldsFactor": 150,
+        "enemiesDropChanceFactor": 150,
         "healthGainedPerLifestock": 1,
         "fastMenuTransitions": true
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,
         "spawnLocations": [
-            "massan", "gumi", "kado", "waterfall", "ryuma", "mercator", "verla", "greenmaze", "destel"
+            "massan", "gumi"
         ],
         "shuffleTrees": false,
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
-        "allowWhistleUsageBehindTrees": true,
+        "allowWhistleUsageBehindTrees": false,
         "itemsDistribution": {
             "EkeEke": 58,
             "Magic Sword": 1,

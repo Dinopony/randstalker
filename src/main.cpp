@@ -102,7 +102,7 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
     shuffler.randomize();
 
     // Apply patches to the game ROM to alter various things that are not directly part of the game world randomization
-    std::cout << "Applying game patches...\n\n";
+    std::cout << "Applying game patches...\n";
     apply_randomizer_patches(rom, world, options, personal_settings);
 
     if(options.allow_spoiler_log())
@@ -155,12 +155,6 @@ void generate(const ArgumentDictionary& args)
     RandomizerOptions options(args, world.item_names());
     PersonalSettings personal_settings(args, world.item_names());
 
-    std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
-
-    std::cout << "Permalink: " << options.permalink() << "\n";
-    std::cout << "Hash sentence: " << options.hash_sentence() << "\n";
-    std::cout << "Share the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
-
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
 
     // Parse output paths from args
@@ -170,7 +164,7 @@ void generate(const ArgumentDictionary& args)
     // Output world to ROM and save ROM unless it was explicitly specified by the user not to output a ROM
     if(!output_rom_path.empty())
     {
-        std::cout << "Writing world to ROM...\n";
+        std::cout << "Writing world to ROM...\n\n";
         world.write_to_rom(*rom);
 
         std::ofstream output_rom_file(output_rom_path, std::ios::binary);
@@ -178,7 +172,9 @@ void generate(const ArgumentDictionary& args)
             throw LandstalkerException("Could not open output ROM file for writing at path '" + output_rom_path + "'");
 
         rom->write_to_file(output_rom_file);
+#ifdef DEBUG
         std::cout << (rom->remaining_empty_bytes()/1000) << "Ko remaining of empty data" << std::endl;
+#endif
         std::cout << "Randomized rom outputted to \"" << output_rom_path << "\".\n";
     }
 
@@ -196,6 +192,11 @@ void generate(const ArgumentDictionary& args)
         else
             std::cout << "Generation log written into \"" << spoiler_log_path << "\".\n";
     }
+
+    //std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
+    std::cout << "\nHash sentence: " << options.hash_sentence() << "\n";
+    std::cout << "\nPermalink: " << options.permalink() << "\n";
+    std::cout << "\nShare the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
 }
 
 int main(int argc, char* argv[])

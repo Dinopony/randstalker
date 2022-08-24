@@ -108,6 +108,27 @@ static void patch_items(World& world, const RandomizerOptions& options)
         red_jewel->name("Kazalt Jewel");
         red_jewel->max_quantity(options.jewel_count());
     }
+    else
+    {
+        if(options.jewel_count() >= 5)
+        {
+            world.item(ITEM_YELLOW_JEWEL)->name("Yellow Jewel");
+            world.item(ITEM_YELLOW_JEWEL)->gold_value(500);
+            world.item(ITEM_YELLOW_JEWEL)->max_quantity(1);
+        }
+        if(options.jewel_count() >= 4)
+        {
+            world.item(ITEM_BLUE_JEWEL)->name("Blue Jewel");
+            world.item(ITEM_BLUE_JEWEL)->gold_value(500);
+            world.item(ITEM_BLUE_JEWEL)->max_quantity(1);
+        }
+        if(options.jewel_count() >= 3)
+        {
+            world.item(ITEM_GREEN_JEWEL)->name("Green Jewel");
+            world.item(ITEM_GREEN_JEWEL)->gold_value(500);
+            world.item(ITEM_GREEN_JEWEL)->max_quantity(1);
+        }
+    }
 
     // Alter a few things depending on settings
     if (options.use_armor_upgrades())

@@ -34,6 +34,7 @@ private:
     bool _remove_gumi_boulder = false;
     bool _remove_tibor_requirement = false;
     bool _all_trees_visited_at_start = false;
+    bool _ekeeke_auto_revive = true;
     uint16_t _enemies_damage_factor = 100;
     uint16_t _enemies_health_factor = 100;
     uint16_t _enemies_armor_factor = 100;
@@ -89,6 +90,7 @@ public:
     [[nodiscard]] bool remove_gumi_boulder() const { return _remove_gumi_boulder; }
     [[nodiscard]] bool remove_tibor_requirement() const { return _remove_tibor_requirement; }
     [[nodiscard]] bool all_trees_visited_at_start() const { return _all_trees_visited_at_start; }
+    [[nodiscard]] bool ekeeke_auto_revive() const { return _ekeeke_auto_revive; }
     [[nodiscard]] double enemies_damage_factor() const { return (double)_enemies_damage_factor / 100.0; }
     [[nodiscard]] double enemies_health_factor() const { return (double)_enemies_health_factor / 100.0; }
     [[nodiscard]] double enemies_armor_factor() const { return (double)_enemies_armor_factor / 100.0; }
@@ -136,6 +138,5 @@ public:
 
 private:
     void parse_permalink(std::string permalink);
-    void parse_arguments(const ArgumentDictionary& args);
     void validate() const;
 };

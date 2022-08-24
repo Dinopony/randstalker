@@ -79,7 +79,9 @@ void RandomizerWorld::load_nodes()
         }
     }
 
+#ifdef DEBUG
     std::cout << _nodes.size() << " nodes loaded." << std::endl;
+#endif
 }
 
 void RandomizerWorld::load_paths()
@@ -97,7 +99,10 @@ void RandomizerWorld::load_paths()
             this->add_path(WorldPath::from_json(inverted_json, _nodes, this->items()));
         }
     }
+
+#ifdef DEBUG
     std::cout << _paths.size() << " paths loaded." << std::endl;
+#endif
 }
 
 void RandomizerWorld::load_regions()
@@ -106,7 +111,9 @@ void RandomizerWorld::load_regions()
     for(const Json& region_json : regions_json)
         _regions.emplace_back(WorldRegion::from_json(region_json, _nodes));
 
+#ifdef DEBUG
     std::cout << _regions.size() << " regions loaded." << std::endl;
+#endif
 
     for(auto& [id, node] : _nodes)
         if(node->region() == nullptr)
@@ -119,7 +126,10 @@ void RandomizerWorld::load_spawn_locations()
     Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
     for(auto& [id, spawn_json] : spawns_json.items())
         this->add_spawn_location(SpawnLocation::from_json(id, spawn_json));
+
+#ifdef DEBUG
     std::cout << _available_spawn_locations.size() << " spawn locations loaded." << std::endl;
+#endif
 }
 
 void RandomizerWorld::load_hint_sources()
@@ -130,7 +140,10 @@ void RandomizerWorld::load_hint_sources()
         HintSource* new_source = HintSource::from_json(hint_source_json, _nodes);
         _hint_sources.emplace_back(new_source);
     }
+
+#ifdef DEBUG
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
+#endif
 }
 
 void RandomizerWorld::init_item_distributions()
@@ -152,7 +165,9 @@ void RandomizerWorld::load_teleport_trees()
         _teleport_tree_pairs.emplace_back(std::make_pair(tree_1, tree_2));
     }
 
+#ifdef DEBUG
     std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
+#endif
 }
 
 void RandomizerWorld::load_additional_item_data()
