@@ -185,25 +185,75 @@ static void put_dex_back_in_verla_mines(World& world)
     }));
 }
 
-void remove_music(md::ROM& rom)
+void remove_music(md::ROM& rom, World& world)
 {
     constexpr uint8_t MUSIC_SILENT = 0x20;
 
+    // Empty the RoomMusicLUT
     for(uint32_t addr=0x2A32 ; addr < 0x2A44 ; ++addr)
         rom.set_byte(addr, MUSIC_SILENT);
 
+    // Remove cutscene-triggered music
     rom.set_byte(0x9E59A, MUSIC_SILENT); // Duke Fanfare before last boss
     rom.set_byte(0x155EB, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x27721, MUSIC_SILENT); // Last boss cutscene
     rom.set_byte(0x15523, MUSIC_SILENT); // Last boss music
     rom.set_byte(0x9EBE3, MUSIC_SILENT); // Credits music
 
-    // Boss music
+    // Remove boss musics
     rom.set_byte(0x9D6A1, MUSIC_SILENT);
     rom.set_byte(0x9D747, MUSIC_SILENT);
     rom.set_byte(0x9E195, MUSIC_SILENT);
     rom.set_byte(0x9E2C1, MUSIC_SILENT);
     rom.set_byte(0x9E57C, MUSIC_SILENT);
+
+    // Since some conditions rely on current room music being Tibor's, we need to build a list of maps using this music
+    // to be able to check it in another way
+    ByteArray maps_using_tibor_music;
+    for(auto& [map_id, map] : world.maps())
+    {
+        if(map->background_music() == 7)
+            maps_using_tibor_music.add_word(map_id);
+    }
+    maps_using_tibor_music.add_word(0xFFFF);
+    uint32_t maps_using_tibor_music_addr = rom.inject_bytes(maps_using_tibor_music);
+
+    // Inject a function checking on the previous table
+    md::Code func_check_tree_map;
+    func_check_tree_map.movem_to_stack({ reg_D0 }, { reg_A0 });
+    {
+        func_check_tree_map.movew(addr_(0xFF1206), reg_D0);
+        func_check_tree_map.lea(maps_using_tibor_music_addr, reg_A0);
+        func_check_tree_map.label("loop_maps");
+        {
+            func_check_tree_map.cmpiw(0xFFFF, addr_(reg_A0));
+            func_check_tree_map.bne("not_the_end");
+            {
+                // Reached the end without finding the map, return false
+                func_check_tree_map.tstb(addr_(0xFF0000));
+                func_check_tree_map.bra("return");
+            }
+            func_check_tree_map.label("not_the_end");
+
+            func_check_tree_map.cmpw(addr_(reg_A0), reg_D0);
+            func_check_tree_map.bne("next_map");
+            {
+                // Found the map, return true
+                func_check_tree_map.bra("return");
+            }
+            func_check_tree_map.label("next_map");
+            func_check_tree_map.adda(2, reg_A0);
+        }
+        func_check_tree_map.bra("loop_maps");
+        func_check_tree_map.label("return");
+    }
+    func_check_tree_map.movem_from_stack({ reg_D0 }, { reg_A0 });
+    func_check_tree_map.rts();
+    uint32_t func_check_tree_map_addr = rom.inject_code(func_check_tree_map);
+
+    // Use the function where appropriate
+    rom.set_code(0x6310, md::Code().jsr(func_check_tree_map_addr).nop());
+    rom.set_code(0x1A034, md::Code().jsr(func_check_tree_map_addr).nop());
 }
 
 /**
@@ -221,7 +271,7 @@ void swap_overworld_music(md::ROM& rom)
  * This patch extends the zone where the item can be used to make it usable from behind the trees, which allows for new
  * routing options.
  */
-void allow_using_whistle_from_behind_trees(md::ROM& rom)
+static void allow_using_whistle_from_behind_trees(md::ROM& rom)
 {
     // Alter the bounds of the zone where we can use Einstein Whistle, to make it usable from behind the trees
     rom.set_byte(0x889F, 0x06); // X width
@@ -237,6 +287,37 @@ void allow_using_whistle_from_behind_trees(md::ROM& rom)
     uint32_t func_addr = rom.inject_code(func_remove_friday_cutscene);
 
     rom.set_code(0x8C72, md::Code().nop().jsr(func_addr));
+}
+
+/**
+ * This patch removes the core feature of the game where Friday revives Nigel using an EkeEke if he dies.
+ * Disabling this makes the game significantly harder and more frustrating.
+ */
+static void remove_ekeeke_auto_revive(md::ROM& rom)
+{
+    // Change the BEQ into a BRA, making death always a game over
+    rom.set_byte(0x10BFA, 0x60);
+}
+
+/**
+ * There is a problem in Mercator castle court with the falling item.
+ * When the falling item is an item using an uncompressed sprite, sprite is reloaded and turns into an EkeEke for some
+ * reason mid-animation. This patch adds a mapsetup for this map setting a byte to force the "compressed sprite behavior".
+ */
+static void fix_castle_falling_cutscene_with_uncompressed_sprites(md::ROM& rom)
+{
+    // Replace the casino mapsetup easter egg where you can turn chickens into enemies
+    md::Code func;
+    func.cmpiw(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT, addr_(0xFF1204));
+    func.bne("next_map");
+    {
+        func.bset(0, addr_(0xFF550C));
+        func.rts();
+    }
+    func.label("next_map");
+    func.jmp(0x1A1A6);
+
+    rom.set_code(0x1A0F2, func);
 }
 
 void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, World& world)
@@ -258,8 +339,11 @@ void patch_rando_adaptations(md::ROM& rom, const RandomizerOptions& options, Wor
     remove_verla_soldiers_on_verla_spawn(world);
     untangle_verla_mines_flags(world);
     put_dex_back_in_verla_mines(world);
+    fix_castle_falling_cutscene_with_uncompressed_sprites(rom);
 
     if(options.allow_whistle_usage_behind_trees())
         allow_using_whistle_from_behind_trees(rom);
+    if(!options.ekeeke_auto_revive())
+        remove_ekeeke_auto_revive(rom);
 }
 

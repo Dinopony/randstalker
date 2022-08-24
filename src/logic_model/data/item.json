@@ -133,12 +133,12 @@
         "goldValue": 200
     },
     "33": {
-        "name": "Blue Jewel",
-        "goldValue": 500
+        "name": "Detox Book",
+        "goldValue": 10
     },
     "34": {
-        "name": "Yellow Jewel",
-        "goldValue": 500
+        "name": "AntiCurse",
+        "goldValue": 50
     },
     "35": {
         "name": "Record Book",
@@ -217,9 +217,7 @@
         "goldValue": 250
     },
     "52": {
-        "name": "Green Jewel",
-        "maxQuantity": 1,
-        "goldValue": 500
+        "name": "No52"
     },
     "53": {
         "name": "Bell",

@@ -63,7 +63,7 @@ PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::ar
     std::ifstream personal_settings_file(settings_path);
     if(personal_settings_file)
     {
-        std::cout << "Reading personal settings file '" << settings_path << "'...\n";
+        std::cout << "Personal settings: '" << settings_path << "'\n";
         Json settings_json;
         personal_settings_file >> settings_json;
         this->parse_json(settings_json);
