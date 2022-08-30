@@ -34,6 +34,8 @@ void christmas_event(md::ROM& rom, World& world);
 
 inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const RandomizerOptions& options, const PersonalSettings& personal_settings)
 {
+    extend_rom(rom);
+
     optimize_maps(world);
     alter_randomizer_credits(rom);
     alter_credits_palette_on_specific_condition(rom);
@@ -100,4 +102,6 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
         remove_music(rom, world);
     if(personal_settings.swap_overworld_music())
         swap_overworld_music(rom);
+
+    new_map_format(rom, world);
 }
