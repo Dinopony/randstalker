@@ -17,12 +17,20 @@
 #include "gameplay_tweaks/patch_remove_tibor_requirement.hpp"
 #include "gameplay_tweaks/patch_allow_whistle_usage_behind_trees.hpp"
 #include "gameplay_tweaks/patch_remove_ekeeke_auto_revive.hpp"
+#include "gameplay_tweaks/patch_remove_tree_cutting_glitch_drops.hpp"
+#include "gameplay_tweaks/patch_sword_of_gaia_in_volcano.hpp"
+#include "gameplay_tweaks/patch_faster_gaia_effect.hpp"
+#include "gameplay_tweaks/patch_faster_pawn_ticket.hpp"
+#include "gameplay_tweaks/patch_set_lifestocks_health.hpp"
+#include "gameplay_tweaks/patch_armor_upgrades.hpp"
 
 #include "item_effects/patch_lithograph_hint_on_use.hpp"
 #include "item_effects/patch_oracle_stone_hint_on_use.hpp"
 #include "item_effects/patch_spell_book_teleport_on_use.hpp"
 #include "item_effects/patch_record_book_save_on_use.hpp"
 #include "item_effects/patch_statue_of_jypta_golds_on_walk.hpp"
+#include "item_effects/patch_consumable_pawn_ticket.hpp"
+#include "item_effects/patch_permanent_key.hpp"
 
 #include "technical/patch_fix_armlet_skip.hpp"
 #include "technical/patch_fix_softlocks.hpp"
@@ -34,6 +42,9 @@
 #include "technical/patch_save_select_show_hash_option.hpp"
 #include "technical/patch_handle_fox_hints.hpp"
 #include "technical/patch_randomizer_adaptations.hpp"
+#include "technical/patch_fix_item_checks.hpp"
+#include "technical/patch_improve_gold_rewards_handling.hpp"
+#include "technical/patch_improve_lantern_handling.hpp"
 
 #include "events/patch_christmas_event.hpp"
 

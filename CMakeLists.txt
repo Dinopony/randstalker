@@ -91,16 +91,43 @@ set(SOURCES
 
         # --- Patches ----------------------------------------
         "src/patches/edit_content/patch_credits.hpp"
-        "src/patches/technical/patch_optimize_maps.hpp"
-        "src/patches/technical/patch_handle_jewels.hpp"
         "src/patches/edit_content/patch_title_screen.hpp"
-        "src/patches/technical/patch_remove_story_dependencies.hpp"
+        "src/patches/edit_content/patch_make_ryuma_mayor_saveable.hpp"
+        "src/patches/edit_content/patch_fahl_challenge.hpp"
+        "src/patches/edit_content/patch_edit_dialogues.hpp"
+        "src/patches/edit_content/patch_rando_world_edits.hpp"
+        "src/patches/edit_content/patch_shorten_cutscenes.hpp"
 
         "src/patches/item_effects/patch_statue_of_jypta_golds_on_walk.hpp"
         "src/patches/item_effects/patch_lithograph_hint_on_use.hpp"
         "src/patches/item_effects/patch_oracle_stone_hint_on_use.hpp"
         "src/patches/item_effects/patch_spell_book_teleport_on_use.hpp"
         "src/patches/item_effects/patch_record_book_save_on_use.hpp"
+        "src/patches/item_effects/patch_consumable_pawn_ticket.hpp"
+
+        "src/patches/gameplay_tweaks/patch_sword_of_gaia_in_volcano.hpp"
+        "src/patches/gameplay_tweaks/patch_remove_tree_cutting_glitch_drops.hpp"
+        "src/patches/gameplay_tweaks/patch_faster_pawn_ticket.hpp"
+        "src/patches/gameplay_tweaks/patch_faster_gaia_effect.hpp"
+        "src/patches/gameplay_tweaks/patch_armor_upgrades.hpp"
+        "src/patches/gameplay_tweaks/patch_set_lifestocks_health.hpp"
+        "src/patches/gameplay_tweaks/patch_remove_tibor_requirement.hpp"
+        "src/patches/gameplay_tweaks/patch_allow_whistle_usage_behind_trees.hpp"
+        "src/patches/gameplay_tweaks/patch_remove_ekeeke_auto_revive.hpp"
+
+        "src/patches/technical/patch_optimize_maps.hpp"
+        "src/patches/technical/patch_handle_jewels.hpp"
+        "src/patches/technical/patch_remove_story_dependencies.hpp"
+        "src/patches/technical/patch_fix_item_checks.hpp"
+        "src/patches/technical/patch_improve_lantern_handling.hpp"
+        "src/patches/technical/patch_improve_gold_rewards_handling.hpp"
+        "src/patches/technical/patch_remove_music.hpp"
+        "src/patches/technical/patch_swap_overworld_music.hpp"
+        "src/patches/technical/patch_handle_fox_hints.hpp"
+        "src/patches/technical/patch_fix_softlocks.hpp"
+        "src/patches/technical/patch_fix_armlet_skip.hpp"
+        "src/patches/technical/patch_randomizer_adaptations.hpp"
+        "src/patches/technical/patch_save_select_show_hash_option.hpp"
 
         "src/patches/events/patch_christmas_event.hpp"
 
@@ -123,7 +150,7 @@ set(SOURCES
         "src/world_solver.hpp"
         "src/world_solver.cpp"
         "src/main.cpp"
-        src/patches/technical/patch_fix_softlocks.hpp src/patches/technical/patch_fix_armlet_skip.hpp src/patches/edit_content/patch_rando_world_edits.hpp src/patches/technical/patch_save_select_show_hash_option.hpp src/patches/edit_content/patch_fahl_challenge.hpp src/patches/edit_content/patch_edit_dialogues.hpp src/patches/edit_content/patch_shorten_cutscenes.hpp src/patches/technical/patch_remove_music.hpp src/patches/technical/patch_swap_overworld_music.hpp src/patches/technical/patch_handle_fox_hints.hpp src/patches/gameplay_tweaks/patch_remove_tibor_requirement.hpp src/patches/gameplay_tweaks/patch_allow_whistle_usage_behind_trees.hpp src/patches/edit_content/patch_make_ryuma_mayor_saveable.hpp src/patches/gameplay_tweaks/patch_remove_ekeeke_auto_revive.hpp src/patches/technical/patch_randomizer_adaptations.hpp)
+        )
 
 add_executable(randstalker "${SOURCES}")
 target_link_libraries(randstalker landstalker_lib)

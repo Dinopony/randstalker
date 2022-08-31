@@ -226,8 +226,6 @@ void WorldShuffler::init_item_pool()
 {
     _item_pool.clear();
 
-    // TODO: Improve this behavior by using the item pool as a list of how to fill remaining item sources
-    //       instead of what is meant to be inside all item sources.
     size_t filled_item_sources_count = 0;
     for(ItemSource* source : _world.item_sources())
         if(!source->empty())
