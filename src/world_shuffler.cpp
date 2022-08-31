@@ -7,7 +7,7 @@
 #include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/tools/game_text.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/model/item_source.hpp>
+#include "logic_model/item_source.hpp"
 #include "logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/model/spawn_location.hpp>
 #include <landstalker_lib/exceptions.hpp>

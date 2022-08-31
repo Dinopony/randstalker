@@ -32,6 +32,7 @@
 #include "item_effects/patch_consumable_pawn_ticket.hpp"
 #include "item_effects/patch_permanent_key.hpp"
 
+#include "technical/patch_apply_item_sources.hpp"
 #include "technical/patch_fix_armlet_skip.hpp"
 #include "technical/patch_fix_softlocks.hpp"
 #include "technical/patch_optimize_maps.hpp"
@@ -71,6 +72,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     // =======================================================
     // Randomizer adjustments to make it playable / interesting
     patches.emplace_back(new PatchNewGame(personal_settings.add_ingame_item_tracker()));
+    patches.emplace_back(new PatchApplyItemSources());
     patches.emplace_back(new PatchRandoWorldEdits());
     patches.emplace_back(new PatchRandomizerAdaptations());
     patches.emplace_back(new PatchFixItemChecks());

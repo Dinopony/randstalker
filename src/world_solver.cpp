@@ -1,6 +1,6 @@
 #include "world_solver.hpp"
 
-#include <landstalker_lib/model/item_source.hpp>
+#include "logic_model/item_source.hpp"
 #include <landstalker_lib/exceptions.hpp>
 #include "logic_model/world_node.hpp"
 

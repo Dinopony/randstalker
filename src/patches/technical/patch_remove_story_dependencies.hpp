@@ -6,7 +6,7 @@
 #include "landstalker_lib/model/map.hpp"
 #include "landstalker_lib/model/entity.hpp"
 #include "landstalker_lib/model/entity_type.hpp"
-#include "landstalker_lib/model/item_source.hpp"
+#include "../../logic_model/item_source.hpp"
 #include "landstalker_lib/constants/map_codes.hpp"
 
 class PatchRemoveStoryDependencies : public GamePatch
@@ -34,7 +34,8 @@ private:
 
     static void make_massan_elder_reward_not_story_dependant(md::ROM& rom, const World& world)
     {
-        ItemSource* source = world.item_source("Massan: Elder reward after freeing Fara in Swamp Shrine");
+        const RandomizerWorld& randomizer_world = reinterpret_cast<const RandomizerWorld&>(world);
+        ItemSource* source = randomizer_world.item_source("Massan: Elder reward after freeing Fara in Swamp Shrine");
         uint8_t item_id = source->item_id();
 
         // This item source writes its contents at this specific address, as specified

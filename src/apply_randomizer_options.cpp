@@ -161,7 +161,7 @@ static void patch_entity_types(World& world, const RandomizerOptions& options)
     {
         if(entity_type->type_name() != "enemy")
             continue;
-        EntityEnemy* enemy_type = reinterpret_cast<EntityEnemy*>(entity_type);
+        EnemyType* enemy_type = reinterpret_cast<EnemyType*>(entity_type);
 
         enemy_type->apply_damage_factor(options.enemies_damage_factor());
         enemy_type->apply_health_factor(options.enemies_health_factor());

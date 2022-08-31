@@ -33,6 +33,7 @@ wrapped_dependency(TEXT     src/logic_model/data/world_region.json          WORL
 wrapped_dependency(TEXT     src/logic_model/data/hint_source.json           HINT_SOURCES_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/spawn_location.json        SPAWN_LOCATIONS_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/item.json                  ITEMS_JSON)
+wrapped_dependency(TEXT     src/logic_model/data/item_source.json           ITEM_SOURCES_JSON)
 wrapped_dependency(TEXT     src/logic_model/data/world_teleport_tree.json   WORLD_TELEPORT_TREES_JSON)
 wrapped_dependency(TEXT     src/assets/game_strings.json                    GAME_STRINGS_JSON)
 wrapped_dependency(RAW      src/assets/christmas_moneybag.bin               CHRISTMAS_MONEYBAG)
@@ -67,6 +68,7 @@ set(SOURCES
         "src/logic_model/data/hint_source.json.hxx"
         "src/logic_model/data/spawn_location.json.hxx"
         "src/logic_model/data/item.json.hxx"
+        "src/logic_model/data/item_source.json.hxx"
         "src/logic_model/data/world_teleport_tree.json.hxx"
 
         # --- I/O ----------------------------------------
@@ -80,6 +82,8 @@ set(SOURCES
         "src/logic_model/hint_source.hpp"
         "src/logic_model/hint_source.cpp"
         "src/logic_model/item_distribution.hpp"
+        "src/logic_model/item_source.hpp"
+        "src/logic_model/item_source.cpp"
         "src/logic_model/world_node.hpp"
         "src/logic_model/world_path.hpp"
         "src/logic_model/world_path.cpp"
@@ -115,6 +119,7 @@ set(SOURCES
         "src/patches/gameplay_tweaks/patch_allow_whistle_usage_behind_trees.hpp"
         "src/patches/gameplay_tweaks/patch_remove_ekeeke_auto_revive.hpp"
 
+        "src/patches/technical/patch_apply_item_sources.hpp"
         "src/patches/technical/patch_optimize_maps.hpp"
         "src/patches/technical/patch_handle_jewels.hpp"
         "src/patches/technical/patch_remove_story_dependencies.hpp"

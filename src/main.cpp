@@ -21,6 +21,7 @@
 #include <landstalker_lib/tools/argument_dictionary.hpp>
 #include <landstalker_lib/constants/offsets.hpp>
 #include <landstalker_lib/exceptions.hpp>
+#include <landstalker_lib/io/io.hpp>
 
 #include "tools/base64.hpp"
 #include "patches/patches.hpp"
@@ -142,14 +143,15 @@ void generate(const ArgumentDictionary& args)
     md::ROM* rom = get_input_rom(input_rom_path);
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
-    rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space
-//    rom->mark_empty_chunk(0x1FFAC0, 0x200000); // Empty space
+    rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space after System Font
     rom->mark_empty_chunk(0x2A442, 0x2A840); // Debug menu code & data
     rom->set_code(0x16F0, md::Code().nop(4)); // Debug menu related calls
     rom->mark_empty_chunk(0x148AB6, 0x14AA78); // Unused bird sprite
-    rom->mark_empty_chunk(0x1AF5FA, 0x1AF800); // Empty space
+    rom->mark_empty_chunk(0x1AF5FA, 0x1AF800); // Empty space after second projectile palette
 
-    RandomizerWorld world(*rom);
+    RandomizerWorld world;
+    io::read_world_from_rom(*rom, world);
+    world.load_model_from_json();
 
     // Parse options from command-line args, preset file, plando file...
     RandomizerOptions options(args, world.item_names());
@@ -165,7 +167,7 @@ void generate(const ArgumentDictionary& args)
     if(!output_rom_path.empty())
     {
         std::cout << "Writing world to ROM...\n\n";
-        world.write_to_rom(*rom);
+        io::write_world_to_rom(world, *rom);
 
         std::ofstream output_rom_file(output_rom_path, std::ios::binary);
         if(!output_rom_file)

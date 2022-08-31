@@ -2,7 +2,7 @@
 
 #include <utility>
 #include "world_node.hpp"
-#include <landstalker_lib/model/item_source.hpp>
+#include "item_source.hpp"
 
 WorldRegion::WorldRegion(std::string name, std::string hint_name, std::vector<WorldNode*> nodes, std::vector<uint16_t> dark_map_ids, bool can_be_hinted_as_required) :
     _name                       (std::move(name)),

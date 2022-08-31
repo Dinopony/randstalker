@@ -13,6 +13,8 @@ class HintSource;
 
 class RandomizerWorld : public World {
 private:
+    std::vector<ItemSource*> _item_sources;
+
     std::map<std::string, WorldNode*> _nodes;
     std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*> _paths;
     std::vector<WorldRegion*> _regions;
@@ -28,10 +30,15 @@ private:
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
 
 public:
-    explicit RandomizerWorld(const md::ROM& rom);
+    RandomizerWorld() = default;
     ~RandomizerWorld();
 
     [[nodiscard]] std::array<std::string, ITEM_COUNT+1> item_names() const;
+
+    [[nodiscard]] const std::vector<ItemSource*>& item_sources() const { return _item_sources; }
+    [[nodiscard]] std::vector<ItemSource*>& item_sources() { return _item_sources; }
+    [[nodiscard]] ItemSource* item_source(const std::string& name) const;
+    [[nodiscard]] std::vector<ItemSource*> item_sources_with_item(Item* item);
 
     [[nodiscard]] const std::map<std::string, WorldNode*>& nodes() const { return _nodes; }
     [[nodiscard]] WorldNode* node(const std::string& id) const { return _nodes.at(id); }
@@ -72,7 +79,11 @@ public:
 
     void add_paths_for_tree_connections(bool require_tibor_access);
 
+    void load_model_from_json();
+
 private:
+    void load_additional_item_data();
+    void load_item_sources();
     void load_nodes();
     void load_paths();
     void load_regions();
@@ -80,5 +91,4 @@ private:
     void load_hint_sources();
     void init_item_distributions();
     void load_teleport_trees();
-    void load_additional_item_data();
 };
