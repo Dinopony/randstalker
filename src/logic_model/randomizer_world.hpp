@@ -27,6 +27,8 @@ private:
     WorldNode* _spawn_node = nullptr;
     WorldRegion* _dark_region = nullptr;
 
+    std::vector<EntityType*> _fahl_enemies;
+
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
 
 public:
@@ -73,6 +75,9 @@ public:
 
     [[nodiscard]] WorldRegion* dark_region() const { return _dark_region; }
     void dark_region(WorldRegion* region);
+
+    [[nodiscard]] const std::vector<EntityType*>& fahl_enemies() const { return _fahl_enemies; }
+    void add_fahl_enemy(EntityType* enemy) { _fahl_enemies.emplace_back(enemy); }
 
     [[nodiscard]] const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
