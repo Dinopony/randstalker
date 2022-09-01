@@ -26,10 +26,10 @@
 #include "tools/base64.hpp"
 #include "patches/patches.hpp"
 #include "apply_randomizer_options.hpp"
-#include "logic_model/hint_source.hpp"
 #include "logic_model/randomizer_world.hpp"
 #include "world_shuffler.hpp"
 #include "io/io.hpp"
+#include "bingo.hpp"
 
 md::ROM* get_input_rom(std::string input_rom_path)
 {
@@ -158,6 +158,13 @@ void generate(const ArgumentDictionary& args)
     PersonalSettings personal_settings(args, world.item_names());
 
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
+
+    if(args.contains("bingo"))
+    {
+        BingoGenerator bingo(world, options.seed());
+        std::string bingo_path = args.get_string("bingo", "./bingo.json");
+        dump_json_to_file(bingo.generate(), bingo_path);
+    }
 
     // Parse output paths from args
     std::string output_rom_path, spoiler_log_path;

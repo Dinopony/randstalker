@@ -4,8 +4,7 @@
 
 /**
  * In the base game, only statues of Gaia work to trigger the volcano leading to Lake Shrine.
- * instead of only Statue of Gaia
- * Add the ability to also trigger the volcano using the Sword of Gaia
+ * This patch adds the ability to also trigger the volcano using the Sword of Gaia.
  */
 class PatchSwordOfGaiaInVolcano : public GamePatch
 {
