@@ -14,7 +14,7 @@ Json SpoilerWriter::build_spoiler_json(const RandomizerWorld& world, const Rando
     Json json;
 
     // Export dark node
-    json["spawnLocation"] = world.spawn_location().id();
+    json["spawnLocation"] = world.spawn_location()->id();
     json["darkRegion"] = world.dark_region()->name();
 
     // Export hints

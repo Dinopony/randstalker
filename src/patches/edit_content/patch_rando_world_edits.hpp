@@ -222,7 +222,8 @@ private:
      */
     static void remove_verla_soldiers_on_verla_spawn(World& world)
     {
-        if(world.spawn_location().node_id() == "verla")
+        RandomizerWorld& randomizer_world = reinterpret_cast<RandomizerWorld&>(world);
+        if(randomizer_world.spawn_location()->node_id() == "verla")
         {
             world.starting_flags().emplace_back(FLAG_VERLA_WHITE_KNIGHTS_KILLED);
             world.starting_flags().emplace_back(FLAG_VERLA_GOLDEN_KNIGHT_KILLED);

@@ -36,10 +36,10 @@ public:
 private:
     static uint32_t inject_func_warp_to_start(md::ROM& rom, const World& world)
     {
-        uint16_t spawn_x = world.spawn_location().position_x();
-        uint16_t spawn_y = world.spawn_location().position_y();
+        uint16_t spawn_x = world.spawn_position_x();
+        uint16_t spawn_y = world.spawn_position_y();
         uint16_t spawn_position = (spawn_x << 8) + spawn_y;
-        uint16_t spawn_map_id = world.spawn_location().map_id();
+        uint16_t spawn_map_id = world.spawn_map_id();
 
         md::Code func;
         func.movem_to_stack({ reg_D0_D7 }, { reg_A0_A6 });

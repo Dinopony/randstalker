@@ -1,7 +1,7 @@
 #include "randomizer_world.hpp"
 
 #include "world_teleport_tree.hpp"
-#include <landstalker_lib/model/spawn_location.hpp>
+#include "spawn_location.hpp"
 #include <landstalker_lib/model/world.hpp>
 #include <landstalker_lib/exceptions.hpp>
 #include "world_node.hpp"
@@ -165,10 +165,17 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
     }
 }
 
-void RandomizerWorld::spawn_location(const SpawnLocation& spawn)
+void RandomizerWorld::spawn_location(const SpawnLocation* spawn)
 {
-    World::spawn_location(spawn);
-    _spawn_node = _nodes.at(spawn.node_id());
+    _spawn_location = spawn;
+
+    this->spawn_map_id(spawn->map_id());
+    this->spawn_position_x(spawn->position_x());
+    this->spawn_position_y(spawn->position_y());
+    this->spawn_orientation(spawn->orientation());
+
+    if(this->starting_life() == 0)
+        this->starting_life(spawn->starting_life());
 }
 
 std::map<uint8_t, uint16_t> RandomizerWorld::item_quantities() const

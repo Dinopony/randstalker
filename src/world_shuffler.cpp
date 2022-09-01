@@ -9,7 +9,7 @@
 #include <landstalker_lib/model/entity_type.hpp>
 #include "logic_model/item_source.hpp"
 #include "logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/model/spawn_location.hpp>
+#include "logic_model/spawn_location.hpp"
 #include <landstalker_lib/exceptions.hpp>
 
 #include "logic_model/hint_source.hpp"
@@ -55,7 +55,7 @@ void WorldShuffler::randomize()
 
 void WorldShuffler::randomize_spawn_location()
 {
-    if(!_world.spawn_location().empty())
+    if(_world.spawn_location() != nullptr)
         return;
 
     std::vector<std::string> spawn_location_pool = _options.possible_spawn_locations();
@@ -67,7 +67,7 @@ void WorldShuffler::randomize_spawn_location()
 
     vectools::shuffle(spawn_location_pool, _rng);
     SpawnLocation* spawn = _world.available_spawn_locations().at(spawn_location_pool[0]);
-    _world.spawn_location(*spawn);
+    _world.spawn_location(spawn);
 }
 
 void WorldShuffler::randomize_dark_rooms()
