@@ -56,7 +56,11 @@ public:
         // a "wave-y" teleportation effect or the regular one
         uint32_t func_check_tree_map_addr = inject_func_check_tree_map(rom);
         rom.set_code(0x6310, md::Code().jsr(func_check_tree_map_addr).nop());
-        rom.set_code(0x1A034, md::Code().jsr(func_check_tree_map_addr).nop());
+
+        // This code was used to fix the check removing enemies once Tibor had been saved (which was also relying
+        // on music). This is not useful anymore with the flexible mapsetup system which attaches the procedure
+        // to the correct Tibor maps directly, not relying on music anymore.
+        // rom.set_code(0x1A034, md::Code().jsr(func_check_tree_map_addr).nop());
     }
 
 private:
