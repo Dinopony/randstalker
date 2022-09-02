@@ -1,11 +1,15 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
-#include <landstalker_lib/model/map.hpp>
-#include <landstalker_lib/model/entity.hpp>
-#include <landstalker_lib/constants/map_codes.hpp>
+#include "landstalker_lib/patches/game_patch.hpp"
+#include "landstalker_lib/model/map.hpp"
+#include "landstalker_lib/model/entity.hpp"
+#include "landstalker_lib/constants/map_codes.hpp"
 
-class PatchFixLaggySwampShrineMap : public GamePatch
+/**
+ * This patch optimizes a specific map in Swamp Shrine (room with falling spikeballs, buttons & platforms) which
+ * is known to be very laggy.
+ */
+class PatchOptimizeSwampShrineMap : public GamePatch
 {
 private:
     static constexpr uint32_t ADDR_SPIKEBALL_1 = 0xFF5480;
@@ -36,14 +40,14 @@ public:
         uint32_t func_handle_platforms = inject_func_handle_platforms(rom);
 
         md::Code func;
-        func.movem_to_stack({ reg_D0, reg_D1 }, { reg_A0 });
+        func.movem_to_stack({ reg_D0 }, { reg_A0 });
         {
             func.jsr(func_disable_spikeballs_progessively);
             func.jsr(func_handle_buttons);
             func.jsr(func_handle_platforms);
         }
         func.label("ret");
-        func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0 });
+        func.movem_from_stack({ reg_D0 }, { reg_A0 });
         func.rts();
 
         uint32_t update_func_addr = rom.inject_code(func);
@@ -55,19 +59,11 @@ private:
     {
         md::Code func;
 
-        func.movew(addr_(0xFF5400), reg_D0); // D0 = player's position
-        func.cmpib(0x1E, reg_D0);
-        func.bne("ret");
-        func.lsrw(8, reg_D0);
+        func.movew(addr_(0xFF5430), reg_D0);    // D0 = entity underneath player
 
-        func.moveb(addr_(0xFF5413), reg_D1); // D1 = player's height
-
-        // btn_1 = 32 1E 0022
         func.btst(0, addr_(0xFF1001));
         func.bne("not_on_btn_1");
-        func.cmpib(0x32, reg_D0);
-        func.bne("not_on_btn_1");
-        func.cmpib(0x22, reg_D1);
+        func.cmpiw(0x0300, reg_D0);
         func.bne("not_on_btn_1");
         {
             func.bset(0, addr_(0xFF1001));      // Set the flag to tell the platform to raise
@@ -77,12 +73,9 @@ private:
         }
         func.label("not_on_btn_1");
 
-        // btn_2 = 2D 1E 0042
         func.btst(1, addr_(0xFF1001));
         func.bne("not_on_btn_2");
-        func.cmpib(0x2D, reg_D0);
-        func.bne("not_on_btn_2");
-        func.cmpib(0x42, reg_D1);
+        func.cmpiw(0x0400, reg_D0);
         func.bne("not_on_btn_2");
         {
             func.bset(1, addr_(0xFF1001));      // Set the flag to tell the platform to raise
@@ -92,12 +85,9 @@ private:
         }
         func.label("not_on_btn_2");
 
-        // btn_3 = 28 1E 0062
         func.btst(2, addr_(0xFF1001));
         func.bne("not_on_btn_3");
-        func.cmpib(0x28, reg_D0);
-        func.bne("not_on_btn_3");
-        func.cmpib(0x62, reg_D1);
+        func.cmpiw(0x0500, reg_D0);
         func.bne("not_on_btn_3");
         {
             func.bset(2, addr_(0xFF1001));      // Set the flag to tell the platform to raise
@@ -107,12 +97,9 @@ private:
         }
         func.label("not_on_btn_3");
 
-        // btn_4 = 23 1E 0082
         func.btst(3, addr_(0xFF1001));
         func.bne("not_on_btn_4");
-        func.cmpib(0x23, reg_D0);
-        func.bne("not_on_btn_4");
-        func.cmpib(0x82, reg_D1);
+        func.cmpiw(0x0600, reg_D0);
         func.bne("not_on_btn_4");
         {
             func.bset(3, addr_(0xFF1001));      // Set the flag to tell the platform to raise
@@ -133,53 +120,53 @@ private:
 
         func.btst(0, addr_(0xFF1001));
         func.beq("platform_1_done");
-        func.movew(addr_(0xFF5792), reg_D1); // D1 = platform Z
-        func.cmpiw(0x001F, reg_D1);
+        func.movew(addr_(0xFF5792), reg_D0); // D0 = platform Z
+        func.cmpiw(0x001F, reg_D0);
         func.bgt("platform_1_done");
         {
-            func.addqb(1, reg_D1);
-            func.movew(reg_D1, addr_(0xFF5792));
-            func.addqb(7, reg_D1);
-            func.movew(reg_D1, addr_(0xFF57D4));
+            func.addqb(1, reg_D0);
+            func.movew(reg_D0, addr_(0xFF5792));
+            func.addqb(7, reg_D0);
+            func.movew(reg_D0, addr_(0xFF57D4));
         }
         func.label("platform_1_done");
 
         func.btst(1, addr_(0xFF1001));
         func.beq("platform_2_done");
-        func.movew(addr_(0xFF5892), reg_D1); // D1 = platform Z
-        func.cmpiw(0x003F, reg_D1);
+        func.movew(addr_(0xFF5892), reg_D0); // D0 = platform Z
+        func.cmpiw(0x003F, reg_D0);
         func.bgt("platform_2_done");
         {
-            func.addqb(1, reg_D1);
-            func.movew(reg_D1, addr_(0xFF5892));
-            func.addqb(7, reg_D1);
-            func.movew(reg_D1, addr_(0xFF58D4));
+            func.addqb(1, reg_D0);
+            func.movew(reg_D0, addr_(0xFF5892));
+            func.addqb(7, reg_D0);
+            func.movew(reg_D0, addr_(0xFF58D4));
         }
         func.label("platform_2_done");
 
         func.btst(2, addr_(0xFF1001));
         func.beq("platform_3_done");
-        func.movew(addr_(0xFF5992), reg_D1); // D1 = platform Z
-        func.cmpiw(0x005F, reg_D1);
+        func.movew(addr_(0xFF5992), reg_D0); // D0 = platform Z
+        func.cmpiw(0x005F, reg_D0);
         func.bgt("platform_3_done");
         {
-            func.addqb(1, reg_D1);
-            func.movew(reg_D1, addr_(0xFF5992));
-            func.addqb(7, reg_D1);
-            func.movew(reg_D1, addr_(0xFF59D4));
+            func.addqb(1, reg_D0);
+            func.movew(reg_D0, addr_(0xFF5992));
+            func.addqb(7, reg_D0);
+            func.movew(reg_D0, addr_(0xFF59D4));
         }
         func.label("platform_3_done");
 
         func.btst(3, addr_(0xFF1001));
         func.beq("platform_4_done");
-        func.movew(addr_(0xFF5A92), reg_D1); // D1 = platform Z
-        func.cmpiw(0x007F, reg_D1);
+        func.movew(addr_(0xFF5A92), reg_D0); // D0 = platform Z
+        func.cmpiw(0x007F, reg_D0);
         func.bgt("platform_4_done");
         {
-            func.addqb(1, reg_D1);
-            func.movew(reg_D1, addr_(0xFF5A92));
-            func.addqb(7, reg_D1);
-            func.movew(reg_D1, addr_(0xFF5AD4));
+            func.addqb(1, reg_D0);
+            func.movew(reg_D0, addr_(0xFF5A92));
+            func.addqb(7, reg_D0);
+            func.movew(reg_D0, addr_(0xFF5AD4));
         }
         func.label("platform_4_done");
         func.rts();

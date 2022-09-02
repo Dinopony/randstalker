@@ -37,7 +37,6 @@
 #include "technical/patch_apply_item_sources.hpp"
 #include "technical/patch_fix_armlet_skip.hpp"
 #include "technical/patch_fix_softlocks.hpp"
-#include "technical/patch_optimize_maps.hpp"
 #include "technical/patch_handle_jewels.hpp"
 #include "technical/patch_remove_music.hpp"
 #include "technical/patch_swap_overworld_music.hpp"
@@ -48,8 +47,11 @@
 #include "technical/patch_fix_item_checks.hpp"
 #include "technical/patch_improve_gold_rewards_handling.hpp"
 #include "technical/patch_improve_lantern_handling.hpp"
-#include "technical/patch_fix_laggy_destel_well_map.hpp"
-#include "technical/patch_fix_laggy_swamp_shrine_map.hpp"
+
+#include "optimization/patch_optimize_maps.hpp"
+#include "optimization/patch_optimize_destel_well_map.hpp"
+#include "optimization/patch_optimize_swamp_shrine_map.hpp"
+#include "optimization/patch_optimize_tibor_maps.hpp"
 
 #include "events/patch_christmas_event.hpp"
 
@@ -67,13 +69,14 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchImproveInGameTimer());
     patches.emplace_back(new PatchAddSoftReset());
     patches.emplace_back(new PatchNormalizeBossesHP());
-    patches.emplace_back(new PatchOptimizeMaps());
     patches.emplace_back(new PatchNewMapFormat());
     patches.emplace_back(new PatchImproveItemUseHandling());
     patches.emplace_back(new PatchImproveGoldRewardsHandling());
     patches.emplace_back(new PatchImproveLanternHandling());
-    patches.emplace_back(new PatchFixLaggyDestelWellMap());
-    patches.emplace_back(new PatchFixLaggySwampShrineMap());
+    patches.emplace_back(new PatchOptimizeMaps());
+    patches.emplace_back(new PatchOptimizeDestelWellMap());
+    patches.emplace_back(new PatchOptimizeSwampShrineMap());
+    patches.emplace_back(new PatchOptimizeTiborMaps());
 
     // =======================================================
     // Randomizer adjustments to make it playable / interesting

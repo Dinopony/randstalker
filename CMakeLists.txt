@@ -122,7 +122,6 @@ set(SOURCES
         "src/patches/gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
 
         "src/patches/technical/patch_apply_item_sources.hpp"
-        "src/patches/technical/patch_optimize_maps.hpp"
         "src/patches/technical/patch_handle_jewels.hpp"
         "src/patches/technical/patch_remove_story_dependencies.hpp"
         "src/patches/technical/patch_fix_item_checks.hpp"
@@ -135,8 +134,11 @@ set(SOURCES
         "src/patches/technical/patch_fix_armlet_skip.hpp"
         "src/patches/technical/patch_randomizer_adaptations.hpp"
         "src/patches/technical/patch_save_select_show_hash_option.hpp"
-        "src/patches/technical/patch_fix_laggy_destel_well_map.hpp"
-        "src/patches/technical/patch_fix_laggy_swamp_shrine_map.hpp"
+
+        "src/patches/optimization/patch_optimize_maps.hpp"
+        "src/patches/optimization/patch_optimize_destel_well_map.hpp"
+        "src/patches/optimization/patch_optimize_swamp_shrine_map.hpp"
+        "src/patches/optimization/patch_optimize_tibor_maps.hpp"
 
         "src/patches/events/patch_christmas_event.hpp"
 

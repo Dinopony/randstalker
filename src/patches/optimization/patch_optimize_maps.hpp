@@ -14,7 +14,6 @@ class PatchOptimizeMaps : public GamePatch
 public:
     void alter_world(World& world) override
     {
-        optimize_laggy_tibor_rooms(world);
         clear_unreachable_maps(world);
         remove_useless_entities(world);
         optimize_palettes_usage(world);
@@ -26,17 +25,6 @@ public:
     }
 
 private:
-    static void optimize_laggy_tibor_rooms(World& world)
-    {
-        // Remove ghosts from laggy Tibor rooms
-        world.map(MAP_TIBOR_808)->remove_entity(5);
-        world.map(MAP_TIBOR_811)->remove_entity(4);
-        world.map(MAP_TIBOR_812)->remove_entity(2);
-        world.map(MAP_TIBOR_813)->remove_entity(1);
-        world.map(MAP_TIBOR_814)->remove_entity(2);
-        world.map(MAP_TIBOR_815)->remove_entity(3);
-    }
-
     static void clear_unreachable_maps(World& world)
     {
         // Clear unreachable maps
