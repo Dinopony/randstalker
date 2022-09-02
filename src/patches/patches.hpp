@@ -23,6 +23,7 @@
 #include "gameplay_tweaks/patch_faster_pawn_ticket.hpp"
 #include "gameplay_tweaks/patch_set_lifestocks_health.hpp"
 #include "gameplay_tweaks/patch_armor_upgrades.hpp"
+#include "gameplay_tweaks/patch_show_all_books_in_churches.hpp"
 
 #include "item_effects/patch_lithograph_hint_on_use.hpp"
 #include "item_effects/patch_oracle_stone_hint_on_use.hpp"
@@ -85,6 +86,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchHandleJewels(options.jewel_count()));
     patches.emplace_back(new PatchMakeRyumaMayorSaveable());
     patches.emplace_back(new PatchFahlChallenge());
+    patches.emplace_back(new PatchShowAllBooksInChurches());
     patches.emplace_back(new PatchSetLifestocksHealth(options.health_gained_per_lifestock()));
     if(options.remove_tree_cutting_glitch_drops())
         patches.emplace_back(new PatchRemoveTreeCuttingGlitchDrops());
