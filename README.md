@@ -1,9 +1,13 @@
-![](https://github.com/Dinopony/randstalker/workflows/Compile/badge.svg)
+![version](https://img.shields.io/badge/Version-1.8.0-blue)
+![compile](https://github.com/Dinopony/randstalker/workflows/Compile/badge.svg)
+<a href="https://discord.gg/XNA76xc9sU">
+  <img src="https://img.shields.io/badge/-Discord-lightgrey?logo=discord" alt="Join Discord">
+</a>
 
-# Randstalker
+# Randstalker: The Landstalker Randomizer
 
 Randstalker is a randomizer for the famous Megadrive / Genesis classic "Landstalker : The Treasure of King Nole". It
-works on a US ROM of the game by randomizing item sources and altering the game so that it is more enjoyable in a
+works on a US ROM of the game by randomizing item sources and altering the game to make it more enjoyable in a
 randomizer format.
 
 ## Notable differences compared to original game
@@ -59,15 +63,13 @@ randomizer format.
 
 ### Release versions
 
-You can use the online generator provided by Dilandau (thanks to him!) at this address: https://randstalker.ovh/
-
-The online generator always uses an up-to-date stable version of the tool, but sometimes not the very latest build 
-(because it might be buggy / unstable).
-
 Using the provided release packages (on the right panel of this webpage) is really straightforward since everything
 (excepted the original ROM) is included for you to start randomizing.
 
-### Development versions
+You just have to put your copy of the original US game ROM inside the folder named `ìnput.md`, and use the 
+`gen_preset.bat` script on Windows (Linux users are expected to know how to use CLI).
+
+### Building from source
 
 If you want to get the very last version, you can also compile and use the executable version on your own device. You
 will need CMake to do so, and then do:
