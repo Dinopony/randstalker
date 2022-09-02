@@ -135,6 +135,7 @@ set(SOURCES
         "src/patches/technical/patch_fix_armlet_skip.hpp"
         "src/patches/technical/patch_randomizer_adaptations.hpp"
         "src/patches/technical/patch_save_select_show_hash_option.hpp"
+        "src/patches/technical/patch_fix_laggy_destel_well_map.hpp"
 
         "src/patches/events/patch_christmas_event.hpp"
 
