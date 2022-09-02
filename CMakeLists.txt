@@ -119,6 +119,7 @@ set(SOURCES
         "src/patches/gameplay_tweaks/patch_allow_whistle_usage_behind_trees.hpp"
         "src/patches/gameplay_tweaks/patch_remove_ekeeke_auto_revive.hpp"
         "src/patches/gameplay_tweaks/patch_show_all_books_in_churches.hpp"
+        "src/patches/gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
 
         "src/patches/technical/patch_apply_item_sources.hpp"
         "src/patches/technical/patch_optimize_maps.hpp"

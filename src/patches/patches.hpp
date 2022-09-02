@@ -24,6 +24,7 @@
 #include "gameplay_tweaks/patch_set_lifestocks_health.hpp"
 #include "gameplay_tweaks/patch_armor_upgrades.hpp"
 #include "gameplay_tweaks/patch_show_all_books_in_churches.hpp"
+#include "gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
 
 #include "item_effects/patch_lithograph_hint_on_use.hpp"
 #include "item_effects/patch_oracle_stone_hint_on_use.hpp"
@@ -121,6 +122,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchAlterInventoryOrder(personal_settings.inventory_order()));
     patches.emplace_back(new PatchAlterNigelColors(personal_settings.nigel_colors()));
     patches.emplace_back(new PatchAlterUIColor(personal_settings.hud_color()));
+    patches.emplace_back(new PatchRemoveContinuePromptAfterSaving());
     patches.emplace_back(new PatchFixHUDTilemap());
     if(options.fast_transitions())
         patches.emplace_back(new PatchFasterTransitions());
