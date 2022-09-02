@@ -48,9 +48,10 @@
 #include "technical/patch_fix_item_checks.hpp"
 #include "technical/patch_improve_gold_rewards_handling.hpp"
 #include "technical/patch_improve_lantern_handling.hpp"
+#include "technical/patch_fix_laggy_destel_well_map.hpp"
+#include "technical/patch_fix_laggy_swamp_shrine_map.hpp"
 
 #include "events/patch_christmas_event.hpp"
-#include "technical/patch_fix_laggy_destel_well_map.hpp"
 
 class RandomizerWorld;
 
@@ -72,6 +73,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchImproveGoldRewardsHandling());
     patches.emplace_back(new PatchImproveLanternHandling());
     patches.emplace_back(new PatchFixLaggyDestelWellMap());
+    patches.emplace_back(new PatchFixLaggySwampShrineMap());
 
     // =======================================================
     // Randomizer adjustments to make it playable / interesting
