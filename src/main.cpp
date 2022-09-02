@@ -162,7 +162,9 @@ void generate(const ArgumentDictionary& args)
     if(args.contains("bingo"))
     {
         BingoGenerator bingo(world, options.seed());
-        std::string bingo_path = args.get_string("bingo", "./bingo.json");
+        std::string bingo_path = args.get_string("bingo", "");
+        if(bingo_path.empty())
+            bingo_path = "./bingo.json";
         dump_json_to_file(bingo.generate(), bingo_path);
     }
 
