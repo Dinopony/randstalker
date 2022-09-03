@@ -24,7 +24,7 @@ public:
     void inject_code(md::ROM& rom, World& world) override
     {
         prevent_hint_item_save_scumming(rom);
-        fix_castle_falling_cutscene_with_uncompressed_sprites(rom);
+        fix_castle_falling_cutscene_with_uncompressed_sprites(rom, world);
     }
 
 private:
@@ -106,20 +106,16 @@ private:
      * When the falling item is an item using an uncompressed sprite, sprite is reloaded and turns into an EkeEke for some
      * reason mid-animation. This patch adds a mapsetup for this map setting a byte to force the "compressed sprite behavior".
      */
-    static void fix_castle_falling_cutscene_with_uncompressed_sprites(md::ROM& rom)
+    static void fix_castle_falling_cutscene_with_uncompressed_sprites(md::ROM& rom, World& world)
     {
         // Replace the casino mapsetup easter egg where you can turn chickens into enemies
-        // TODO: This will be most likely problematic with a flexible mapsetup system
         md::Code func;
-        func.cmpiw(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT, addr_(0xFF1204));
-        func.bne("next_map");
         {
             func.bset(0, addr_(0xFF550C));
-            func.rts();
         }
-        func.label("next_map");
-        func.jmp(0x1A1A6);
+        func.rts();
 
-        rom.set_code(0x1A0F2, func);
+        uint32_t func_addr = rom.inject_code(func);
+        world.map(MAP_MERCATOR_CASTLE_EXTERIOR_LEFT_COURT)->map_setup_addr(func_addr);
     }
 };
