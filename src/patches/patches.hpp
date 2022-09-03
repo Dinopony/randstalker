@@ -52,6 +52,7 @@
 #include "optimization/patch_optimize_destel_well_map.hpp"
 #include "optimization/patch_optimize_swamp_shrine_map.hpp"
 #include "optimization/patch_optimize_tibor_maps.hpp"
+#include "optimization/patch_optimize_lake_shrine_platforms_map.hpp"
 
 #include "events/patch_christmas_event.hpp"
 
@@ -77,6 +78,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOptimizeDestelWellMap());
     patches.emplace_back(new PatchOptimizeSwampShrineMap());
     patches.emplace_back(new PatchOptimizeTiborMaps());
+    patches.emplace_back(new PatchOptimizeLakeShrinePlatformsMap());
 
     // =======================================================
     // Randomizer adjustments to make it playable / interesting

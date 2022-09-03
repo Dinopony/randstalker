@@ -139,6 +139,7 @@ set(SOURCES
         "src/patches/optimization/patch_optimize_destel_well_map.hpp"
         "src/patches/optimization/patch_optimize_swamp_shrine_map.hpp"
         "src/patches/optimization/patch_optimize_tibor_maps.hpp"
+        "src/patches/optimization/patch_optimize_lake_shrine_platforms_map.hpp"
 
         "src/patches/events/patch_christmas_event.hpp"
 
