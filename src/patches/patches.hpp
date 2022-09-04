@@ -79,6 +79,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOptimizeSwampShrineMap());
     patches.emplace_back(new PatchOptimizeTiborMaps());
     patches.emplace_back(new PatchOptimizeLakeShrinePlatformsMap());
+    patches.emplace_back(new PatchOptimizeAILookup());
 
     // =======================================================
     // Randomizer adjustments to make it playable / interesting
