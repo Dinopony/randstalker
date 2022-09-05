@@ -18,11 +18,6 @@ public:
         world.map(MAP_TIBOR_811)->remove_entity(4);
 
         world.map(MAP_TIBOR_812)->remove_entity(2);
-        world.map(MAP_TIBOR_812)->remove_entity(2);
-
-        world.map(MAP_TIBOR_813)->remove_entity(1);
-
-        world.map(MAP_TIBOR_814)->remove_entity(2);
 
         world.map(MAP_TIBOR_815)->remove_entity(3);
     }
