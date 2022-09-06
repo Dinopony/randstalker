@@ -121,21 +121,21 @@ public:
             // Add a sprite for green jewel and make the item use it
             Sprite green_jewel_sprite(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE, { subsprite });
             uint32_t green_jewel_sprite_addr = rom.inject_bytes(green_jewel_sprite.encode());
-            world.item(ITEM_GREEN_JEWEL)->sprite_addr(green_jewel_sprite_addr);
+            rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_GREEN_JEWEL * 0x4), green_jewel_sprite_addr);
         }
         if(_jewel_count >= 4)
         {
             // Add a sprite for blue jewel and make the item use it
             Sprite blue_jewel_sprite(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE, { subsprite });
             uint32_t blue_jewel_sprite_addr = rom.inject_bytes(blue_jewel_sprite.encode());
-            world.item(ITEM_BLUE_JEWEL)->sprite_addr(blue_jewel_sprite_addr);
+            rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_BLUE_JEWEL * 0x4), blue_jewel_sprite_addr);
         }
         if(_jewel_count >= 5)
         {
             // Add a sprite for green jewel and make the item use it
             Sprite yellow_jewel_sprite(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE, { subsprite });
             uint32_t yellow_jewel_sprite_addr = rom.inject_bytes(yellow_jewel_sprite.encode());
-            world.item(ITEM_YELLOW_JEWEL)->sprite_addr(yellow_jewel_sprite_addr);
+            rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_YELLOW_JEWEL * 0x4), yellow_jewel_sprite_addr);
         }
     }
 
