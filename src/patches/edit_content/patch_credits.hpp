@@ -11,6 +11,7 @@ class PatchCredits : public GamePatch
 private:
     uint16_t _waiting_time_after_end = 180;
     uint32_t _blue_credits_palette_addr = 0xFFFFFFFF;
+    uint32_t _red_credits_palette_addr = 0xFFFFFFFF;
     std::vector<uint8_t> _original_credits;
 
 public:
@@ -48,18 +49,31 @@ public:
         blue_credits_palette.add_word(0xC44);
         blue_credits_palette.add_word(0xA22);
         _blue_credits_palette_addr = rom.inject_bytes(blue_credits_palette);
+
+        ByteArray red_credits_palette;
+        red_credits_palette.add_word(0x000);
+        red_credits_palette.add_word(0x66E);
+        red_credits_palette.add_word(0x44C);
+        red_credits_palette.add_word(0x22A);
+        _red_credits_palette_addr = rom.inject_bytes(red_credits_palette);
     }
 
     void inject_code(md::ROM& rom, World& world) override
     {
-        // Use blue credits palette if blue ribbon is held
         md::Code func;
         {
             func.lea(0xFF0080, reg_A1); // instruction erased by the jsr
+            func.cmpib(2, addr_(0xFF001C));
+            func.bne("not_arg");
+            {
+                func.lea(_red_credits_palette_addr, reg_A0); // Use red credits palette if Dark Gola has been beaten
+                func.bra("ret");
+            }
+            func.label("not_arg");
             func.btst(1, addr_(0xFF104C));
             func.beq("ret");
             {
-                func.lea(_blue_credits_palette_addr, reg_A0);
+                func.lea(_blue_credits_palette_addr, reg_A0); // Use blue credits palette if blue ribbon is held
             }
             func.label("ret");
         }

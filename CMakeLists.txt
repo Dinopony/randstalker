@@ -40,6 +40,7 @@ wrapped_dependency(RAW      src/assets/christmas_moneybag.bin               CHRI
 wrapped_dependency(RAW      src/assets/blue_jewel.bin                       BLUE_JEWEL_SPRITE)
 wrapped_dependency(RAW      src/assets/green_jewel.bin                      GREEN_JEWEL_SPRITE)
 wrapped_dependency(RAW      src/assets/yellow_jewel.bin                     YELLOW_JEWEL_SPRITE)
+wrapped_dependency(RAW      src/assets/secret_arg_music_bank.bin            ARG_MUSIC_BANK)
 
 wrapped_dependency(RAW      src/assets/titlescreen/title1_layout.rle        TITLE1_LAYOUT)
 wrapped_dependency(RAW      src/assets/titlescreen/title1_tiles.lz77        TITLE1_TILES)
@@ -55,6 +56,8 @@ set(SOURCES
         "src/assets/blue_jewel.bin.hxx"
         "src/assets/green_jewel.bin.hxx"
         "src/assets/yellow_jewel.bin.hxx"
+        "src/assets/secret_arg_music_bank.bin.hxx"
+
         "src/assets/titlescreen/title1_layout.rle.hxx"
         "src/assets/titlescreen/title1_tiles.lz77.hxx"
         "src/assets/titlescreen/title2_layout.rle.hxx"
@@ -142,6 +145,8 @@ set(SOURCES
         "src/patches/optimization/patch_optimize_lake_shrine_platforms_map.hpp"
 
         "src/patches/events/patch_christmas_event.hpp"
+        "src/patches/events/patch_secret_arg.hpp"
+        "src/patches/events/patch_secret_arg.cpp"
 
         "src/patches/patches.hpp"
 
