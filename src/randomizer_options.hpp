@@ -7,7 +7,7 @@
 #include <fstream>
 
 #include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/constants/values.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/tools/stringtools.hpp>
 #include <landstalker_lib/tools/argument_dictionary.hpp>
 

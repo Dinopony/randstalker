@@ -6,7 +6,6 @@
 #include "logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/constants/flags.hpp>
-#include <landstalker_lib/constants/values.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
 #include "assets/game_strings.json.hxx"
@@ -101,28 +100,7 @@ static void patch_items(World& world, const RandomizerOptions& options)
     const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
     for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
         world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
-
-    if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        Item* red_jewel = world.item(ITEM_RED_JEWEL);
-        red_jewel->name("Kazalt Jewel");
-        red_jewel->max_quantity(options.jewel_count());
-    }
-    else
-    {
-        if(options.jewel_count() >= 5)
-        {
-            world.item(ITEM_YELLOW_JEWEL)->name("Yellow Jewel");
-            world.item(ITEM_YELLOW_JEWEL)->gold_value(500);
-            world.item(ITEM_YELLOW_JEWEL)->max_quantity(1);
-        }
-        if(options.jewel_count() >= 4)
-        {
-            world.item(ITEM_BLUE_JEWEL)->name("Blue Jewel");
-            world.item(ITEM_BLUE_JEWEL)->gold_value(500);
-            world.item(ITEM_BLUE_JEWEL)->max_quantity(1);
-        }
-        if(options.jewel_count() >= 3)
         {
             world.item(ITEM_GREEN_JEWEL)->name("Green Jewel");
             world.item(ITEM_GREEN_JEWEL)->gold_value(500);

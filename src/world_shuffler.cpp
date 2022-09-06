@@ -2,7 +2,6 @@
 
 #include <landstalker_lib/constants/entity_type_codes.hpp>
 #include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/constants/values.hpp>
 #include "landstalker_lib/tools/stringtools.hpp"
 #include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/tools/game_text.hpp>

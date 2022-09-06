@@ -8,7 +8,6 @@
 #include "landstalker_lib/constants/item_codes.hpp"
 #include "landstalker_lib/constants/map_codes.hpp"
 #include "landstalker_lib/constants/offsets.hpp"
-#include "landstalker_lib/constants/values.hpp"
 #include "landstalker_lib/exceptions.hpp"
 #include "landstalker_lib/tools/sprite.hpp"
 
@@ -39,6 +38,40 @@ public:
 
     void alter_world(World& world) override
     {
+        if(_jewel_count > MAX_INDIVIDUAL_JEWELS)
+        {
+            Item* red_jewel = world.item(ITEM_RED_JEWEL);
+            red_jewel->name("Kazalt Jewel");
+            red_jewel->max_quantity(_jewel_count);
+        }
+        else
+        {
+            if(_jewel_count >= 5)
+            {
+                Item* item_yellow_jewel = new Item();
+                item_yellow_jewel->id(ITEM_YELLOW_JEWEL);
+                item_yellow_jewel->name("Yellow Jewel");
+                item_yellow_jewel->gold_value(500);
+                item_yellow_jewel->max_quantity(1);
+                world.add_item(item_yellow_jewel);
+            }
+            if(_jewel_count >= 4)
+            {
+                Item* item_blue_jewel = new Item();
+                item_blue_jewel->id(ITEM_BLUE_JEWEL);
+                item_blue_jewel->name("Blue Jewel");
+                item_blue_jewel->gold_value(500);
+                item_blue_jewel->max_quantity(1);
+                world.add_item(item_blue_jewel);
+            }
+            if(_jewel_count >= 3)
+            {
+                world.item(ITEM_GREEN_JEWEL)->name("Green Jewel");
+                world.item(ITEM_GREEN_JEWEL)->gold_value(500);
+                world.item(ITEM_GREEN_JEWEL)->max_quantity(1);
+            }
+        }
+
         // Remove jewels replaced from book IDs from priest stands if needed
         if(_jewel_count > 3 && _jewel_count <= MAX_INDIVIDUAL_JEWELS)
         {
@@ -88,21 +121,21 @@ public:
             // Add a sprite for green jewel and make the item use it
             Sprite green_jewel_sprite(GREEN_JEWEL_SPRITE, GREEN_JEWEL_SPRITE_SIZE, { subsprite });
             uint32_t green_jewel_sprite_addr = rom.inject_bytes(green_jewel_sprite.encode());
-            rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_GREEN_JEWEL * 0x4), green_jewel_sprite_addr);
+            world.item(ITEM_GREEN_JEWEL)->sprite_addr(green_jewel_sprite_addr);
         }
         if(_jewel_count >= 4)
         {
             // Add a sprite for blue jewel and make the item use it
             Sprite blue_jewel_sprite(BLUE_JEWEL_SPRITE, BLUE_JEWEL_SPRITE_SIZE, { subsprite });
             uint32_t blue_jewel_sprite_addr = rom.inject_bytes(blue_jewel_sprite.encode());
-            rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_BLUE_JEWEL * 0x4), blue_jewel_sprite_addr);
+            world.item(ITEM_BLUE_JEWEL)->sprite_addr(blue_jewel_sprite_addr);
         }
         if(_jewel_count >= 5)
         {
             // Add a sprite for green jewel and make the item use it
             Sprite yellow_jewel_sprite(YELLOW_JEWEL_SPRITE, YELLOW_JEWEL_SPRITE_SIZE, { subsprite });
             uint32_t yellow_jewel_sprite_addr = rom.inject_bytes(yellow_jewel_sprite.encode());
-            rom.set_long(offsets::ITEM_SPRITES_TABLE + (ITEM_YELLOW_JEWEL * 0x4), yellow_jewel_sprite_addr);
+            world.item(ITEM_YELLOW_JEWEL)->sprite_addr(yellow_jewel_sprite_addr);
         }
     }
 
