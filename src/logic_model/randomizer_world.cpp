@@ -67,7 +67,16 @@ std::array<std::string, ITEM_COUNT+1> RandomizerWorld::item_names() const
 {
     std::array<std::string, ITEM_COUNT+1> item_names;
     for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
-        item_names[i] = this->item(i)->name();
+    {
+        try
+        {
+            item_names[i] = this->item(i)->name();
+        }
+        catch(std::out_of_range&)
+        {
+            item_names[i] = "No" + std::to_string(i);
+        }
+    }
     item_names[ITEM_COUNT] = "Golds";
 
     return item_names;

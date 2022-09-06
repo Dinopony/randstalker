@@ -99,13 +99,12 @@ static void patch_items(World& world, const RandomizerOptions& options)
     // Process custom starting quantities for items
     const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
     for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
-        world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
     {
+        try
         {
-            world.item(ITEM_GREEN_JEWEL)->name("Green Jewel");
-            world.item(ITEM_GREEN_JEWEL)->gold_value(500);
-            world.item(ITEM_GREEN_JEWEL)->max_quantity(1);
+            world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
         }
+        catch(std::out_of_range&) {}
     }
 
     // Alter a few things depending on settings
