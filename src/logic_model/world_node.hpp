@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include <landstalker_lib/model/item_source.hpp>
+#include "item_source.hpp"
 
 #include "world_path.hpp"
 

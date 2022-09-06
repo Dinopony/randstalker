@@ -4,8 +4,7 @@
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
-#include <landstalker_lib/model/world.hpp>
-#include "landstalker_lib/tools/stringtools.hpp"
+#include <landstalker_lib/tools/stringtools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
 static Item* parse_item_from_name_in_json(const std::string& item_name, RandomizerWorld& world)
@@ -96,7 +95,7 @@ static void parse_spawn_location_from_json(RandomizerWorld& world, const Json& j
         const std::string& spawn_location_name = json.at("spawnLocation");
         try {
             SpawnLocation* spawn = world.available_spawn_locations().at(spawn_location_name);
-            world.spawn_location(*spawn);
+            world.spawn_location(spawn);
         }
         catch(std::out_of_range&) {
             throw LandstalkerException("Spawn location '" + spawn_location_name + "' could not be found");

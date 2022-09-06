@@ -7,9 +7,9 @@
 #include <landstalker_lib/tools/vectools.hpp>
 #include <landstalker_lib/tools/game_text.hpp>
 #include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/model/item_source.hpp>
+#include "logic_model/item_source.hpp"
 #include "logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/model/spawn_location.hpp>
+#include "logic_model/spawn_location.hpp"
 #include <landstalker_lib/exceptions.hpp>
 
 #include "logic_model/hint_source.hpp"
@@ -55,7 +55,7 @@ void WorldShuffler::randomize()
 
 void WorldShuffler::randomize_spawn_location()
 {
-    if(!_world.spawn_location().empty())
+    if(_world.spawn_location() != nullptr)
         return;
 
     std::vector<std::string> spawn_location_pool = _options.possible_spawn_locations();
@@ -67,7 +67,7 @@ void WorldShuffler::randomize_spawn_location()
 
     vectools::shuffle(spawn_location_pool, _rng);
     SpawnLocation* spawn = _world.available_spawn_locations().at(spawn_location_pool[0]);
-    _world.spawn_location(*spawn);
+    _world.spawn_location(spawn);
 }
 
 void WorldShuffler::randomize_dark_rooms()
@@ -226,8 +226,6 @@ void WorldShuffler::init_item_pool()
 {
     _item_pool.clear();
 
-    // TODO: Improve this behavior by using the item pool as a list of how to fill remaining item sources
-    //       instead of what is meant to be inside all item sources.
     size_t filled_item_sources_count = 0;
     for(ItemSource* source : _world.item_sources())
         if(!source->empty())

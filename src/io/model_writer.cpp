@@ -10,7 +10,6 @@
 
 void ModelWriter::write_world_model(const RandomizerWorld& world)
 {
-    io::export_item_sources_as_json(world,"./json_data/item_source.json");
     io::export_items_as_json(world, "./json_data/item.json");
     io::export_entity_types_as_json(world, "./json_data/entity_type.json");
     io::export_maps_as_json(world, "./json_data/map.json");
@@ -50,6 +49,11 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
         paths_json.emplace_back(path->to_json(two_way));
     }
     dump_json_to_file(paths_json, "./json_data/world_path.json");
+
+    Json item_sources_json = Json::array();
+    for(ItemSource* source : world.item_sources())
+        item_sources_json.emplace_back(source->to_json());
+    dump_json_to_file(item_sources_json, "./json_data/item_sources.json");
 
     Json regions_json = Json::array();
     for(WorldRegion* region : world.regions())
