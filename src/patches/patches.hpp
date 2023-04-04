@@ -148,7 +148,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     // Special events
     if(options.christmas_event())
         patches.emplace_back(new PatchChristmasEvent());
-    patches.emplace_back(new PatchSecretARG(options));
+    // patches.emplace_back(new PatchSecretARG(options));
 
     execute_patches(patches, rom, world);
 }
