@@ -77,7 +77,7 @@ std::array<std::string, ITEM_COUNT+1> RandomizerWorld::item_names() const
             item_names[i] = "No" + std::to_string(i);
         }
     }
-    item_names[ITEM_COUNT] = "Golds";
+    item_names[ITEM_GOLDS_START] = "Golds";
 
     return item_names;
 }

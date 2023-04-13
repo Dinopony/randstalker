@@ -14,7 +14,7 @@ static Item* parse_item_from_name_in_json(const std::string& item_name, Randomiz
         return item;
 
     // If item is formatted as "X golds", parse X value and create the matching gold stack item
-    if(item_name.ends_with("golds"))
+    if(item_name.ends_with(" golds") || item_name.ends_with(" Golds"))
     {
         size_t space_index = item_name.find_first_of(' ');
         if(space_index != std::string::npos)
@@ -36,25 +36,19 @@ static void parse_item_sources_from_json(RandomizerWorld& world, const Json& jso
     if(!json.count("itemSources"))
         return;
 
+    std::map<std::string, ItemSource*> item_sources_table;
+    for(ItemSource* source : world.item_sources())
+        item_sources_table[source->name()] = source;
+
     const Json& item_sources_json = json.at("itemSources");
-    for(auto&[region_id, item_sources_in_region_json] : item_sources_json.items())
+    for(auto&[source_name, item_name] : item_sources_json.items())
     {
         try {
-            WorldRegion* region = world.region(region_id);
-            std::map<std::string, ItemSource*> region_item_sources = region->item_sources();
-
-            for(auto&[source_name, item_name] : item_sources_in_region_json.items())
-            {
-                try {
-                    ItemSource* source = region_item_sources.at(source_name);
-                    Item* item = parse_item_from_name_in_json(item_name, world);
-                    source->item(item);
-                } catch(std::out_of_range&) {
-                    throw LandstalkerException("Item source '" + source_name + "' could not be found in region '" + region_id +  "'");
-                }
-            }
+            ItemSource* source = item_sources_table.at(source_name);
+            Item* item = parse_item_from_name_in_json(item_name, world);
+            source->item(item);
         } catch(std::out_of_range&) {
-            throw LandstalkerException("Region '" + region_id + "' could not be found");
+            throw LandstalkerException("Item source '" + source_name + "' could not be found.");
         }
     }
 }
