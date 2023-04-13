@@ -38,40 +38,6 @@ public:
 
     void alter_world(World& world) override
     {
-        if(_jewel_count > MAX_INDIVIDUAL_JEWELS)
-        {
-            Item* red_jewel = world.item(ITEM_RED_JEWEL);
-            red_jewel->name("Kazalt Jewel");
-            red_jewel->max_quantity(_jewel_count);
-        }
-        else
-        {
-            if(_jewel_count >= 5)
-            {
-                Item* item_yellow_jewel = new Item();
-                item_yellow_jewel->id(ITEM_YELLOW_JEWEL);
-                item_yellow_jewel->name("Yellow Jewel");
-                item_yellow_jewel->gold_value(500);
-                item_yellow_jewel->max_quantity(1);
-                world.add_item(item_yellow_jewel);
-            }
-            if(_jewel_count >= 4)
-            {
-                Item* item_blue_jewel = new Item();
-                item_blue_jewel->id(ITEM_BLUE_JEWEL);
-                item_blue_jewel->name("Blue Jewel");
-                item_blue_jewel->gold_value(500);
-                item_blue_jewel->max_quantity(1);
-                world.add_item(item_blue_jewel);
-            }
-            if(_jewel_count >= 3)
-            {
-                world.item(ITEM_GREEN_JEWEL)->name("Green Jewel");
-                world.item(ITEM_GREEN_JEWEL)->gold_value(500);
-                world.item(ITEM_GREEN_JEWEL)->max_quantity(1);
-            }
-        }
-
         // Remove jewels replaced from book IDs from priest stands if needed
         if(_jewel_count > 3 && _jewel_count <= MAX_INDIVIDUAL_JEWELS)
         {
