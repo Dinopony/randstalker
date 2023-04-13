@@ -2,10 +2,9 @@
 
 #include <string>
 #include <utility>
-#include "../../extlibs/landstalker_lib/model/item.hpp"
-#include "../../extlibs/landstalker_lib/model/entity.hpp"
-
-#include "../../extlibs/landstalker_lib/constants/item_codes.hpp"
+#include <landstalker_lib/model/item.hpp>
+#include <landstalker_lib/model/entity.hpp>
+#include <landstalker_lib/constants/item_codes.hpp>
 
 constexpr const char* ITEM_SOURCE_TYPE_CHEST = "chest";
 constexpr const char* ITEM_SOURCE_TYPE_GROUND = "ground";

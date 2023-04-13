@@ -12,15 +12,15 @@ if(DEBUG)
     add_compile_definitions(DEBUG)
 endif()
 
-add_subdirectory(extlibs/landstalker_lib landstalker_lib)
-include_directories("extlibs/")
+add_subdirectory(extlibs/landstalker_lib/landstalker_lib landstalker_lib)
+include_directories("extlibs/landstalker_lib")
 
 macro(WRAPPED_DEPENDENCY)
     message(STATUS "Defining wrapped dependency for ${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}")
     add_custom_command(
             OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}.hxx"
             COMMAND "${CMAKE_COMMAND}"
-            ARGS -DINPUT_FILE="${ARGV1}" -DVARIABLE_NAME="${ARGV2}" -DPROCESS_TYPE="${ARGV0}" -P "extlibs/landstalker_lib/wrap_file.cmake"
+            ARGS -DINPUT_FILE="${ARGV1}" -DVARIABLE_NAME="${ARGV2}" -DPROCESS_TYPE="${ARGV0}" -P "extlibs/landstalker_lib/landstalker_lib/wrap_file.cmake"
             DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}"
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
@@ -167,8 +167,7 @@ set(SOURCES
         "src/world_solver.hpp"
         "src/world_solver.cpp"
         "src/bingo.hpp"
-        "src/main.cpp"
-        )
+        "src/main.cpp")
 
 add_executable(randstalker "${SOURCES}")
 target_link_libraries(randstalker landstalker_lib)

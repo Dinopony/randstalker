@@ -1,10 +1,9 @@
 #include "item_source.hpp"
-#include "../../extlibs/landstalker_lib/model/entity.hpp"
-#include "../../extlibs/landstalker_lib/model/entity_type.hpp"
-#include "../../extlibs/landstalker_lib/model/map.hpp"
-#include "../../extlibs/landstalker_lib/model/world.hpp"
-
-#include "../../extlibs/landstalker_lib/exceptions.hpp"
+#include <landstalker_lib/model/entity.hpp>
+#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker_lib/model/map.hpp>
+#include <landstalker_lib/model/world.hpp>
+#include <landstalker_lib/exceptions.hpp>
 
 ItemSource::ItemSource(const std::string& name, const std::string& node_id, const std::vector<std::string>& hints) :
     _name       (name),

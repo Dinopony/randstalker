@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <string>
 #include <utility>
-#include "../../extlibs/landstalker_lib/md_tools.hpp"
-#include "../../extlibs/landstalker_lib/tools/json.hpp"
+#include <landstalker_lib/md_tools.hpp>
+#include <landstalker_lib/tools/json.hpp>
 
 class WorldTeleportTree {
 private:
