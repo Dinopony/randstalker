@@ -8,7 +8,6 @@
 #include "world_path.hpp"
 #include "world_region.hpp"
 #include "hint_source.hpp"
-#include "item_distribution.hpp"
 
 // Include headers automatically generated from model json files
 #include "data/item.json.hxx"
@@ -187,14 +186,6 @@ void RandomizerWorld::spawn_location(const SpawnLocation* spawn)
         this->starting_life(spawn->starting_life());
 }
 
-std::map<uint8_t, uint16_t> RandomizerWorld::item_quantities() const
-{
-    std::map<uint8_t, uint16_t> item_quantities;
-    for(uint8_t i=0 ; i<=ITEM_GOLDS_START ; ++i)
-        item_quantities[i] = _item_distributions[i].quantity();
-    return item_quantities;
-}
-
 HintSource* RandomizerWorld::hint_source(const std::string& name) const
 {
     for(HintSource* source : _hint_sources)
@@ -213,7 +204,6 @@ void RandomizerWorld::load_model_from_json()
     this->load_regions();
     this->load_spawn_locations();
     this->load_hint_sources();
-    this->init_item_distributions();
     this->load_teleport_trees();
 }
 
@@ -301,15 +291,6 @@ void RandomizerWorld::load_hint_sources()
 #ifdef DEBUG
     std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
 #endif
-}
-
-void RandomizerWorld::init_item_distributions()
-{
-    const std::vector<uint8_t> ITEMS_FORBIDDEN_ON_GROUND = {
-            ITEM_PAWN_TICKET, ITEM_DAHL, ITEM_SHORT_CAKE, ITEM_LIFESTOCK, ITEM_GOLDS_START
-    };
-    for(uint8_t item_id : ITEMS_FORBIDDEN_ON_GROUND)
-        _item_distributions[item_id].allowed_on_ground(false);
 }
 
 void RandomizerWorld::load_teleport_trees()

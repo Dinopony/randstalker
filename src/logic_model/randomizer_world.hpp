@@ -5,7 +5,6 @@
 #include <string>
 #include <landstalker_lib/constants/item_codes.hpp>
 #include <landstalker_lib/model/world.hpp>
-#include "item_distribution.hpp"
 #include "spawn_location.hpp"
 
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
@@ -26,7 +25,7 @@ private:
     std::map<std::string, SpawnLocation*> _available_spawn_locations;
     const SpawnLocation* _spawn_location = nullptr;
 
-    std::array<ItemDistribution, ITEM_COUNT+1> _item_distributions;
+    std::array<uint16_t, ITEM_COUNT+1> _item_quantities;
 
     std::vector<HintSource*> _hint_sources;
     std::vector<HintSource*> _used_hint_sources;
@@ -65,10 +64,11 @@ public:
     [[nodiscard]] const SpawnLocation* spawn_location() const { return _spawn_location; }
     void spawn_location(const SpawnLocation* spawn);
 
-    [[nodiscard]] const std::array<ItemDistribution, ITEM_COUNT+1>& item_distributions() const { return _item_distributions; }
-    [[nodiscard]] const ItemDistribution* item_distribution(uint8_t item_id) const { return &_item_distributions[item_id]; }
-    [[nodiscard]] ItemDistribution* item_distribution(uint8_t item_id) { return &_item_distributions[item_id]; }
-    [[nodiscard]] std::map<uint8_t, uint16_t> item_quantities() const;
+    [[nodiscard]] const std::array<uint16_t, ITEM_COUNT+1>& item_quantities() const { return _item_quantities; }
+    [[nodiscard]] uint16_t item_quantity(uint8_t item_id) const { return _item_quantities.at(item_id); }
+    void item_quantity(uint8_t item_id, uint16_t quantity) { _item_quantities[item_id] = quantity; }
+    void item_quantity_add(uint8_t item_id, uint16_t diff) { _item_quantities[item_id] += diff; }
+    void item_quantity_remove(uint8_t item_id, uint16_t diff) { _item_quantities[item_id] = (_item_quantities[item_id] >= diff) ? (_item_quantities[item_id] - diff) : 0; }
 
     [[nodiscard]] const std::vector<HintSource*>& hint_sources() const { return _hint_sources; }
     [[nodiscard]] HintSource* hint_source(const std::string& name) const;
@@ -100,6 +100,5 @@ private:
     void load_regions();
     void load_spawn_locations();
     void load_hint_sources();
-    void init_item_distributions();
     void load_teleport_trees();
 };

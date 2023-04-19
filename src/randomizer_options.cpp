@@ -96,6 +96,14 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
     json["gameSettings"]["fastTransitions"] = _fast_transitions;
 
+    json["gameSettings"]["finiteGroundItems"] = Json::array();
+    for(uint8_t item_id : _finite_ground_items)
+        json["gameSettings"]["finiteGroundItems"].emplace_back(_item_names[item_id]);
+
+    json["gameSettings"]["finiteShopItems"] = Json::array();
+    for(uint8_t item_id : _finite_shop_items)
+        json["gameSettings"]["finiteShopItems"].emplace_back(_item_names[item_id]);
+
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
@@ -196,6 +204,11 @@ void RandomizerOptions::parse_json(const Json& json)
                 _starting_items[item_id] = quantity;
             }
         }
+
+        _finite_ground_items = { ITEM_LIFESTOCK, ITEM_SHORT_CAKE, ITEM_PAWN_TICKET };
+        parse_json_item_array(game_settings_json.at("finiteGroundItems"), _finite_ground_items);
+        _finite_shop_items = { ITEM_PAWN_TICKET };
+        parse_json_item_array(game_settings_json.at("finiteShopItems"), _finite_shop_items);
     }
 
     if(json.contains("randomizerSettings"))
@@ -270,6 +283,37 @@ void RandomizerOptions::parse_json(const Json& json)
 
     if(json.contains("seed"))
         _seed = json.at("seed");
+}
+
+void RandomizerOptions::parse_json_item_array(const Json& json, std::vector<uint8_t>& output)
+{
+    output.reserve(ITEM_COUNT);
+
+    if(json.is_string())
+    {
+        std::string str = json;
+
+        if(str == "all")
+        {
+            output = {};
+            for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+                output.emplace_back(i);
+        }
+        else if(str == "none")
+            output = {};
+    }
+    else if(json.is_array())
+    {
+        output = {};
+        for(std::string item_name : json)
+        {
+            auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
+            if(it == _item_names.end())
+                throw LandstalkerException("Unknown item name '" + item_name + "' inside item array in preset file.");
+            uint8_t item_id = std::distance(_item_names.begin(), it);
+            output.emplace_back(item_id);
+        }
+    }
 }
 
 void RandomizerOptions::validate() const
@@ -351,6 +395,9 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack_vector(_possible_spawn_locations);
 
     bitpack.pack_array(_starting_items);
+    bitpack.pack_vector(_finite_ground_items);
+    bitpack.pack_vector(_finite_shop_items);
+
     bitpack.pack_vector(Json::to_msgpack(_model_patch_items));
     bitpack.pack_vector(Json::to_msgpack(_model_patch_spawns));
     bitpack.pack_vector(Json::to_msgpack(_model_patch_hint_sources));
@@ -410,6 +457,9 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 
     _starting_items = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
+    _finite_ground_items = bitpack.unpack_vector<uint8_t>();
+    _finite_shop_items = bitpack.unpack_vector<uint8_t>();
+
     _model_patch_items = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
     _model_patch_spawns = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
     _model_patch_hint_sources = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());

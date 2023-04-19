@@ -12,7 +12,6 @@
 
 #include "logic_model/world_path.hpp"
 #include "logic_model/randomizer_world.hpp"
-#include "logic_model/item_distribution.hpp"
 #include "logic_model/hint_source.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
@@ -267,44 +266,43 @@ static void apply_options_on_item_distributions(const RandomizerOptions& options
     // Apply the global distribution params, if set by the user
     const std::array<uint8_t, ITEM_COUNT+1>& distribution_param = options.items_distribution();
     for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
-        world.item_distribution(i)->quantity(distribution_param[i]);
+        world.item_quantity(i, distribution_param[i]);
 
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
-        if(world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
+        if(world.item_quantity(ITEM_RED_JEWEL) == 0)
         {
-            world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
-            world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+            world.item_quantity(ITEM_RED_JEWEL, options.jewel_count());
+            world.item_quantity_remove(ITEM_NONE, options.jewel_count());
         }
     }
     else
     {
-        if(options.jewel_count() >= 1 && world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
+        if(options.jewel_count() >= 1 && world.item_quantity(ITEM_RED_JEWEL) == 0)
         {
-            world.item_distribution(ITEM_RED_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
+            world.item_quantity_add(ITEM_RED_JEWEL, 1);
+            world.item_quantity_remove(ITEM_NONE, 1);
         }
-        if(options.jewel_count() >= 2 && world.item_distribution(ITEM_PURPLE_JEWEL)->quantity() == 0)
+        if(options.jewel_count() >= 2 && world.item_quantity(ITEM_PURPLE_JEWEL) == 0)
         {
-            world.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
+            world.item_quantity_add(ITEM_PURPLE_JEWEL, 1);
+            world.item_quantity_remove(ITEM_NONE, 1);
         }
-        if(options.jewel_count() >= 3 && world.item_distribution(ITEM_GREEN_JEWEL)->quantity() == 0)
+        if(options.jewel_count() >= 3 && world.item_quantity(ITEM_GREEN_JEWEL) == 0)
         {
-            world.item_distribution(ITEM_GREEN_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
+            world.item_quantity_add(ITEM_GREEN_JEWEL, 1);
+            world.item_quantity_remove(ITEM_NONE, 1);
         }
-        if(options.jewel_count() >= 4 && world.item_distribution(ITEM_BLUE_JEWEL)->quantity() == 0)
+        if(options.jewel_count() >= 4 && world.item_quantity(ITEM_BLUE_JEWEL) == 0)
         {
-            world.item_distribution(ITEM_BLUE_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
+            world.item_quantity_add(ITEM_BLUE_JEWEL, 1);
+            world.item_quantity_remove(ITEM_NONE, 1);
         }
-        if(options.jewel_count() >= 5 && world.item_distribution(ITEM_YELLOW_JEWEL)->quantity() == 0)
+        if(options.jewel_count() >= 5 && world.item_quantity(ITEM_YELLOW_JEWEL) == 0)
         {
-            world.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
+            world.item_quantity_add(ITEM_YELLOW_JEWEL, 1);
+            world.item_quantity_remove(ITEM_NONE, 1);
         }
     }
 }
