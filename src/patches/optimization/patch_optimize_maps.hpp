@@ -138,6 +138,8 @@ private:
                 MAP_MERCATOR_DOCKS_SUPPLY_SHOP
         };
 
+        world.map(MAP_MERCATOR_DOCKS_SUPPLY_SHOP)->map_setup_addr(0xFFFFFFFF);
+
         for(uint16_t map_id : MAPS_TO_REMOVE_VARIANTS_FROM)
         {
             Map* map = world.map(map_id);
