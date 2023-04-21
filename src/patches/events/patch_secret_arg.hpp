@@ -9,9 +9,7 @@ private:
     bool _has_golas_blessing;
 
 public:
-    explicit PatchSecretARG(const RandomizerOptions& options) :
-        _has_golas_blessing(options.hash_sentence().find("Gola") != std::string::npos)
-    {}
+    PatchSecretARG() = default;
 
     void inject_code(md::ROM& rom, World& world) override;
 };

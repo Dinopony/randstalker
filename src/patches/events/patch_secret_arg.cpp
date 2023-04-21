@@ -9,10 +9,8 @@
 #include "landstalker_lib/constants/map_codes.hpp"
 #include "landstalker_lib/constants/item_codes.hpp"
 #include "landstalker_lib/constants/offsets.hpp"
-#include "../../randomizer_options.hpp"
 #include "../../assets/secret_arg_music_bank.bin.hxx"
 
-// constexpr Flag FLAG_3_HOURS_ELAPSED = Flag(0x19, 0);
 constexpr Flag FLAG_ALL_VALID_EQUIPMENTS = Flag(0x2C, 0);
 constexpr Flag FLAG_FOUND_GNOME_1 = Flag(0x2C, 1);
 constexpr Flag FLAG_FOUND_GNOME_2 = Flag(0x2C, 2);
@@ -24,10 +22,6 @@ constexpr Flag FLAG_CLEARED_GH_3 = Flag(0xCE, 0);
 constexpr Flag FLAG_CLEARED_GH_4 = Flag(0xCE, 1);
 constexpr Flag FLAG_CLEARED_GH_5 = Flag(0xCE, 2);
 constexpr Flag FLAG_CLEARED_GH_6 = Flag(0xCE, 3);
-//constexpr Flag FLAG_UNDEFINED = Flag(0x3E, 1);
-//constexpr Flag FLAG_UNDEFINED = Flag(0x3E, 2);
-//constexpr Flag FLAG_UNDEFINED = Flag(0x3E, 3);
-//constexpr Flag FLAG_UNDEFINED = Flag(0xCD, 7);
 
 // =========================== MUSIC HANDLING ===========================
 
@@ -275,32 +269,6 @@ static void add_foxy_in_knt(md::ROM& rom, World& world)
     add_custom_text(map, world, "Foxy: What you are about to\naccomplish is grand, but can\nyou feel there is more to it?\x1e\n"
                                 "This island hides a bigger\nmystery, something that has\nyet to be solved...\x1e\n"
                                 "Perhaps you should take a\ncloser look at the\ncrypt of Mercator.\x03");
-
-    md::Code func;
-    {
-        // Remove Foxy if IGT < 2h30
-        func.cmpiw(0x0002, addr_(0xFF0FE2)); // 2 hours
-        func.bgt("ret"); // if greater, let Foxy
-        func.blt("erase_foxy"); // if lower, remove Foxy
-
-        // If equal, test minutes
-        func.cmpiw(0x001E, addr_(0xFF0FE0)); // 30 min
-        func.bge("ret"); // More than or equal to 2h30, let Foxy
-        // Less than 2h30, fallthrough and erase Foxy
-
-        // Actually erase Foxy
-        func.label("erase_foxy");
-        func.movew(0xFFFF, addr_(0xFF5480));
-    }
-    func.label("ret");
-    func.rts();
-
-    map->map_setup_addr(rom.inject_code(func));
-
-    // Change the crypt sign to indicate "Gola" is required inside hash sentence
-    world.game_strings()[0x10E] = "      FOR THIS ROOM'S SECRET\n"
-                                  "    TO APPEAR, GOLA'S BLESSING\n"
-                                  "        YOU MUST NOT FEAR\x03";
 }
 
 static Map* add_first_riddle_room(md::ROM& rom, World& world, MapPalette* pal)
@@ -1664,90 +1632,87 @@ void PatchSecretARG::inject_code(md::ROM& rom, World& world)
 
     add_foxy_in_knt(rom, world);
 
-    if(_has_golas_blessing)
-    {
-        MapPalette* blue_palace_palette = build_blue_palace_palette(world);
-        MapPalette* blue_shrine_palette = build_blue_shrine_palette(world);
-        MapPalette* golas_heart_palette = build_golas_heart_palette(world);
-        MapPalette* stairs_palette_2 = build_greyscale_palette(world, world.map(MAP_LAKE_SHRINE_342)->palette());
-        MapPalette* stairs_palette_1 = build_transition_palette(world, golas_heart_palette, stairs_palette_2);
-        MapPalette* final_fight_palette = build_greyscale_palette(world, world.map(MAP_NOLE_ARENA)->palette(), 0.4);
+    MapPalette* blue_palace_palette = build_blue_palace_palette(world);
+    MapPalette* blue_shrine_palette = build_blue_shrine_palette(world);
+    MapPalette* golas_heart_palette = build_golas_heart_palette(world);
+    MapPalette* stairs_palette_2 = build_greyscale_palette(world, world.map(MAP_LAKE_SHRINE_342)->palette());
+    MapPalette* stairs_palette_1 = build_transition_palette(world, golas_heart_palette, stairs_palette_2);
+    MapPalette* final_fight_palette = build_greyscale_palette(world, world.map(MAP_NOLE_ARENA)->palette(), 0.4);
 
-        Map* room_1 = add_first_riddle_room(rom, world, blue_palace_palette);
+    Map* room_1 = add_first_riddle_room(rom, world, blue_palace_palette);
 
-        Map* room_2 = add_room_2(rom, world, blue_palace_palette);
-        room_1->fall_destination(room_2->id());
+    Map* room_2 = add_room_2(rom, world, blue_palace_palette);
+    room_1->fall_destination(room_2->id());
 
-        Map* room_3 = add_room_3(rom, world, blue_palace_palette);
-        world.map_connections().emplace_back(MapConnection(room_2->id(), 18, 15, room_3->id(), 40, 37));
+    Map* room_3 = add_room_3(rom, world, blue_palace_palette);
+    world.map_connections().emplace_back(MapConnection(room_2->id(), 18, 15, room_3->id(), 40, 37));
 
-        add_gnomes_in_mercator(rom, world);
+    add_gnomes_in_mercator(rom, world);
 
-        Map* room_4 = add_room_4(rom, world, blue_palace_palette);
-        world.map_connections().emplace_back(MapConnection(room_3->id(), 37, 26, room_4->id(), 26, 19));
+    Map* room_4 = add_room_4(rom, world, blue_palace_palette);
+    world.map_connections().emplace_back(MapConnection(room_3->id(), 37, 26, room_4->id(), 26, 19));
 
-        Map* room_5 = add_room_5(rom, world, blue_shrine_palette);
-        world.map_connections().emplace_back(MapConnection(room_4->id(), 21, 21, room_5->id(), 25, 34, 2));
+    Map* room_5 = add_room_5(rom, world, blue_shrine_palette);
+    world.map_connections().emplace_back(MapConnection(room_4->id(), 21, 21, room_5->id(), 25, 34, 2));
 
-        Map* room_6 = add_room_6(rom, world, blue_shrine_palette);
-        world.map_connections().emplace_back(MapConnection(room_5->id(), 19, 25, room_6->id(), 34, 25, 4));
+    Map* room_6 = add_room_6(rom, world, blue_shrine_palette);
+    world.map_connections().emplace_back(MapConnection(room_5->id(), 19, 25, room_6->id(), 34, 25, 4));
 
-        add_statue_dialogues(rom, world);
+    add_statue_dialogues(rom, world);
 
-        Map* gh_room_1 = add_gh_room_1(rom, world);
-        add_teleport_to_golas_heart(rom, world, gh_room_1);
+    Map* gh_room_1 = add_gh_room_1(rom, world);
+    add_teleport_to_golas_heart(rom, world, gh_room_1);
 
-        // Archway
-        Map* gh_room_2 = add_gh_room_2(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_1->id(), 33, 48, gh_room_2->id(), 25, 34, 2));
+    // Archway
+    Map* gh_room_2 = add_gh_room_2(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_1->id(), 33, 48, gh_room_2->id(), 25, 34, 2));
 
-        // Double red spinner room
-        Map* gh_room_3 = add_gh_room_3(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_2->id(), 25, 23, gh_room_3->id(), 25, 34, 2));
+    // Double red spinner room
+    Map* gh_room_3 = add_gh_room_3(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_2->id(), 25, 23, gh_room_3->id(), 25, 34, 2));
 
-        // Lizards room
-        Map* gh_room_4 = add_gh_room_4(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_3->id(), 25, 19, gh_room_4->id(), 25, 34, 2));
+    // Lizards room
+    Map* gh_room_4 = add_gh_room_4(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_3->id(), 25, 19, gh_room_4->id(), 25, 34, 2));
 
-        // Solo unicorn room
-        Map* gh_room_5 = add_gh_room_5(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_5->id(), 19, 25, gh_room_4->id(), 34, 25, 4));
+    // Solo unicorn room
+    Map* gh_room_5 = add_gh_room_5(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_5->id(), 19, 25, gh_room_4->id(), 34, 25, 4));
 
-        // Mirrors T-room
-        Map* gh_room_6 = add_gh_room_6(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_6->id(), 25, 19, gh_room_5->id(), 25, 34, 2));
-        world.map_connections().emplace_back(MapConnection(gh_room_6->id(), 19, 25, gh_room_2->id(), 34, 25, 4));
+    // Mirrors T-room
+    Map* gh_room_6 = add_gh_room_6(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_6->id(), 25, 19, gh_room_5->id(), 25, 34, 2));
+    world.map_connections().emplace_back(MapConnection(gh_room_6->id(), 19, 25, gh_room_2->id(), 34, 25, 4));
 
-        // Healing room
-        Map* gh_room_7 = add_gh_room_7(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_7->id(), 19, 25, gh_room_6->id(), 34, 25, 4));
+    // Healing room
+    Map* gh_room_7 = add_gh_room_7(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_7->id(), 19, 25, gh_room_6->id(), 34, 25, 4));
 
-        // WS orc arena
-        Map* gh_room_8 = add_gh_room_8(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_2->id(), 19, 25, gh_room_8->id(), 27, 18, 4));
+    // WS orc arena
+    Map* gh_room_8 = add_gh_room_8(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_2->id(), 19, 25, gh_room_8->id(), 27, 18, 4));
 
-        // WS underground
-        Map* gh_room_9 = add_gh_room_9(rom, world, golas_heart_palette);
-        world.map_connections().emplace_back(MapConnection(gh_room_9->id(), 31, 18, gh_room_8->id(), 18, 19, 10));
+    // WS underground
+    Map* gh_room_9 = add_gh_room_9(rom, world, golas_heart_palette);
+    world.map_connections().emplace_back(MapConnection(gh_room_9->id(), 31, 18, gh_room_8->id(), 18, 19, 10));
 
-        // Giant stairs
-        Map* gh_room_10 = add_gh_stairs_room(rom, world, golas_heart_palette, 817);
-        world.map_connections().emplace_back(MapConnection(gh_room_9->id(), 16, 51, gh_room_10->id(), 45, 22, 4));
-        Map* gh_room_11 = add_gh_stairs_room(rom, world, stairs_palette_1, 818);
-        world.map_connections().emplace_back(MapConnection(gh_room_10->id(), 20, 22, gh_room_11->id(), 45, 22, 4));
-        Map* gh_room_12 = add_gh_stairs_room(rom, world, stairs_palette_2, 819);
-        world.map_connections().emplace_back(MapConnection(gh_room_11->id(), 20, 22, gh_room_12->id(), 45, 22, 4));
+    // Giant stairs
+    Map* gh_room_10 = add_gh_stairs_room(rom, world, golas_heart_palette, 817);
+    world.map_connections().emplace_back(MapConnection(gh_room_9->id(), 16, 51, gh_room_10->id(), 45, 22, 4));
+    Map* gh_room_11 = add_gh_stairs_room(rom, world, stairs_palette_1, 818);
+    world.map_connections().emplace_back(MapConnection(gh_room_10->id(), 20, 22, gh_room_11->id(), 45, 22, 4));
+    Map* gh_room_12 = add_gh_stairs_room(rom, world, stairs_palette_2, 819);
+    world.map_connections().emplace_back(MapConnection(gh_room_11->id(), 20, 22, gh_room_12->id(), 45, 22, 4));
 
-        // Falling room
-        Map* gh_room_13 = add_gh_falling_room(rom, world, stairs_palette_2);
-        world.map_connections().emplace_back(MapConnection(gh_room_12->id(), 20, 22, gh_room_13->id(), 34, 25, 4));
+    // Falling room
+    Map* gh_room_13 = add_gh_falling_room(rom, world, stairs_palette_2);
+    world.map_connections().emplace_back(MapConnection(gh_room_12->id(), 20, 22, gh_room_13->id(), 34, 25, 4));
 
-        Map* gh_room_14 = add_gh_final_fight_room(rom, world, final_fight_palette);
-        gh_room_13->fall_destination(gh_room_14->id());
+    Map* gh_room_14 = add_gh_final_fight_room(rom, world, final_fight_palette);
+    gh_room_13->fall_destination(gh_room_14->id());
 
-        inject_special_music_bank(rom);
-        extend_room_music_lut(rom);
-    }
+    inject_special_music_bank(rom);
+    extend_room_music_lut(rom);
 
     // Inject the function capable of using the custom text lookup table, and call it on Dexter universal script
     custom_text_map_ids_table.add_word(0xFFFF);

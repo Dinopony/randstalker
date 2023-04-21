@@ -64,6 +64,7 @@ private:
 
     // ------------- Events -------------
     bool _christmas_event = false;
+    bool _secret_event = false;
 
     // ------------- Plando world JSON -------------
     Json _world_json;
@@ -127,6 +128,7 @@ public:
 
     // Event
     [[nodiscard]] bool christmas_event() const { return _christmas_event; }
+    [[nodiscard]] bool secret_event() const { return _secret_event; }
 
     // Plando-specific options
     [[nodiscard]] const Json& world_json() const { return _world_json; }

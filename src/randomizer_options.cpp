@@ -206,9 +206,12 @@ void RandomizerOptions::parse_json(const Json& json)
         }
 
         _finite_ground_items = { ITEM_LIFESTOCK, ITEM_SHORT_CAKE, ITEM_PAWN_TICKET };
-        parse_json_item_array(game_settings_json.at("finiteGroundItems"), _finite_ground_items);
+        if(game_settings_json.contains("finiteGroundItems"))
+            parse_json_item_array(game_settings_json.at("finiteGroundItems"), _finite_ground_items);
+
         _finite_shop_items = { ITEM_PAWN_TICKET };
-        parse_json_item_array(game_settings_json.at("finiteShopItems"), _finite_shop_items);
+        if(game_settings_json.contains("finiteShopItems"))
+            parse_json_item_array(game_settings_json.at("finiteShopItems"), _finite_shop_items);
     }
 
     if(json.contains("randomizerSettings"))
@@ -277,6 +280,7 @@ void RandomizerOptions::parse_json(const Json& json)
     }
 
     _christmas_event = json.value("christmasEvent", false);
+    _secret_event = json.value("secretEvent", false);
 
     if(json.contains("world"))
         _world_json = json.at("world");
