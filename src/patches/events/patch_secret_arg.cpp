@@ -52,7 +52,7 @@ static void extend_room_music_lut(md::ROM& rom)
     {
         func.extw(reg_D0);
         func.lea(new_room_music_lut_addr, reg_A0);
-        func.moveb(addr_(reg_A0, reg_D0), reg_D0);
+        func.moveb(addrw_(reg_A0, reg_D0), reg_D0);
     }
     func.movem_from_stack({}, { reg_A0 });
     func.rts();
