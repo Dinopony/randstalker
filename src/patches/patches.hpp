@@ -47,6 +47,7 @@
 #include "technical/patch_fix_item_checks.hpp"
 #include "technical/patch_improve_gold_rewards_handling.hpp"
 #include "technical/patch_improve_lantern_handling.hpp"
+#include "technical/patch_flags_for_ground_items.hpp"
 
 #include "optimization/patch_optimize_maps.hpp"
 #include "optimization/patch_optimize_destel_well_map.hpp"
@@ -83,6 +84,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOptimizeAILookup());
     patches.emplace_back(new PatchOptimizeReorderDrawOrderList());
     patches.emplace_back(new PatchOptimizeCollisionDetect());
+    patches.emplace_back(new PatchFlagsForGroundItems(options));
 
     // =======================================================
     // Randomizer adjustments to make it playable / interesting

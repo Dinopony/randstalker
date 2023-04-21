@@ -86,19 +86,15 @@ private:
      */
     static void prevent_hint_item_save_scumming(md::ROM& rom)
     {
-        // TODO: Only save if Lithograph / Oracle Stone was bought
         md::Code func_save_on_buy;
         {
-            // Redo instructions that were removed by injection
-            func_save_on_buy.movew(reg_D2, reg_D0);
-            func_save_on_buy.jsr(0x291D6); // GetItem
-            // Save game
-            func_save_on_buy.jsr(0x1592);  // SaveGame
+            func_save_on_buy.jsr(0x1592);                   // Save game
+            func_save_on_buy.moveb(0xFF, addr_(0xFF1903));  // Redo instruction that was removed by injection
         }
         func_save_on_buy.rts();
         uint32_t func_save_on_buy_addr = rom.inject_code(func_save_on_buy);
 
-        rom.set_code(0x24F3E, md::Code().jsr(func_save_on_buy_addr));
+        rom.set_code(0x24F48, md::Code().jsr(func_save_on_buy_addr).nop());
     }
 
     /**

@@ -42,6 +42,8 @@ private:
     uint16_t _enemies_drop_chance_factor = 100;
     uint8_t _health_gained_per_lifestock = 1;
     bool _fast_transitions = true;
+    std::vector<uint8_t> _finite_ground_items {};
+    std::vector<uint8_t> _finite_shop_items {};
 
     // ------------- Randomization settings -------------
     // (included in permalink & presets, not in plandos)
@@ -98,6 +100,8 @@ public:
     [[nodiscard]] double enemies_drop_chance_factor() const { return (double)_enemies_drop_chance_factor / 100.0; }
     [[nodiscard]] uint8_t health_gained_per_lifestock() const { return _health_gained_per_lifestock; }
     [[nodiscard]] bool fast_transitions() const { return _fast_transitions; }
+    [[nodiscard]] const std::vector<uint8_t>& finite_ground_items() const { return _finite_ground_items; }
+    [[nodiscard]] const std::vector<uint8_t>& finite_shop_items() const { return _finite_shop_items; }
 
     // Randomization options
     [[nodiscard]] uint32_t seed() const { return _seed; }
@@ -137,6 +141,7 @@ public:
     [[nodiscard]] std::string permalink() const;
 
 private:
+    void parse_json_item_array(const Json& json, std::vector<uint8_t>& output);
     void parse_permalink(std::string permalink);
     void validate() const;
 };

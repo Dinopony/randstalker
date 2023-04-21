@@ -22,7 +22,9 @@
         "enemiesGoldsFactor": 100,
         "enemiesDropChanceFactor": 100,
         "healthGainedPerLifestock": 1,
-        "fastMenuTransitions": true
+        "fastMenuTransitions": true,
+        "finiteGroundItems": [ "Life Stock", "Short Cake", "Pawn Ticket" ],
+        "finiteShopItems": [ "Pawn Ticket" ]
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,

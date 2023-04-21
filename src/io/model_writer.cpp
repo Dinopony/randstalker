@@ -5,7 +5,6 @@
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
-#include "../logic_model/item_distribution.hpp"
 #include "../logic_model/randomizer_world.hpp"
 
 void ModelWriter::write_world_model(const RandomizerWorld& world)
@@ -73,6 +72,6 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
     Json distribs_json = Json::object();
     auto item_names = world.item_names();
     for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
-        distribs_json[item_names[i]] = world.item_distribution(i)->to_json();
+        distribs_json[item_names[i]] = world.item_quantity(i);
     dump_json_to_file(distribs_json, "./json_data/item_distribution.json");
 }

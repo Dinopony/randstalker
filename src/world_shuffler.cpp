@@ -13,7 +13,6 @@
 
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
-#include "logic_model/item_distribution.hpp"
 #include "world_solver.hpp"
 
 #include <algorithm>
@@ -233,7 +232,11 @@ void WorldShuffler::init_item_pool()
         return;
 
     _item_pool.reserve(_world.item_sources().size());
-    _item_pool_quantities = _world.item_quantities();
+
+    _item_pool_quantities.clear();
+    const auto& quantities = _world.item_quantities();
+    for(size_t i=0 ; i<quantities.size() ; ++i)
+        _item_pool_quantities[i] = quantities[i];
 
     // Count quantities already in place
     for(ItemSource* source : _world.item_sources())
@@ -384,8 +387,6 @@ bool WorldShuffler::test_item_source_compatibility(ItemSource* source, Item* ite
 
     ItemSourceOnGround* cast_source = reinterpret_cast<ItemSourceOnGround*>(source);
     if(item->id() >= ITEM_GOLDS_START)
-        return false;
-    if(!cast_source->can_be_taken_only_once() && !_world.item_distribution(item->id())->allowed_on_ground())
         return false;
 
     if(source->is_shop_item())
@@ -580,7 +581,7 @@ void WorldShuffler::randomize_lithograph_hint()
         return;
     }
 
-    if(_options.jewel_count() == 0 || _world.item_distribution(ITEM_LITHOGRAPH)->quantity() == 0)
+    if(_options.jewel_count() == 0 || _world.item_quantity(ITEM_LITHOGRAPH) == 0)
     {
         lithograph_hint_source->text("This tablet seems of no use...");
         return;
@@ -672,7 +673,7 @@ void WorldShuffler::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_i
 {
     HintSource* oracle_stone_source = _world.hint_source("Oracle Stone");
 
-    if(_world.item_distribution(ITEM_ORACLE_STONE)->quantity() > 0)
+    if(_world.item_quantity(ITEM_ORACLE_STONE) > 0)
     {
         _world.add_used_hint_source(oracle_stone_source);
 

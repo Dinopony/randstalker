@@ -116,10 +116,10 @@ private:
     {
         md::Code func;
         {
-            func.jsr(0x22EE8); // open textbox
+            func.jsr(0x28F9E); // open textbox
             func.movew(0x22, reg_D0);
             func.jsr(0x28FD8); // display text
-            func.jsr(0x22EA0); // close textbox
+            func.jsr(0x28FB8); // close textbox
         }
         func.rts();
         return rom.inject_code(func);

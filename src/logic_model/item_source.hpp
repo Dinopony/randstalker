@@ -75,20 +75,22 @@ class ItemSourceOnGround : public ItemSource
 {
 private:
     std::vector<Entity*> _entities;
-    bool _cannot_be_taken_repeatedly;
+    uint8_t _ground_item_id = 0x00;
 
 public:
-    ItemSourceOnGround(const std::string& name, std::vector<Entity*> entities, const std::string& node_id = "", 
-                        const std::vector<std::string>& hints = {}, bool cannot_be_taken_repeatedly = false, bool add_hint = true) :
+    ItemSourceOnGround(const std::string& name, std::vector<Entity*> entities, uint8_t ground_item_id, const std::string& node_id = "",
+                        const std::vector<std::string>& hints = {}, bool add_hint = true) :
         ItemSource                  (name, node_id, hints), 
         _entities                   (std::move(entities)),
-        _cannot_be_taken_repeatedly (cannot_be_taken_repeatedly)
+        _ground_item_id             (ground_item_id)
     {
         if(add_hint)
             this->add_hint("lying on the ground, waiting for someone to pick it up");
     }
 
     [[nodiscard]] const std::vector<Entity*>& entities() const { return _entities; }
+    [[nodiscard]] uint8_t ground_item_id() const { return _ground_item_id; }
+
     void item(Item* item) override
     { 
         ItemSource::item(item);
@@ -97,7 +99,6 @@ public:
     }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_GROUND; }
     [[nodiscard]] Json to_json() const override;
-    [[nodiscard]] bool can_be_taken_only_once() const { return _cannot_be_taken_repeatedly; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,9 +106,9 @@ public:
 class ItemSourceShop : public ItemSourceOnGround
 {
 public:
-    ItemSourceShop(const std::string& name, std::vector<Entity*> entities, const std::string& node_id = "", 
+    ItemSourceShop(const std::string& name, std::vector<Entity*> entities, uint8_t ground_item_id, const std::string& node_id = "",
                     const std::vector<std::string>& hints = {}) :
-        ItemSourceOnGround (name, entities, node_id, hints, true, false)
+        ItemSourceOnGround (name, std::move(entities), ground_item_id, node_id, hints, false)
     {
         this->add_hint("owned by someone trying to make profit out of it");
     }

@@ -61,11 +61,12 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
             entities.emplace_back(entity);
         }
 
-        if(type == "shop")
-            return new ItemSourceShop(name, entities, node_id, hints);
+        uint8_t ground_item_id = json.at("groundItemId");
 
-        bool cannot_be_taken_repeatedly = json.value("cannotBeTakenRepeatedly", false);
-        return new ItemSourceOnGround(name, entities, node_id, hints, cannot_be_taken_repeatedly); 
+        if(type == "shop")
+            return new ItemSourceShop(name, entities, ground_item_id, node_id, hints);
+
+        return new ItemSourceOnGround(name, entities, ground_item_id, node_id, hints);
     }
     else if(type == "reward")
     {
@@ -108,9 +109,6 @@ Json ItemSourceOnGround::to_json() const
         else
             json["entities"].emplace_back(entity_json);
     }
-
-    if(_cannot_be_taken_repeatedly)
-        json["cannotBeTakenRepeatedly"] = _cannot_be_taken_repeatedly;
 
     return json;
 }
