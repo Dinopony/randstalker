@@ -207,10 +207,13 @@ void WorldShuffler::randomize_items()
 
     // Analyse items required to complete the seed
     Json& debug_log = _solver.debug_log();
-    _minimal_items_to_complete = _solver.find_minimal_inventory();
-    debug_log["requiredItems"] = Json::array();
-    for (Item* item : _minimal_items_to_complete)
-        debug_log["requiredItems"].emplace_back(item->name());
+    if(!_options.archipelago_world())
+    {
+        _minimal_items_to_complete = _solver.find_minimal_inventory();
+        debug_log["requiredItems"] = Json::array();
+        for(Item* item : _minimal_items_to_complete)
+            debug_log["requiredItems"].emplace_back(item->name());
+    }
 }
 
 /**
@@ -960,5 +963,3 @@ Json WorldShuffler::playthrough_as_json() const
 
     return json;
 }
-
-

@@ -7,7 +7,13 @@
  */
 class PatchStatueOfJyptaGoldsOnWalk : public GamePatch
 {
+private:
+    bool _archipelago;
+
 public:
+    explicit PatchStatueOfJyptaGoldsOnWalk(bool archipelago) : _archipelago(archipelago)
+    {}
+
     void inject_code(md::ROM& rom, World& world) override
     {
         constexpr uint16_t GOLDS_PER_CYCLE = 0x0001;
@@ -37,7 +43,36 @@ public:
         uint32_t func_addr = rom.inject_code(func_handle_walk_abilities);
 
         // ============== Hook the function inside game code ==============
-        rom.set_code(0x16696, md::Code().nop(5));
+        if(_archipelago)
+        {
+            uint32_t func_process_received_items = inject_func_process_received_items(rom);
+            rom.set_code(0x16696, md::Code().jsr(func_process_received_items).nop(2));
+        }
+        else
+        {
+            rom.set_code(0x16696, md::Code().nop(5));
+        }
+
         rom.set_code(0x166D0, md::Code().jsr(func_addr).nop(4));
+    }
+
+private:
+    uint32_t inject_func_process_received_items(md::ROM& rom)
+    {
+        md::Code func;
+
+        func.cmpib(0xFF, addr_(0xFF0020));
+        func.beq("return");
+        {
+            func.clrw(addr_(0xFF1196));
+            func.moveb(addr_(0xFF0020), addr_(0xFF1197));
+            func.jsr(0x28EBA); // Receive item
+            func.jsr(0x28FB8); // Close textbox
+            func.moveb(0xFF, addr_(0xFF0020));
+        }
+        func.label("return");
+        func.rts();
+
+        return rom.inject_code(func);
     }
 };

@@ -87,7 +87,9 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 {
     Json spoiler_json;
 
-    spoiler_json["permalink"] = options.permalink();
+    if(!options.archipelago_world())
+        spoiler_json["permalink"] = options.permalink();
+
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
@@ -190,7 +192,7 @@ void generate(const ArgumentDictionary& args)
     }
 
     // Write a spoiler log to help the player
-    if(!spoiler_log_path.empty())
+    if(!spoiler_log_path.empty() && !options.archipelago_world())
     {
         std::ofstream spoiler_file(spoiler_log_path);
         if(!spoiler_file)
@@ -206,8 +208,13 @@ void generate(const ArgumentDictionary& args)
 
     //std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
     std::cout << "\nHash sentence: " << options.hash_sentence() << "\n";
-    std::cout << "\nPermalink: " << options.permalink() << "\n";
-    std::cout << "\nShare the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
+
+    if(!options.archipelago_world())
+    {
+        std::cout << "\nPermalink: " << options.permalink() << "\n";
+        std::cout << "\nShare the permalink above with other people to enable them building the exact same seed.\n"
+                  << std::endl;
+    }
 }
 
 int main(int argc, char* argv[])

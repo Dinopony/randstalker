@@ -48,6 +48,7 @@
 #include "technical/patch_improve_gold_rewards_handling.hpp"
 #include "technical/patch_improve_lantern_handling.hpp"
 #include "technical/patch_flags_for_ground_items.hpp"
+#include "technical/patch_handle_archipelago.hpp"
 
 #include "optimization/patch_optimize_maps.hpp"
 #include "optimization/patch_optimize_destel_well_map.hpp"
@@ -86,6 +87,9 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOptimizeCollisionDetect());
     patches.emplace_back(new PatchFlagsForGroundItems(options));
 
+    if(options.archipelago_world())
+        patches.emplace_back(new PatchHandleArchipelago(options));
+
     // =======================================================
     // Randomizer adjustments to make it playable / interesting
     patches.emplace_back(new PatchNewGame(personal_settings.add_ingame_item_tracker()));
@@ -123,7 +127,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOracleStoneHintOnUse());
     patches.emplace_back(new PatchSpellBookTeleportOnUse(options.consumable_spell_book()));
     patches.emplace_back(new PatchRecordBookSaveOnUse(options.consumable_record_book()));
-    patches.emplace_back(new PatchStatueOfJyptaGoldsOnWalk());
+    patches.emplace_back(new PatchStatueOfJyptaGoldsOnWalk(options.archipelago_world()));
 
     // =======================================================
     // Fluff / quality of life

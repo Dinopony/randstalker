@@ -19,10 +19,14 @@ public:
     void inject_data(md::ROM& rom, World& world) override
     {
         ByteArray byte_array;
-        for(size_t id=ITEM_GOLDS_START ; id < world.items().size() ; ++id)
+        for(size_t id=ITEM_GOLDS_START ; id < ITEM_GOLDS_END ; ++id)
         {
-            Item* gold_item = world.item(id);
-            byte_array.add_byte(static_cast<uint8_t>(gold_item->gold_value()));
+            try {
+                Item* gold_item = world.item(id);
+                byte_array.add_byte(static_cast<uint8_t>(gold_item->gold_value()));
+            } catch(std::out_of_range&) {
+                break;
+            }
         }
 
         _gold_rewards_table_addr = rom.inject_bytes(byte_array);
@@ -78,6 +82,14 @@ private:
         {
             proc_check_if_item_is_golds.clrl(reg_D0);
             proc_check_if_item_is_golds.movew(addr_(0xFF1196), reg_D0);
+            proc_check_if_item_is_golds.cmpiw(ITEM_ARCHIPELAGO, reg_D0);
+            proc_check_if_item_is_golds.bne("item_not_archipelago");
+            {
+                // Archipelago item case
+                proc_check_if_item_is_golds.movew(0x1E, reg_D0);
+                proc_check_if_item_is_golds.jmp(JUMP_ADDR_NO_REWARD);
+            }
+            proc_check_if_item_is_golds.label("item_not_archipelago");
             proc_check_if_item_is_golds.cmpiw(ITEM_GOLDS_START, reg_D0);
             proc_check_if_item_is_golds.blt("item_not_golds");
             {
@@ -100,6 +112,7 @@ private:
             proc_check_if_item_is_golds.jmp(JUMP_ADDR_ITEM_REWARD);
         }
         uint32_t addr = rom.inject_code(proc_check_if_item_is_golds);
+
         rom.set_code(0x28EC4, md::Code().jmp(addr));
     }
 };

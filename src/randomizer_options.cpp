@@ -95,6 +95,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["enemiesDropChanceFactor"] = _enemies_drop_chance_factor;
     json["gameSettings"]["healthGainedPerLifestock"] = _health_gained_per_lifestock;
     json["gameSettings"]["fastTransitions"] = _fast_transitions;
+    json["gameSettings"]["archipelagoWorld"] = _archipelago_world;
 
     json["gameSettings"]["finiteGroundItems"] = Json::array();
     for(uint8_t item_id : _finite_ground_items)
@@ -191,6 +192,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _health_gained_per_lifestock = game_settings_json.at("healthGainedPerLifestock");
         if(game_settings_json.contains("fastTransitions"))
             _fast_transitions = game_settings_json.at("fastTransitions");
+        if(game_settings_json.contains("archipelagoWorld"))
+            _archipelago_world = game_settings_json.at("archipelagoWorld");
 
         if(game_settings_json.contains("startingItems"))
         {
