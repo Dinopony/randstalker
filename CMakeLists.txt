@@ -40,6 +40,7 @@ wrapped_dependency(RAW      src/assets/christmas_moneybag.bin               CHRI
 wrapped_dependency(RAW      src/assets/blue_jewel.bin                       BLUE_JEWEL_SPRITE)
 wrapped_dependency(RAW      src/assets/green_jewel.bin                      GREEN_JEWEL_SPRITE)
 wrapped_dependency(RAW      src/assets/yellow_jewel.bin                     YELLOW_JEWEL_SPRITE)
+wrapped_dependency(RAW      src/assets/archipelago_item.bin                 ARCHIPELAGO_ITEM_SPRITE)
 wrapped_dependency(RAW      src/assets/secret_arg_music_bank.bin            ARG_MUSIC_BANK)
 
 wrapped_dependency(RAW      src/assets/titlescreen/title1_layout.rle        TITLE1_LAYOUT)
@@ -56,6 +57,7 @@ set(SOURCES
         "src/assets/blue_jewel.bin.hxx"
         "src/assets/green_jewel.bin.hxx"
         "src/assets/yellow_jewel.bin.hxx"
+        "src/assets/archipelago_item.bin.hxx"
         "src/assets/secret_arg_music_bank.bin.hxx"
 
         "src/assets/titlescreen/title1_layout.rle.hxx"

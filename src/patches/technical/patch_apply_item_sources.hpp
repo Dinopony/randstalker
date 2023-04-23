@@ -34,7 +34,11 @@ public:
                 // Therefore those types of item sources will effectively be written when map entities are written.
                 ItemSourceOnGround* ground_source = reinterpret_cast<ItemSourceOnGround*>(source);
                 for (Entity* entity : ground_source->entities())
-                    entity->entity_type_id(ground_source->item_id() + 0xC0);
+                {
+                    uint8_t item_id = ground_source->item_id();
+                    uint8_t entity_type_id = (item_id == ITEM_ARCHIPELAGO) ? ENTITY_ARCHIPELAGO_ITEM : item_id+0xC0;
+                    entity->entity_type_id(entity_type_id);
+                }
             }
         }
     }

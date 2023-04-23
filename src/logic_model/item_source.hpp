@@ -90,13 +90,6 @@ public:
 
     [[nodiscard]] const std::vector<Entity*>& entities() const { return _entities; }
     [[nodiscard]] uint8_t ground_item_id() const { return _ground_item_id; }
-
-    void item(Item* item) override
-    { 
-        ItemSource::item(item);
-        for (Entity* entity : _entities)
-            entity->entity_type_id(this->item_id() + 0xC0);
-    }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_GROUND; }
     [[nodiscard]] Json to_json() const override;
 };

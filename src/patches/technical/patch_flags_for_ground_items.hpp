@@ -44,10 +44,9 @@ public:
             _finite_shop_items.emplace_back(ITEM_RED_JEWEL);
         }
 
-        // TODO: Reactivate
         // Archipelago items have no point in being obtained several times
-//      if(options.archipelago_world())
-//          _finite_ground_items.emplace_back(ITEM_ARCHIPELAGO);
+        if(options.archipelago_world())
+            _finite_ground_items.emplace_back(ITEM_ARCHIPELAGO);
     }
 
     void alter_world(World& world) override
