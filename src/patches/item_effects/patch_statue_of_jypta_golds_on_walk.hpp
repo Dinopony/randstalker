@@ -68,6 +68,7 @@ private:
             func.moveb(addr_(0xFF0020), addr_(0xFF1197));
             func.jsr(0x28EBA); // Receive item
             func.jsr(0x28FB8); // Close textbox
+            func.addiw(1, addr_(0x107E));
             func.moveb(0xFF, addr_(0xFF0020));
         }
         func.label("return");
