@@ -4,6 +4,7 @@
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
+#include "../logic_model/world_teleport_tree.hpp"
 #include <landstalker_lib/tools/stringtools.hpp>
 #include <landstalker_lib/exceptions.hpp>
 
@@ -112,17 +113,42 @@ static void parse_dark_region_from_json(RandomizerWorld& world, const Json& json
 
 static void parse_fahl_enemies(RandomizerWorld& world, const Json& json)
 {
-    if(json.contains("fahlEnemies"))
-    {
-        for(std::string enemy_name : json.at("fahlEnemies"))
-        {
-            EntityType* enemy = world.entity_type(enemy_name);
-            if(!enemy)
-                throw LandstalkerException("Enemy type '" + enemy_name + "' could not be found");
+    if(!json.contains("fahlEnemies"))
+        return;
 
-            world.add_fahl_enemy(enemy);
-        }
+    for(std::string enemy_name : json.at("fahlEnemies"))
+    {
+        EntityType* enemy = world.entity_type(enemy_name);
+        if(!enemy)
+            throw LandstalkerException("Enemy type '" + enemy_name + "' could not be found");
+
+        world.add_fahl_enemy(enemy);
     }
+}
+
+static void parse_teleport_trees(RandomizerWorld& world, const Json& json)
+{
+    if(!json.contains("teleportTreePairs"))
+        return;
+
+    std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> pairs = world.teleport_tree_pairs();
+
+    std::map<std::string, WorldTeleportTree*> tree_dictionary;
+    for(const auto& pair : pairs)
+    {
+        tree_dictionary[pair.first->name()] = pair.first;
+        tree_dictionary[pair.second->name()] = pair.second;
+    }
+    pairs.clear();
+
+    for(Json pair : json.at("teleportTreePairs"))
+    {
+        WorldTeleportTree* tree_1 = tree_dictionary.at(pair[0]);
+        WorldTeleportTree* tree_2 = tree_dictionary.at(pair[1]);
+        pairs.emplace_back(std::make_pair(tree_1, tree_2));
+    }
+
+    world.teleport_tree_pairs(pairs);
 }
 
 void WorldJsonParser::parse_world_json(RandomizerWorld& world, const Json& json)
@@ -132,4 +158,5 @@ void WorldJsonParser::parse_world_json(RandomizerWorld& world, const Json& json)
     parse_spawn_location_from_json(world, json);
     parse_dark_region_from_json(world, json);
     parse_fahl_enemies(world, json);
+    parse_teleport_trees(world, json);
 }
