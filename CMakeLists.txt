@@ -140,6 +140,7 @@ set(SOURCES
         "src/patches/technical/patch_randomizer_adaptations.hpp"
         "src/patches/technical/patch_save_select_show_hash_option.hpp"
         "src/patches/technical/patch_flags_for_ground_items.hpp"
+        "src/patches/technical/patch_update_teleport_tree_connections.hpp"
 
         "src/patches/optimization/patch_optimize_maps.hpp"
         "src/patches/optimization/patch_optimize_destel_well_map.hpp"

@@ -49,6 +49,7 @@
 #include "technical/patch_improve_lantern_handling.hpp"
 #include "technical/patch_flags_for_ground_items.hpp"
 #include "technical/patch_handle_archipelago.hpp"
+#include "technical/patch_update_teleport_tree_connections.hpp"
 
 #include "optimization/patch_optimize_maps.hpp"
 #include "optimization/patch_optimize_destel_well_map.hpp"
@@ -108,6 +109,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchFahlChallenge());
     patches.emplace_back(new PatchShowAllBooksInChurches());
     patches.emplace_back(new PatchSetLifestocksHealth(options.health_gained_per_lifestock()));
+    patches.emplace_back(new PatchUpdateTeleportTreeConnections());
     if(options.remove_tree_cutting_glitch_drops())
         patches.emplace_back(new PatchRemoveTreeCuttingGlitchDrops());
     if(options.use_armor_upgrades())

@@ -96,48 +96,21 @@ void WorldShuffler::randomize_dark_rooms()
 
 void WorldShuffler::randomize_tibor_trees()
 {
-    const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& tree_pairs = _world.teleport_tree_pairs();
-
-    std::vector<uint16_t> tree_map_ids;
-    std::map<uint16_t, uint16_t> original_tree_map_for_exterior_maps;
-    std::map<uint16_t, std::string> exterior_map_names;
-    std::vector<std::pair<uint16_t, std::string>> exterior_map_and_node_list;
-    for(auto& pair : tree_pairs)
+    std::vector<WorldTeleportTree*> all_trees;
+    for(const auto& pair : _world.teleport_tree_pairs())
     {
-        for(uint8_t i=0 ; i<2 ; ++i)
-        {
-            WorldTeleportTree* tree = (i==0) ? pair.first : pair.second;
-            tree_map_ids.emplace_back(tree->tree_map_id());
-            original_tree_map_for_exterior_maps[tree->exterior_map_id()] = tree->tree_map_id();
-            exterior_map_and_node_list.emplace_back(std::make_pair(tree->exterior_map_id(), tree->node_id()));
-            exterior_map_names[tree->exterior_map_id()] = tree->name();
-            delete tree;
-        }
+        all_trees.emplace_back(pair.first);
+        all_trees.emplace_back(pair.second);
     }
-    vectools::shuffle(exterior_map_and_node_list, _rng);
-
-    // Create new pairs of teleport trees and update map connections
-    std::vector<WorldTeleportTree*> new_teleport_trees;
-    for(size_t i=0 ; i<exterior_map_and_node_list.size() ; ++i)
-    {
-        uint16_t exterior_map_id = exterior_map_and_node_list[i].first;
-        const std::string& name = exterior_map_names[exterior_map_id];
-        const std::string& node_id = exterior_map_and_node_list[i].second;
-
-        uint16_t old_tree_map_id = original_tree_map_for_exterior_maps[exterior_map_id];
-        uint16_t new_tree_map_id = tree_map_ids[i];
-
-        new_teleport_trees.emplace_back(new WorldTeleportTree(name, new_tree_map_id, exterior_map_id, node_id));
-
-        std::vector<MapConnection*> connections = _world.map_connections(exterior_map_id, old_tree_map_id);
-        for(MapConnection* conn : connections)
-            conn->replace_map(old_tree_map_id, new_tree_map_id);
-    }
+    vectools::shuffle(all_trees, _rng);
 
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> new_pairs;
-    for(size_t i=1 ; i<new_teleport_trees.size() ; i+=2)
-        new_pairs.emplace_back(std::make_pair(new_teleport_trees[i-1], new_teleport_trees[i]));
-
+    for(size_t i=0 ; i < all_trees.size() ; i+=2)
+    {
+        WorldTeleportTree* tree_1 = all_trees[i];
+        WorldTeleportTree* tree_2 = all_trees[i+1];
+        new_pairs.emplace_back(std::make_pair(tree_1, tree_2));
+    }
     _world.teleport_tree_pairs(new_pairs);
 }
 

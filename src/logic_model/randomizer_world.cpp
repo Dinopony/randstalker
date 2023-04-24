@@ -300,6 +300,8 @@ void RandomizerWorld::load_teleport_trees()
     {
         WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0]);
         WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1]);
+        tree_1->paired_map_id(tree_2->map_id());
+        tree_2->paired_map_id(tree_1->map_id());
         _teleport_tree_pairs.emplace_back(std::make_pair(tree_1, tree_2));
     }
 
