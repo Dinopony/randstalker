@@ -61,12 +61,16 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
             entities.emplace_back(entity);
         }
 
-        uint8_t ground_item_id = json.at("groundItemId");
-
         if(type == "shop")
-            return new ItemSourceShop(name, entities, ground_item_id, node_id, hints);
-
-        return new ItemSourceOnGround(name, entities, ground_item_id, node_id, hints);
+        {
+            uint8_t shop_item_id = json.at("shopItemId");
+            return new ItemSourceShop(name, entities, shop_item_id, node_id, hints);
+        }
+        else
+        {
+            uint8_t ground_item_id = json.at("groundItemId");
+            return new ItemSourceOnGround(name, entities, ground_item_id, node_id, hints);
+        }
     }
     else if(type == "reward")
     {

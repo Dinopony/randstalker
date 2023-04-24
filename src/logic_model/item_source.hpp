@@ -99,9 +99,9 @@ public:
 class ItemSourceShop : public ItemSourceOnGround
 {
 public:
-    ItemSourceShop(const std::string& name, std::vector<Entity*> entities, uint8_t ground_item_id, const std::string& node_id = "",
+    ItemSourceShop(const std::string& name, std::vector<Entity*> entities, uint8_t shop_item_id, const std::string& node_id = "",
                     const std::vector<std::string>& hints = {}) :
-        ItemSourceOnGround (name, std::move(entities), ground_item_id, node_id, hints, false)
+        ItemSourceOnGround (name, std::move(entities), shop_item_id, node_id, hints, false)
     {
         this->add_hint("owned by someone trying to make profit out of it");
     }

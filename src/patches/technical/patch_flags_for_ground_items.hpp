@@ -18,6 +18,7 @@ class PatchFlagsForGroundItems : public GamePatch
 private:
     static constexpr uint8_t OFFSET_ENTITY_GROUND_ITEM_ID = 0x3A;
     static constexpr uint32_t GROUND_ITEM_FLAGS_START_ADDR = 0xFF1060;
+    static constexpr uint32_t SHOP_ITEM_FLAGS_START_ADDR = 0xFF1064;
 
     std::vector<uint8_t> _finite_ground_items;
     std::vector<uint8_t> _finite_shop_items;
@@ -110,7 +111,12 @@ private:
 
             uint8_t flag_byte = ground_item_id >> 3;
             uint8_t flag_bit = ground_item_id & 0x7;
-            Flag flag_source_already_taken(GROUND_ITEM_FLAGS_START_ADDR + flag_byte, flag_bit);
+
+            Flag flag_source_already_taken;
+            if(item_source->is_ground_item())
+                flag_source_already_taken = Flag(GROUND_ITEM_FLAGS_START_ADDR + flag_byte, flag_bit);
+            else // if(item_source->is_shop_item())
+                flag_source_already_taken = Flag(SHOP_ITEM_FLAGS_START_ADDR + flag_byte, flag_bit);
 
             for(Entity* entity : ground_source->entities())
                 entity->remove_when_flag_is_set(flag_source_already_taken);
@@ -125,7 +131,7 @@ private:
     static void handle_set_flag_for_item_entity(md::ROM& rom)
     {
         md::Code func;
-        func.movem_to_stack({ reg_D0, reg_D1 }, { reg_A0 });
+        func.movem_to_stack({ reg_D0, reg_D1 }, {});
         {
             func.clrl(reg_D0);
             func.moveb(addr_(reg_A5, OFFSET_ENTITY_GROUND_ITEM_ID), reg_D0);
@@ -133,23 +139,40 @@ private:
             func.movel(reg_D0, reg_D1);
             func.andib(0x07, reg_D1);                                           // D1 contains flag bit
             func.lsrb(3, reg_D0);                                               // D0 contains flag byte
-            func.lea(GROUND_ITEM_FLAGS_START_ADDR, reg_A0);
             func.bset(reg_D1, addr_(reg_A0, reg_D0));
         }
-        func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0 });
+        func.movem_from_stack({ reg_D0, reg_D1 }, {});
         func.rts();
         uint32_t func_set_flag_addr = rom.inject_code(func);
 
-        // Add a procedure extension to call the new set_flag function
-        md::Code hook_func;
+        // Add a procedure extension to call the new set_flag function when grabbing a ground item
+        md::Code ground_hook_func;
         {
-            hook_func.movew(reg_D2, reg_D0);
-            hook_func.jsr(0x291D6);  // GetItem
-            hook_func.jsr(func_set_flag_addr);
+            ground_hook_func.movew(reg_D2, reg_D0);
+            ground_hook_func.jsr(0x291D6);  // GetItem
+
+            ground_hook_func.movem_to_stack({}, { reg_A0 });
+            ground_hook_func.lea(GROUND_ITEM_FLAGS_START_ADDR, reg_A0);
+            ground_hook_func.jsr(func_set_flag_addr);
+            ground_hook_func.movem_from_stack({}, { reg_A0 });
         }
-        hook_func.rts();
-        uint32_t hook_func_addr = rom.inject_code(hook_func);
-        rom.set_code(0x24B1A, md::Code().jsr(hook_func_addr));  // Ground items
-        rom.set_code(0x24F3E, md::Code().jsr(hook_func_addr));  // Shop items
+        ground_hook_func.rts();
+        uint32_t ground_hook_func_addr = rom.inject_code(ground_hook_func);
+        rom.set_code(0x24B1A, md::Code().jsr(ground_hook_func_addr));  // Ground items
+
+        // Add a procedure extension to call the new set_flag function when buying a shop item
+        md::Code shop_hook_func;
+        {
+            shop_hook_func.movew(reg_D2, reg_D0);
+            shop_hook_func.jsr(0x291D6);  // GetItem
+
+            shop_hook_func.movem_to_stack({}, { reg_A0 });
+            shop_hook_func.lea(SHOP_ITEM_FLAGS_START_ADDR, reg_A0);
+            shop_hook_func.jsr(func_set_flag_addr);
+            shop_hook_func.movem_from_stack({}, { reg_A0 });
+        }
+        shop_hook_func.rts();
+        uint32_t shop_hook_func_addr = rom.inject_code(shop_hook_func);
+        rom.set_code(0x24F3E, md::Code().jsr(shop_hook_func_addr));  // Shop items
     }
 };
