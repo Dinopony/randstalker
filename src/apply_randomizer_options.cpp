@@ -136,9 +136,6 @@ static void patch_items(World& world, const RandomizerOptions& options)
 
     if(options.archipelago_world())
     {
-        Item* archipelago_item = new Item(ITEM_ARCHIPELAGO, "Archipelago Item", 0, 0, 0, 0);
-        world.add_item(archipelago_item);
-
         // Add generic gold items in increasing order when working with Archipelago
         const std::vector<uint8_t> GOLD_VALUES = { 1, 20, 50, 100, 200 };
         for(uint8_t value : GOLD_VALUES)

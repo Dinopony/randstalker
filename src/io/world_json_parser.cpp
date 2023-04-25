@@ -42,14 +42,27 @@ static void parse_item_sources_from_json(RandomizerWorld& world, const Json& jso
         item_sources_table[source->name()] = source;
 
     const Json& item_sources_json = json.at("itemSources");
-    for(auto&[source_name, item_name] : item_sources_json.items())
+    for(auto&[source_name, item_data] : item_sources_json.items())
     {
+        ItemSource* source;
         try {
-            ItemSource* source = item_sources_table.at(source_name);
-            Item* item = parse_item_from_name_in_json(item_name, world);
-            source->item(item);
+            source = item_sources_table.at(source_name);
         } catch(std::out_of_range&) {
             throw LandstalkerException("Item source '" + source_name + "' could not be found.");
+        }
+
+        if(item_data.is_string())
+        {
+            // If we find a string, that's an item name from Landstalker and we should be able to find it inside
+            // the World's items list
+            Item* item = parse_item_from_name_in_json(item_data, world);
+            source->item(item);
+        }
+        else
+        {
+            // If it's an object containing a "player" and an "item", it means it's a remote item belonging to another
+            // player in the case of an Archipelago world
+            source->item(world.add_archipelago_item(item_data["item"], item_data["player"]));
         }
     }
 }

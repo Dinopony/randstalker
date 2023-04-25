@@ -48,6 +48,8 @@ public:
     [[nodiscard]] const std::vector<std::string>& hints() const { return _hints; }
     void add_hint(const std::string& hint) { _hints.emplace_back(hint); }
 
+    [[nodiscard]] virtual uint16_t uuid() const = 0;
+
     [[nodiscard]] virtual Json to_json() const;
     static ItemSource* from_json(const Json& json, const World& world);
 };
@@ -66,6 +68,7 @@ public:
 
     [[nodiscard]] uint8_t chest_id() const { return _chest_id; }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_CHEST; }
+    [[nodiscard]] uint16_t uuid() const override { return 0x100 + _chest_id; }
     [[nodiscard]] Json to_json() const override;
 };
 
@@ -91,6 +94,7 @@ public:
     [[nodiscard]] const std::vector<Entity*>& entities() const { return _entities; }
     [[nodiscard]] uint8_t ground_item_id() const { return _ground_item_id; }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_GROUND; }
+    [[nodiscard]] uint16_t uuid() const override { return 0x200 + _ground_item_id; }
     [[nodiscard]] Json to_json() const override;
 };
 
@@ -106,6 +110,7 @@ public:
         this->add_hint("owned by someone trying to make profit out of it");
     }
 
+    [[nodiscard]] uint16_t uuid() const override { return 0x200 + 30 + this->ground_item_id(); }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_SHOP; }
 };
 
@@ -115,10 +120,12 @@ class ItemSourceReward : public ItemSource
 {
 private:
     uint32_t _address_in_rom;
+    uint8_t _reward_id = 0x00;
 
 public:
-    ItemSourceReward(uint32_t address_in_rom, const std::string& name, const std::string& node_id = "", const std::vector<std::string>& hints = {}) :
-        ItemSource      (name, node_id, hints), 
+    ItemSourceReward(uint32_t address_in_rom, const std::string& name, uint8_t reward_id, const std::string& node_id = "", const std::vector<std::string>& hints = {}) :
+        ItemSource      (name, node_id, hints),
+        _reward_id      (reward_id),
         _address_in_rom (address_in_rom)
     {
         this->add_hint("owned by someone willing to give it to the brave");
@@ -126,5 +133,9 @@ public:
 
     [[nodiscard]] uint32_t address_in_rom() const { return _address_in_rom; }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_REWARD; }
+    [[nodiscard]] uint8_t reward_id() const { return _reward_id; }
+    [[nodiscard]] uint16_t uuid() const override { return base_reward_uuid() + _reward_id; }
     [[nodiscard]] Json to_json() const override;
+
+    static uint16_t base_reward_uuid() { return 0x200 + 80; }
 };

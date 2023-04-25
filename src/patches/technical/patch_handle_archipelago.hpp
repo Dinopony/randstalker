@@ -21,9 +21,12 @@ class PatchHandleArchipelago : public GamePatch
 private:
     static constexpr uint32_t ADDR_RECEIVED_ITEM = 0xFF0020;
     static constexpr uint32_t ADDR_SEED = 0xFF0022;
+    static constexpr uint32_t ADDR_CURRENT_LOCATION_UUID = 0xFF0026;
     static constexpr uint32_t ADDR_CURRENT_RECEIVED_ITEM_INDEX = 0xFF107E;
 
     uint32_t _seed;
+    uint32_t _remote_names_table_addr = 0xFFFFFFFF;
+    uint32_t _npc_addr_to_uuid_table_addr = 0xFFFFFFFF;
 
 public:
     explicit PatchHandleArchipelago(const RandomizerOptions& options) :
@@ -46,9 +49,10 @@ public:
         // Extend the function that read item names to add a special case for ITEM_ARCHIPELAGO
         extend_load_item_name_function(rom);
 
-        // Remove the check that prevents from getting the item and displays a "bag is full" message because
-        // the game evaluates we are always full of AP items (since it's not a valid item)
-        remove_bag_full_check_for_ground_ap_items(rom);
+        // Change the message when obtaining an Archipelago item on the ground
+        add_proc_handle_archipelago_items_on_ground(rom);
+        // Change the message when obtaining an Archipelago item from an NPC
+        handle_npc_set_uuid_on_reward(rom);
     }
 
     void inject_data(md::ROM& rom, World& world) override
@@ -63,6 +67,12 @@ public:
         frame_pointers.add_long(ap_item_sprite_addr);
         uint32_t new_gfx_035_anim_07 = rom.inject_bytes(frame_pointers);
         rom.set_long(0x12059C, new_gfx_035_anim_07);
+
+        // Inject remote item names to make them appear in textboxes
+        _remote_names_table_addr = inject_remote_item_names(rom, reinterpret_cast<RandomizerWorld&>(world));
+
+        // Inject a lookup table to determine the UUID of a NPC reward based on its address
+        _npc_addr_to_uuid_table_addr = inject_npc_addr_to_uuid_table(rom, reinterpret_cast<RandomizerWorld&>(world));
     }
 
     void alter_world(World& world) override
@@ -104,7 +114,14 @@ private:
                 proc.movem_to_stack({ reg_D0, reg_D1 }, {});
                 proc.jsr(0x9B00C);                  // Open chest
                 proc.trap(0x00, { 0x00, 0x05 });    // Play chest jingle
-                proc.movew(0x001E, reg_D0);         // "Got an Archipelago Item"
+
+                // Update current chest UUID
+                proc.clrw(reg_D7);
+                proc.moveb(addr_(reg_A4, 0x37), reg_D7);  // Chest ID
+                proc.addiw(0x100, reg_D7);                // + 0x100
+                proc.movew(reg_D7, addr_(ADDR_CURRENT_LOCATION_UUID));
+
+                proc.movew(0x001E, reg_D0);         // "Sent {ITEM}"
                 proc.jsr(0x22E90);                  // j_PrintString
                 proc.jsr(0x852);                    // RestoreBGM
                 proc.movem_from_stack({ reg_D0, reg_D1 }, {});
@@ -159,7 +176,43 @@ private:
         rom.set_code(0x19630, md::Code().jmp(func_addr));
     }
 
-    static void extend_load_item_name_function(md::ROM& rom)
+    static uint32_t inject_remote_item_names(md::ROM& rom, RandomizerWorld& world)
+    {
+        std::map<std::string, uint32_t> remote_item_names_dict;
+        std::vector<uint32_t> source_id_to_name_table;
+        constexpr uint16_t STARTING_ID = 0x100;
+
+        for(ItemSource* source : world.item_sources())
+        {
+            Item* item = source->item();
+            if(item->id() != ITEM_ARCHIPELAGO)
+                continue;
+            if(source->uuid() < STARTING_ID)
+                continue;
+
+            // If that's the first time we encounter that item name, inject it and add it to the dictionary
+            if(!remote_item_names_dict.count(item->name()))
+            {
+                ByteArray str_bytes(Symbols::bytes_for_symbols(item->name()));
+                str_bytes.insert(str_bytes.begin(), (uint8_t)str_bytes.size()-1);
+                remote_item_names_dict[item->name()] = rom.inject_bytes(str_bytes);
+            }
+
+            // Match the item name with the item source we are processing
+            uint16_t table_index = source->uuid() - STARTING_ID;
+            if(source_id_to_name_table.size() <= table_index)
+                source_id_to_name_table.resize(table_index+1, 0xFFFFFFFF);
+            source_id_to_name_table[table_index] = remote_item_names_dict[item->name()];
+        }
+
+        // Now that we have built a full matching table for all item names in sources containing remote items, inject it
+        ByteArray addresses_table;
+        for(uint32_t addr : source_id_to_name_table)
+            addresses_table.add_long(addr);
+        return rom.inject_bytes(addresses_table);
+    }
+
+    void extend_load_item_name_function(md::ROM& rom) const
     {
         const std::string ARCHIPELAGO_ITEM_NAME = "Archipelago Item";
         uint32_t string_addr = rom.inject_bytes(Symbols::bytes_for_symbols(ARCHIPELAGO_ITEM_NAME));
@@ -169,8 +222,29 @@ private:
             proc.cmpiw(ITEM_ARCHIPELAGO, reg_D1);
             proc.bne("not_archipelago");
             {
-                proc.movew(ARCHIPELAGO_ITEM_NAME.size()-1, reg_D7);
-                proc.movel(string_addr, reg_A2);
+               proc.clrl(reg_D7);
+               proc.movew(addr_(ADDR_CURRENT_LOCATION_UUID), reg_D7);
+               proc.cmpiw(0x100, reg_D7);
+               proc.blt("generic_ap_item");
+               {
+                   // If UUID is greater or equal to 0x100, it's valid and we can use it
+                   proc.subiw(0x100, reg_D7);
+                   proc.lsll(2, reg_D7);
+                   proc.lea(_remote_names_table_addr, reg_A2);
+                   proc.movel(addr_(reg_A2, reg_D7), reg_A2);
+                   proc.clrl(reg_D7);
+                   proc.moveb(addr_(reg_A2), reg_D7);  // Put string size inside D7 (first byte)
+                   proc.adda(1, reg_A2);               // Make A2 point on the first char of the string (second byte)
+                   proc.bra("return_ap");
+               }
+               proc.label("generic_ap_item");
+               {
+                    // If UUID is invalid, put a generic "Archipelago Item" as a fallback
+                    proc.movew(ARCHIPELAGO_ITEM_NAME.size() - 1, reg_D7);
+                    proc.movel(string_addr, reg_A2);
+                }
+                proc.label("return_ap");
+                proc.movew(0x0000, addr_(ADDR_CURRENT_LOCATION_UUID));
                 proc.jmp(0x294B2);
             }
             proc.label("not_archipelago");
@@ -187,20 +261,39 @@ private:
         rom.set_code(0x2949C, md::Code().jmp(proc_addr));
     }
 
-    static void remove_bag_full_check_for_ground_ap_items(md::ROM& rom)
+    static void add_proc_handle_archipelago_items_on_ground(md::ROM& rom)
     {
         md::Code proc;
         {
             proc.cmpib(ITEM_ARCHIPELAGO, reg_D0);
             proc.bne("not_archipelago");
             {
-                // Item is Archipelago-typed, jump after the "bag full" checks to ensure item is taken
-                proc.movew(ITEM_NO_SWORD, reg_D2);
-                proc.jmp(0x24B16);
+                proc.trap(0x00, { 0x00, 0x05 });  // Play "get item" jingle
+
+                // Update current ground item UUID
+                proc.clrw(reg_D7);
+                proc.moveb(addr_(reg_A5, 0x3A), reg_D7);  // Ground ID stored as dialogue
+                proc.lsrb(2, reg_D7);                     //   / 4
+
+                // Set the ground check flag manually since we skip the "GetItem" function
+                proc.movem_to_stack({ reg_D0, reg_D7 }, { reg_A0 });
+                proc.movel(reg_D7, reg_D0);
+                proc.andib(0x07, reg_D7);      // D7 contains flag bit
+                proc.lsrb(3, reg_D0);          // D0 contains flag byte
+                proc.lea(0xFF1060, reg_A0);
+                proc.bset(reg_D7, addr_(reg_A0, reg_D0));
+                proc.movem_from_stack({ reg_D0, reg_D7 }, { reg_A0 });
+
+                proc.addiw(0x200, reg_D7);                // add 0x200 to ground_item_id to get UUID
+                proc.movew(reg_D7, addr_(ADDR_CURRENT_LOCATION_UUID));
+
+                proc.movew(0x1E, reg_D0); // "Sent {ITEM}"
+                proc.jsr(0x28FD8);        // DisplayText
+                proc.jmp(0x24B30);        // Return to normal flow not giving any item
             }
             proc.label("not_archipelago");
             // Item is regular, perform the checks as usual
-            proc.jsr(0x29232);
+            proc.jsr(0x29232); // GetRemainingItemAllowedCount
             proc.bne("jmp_to_24AF4");
             proc.jmp(0x24AEA);
             proc.label("jmp_to_24AF4");
@@ -209,5 +302,58 @@ private:
 
         uint32_t addr = rom.inject_code(proc);
         rom.set_code(0x24AE4, md::Code().jmp(addr).nop());
+    }
+
+    static uint32_t inject_npc_addr_to_uuid_table(md::ROM& rom, RandomizerWorld& world)
+    {
+        std::vector<uint32_t> npc_reward_addresses;
+        for(ItemSource* source : world.item_sources())
+        {
+            if(!source->is_npc_reward())
+                continue;
+            ItemSourceReward* reward_source = reinterpret_cast<ItemSourceReward*>(source);
+
+            uint8_t reward_id = reward_source->reward_id();
+            if(npc_reward_addresses.size() <= reward_id)
+                npc_reward_addresses.resize(reward_id+1, 0xFFFFFFFF);
+            npc_reward_addresses[reward_id] = reward_source->address_in_rom() + 1;
+        }
+
+        ByteArray bytes;
+        for(uint32_t addr : npc_reward_addresses)
+            bytes.add_long(addr);
+        bytes.add_long(0xFFFFFFFF);
+        return rom.inject_bytes(bytes);
+    }
+
+    void handle_npc_set_uuid_on_reward(md::ROM& rom) const
+    {
+        md::Code proc;
+        {
+            proc.clrl(reg_D7);
+            proc.lea(_npc_addr_to_uuid_table_addr, reg_A1);
+            proc.label("loop");
+            {
+                proc.cmpil(0xFFFFFFFF, addr_(reg_A1, reg_D7));
+                proc.beq("return"); // We reached the end of the table, this reward is not handled, just skip it
+                proc.cmpa(addr_(reg_A1, reg_D7), reg_A0);
+                proc.bne("not_this_reward");
+                {
+                    proc.lsrw(2, reg_D7);
+                    proc.addiw(ItemSourceReward::base_reward_uuid(), reg_D7);
+                    proc.movew(reg_D7, addr_(ADDR_CURRENT_LOCATION_UUID));
+                    proc.bra("return");
+                }
+                proc.label("not_this_reward");
+                proc.addqb(4, reg_D7);
+                proc.bra("loop");
+            }
+        }
+        proc.label("return");
+        proc.movem_from_stack({ reg_D0 }, { reg_A1 });
+        proc.rts();
+
+        uint32_t proc_addr = rom.inject_code(proc);
+        rom.set_code(0x28DDE, md::Code().jmp(proc_addr));
     }
 };

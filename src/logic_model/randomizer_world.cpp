@@ -40,6 +40,8 @@ RandomizerWorld::~RandomizerWorld()
         delete tree_1;
         delete tree_2;
     }
+    for(Item* item : _archipelago_items)
+        delete item;
 }
 
 ItemSource* RandomizerWorld::item_source(const std::string& name) const
@@ -171,6 +173,20 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
         this->add_path(new WorldPath(first_node, second_node, 1, {}, required_nodes));
         this->add_path(new WorldPath(second_node, first_node, 1, {}, required_nodes));
     }
+}
+
+Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name)
+{
+    std::string formatted_name = name + " to " + player_name;
+    for(Item* item : _archipelago_items)
+    {
+        if(item->name() == formatted_name)
+            return item;
+    }
+
+    Item* new_item = new Item(ITEM_ARCHIPELAGO, formatted_name, 0, 0, 0, 0);
+    _archipelago_items.emplace_back(new_item);
+    return new_item;
 }
 
 void RandomizerWorld::spawn_location(const SpawnLocation* spawn)

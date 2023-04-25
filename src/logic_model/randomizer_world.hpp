@@ -35,6 +35,7 @@ private:
     std::vector<EntityType*> _fahl_enemies;
 
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
+    std::vector<Item*> _archipelago_items;
 
 public:
     RandomizerWorld() = default;
@@ -89,6 +90,8 @@ public:
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
 
     void add_paths_for_tree_connections(bool require_tibor_access);
+
+    Item* add_archipelago_item(const std::string& name, const std::string& player_name);
 
     void load_model_from_json();
 

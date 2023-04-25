@@ -75,7 +75,8 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
     else if(type == "reward")
     {
         uint32_t address_in_rom = json.at("address");
-        return new ItemSourceReward(address_in_rom, name, node_id, hints);        
+        uint8_t reward_id = json.at("rewardId");
+        return new ItemSourceReward(address_in_rom, name, reward_id, node_id, hints);
     }
 
     std::stringstream msg;
