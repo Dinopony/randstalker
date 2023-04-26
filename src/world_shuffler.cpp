@@ -296,11 +296,7 @@ Item* WorldShuffler::generate_gold_item()
 ItemSource* WorldShuffler::place_item_randomly(Item* item, std::vector<ItemSource*> possible_sources)
 {
     if(_item_pool_quantities[item->id()] == 0)
-    {
-        std::cout << "Ignored placement of " << item->name() << " after crossing path because there are no more"
-                                                                " instances of it inside the item pool." << std::endl;
         return nullptr;
-    }
 
     vectools::shuffle(possible_sources, _rng);
 
