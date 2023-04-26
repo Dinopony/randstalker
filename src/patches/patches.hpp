@@ -88,9 +88,6 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOptimizeCollisionDetect());
     patches.emplace_back(new PatchFlagsForGroundItems(options));
 
-    if(options.archipelago_world())
-        patches.emplace_back(new PatchHandleArchipelago(options));
-
     // =======================================================
     // Randomizer adjustments to make it playable / interesting
     patches.emplace_back(new PatchNewGame(personal_settings.add_ingame_item_tracker()));
@@ -122,6 +119,9 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
         patches.emplace_back(new PatchAllowWhistleUsageBehindTrees());
     if(!options.ekeeke_auto_revive())
         patches.emplace_back(new PatchRemoveEkeEkeAutoRevive());
+
+    if(options.archipelago_world())
+        patches.emplace_back(new PatchHandleArchipelago(options));
 
     // =======================================================
     // Randomizer-specific item effects

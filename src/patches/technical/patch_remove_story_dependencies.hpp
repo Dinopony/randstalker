@@ -73,6 +73,9 @@ private:
 
         rom.set_code(0x25F98, md::Code().jmp(addr).rts());
 
+        // Update the ItemSource address to make it point on the new relevant item byte
+        reinterpret_cast<ItemSourceReward*>(source)->address_in_rom(addr + 0x2B);
+
         rom.mark_empty_chunk(0x25FA0, 0x25FB1);
     }
 

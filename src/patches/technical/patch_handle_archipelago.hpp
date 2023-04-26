@@ -26,7 +26,6 @@ private:
 
     uint32_t _seed;
     uint32_t _remote_names_table_addr = 0xFFFFFFFF;
-    uint32_t _npc_addr_to_uuid_table_addr = 0xFFFFFFFF;
 
 public:
     explicit PatchHandleArchipelago(const RandomizerOptions& options) :
@@ -52,7 +51,7 @@ public:
         // Change the message when obtaining an Archipelago item on the ground
         add_proc_handle_archipelago_items_on_ground(rom);
         // Change the message when obtaining an Archipelago item from an NPC
-        handle_npc_set_uuid_on_reward(rom);
+        handle_npc_set_uuid_on_reward(rom, reinterpret_cast<RandomizerWorld&>(world));
     }
 
     void inject_data(md::ROM& rom, World& world) override
@@ -70,9 +69,6 @@ public:
 
         // Inject remote item names to make them appear in textboxes
         _remote_names_table_addr = inject_remote_item_names(rom, reinterpret_cast<RandomizerWorld&>(world));
-
-        // Inject a lookup table to determine the UUID of a NPC reward based on its address
-        _npc_addr_to_uuid_table_addr = inject_npc_addr_to_uuid_table(rom, reinterpret_cast<RandomizerWorld&>(world));
     }
 
     void alter_world(World& world) override
@@ -326,12 +322,17 @@ private:
         return rom.inject_bytes(bytes);
     }
 
-    void handle_npc_set_uuid_on_reward(md::ROM& rom) const
+    void handle_npc_set_uuid_on_reward(md::ROM& rom, RandomizerWorld& world)
     {
+        // Inject a lookup table to determine the UUID of a NPC reward based on its address
+        // This is injected at "inject_code" time since it needs for RemoveStoryDependency patch to execute its
+        // own inject_code routine to have the correct address for the vanilla Red Jewel item source.
+        uint32_t npc_addr_to_uuid_table_addr = inject_npc_addr_to_uuid_table(rom, world);
+
         md::Code proc;
         {
             proc.clrl(reg_D7);
-            proc.lea(_npc_addr_to_uuid_table_addr, reg_A1);
+            proc.lea(npc_addr_to_uuid_table_addr, reg_A1);
             proc.label("loop");
             {
                 proc.cmpil(0xFFFFFFFF, addr_(reg_A1, reg_D7));

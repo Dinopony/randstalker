@@ -132,6 +132,8 @@ public:
     }
 
     [[nodiscard]] uint32_t address_in_rom() const { return _address_in_rom; }
+    void address_in_rom(uint32_t addr) { _address_in_rom = addr; }
+
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_REWARD; }
     [[nodiscard]] uint8_t reward_id() const { return _reward_id; }
     [[nodiscard]] uint16_t uuid() const override { return base_reward_uuid() + _reward_id; }
