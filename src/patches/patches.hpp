@@ -30,7 +30,6 @@
 #include "item_effects/patch_oracle_stone_hint_on_use.hpp"
 #include "item_effects/patch_spell_book_teleport_on_use.hpp"
 #include "item_effects/patch_record_book_save_on_use.hpp"
-#include "item_effects/patch_statue_of_jypta_golds_on_walk.hpp"
 #include "item_effects/patch_consumable_pawn_ticket.hpp"
 #include "item_effects/patch_permanent_key.hpp"
 
@@ -50,6 +49,7 @@
 #include "technical/patch_flags_for_ground_items.hpp"
 #include "technical/patch_handle_archipelago.hpp"
 #include "technical/patch_update_teleport_tree_connections.hpp"
+#include "technical/patch_on_walk_effects.hpp"
 
 #include "optimization/patch_optimize_maps.hpp"
 #include "optimization/patch_optimize_destel_well_map.hpp"
@@ -129,7 +129,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOracleStoneHintOnUse());
     patches.emplace_back(new PatchSpellBookTeleportOnUse(options.consumable_spell_book()));
     patches.emplace_back(new PatchRecordBookSaveOnUse(options.consumable_record_book()));
-    patches.emplace_back(new PatchStatueOfJyptaGoldsOnWalk(options.archipelago_world()));
+    patches.emplace_back(new PatchOnWalkEffects(options.archipelago_world()));
 
     // =======================================================
     // Fluff / quality of life
