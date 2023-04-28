@@ -1,10 +1,10 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
-#include "landstalker_lib/constants/item_codes.hpp"
-#include "landstalker_lib/tools/byte_array.hpp"
-#include "landstalker_lib/model/item.hpp"
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/byte_array.hpp>
+#include <landstalker-lib/model/item.hpp>
 
 /**
  * In the original game, only 3 item IDs are reserved for fixed gold rewards (3A, 3B, 3C)

@@ -2,9 +2,9 @@
 
 #include <cstdint>
 #include <utility>
-#include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/tools/color.hpp>
-#include <landstalker_lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/json.hpp>
+#include <landstalker-lib/tools/color.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
 
 class ArgumentDictionary;
 

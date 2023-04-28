@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include <random>
-#include <landstalker_lib/model/world.hpp>
+#include <landstalker-lib/model/world.hpp>
 
 #include "randomizer_options.hpp"
 #include "world_solver.hpp"

@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/tools/stringtools.hpp>
-#include <landstalker_lib/tools/vectools.hpp>
-#include <landstalker_lib/tools/bitstream_writer.hpp>
-#include <landstalker_lib/tools/bitstream_reader.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
+#include <landstalker-lib/tools/bitstream_writer.hpp>
+#include <landstalker-lib/tools/bitstream_reader.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
 #include "tools/base64.hpp"
 

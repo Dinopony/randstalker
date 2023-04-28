@@ -1,14 +1,14 @@
 #include "patch_secret_arg.hpp"
 
-#include "landstalker_lib/model/world.hpp"
-#include "landstalker_lib/model/map.hpp"
-#include "landstalker_lib/model/entity.hpp"
-#include "landstalker_lib/model/item.hpp"
-#include "landstalker_lib/tools/game_text.hpp"
-#include "landstalker_lib/constants/entity_type_codes.hpp"
-#include "landstalker_lib/constants/map_codes.hpp"
-#include "landstalker_lib/constants/item_codes.hpp"
-#include "landstalker_lib/constants/offsets.hpp"
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/model/item.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/constants/offsets.hpp>
 #include "../../assets/secret_arg_music_bank.bin.hxx"
 
 constexpr Flag FLAG_ALL_VALID_EQUIPMENTS = Flag(0x2C, 0);

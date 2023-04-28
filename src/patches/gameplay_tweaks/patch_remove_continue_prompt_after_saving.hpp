@@ -1,7 +1,7 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
-#include <landstalker_lib/constants/map_codes.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
 
 /**
  * In vanilla game, after saving in a church, player was asked whether they want to continue the game or not.

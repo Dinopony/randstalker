@@ -3,8 +3,8 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/model/world.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/model/world.hpp>
 #include "spawn_location.hpp"
 
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;

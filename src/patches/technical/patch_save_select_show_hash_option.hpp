@@ -1,7 +1,7 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
-#include "landstalker_lib/constants/symbols.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/constants/symbols.hpp>
 #include <utility>
 
 /**

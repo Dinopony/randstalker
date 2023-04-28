@@ -1,7 +1,7 @@
 #include "personal_settings.hpp"
-#include <landstalker_lib/exceptions.hpp>
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/tools/argument_dictionary.hpp>
+#include <landstalker-lib/exceptions.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/argument_dictionary.hpp>
 #include <iostream>
 #include <set>
 

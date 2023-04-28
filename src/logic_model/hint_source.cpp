@@ -2,9 +2,9 @@
 
 #include <algorithm>
 #include <utility>
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/tools/game_text.hpp>
-#include <landstalker_lib/tools/stringtools.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
 
 HintSource::HintSource(std::vector<uint16_t> text_ids, std::string description,
         WorldNode* node, bool small_textbox,

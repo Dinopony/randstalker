@@ -1,13 +1,12 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
-#include "landstalker_lib/model/world.hpp"
-#include "landstalker_lib/model/item.hpp"
-#include "landstalker_lib/constants/item_codes.hpp"
-
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/item.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
 #include "../../assets/archipelago_item.bin.hxx"
-#include "landstalker_lib/tools/game_text.hpp"
 
 // TODO: To handle shops, we need:
 //      - Explicit item naming, for the player to be able to choose if they buy the item or not

@@ -16,12 +16,12 @@
 #include <string>
 #include <iostream>
 
-#include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/md_tools.hpp>
-#include <landstalker_lib/tools/argument_dictionary.hpp>
-#include <landstalker_lib/constants/offsets.hpp>
-#include <landstalker_lib/exceptions.hpp>
-#include <landstalker_lib/io/io.hpp>
+#include <landstalker-lib/tools/json.hpp>
+#include <landstalker-lib/md_tools.hpp>
+#include <landstalker-lib/tools/argument_dictionary.hpp>
+#include <landstalker-lib/constants/offsets.hpp>
+#include <landstalker-lib/exceptions.hpp>
+#include <landstalker-lib/io/io.hpp>
 
 #include "tools/base64.hpp"
 #include "patches/patches.hpp"

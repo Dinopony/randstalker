@@ -2,8 +2,8 @@
 
 #include "world_teleport_tree.hpp"
 #include "spawn_location.hpp"
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/exceptions.hpp>
 #include "world_node.hpp"
 #include "world_path.hpp"
 #include "world_region.hpp"

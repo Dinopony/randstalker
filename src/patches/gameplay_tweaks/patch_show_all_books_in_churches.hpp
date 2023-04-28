@@ -1,7 +1,7 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
-#include <landstalker_lib/constants/map_codes.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
 
 /**
  * Usually, the game has a mechanism that makes items on ground disappear if the maximum quantity is owned

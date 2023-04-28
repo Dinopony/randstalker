@@ -6,10 +6,10 @@
 #include <chrono>
 #include <fstream>
 
-#include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/tools/stringtools.hpp>
-#include <landstalker_lib/tools/argument_dictionary.hpp>
+#include <landstalker-lib/tools/json.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/tools/argument_dictionary.hpp>
 
 class Item;
 

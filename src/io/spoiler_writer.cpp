@@ -1,8 +1,8 @@
 #include "io.hpp"
 
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/tools/json.hpp>
 #include "../logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/randomizer_world.hpp"

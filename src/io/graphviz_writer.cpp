@@ -3,11 +3,11 @@
 #include <vector>
 #include <fstream>
 
-#include <landstalker_lib/model/map.hpp>
-#include <landstalker_lib/model/map_connection.hpp>
-#include <landstalker_lib/model/world.hpp>
-#include "landstalker_lib/tools/stringtools.hpp"
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/map_connection.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/tools/json.hpp>
 
 #include "../logic_model/data/world_path.json.hxx"
 #include "../logic_model/world_node.hpp"

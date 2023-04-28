@@ -1,12 +1,12 @@
 #include "randomizer_options.hpp"
 
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/model/item.hpp>
-#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/item.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
 #include "logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/constants/flags.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/constants/flags.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
 #include "assets/game_strings.json.hxx"
 

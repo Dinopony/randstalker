@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * Usually, Einstein Whistle can only be used in front of the sacred trees at the end of Greenmaze in order to cut them.

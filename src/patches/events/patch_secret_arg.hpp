@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 #include "../../randomizer_options.hpp"
 
 class PatchSecretARG : public GamePatch

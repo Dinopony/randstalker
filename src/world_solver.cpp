@@ -1,7 +1,7 @@
 #include "world_solver.hpp"
 
 #include "logic_model/item_source.hpp"
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/exceptions.hpp>
 #include "logic_model/world_node.hpp"
 
 WorldSolver::WorldSolver(const RandomizerWorld& world) : _world (world)

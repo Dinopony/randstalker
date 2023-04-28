@@ -1,16 +1,15 @@
 #include "world_shuffler.hpp"
 
-#include <landstalker_lib/constants/entity_type_codes.hpp>
-#include <landstalker_lib/constants/item_codes.hpp>
-#include "landstalker_lib/tools/stringtools.hpp"
-#include <landstalker_lib/tools/vectools.hpp>
-#include <landstalker_lib/tools/game_text.hpp>
-#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/exceptions.hpp>
 #include "logic_model/item_source.hpp"
 #include "logic_model/world_teleport_tree.hpp"
 #include "logic_model/spawn_location.hpp"
-#include <landstalker_lib/exceptions.hpp>
-
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
 #include "world_solver.hpp"

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <landstalker_lib/md_tools.hpp>
+#include <landstalker-lib/md_tools.hpp>
 #include "../randomizer_options.hpp"
 #include "../personal_settings.hpp"
 
-#include <landstalker_lib/patches/patches.hpp>
+#include <landstalker-lib/patches/patches.hpp>
 
 #include "edit_content/patch_edit_dialogues.hpp"
 #include "edit_content/patch_shorten_cutscenes.hpp"

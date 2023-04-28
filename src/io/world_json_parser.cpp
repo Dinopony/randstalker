@@ -5,8 +5,8 @@
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
 #include "../logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/tools/stringtools.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
 static Item* parse_item_from_name_in_json(const std::string& item_name, RandomizerWorld& world)
 {

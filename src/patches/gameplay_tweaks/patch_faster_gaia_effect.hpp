@@ -1,6 +1,6 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * Make the effect of Statue of Gaia and Sword of Gaia way faster than in vanilla.

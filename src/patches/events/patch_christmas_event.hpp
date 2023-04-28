@@ -1,10 +1,10 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
-#include <landstalker_lib/model/map.hpp>
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/constants/map_codes.hpp>
-#include <landstalker_lib/tools/sprite.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
+#include <landstalker-lib/tools/sprite.hpp>
 
 #include "../../assets/christmas_moneybag.bin.hxx"
 

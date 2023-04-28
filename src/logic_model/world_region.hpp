@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/tools/json.hpp>
 
 class WorldNode;
 class ItemSource;

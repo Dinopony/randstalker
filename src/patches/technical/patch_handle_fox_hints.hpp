@@ -1,16 +1,16 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 
-#include "landstalker_lib/model/entity.hpp"
-#include "landstalker_lib/model/entity_type.hpp"
-#include "landstalker_lib/model/map.hpp"
-#include "landstalker_lib/model/world.hpp"
-#include "landstalker_lib/constants/entity_type_codes.hpp"
-#include "landstalker_lib/tools/byte_array.hpp"
-#include "landstalker_lib/tools/vectools.hpp"
-#include "landstalker_lib/constants/symbols.hpp"
-#include "landstalker_lib/tools/sprite.hpp"
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
+#include <landstalker-lib/tools/byte_array.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
+#include <landstalker-lib/constants/symbols.hpp>
+#include <landstalker-lib/tools/sprite.hpp>
 #include "../../logic_model/randomizer_world.hpp"
 #include "../../logic_model/hint_source.hpp"
 

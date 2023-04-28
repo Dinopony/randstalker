@@ -1,7 +1,7 @@
 #include "io.hpp"
 
-#include <landstalker_lib/io/io.hpp>
-#include "landstalker_lib/tools/stringtools.hpp"
+#include <landstalker-lib/io/io.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"

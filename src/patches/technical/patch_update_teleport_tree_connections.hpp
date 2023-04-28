@@ -1,6 +1,6 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
 #include "../../logic_model/randomizer_world.hpp"
 #include "../../logic_model/world_teleport_tree.hpp"

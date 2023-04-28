@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/model/item.hpp>
+#include <landstalker-lib/model/item.hpp>
 
 class WorldNode;
 

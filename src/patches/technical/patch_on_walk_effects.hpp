@@ -1,6 +1,6 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * Add handling for several procedures that trigger while the playing can walk

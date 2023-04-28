@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/tools/json.hpp>
 #include <string>
 
 class RandomizerWorld;

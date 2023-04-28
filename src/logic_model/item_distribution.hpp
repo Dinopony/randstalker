@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/tools/json.hpp>
 
 class ItemDistribution
 {

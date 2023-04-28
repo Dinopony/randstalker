@@ -1,7 +1,7 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
-#include <landstalker_lib/model/map.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/model/map.hpp>
 
 /**
  * This patch removes all music inside the game, while leaving all of the SFX / jingles intact.

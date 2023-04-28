@@ -1,6 +1,6 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * This patch gives the possibility to increase the amount of HP & Max HP granted by getting a Life Stock.

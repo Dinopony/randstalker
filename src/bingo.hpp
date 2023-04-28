@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <random>
-#include <landstalker_lib/tools/vectools.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
 #include "logic_model/randomizer_world.hpp"
 
 class BingoGenerator {

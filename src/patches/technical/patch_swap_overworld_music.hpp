@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * This patch swaps the two overworld music (before and after taking the boat to Verla), because some settings tend

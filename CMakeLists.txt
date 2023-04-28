@@ -12,7 +12,7 @@ if(DEBUG)
     add_compile_definitions(DEBUG)
 endif()
 
-add_subdirectory(extlibs/landstalker_lib/landstalker_lib landstalker_lib)
+add_subdirectory(extlibs/landstalker_lib/landstalker-lib landstalker_lib)
 include_directories("extlibs/landstalker_lib")
 
 macro(WRAPPED_DEPENDENCY)

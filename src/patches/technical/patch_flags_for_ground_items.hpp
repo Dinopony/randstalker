@@ -1,9 +1,9 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 #include "../../logic_model/randomizer_world.hpp"
 #include "../../logic_model/item_source.hpp"
-#include <landstalker_lib/model/entity.hpp>
+#include <landstalker-lib/model/entity.hpp>
 
 /**
  * In the vanilla game engine, the game almost never sets a flag when obtaining a ground item / shop item for the

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
-#include <landstalker_lib/constants/offsets.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/constants/offsets.hpp>
 
 #include "../../logic_model/randomizer_world.hpp"
 #include "../../logic_model/item_source.hpp"

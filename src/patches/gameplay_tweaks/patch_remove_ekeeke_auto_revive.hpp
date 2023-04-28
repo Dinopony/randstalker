@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * This patch removes the core feature of the game where Friday revives Nigel using an EkeEke if he dies.
