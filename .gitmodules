@@ -1,0 +1,3 @@
+[submodule "extlibs/landstalker_lib"]
+	path = extlibs/landstalker_lib
+	url = https://github.com/dinopony/landstalker-lib
