@@ -36,6 +36,11 @@ public:
             _finite_ground_items.emplace_back(ITEM_CHROME_BREAST);
             _finite_ground_items.emplace_back(ITEM_SHELL_BREAST);
             _finite_ground_items.emplace_back(ITEM_HYPER_BREAST);
+
+            _finite_shop_items.emplace_back(ITEM_STEEL_BREAST);
+            _finite_shop_items.emplace_back(ITEM_CHROME_BREAST);
+            _finite_shop_items.emplace_back(ITEM_SHELL_BREAST);
+            _finite_shop_items.emplace_back(ITEM_HYPER_BREAST);
         }
 
         // If jewels are in "Kazalt Jewel" mode, Red Jewel must not be obtained several times from the same source
