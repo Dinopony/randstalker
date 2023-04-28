@@ -20,7 +20,7 @@ macro(WRAPPED_DEPENDENCY)
     add_custom_command(
             OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}.hxx"
             COMMAND "${CMAKE_COMMAND}"
-            ARGS -DINPUT_FILE="${ARGV1}" -DVARIABLE_NAME="${ARGV2}" -DPROCESS_TYPE="${ARGV0}" -P "extlibs/landstalker_lib/landstalker_lib/wrap_file.cmake"
+            ARGS -DINPUT_FILE="${ARGV1}" -DVARIABLE_NAME="${ARGV2}" -DPROCESS_TYPE="${ARGV0}" -P "extlibs/landstalker_lib/landstalker-lib/wrap_file.cmake"
             DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}"
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
