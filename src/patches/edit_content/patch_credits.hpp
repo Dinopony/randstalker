@@ -12,6 +12,8 @@ private:
     uint16_t _waiting_time_after_end = 180;
     uint32_t _blue_credits_palette_addr = 0xFFFFFFFF;
     uint32_t _red_credits_palette_addr = 0xFFFFFFFF;
+    uint32_t _gold_credits_palette_addr = 0xFFFFFFFF;
+    uint32_t _all_checks_bytes_addr = 0xFFFFFFFF;
     std::vector<uint8_t> _original_credits;
 
 public:
@@ -56,6 +58,24 @@ public:
         red_credits_palette.add_word(0x44C);
         red_credits_palette.add_word(0x22A);
         _red_credits_palette_addr = rom.inject_bytes(red_credits_palette);
+
+        ByteArray gold_credits_palette;
+        gold_credits_palette.add_word(0x000);
+        gold_credits_palette.add_word(0x6CE);
+        gold_credits_palette.add_word(0x48C);
+        gold_credits_palette.add_word(0x26A);
+        _gold_credits_palette_addr = rom.inject_bytes(gold_credits_palette);
+
+        std::vector<uint16_t> all_checks_signature = {
+            0xFEFF, 0xFF3F, 0xFEFF, 0xFFFF, 0xFFFF, 0x0300, 0x0000, 0x0000,
+            0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+            0xFFFF, 0x7FB3, 0x5EFE, 0xF71F, 0xFCFF, 0xFFFF, 0xFFFF, 0xFFFF,
+            0xFFFF, 0xFFFF, 0xFFFF, 0xFF87, 0xF7FF, 0xFF3F
+        };
+        ByteArray all_checks_bytes;
+        for(uint16_t word : all_checks_signature)
+            all_checks_bytes.add_word(word);
+        _all_checks_bytes_addr = rom.inject_bytes(all_checks_bytes);
     }
 
     void inject_code(md::ROM& rom, World& world) override
@@ -70,6 +90,25 @@ public:
                 func.bra("ret");
             }
             func.label("not_arg");
+            func.movem_to_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
+            func.lea(0xFF1060, reg_A0);
+            func.lea(_all_checks_bytes_addr, reg_A1);
+            func.label("checks_loop");
+            {
+                func.movew(addr_postinc_(reg_A0), reg_D0);  // A0/D0 = cursor on check flags
+                func.movew(addr_postinc_(reg_A1), reg_D1);  // A1/D1 = cursor on target values
+                func.andw(reg_D1, reg_D0);                  // Check if D0 contains at least all bits set in D1
+                func.cmpw(reg_D1, reg_D0);
+                func.bne("not_all_checks");                 // If at least one is not equal, don't give golden ending
+                func.cmpa(0xFF109C, reg_A0);
+                func.blt("checks_loop");
+                func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
+                func.lea(_gold_credits_palette_addr, reg_A0); // Everything was collected, give the golden credits
+                func.bra("ret");
+            }
+
+            func.label("not_all_checks");
+            func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
             func.btst(1, addr_(0xFF104C));
             func.beq("ret");
             {
@@ -116,15 +155,6 @@ private:
                 // "WIZ"
                 0x08, 0xFF,
                 0x18, 0x0A, 0x1B, 0x00,
-                // "frontend by"
-                0x04, 0xFF, 0x81,
-                0x21, 0x2D, 0x2A, 0x29, 0x2F, 0x20, 0x29, 0x1F, 0x80, 0x1D, 0x34, 0x00,
-                // "HAWKREX"
-                0x03, 0xFF,
-                0x09, 0x02, 0x18, 0x0C, 0x13, 0x06, 0x19, 0x00,
-                // "DILANDAU"
-                0x08, 0xFF,
-                0x05, 0x0A, 0x0D, 0x02, 0x0F, 0x05, 0x02, 0x16, 0x00,
                 // "testing"
                 0x04, 0xFF, 0x81,
                 0x2F, 0x20, 0x2E, 0x2F, 0x24, 0x29, 0x22, 0x00,
@@ -134,12 +164,21 @@ private:
                 // "STIK"
                 0x03, 0xFF,
                 0x14, 0x15, 0x0A, 0x0C, 0x00,
+                // "HAWKREX"
+                0x03, 0xFF,
+                0x09, 0x02, 0x18, 0x0C, 0x13, 0x06, 0x19, 0x00,
                 // "LANDRYLE"
                 0x03, 0xFF,
                 0x0D, 0x02, 0x0F, 0x05, 0x13, 0x1A, 0x0D, 0x06, 0x00,
                 // "SORCIER"
                 0x08, 0xFF,
-                0x14, 0x10, 0x13, 0x04, 0x0A, 0x06, 0x13, 0x00
+                0x14, 0x10, 0x13, 0x04, 0x0A, 0x06, 0x13, 0x00,
+                // "disassembly"
+                0x04, 0xFF, 0x81,
+                0x1F, 0x24, 0x2E, 0x1C, 0x2E, 0x2E, 0x20, 0x28, 0x1D, 0x27, 0x34, 0x00,
+                // "LORDMIR"
+                0x08, 0xFF,
+                0x0D, 0x10, 0x13, 0x05, 0x0E, 0x0A, 0x13, 0x00,
         };
         new_credits_text.insert(new_credits_text.end(), rando_credits.begin(), rando_credits.end());
 
