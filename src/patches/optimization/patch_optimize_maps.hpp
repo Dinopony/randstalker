@@ -29,8 +29,7 @@ private:
     {
         // Clear unreachable maps
         const std::vector<uint16_t> UNREACHABLE_MAPS = {
-                MAP_INTRO_139, MAP_INTRO_140, MAP_INTRO_141, MAP_INTRO_142, MAP_INTRO_143,
-                MAP_MERCATOR_CASTLE_KAYLA_ROOM, MAP_MERCATOR_CASTLE_KAYLA_BATHROOM_ENTRANCE, MAP_MERCATOR_CASTLE_KAYLA_BATHROOM
+                MAP_INTRO_139, MAP_INTRO_140, MAP_INTRO_141, MAP_INTRO_142, MAP_INTRO_143
         };
 
         for(uint16_t map_id : UNREACHABLE_MAPS)
@@ -51,7 +50,8 @@ private:
                 MAP_MERCATOR_CASTLE_NIGEL_ROOM,
                 MAP_MERCATOR_CASTLE_ARMORY_BARRACKS,
                 MAP_RYUMA_LIGHTHOUSE, // Base Ryuma lighthouse (before Duke breaks it) is not reachable
-                MAP_KN_CAVE_TELEPORTER_TO_KAZALT
+                MAP_KN_CAVE_TELEPORTER_TO_KAZALT,
+                MAP_MERCATOR_CASTLE_2F_HALLWAY
         };
 
         for(uint16_t map_id : MAPS_TO_CLEAR_ENTITIES_FROM)
@@ -135,7 +135,8 @@ private:
                 MAP_MERCATOR_CASTLE_MAIN_HALL,
                 MAP_MERCATOR_CASTLE_ENTRANCE_HALLWAY,
                 MAP_MERCATOR_CASTLE_ARMORY_0F,
-                MAP_MERCATOR_DOCKS_SUPPLY_SHOP
+                MAP_MERCATOR_DOCKS_SUPPLY_SHOP,
+                MAP_MERCATOR_CASTLE_2F_HALLWAY
         };
 
         world.map(MAP_MERCATOR_DOCKS_SUPPLY_SHOP)->map_setup_addr(0xFFFFFFFF);
