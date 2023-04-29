@@ -102,6 +102,9 @@ public:
 
 class ItemSourceShop : public ItemSourceOnGround
 {
+private:
+    uint16_t _price = 1;
+
 public:
     ItemSourceShop(const std::string& name, std::vector<Entity*> entities, uint8_t shop_item_id, const std::string& node_id = "",
                     const std::vector<std::string>& hints = {}) :
@@ -112,6 +115,9 @@ public:
 
     [[nodiscard]] uint16_t uuid() const override { return 0x200 + 30 + this->ground_item_id(); }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_SHOP; }
+
+    [[nodiscard]] uint16_t price() const { return _price; }
+    void price(uint16_t value) { _price = value; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

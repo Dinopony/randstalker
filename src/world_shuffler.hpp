@@ -60,6 +60,7 @@ private:
     [[nodiscard]] std::vector<WorldPath*> build_weighted_blocked_paths_list();
     void open_random_blocked_path();
     void place_remaining_items();
+    void randomize_prices();
 
     // Hints randomization
     void randomize_hints();

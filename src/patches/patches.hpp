@@ -50,6 +50,7 @@
 #include "technical/patch_handle_archipelago.hpp"
 #include "technical/patch_update_teleport_tree_connections.hpp"
 #include "technical/patch_on_walk_effects.hpp"
+#include "technical/patch_individual_price_for_shop_sources.hpp"
 
 #include "optimization/patch_optimize_maps.hpp"
 #include "optimization/patch_optimize_destel_well_map.hpp"
@@ -107,6 +108,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchShowAllBooksInChurches());
     patches.emplace_back(new PatchSetLifestocksHealth(options.health_gained_per_lifestock()));
     patches.emplace_back(new PatchUpdateTeleportTreeConnections());
+    patches.emplace_back(new PatchIndividualPriceForShopSources());
     if(options.remove_tree_cutting_glitch_drops())
         patches.emplace_back(new PatchRemoveTreeCuttingGlitchDrops());
     if(options.use_armor_upgrades())

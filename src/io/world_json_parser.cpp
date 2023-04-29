@@ -53,16 +53,28 @@ static void parse_item_sources_from_json(RandomizerWorld& world, const Json& jso
 
         if(item_data.is_string())
         {
-            // If we find a string, that's an item name from Landstalker and we should be able to find it inside
-            // the World's items list
+            // If we find a string, that's the shorthand syntax for an item name from our own world
             Item* item = parse_item_from_name_in_json(item_data, world);
             source->item(item);
+            continue;
         }
+
+        // Otherwise, it means it's either an item for another player in the case of an Archipelago world, or an item
+        // with additionnal data (e.g. price)
+        Item* item;
+        if(item_data.contains("player"))
+            item = world.add_archipelago_item(item_data["item"], item_data["player"]);
         else
+            item = parse_item_from_name_in_json(item_data["item"], world);
+        source->item(item);
+
+        if(item_data.contains("price"))
         {
-            // If it's an object containing a "player" and an "item", it means it's a remote item belonging to another
-            // player in the case of an Archipelago world
-            source->item(world.add_archipelago_item(item_data["item"], item_data["player"]));
+            if(!source->is_shop_item())
+                throw LandstalkerException("Trying to put an item with a price inside an item source which is not a shop");
+
+            uint16_t price = item_data.at("price");
+            reinterpret_cast<ItemSourceShop*>(source)->price(price);
         }
     }
 }

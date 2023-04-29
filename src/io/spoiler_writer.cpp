@@ -40,7 +40,17 @@ Json SpoilerWriter::build_spoiler_json(const RandomizerWorld& world, const Rando
             for(ItemSource* source : node->item_sources())
             {
                 Item* item = world.item(source->item_id());
-                json["itemSources"][region->name()][source->name()] = item->name();
+                if(source->is_shop_item())
+                {
+                    Json source_details = Json::object();
+                    source_details["item"] = item->name();
+                    source_details["price"] = reinterpret_cast<ItemSourceShop*>(source)->price();
+                    json["itemSources"][region->name()][source->name()] = source_details;
+                }
+                else
+                {
+                    json["itemSources"][region->name()][source->name()] = item->name();
+                }
             }
         }
     }

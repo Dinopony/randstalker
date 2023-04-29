@@ -141,6 +141,7 @@ set(SOURCES
         "src/patches/technical/patch_flags_for_ground_items.hpp"
         "src/patches/technical/patch_update_teleport_tree_connections.hpp"
         "src/patches/technical/patch_on_walk_effects.hpp"
+        "src/patches/technical/patch_individual_price_for_shop_sources.hpp"
 
         "src/patches/optimization/patch_optimize_maps.hpp"
         "src/patches/optimization/patch_optimize_destel_well_map.hpp"

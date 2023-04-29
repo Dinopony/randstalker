@@ -41,6 +41,7 @@ void WorldShuffler::randomize()
     this->randomize_items();
 
     // 3rd pass: randomizations happening AFTER randomizing items
+    this->randomize_prices();
     this->randomize_hints();
     for(HintSource* hint_source : _world.hint_sources())
         hint_source->apply_text(_world);
@@ -492,6 +493,43 @@ void WorldShuffler::place_remaining_items()
     _item_pool.clear();
 }
 
+/**
+ * Give a random price to all shop item sources depending on the item that's inside and whether it's required
+ * for progression or not
+ */
+void WorldShuffler::randomize_prices()
+{
+    constexpr float EARLYGAME_PRICE_FACTOR = 0.5;
+    constexpr float ENDGAME_PRICE_FACTOR = 2.0;
+    constexpr float FACTOR_DIFF = ENDGAME_PRICE_FACTOR - EARLYGAME_PRICE_FACTOR;
+
+    if(_options.archipelago_world())
+        return;
+
+    for(ItemSource* source : _world.item_sources())
+    {
+        if(!source->is_shop_item())
+            continue;
+        ItemSourceShop* shop_source = reinterpret_cast<ItemSourceShop*>(source);
+        Item* item = shop_source->item();
+        shop_source->price(item->gold_value());
+    }
+
+    for(size_t i=0 ; i<_logical_playthrough.size() ; ++i)
+    {
+        ItemSource* source = _logical_playthrough[i];
+        if(!source->is_shop_item())
+            continue;
+        ItemSourceShop* shop_source = reinterpret_cast<ItemSourceShop*>(source);
+
+        float current_playthrough_progression = (float)i / (float)_logical_playthrough.size();
+        float progression_price_factor = EARLYGAME_PRICE_FACTOR + (current_playthrough_progression * FACTOR_DIFF);
+
+        uint16_t price = (uint16_t)((float)shop_source->item()->gold_value() * progression_price_factor);
+        price -= price % 10;
+        shop_source->price(price);
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///        THIRD PASS RANDOMIZATIONS (after items)
