@@ -542,7 +542,7 @@ void WorldShuffler::randomize_hints()
     this->randomize_lithograph_hint();
     this->randomize_where_is_lithograph_hint();
 
-    Item* hinted_item =this->randomize_fortune_teller_hint();
+    Item* hinted_item = this->randomize_fortune_teller_hint();
     this->randomize_oracle_stone_hint(hinted_item);
 
     this->randomize_fox_hints();
@@ -630,6 +630,9 @@ void WorldShuffler::randomize_lithograph_hint()
 
 void WorldShuffler::randomize_where_is_lithograph_hint()
 {
+    if(_options.archipelago_world())
+        return;
+
     HintSource* knc_sign_source = _world.hint_source("King Nole's Cave sign");
 
     _world.add_used_hint_source(knc_sign_source);
@@ -647,6 +650,9 @@ void WorldShuffler::randomize_where_is_lithograph_hint()
 
 Item* WorldShuffler::randomize_fortune_teller_hint()
 {
+    if(_options.archipelago_world())
+        return nullptr;
+
     HintSource* fortune_teller_source = _world.hint_source("Mercator fortune teller");
 
     _world.add_used_hint_source(fortune_teller_source);
@@ -682,13 +688,16 @@ void WorldShuffler::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_i
 {
     HintSource* oracle_stone_source = _world.hint_source("Oracle Stone");
 
+    // If hint source already contains text (e.g. through plando descriptor), ignore it
+    if(!oracle_stone_source->text().empty())
+    {
+        _world.add_used_hint_source(oracle_stone_source);
+        return;
+    }
+
     if(_world.item_quantity(ITEM_ORACLE_STONE) > 0)
     {
         _world.add_used_hint_source(oracle_stone_source);
-
-        // If hint source already contains text (e.g. through plando descriptor), ignore it
-        if(!oracle_stone_source->text().empty())
-            return;
 
         std::vector<Item*> forbidden_items = {
                 forbidden_fortune_teller_item, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
