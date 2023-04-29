@@ -63,6 +63,16 @@ public:
             // Put item ID in D0 and 0xFF1198
             func.clrl(reg_D0);
             func.moveb(addr_(0xFF1903), reg_D0);
+            func.cmpib(ITEM_ARCHIPELAGO, reg_D0);
+            func.bne("not_archipelago");
+            {
+                func.moveb(addr_(reg_A5, 0x3A), reg_D0);
+                func.lsrb(2, reg_D0);
+                func.addiw(ItemSourceShop::base_shop_uuid(), reg_D0);
+                func.movew(reg_D0, addr_(PatchHandleArchipelago::ADDR_CURRENT_LOCATION_UUID));
+                func.movew(ITEM_ARCHIPELAGO, reg_D0);
+            }
+            func.label("not_archipelago");
             func.movew(reg_D0, addr_(0xFF1198));
         }
         func.rts();

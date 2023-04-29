@@ -63,7 +63,7 @@ static void parse_item_sources_from_json(RandomizerWorld& world, const Json& jso
         // with additionnal data (e.g. price)
         Item* item;
         if(item_data.contains("player"))
-            item = world.add_archipelago_item(item_data["item"], item_data["player"]);
+            item = world.add_archipelago_item(item_data["item"], item_data["player"], source->is_shop_item());
         else
             item = parse_item_from_name_in_json(item_data["item"], world);
         source->item(item);

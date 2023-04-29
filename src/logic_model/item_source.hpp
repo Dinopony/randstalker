@@ -113,11 +113,13 @@ public:
         this->add_hint("owned by someone trying to make profit out of it");
     }
 
-    [[nodiscard]] uint16_t uuid() const override { return 0x200 + 30 + this->ground_item_id(); }
+    [[nodiscard]] uint16_t uuid() const override { return base_shop_uuid() + this->ground_item_id(); }
     [[nodiscard]] std::string type_name() const override { return ITEM_SOURCE_TYPE_SHOP; }
 
     [[nodiscard]] uint16_t price() const { return _price; }
     void price(uint16_t value) { _price = value; }
+
+    static uint16_t base_shop_uuid() { return 0x200 + 30; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

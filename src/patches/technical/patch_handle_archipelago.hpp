@@ -17,12 +17,13 @@
  */
 class PatchHandleArchipelago : public GamePatch
 {
-private:
+public:
     static constexpr uint32_t ADDR_RECEIVED_ITEM = 0xFF0020;
     static constexpr uint32_t ADDR_SEED = 0xFF0022;
     static constexpr uint32_t ADDR_CURRENT_LOCATION_UUID = 0xFF0026;
     static constexpr uint32_t ADDR_CURRENT_RECEIVED_ITEM_INDEX = 0xFF107E;
 
+private:
     uint32_t _seed;
     uint32_t _remote_names_table_addr = 0xFFFFFFFF;
 
@@ -77,6 +78,12 @@ public:
         EntityType* entity_type_ap_item = world.entity_type(ENTITY_ARCHIPELAGO_ITEM);
         entity_type_ap_item->low_palette(entity_type_ekeeke->low_palette());
         entity_type_ap_item->high_palette(entity_type_ekeeke->high_palette());
+
+        // Normalize shopkeeper's text when taking an item
+        std::string generic_text = "\u001c\n\u001d\nPrice: \u001b golds\u0003";
+        std::vector<uint16_t> STRING_IDS_TO_CHANGE = { 0x50, 0x89, 0x99, 0xA1, 0xB1, 0xBA, 0xBB, 0xD0, 0xDB };
+        for(uint16_t id : STRING_IDS_TO_CHANGE)
+            world.game_strings()[id] = generic_text;
     }
 
 private:

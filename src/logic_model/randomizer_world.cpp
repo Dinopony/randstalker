@@ -175,14 +175,24 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
     }
 }
 
-Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name)
+Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming)
 {
-    std::string formatted_name = name + " to " + player_name;
-    for(Item* item : _archipelago_items)
+    std::string formatted_name;
+    if(use_shop_naming)
     {
+        formatted_name = player_name + "'s " + name;
+        if(formatted_name.size() > 30)
+        {
+            formatted_name = formatted_name.substr(0,30);;
+            formatted_name += ".";
+        }
+    }
+    else
+        formatted_name = name + " to " + player_name;
+
+    for(Item* item : _archipelago_items)
         if(item->name() == formatted_name)
             return item;
-    }
 
     Item* new_item = new Item(ITEM_ARCHIPELAGO, formatted_name, 0, 0, 0, 0);
     _archipelago_items.emplace_back(new_item);

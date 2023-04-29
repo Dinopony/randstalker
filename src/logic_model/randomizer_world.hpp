@@ -91,7 +91,7 @@ public:
 
     void add_paths_for_tree_connections(bool require_tibor_access);
 
-    Item* add_archipelago_item(const std::string& name, const std::string& player_name);
+    Item* add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming);
 
     void load_model_from_json();
 
