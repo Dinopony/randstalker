@@ -182,11 +182,12 @@ private:
         {
             ground_hook_func.movew(reg_D2, reg_D0);
             ground_hook_func.cmpib(ITEM_ARCHIPELAGO, reg_D0);
-            ground_hook_func.bne("not_archipelago");
+            ground_hook_func.beq("archipelago");
             {
+                // If item is an Archipelago item, don't call the GetItem function
                 ground_hook_func.jsr(0x291D6);  // GetItem
             }
-            ground_hook_func.label("not_archipelago");
+            ground_hook_func.label("archipelago");
 
             ground_hook_func.movem_to_stack({}, { reg_A0 });
             ground_hook_func.lea(GROUND_ITEM_FLAGS_START_ADDR, reg_A0);
@@ -201,12 +202,13 @@ private:
         md::Code shop_hook_func;
         {
             shop_hook_func.movew(reg_D2, reg_D0);
-            ground_hook_func.cmpib(ITEM_ARCHIPELAGO, reg_D0);
-            ground_hook_func.bne("not_archipelago");
+            shop_hook_func.cmpib(ITEM_ARCHIPELAGO, reg_D0);
+            shop_hook_func.beq("archipelago");
             {
-                ground_hook_func.jsr(0x291D6);  // GetItem
+                // If item is an Archipelago item, don't call the GetItem function
+                shop_hook_func.jsr(0x291D6);  // GetItem
             }
-            ground_hook_func.label("not_archipelago");
+            shop_hook_func.label("archipelago");
 
             shop_hook_func.movem_to_stack({}, { reg_A0 });
             shop_hook_func.lea(SHOP_ITEM_FLAGS_START_ADDR, reg_A0);
