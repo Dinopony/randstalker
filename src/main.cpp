@@ -31,14 +31,19 @@
 #include "io/io.hpp"
 #include "bingo.hpp"
 
-md::ROM* get_input_rom(std::string input_rom_path)
+md::ROM* get_input_rom(std::string input_rom_path, bool ask_on_failure)
 {
     md::ROM* rom = new md::ROM(input_rom_path);
     while (!rom->is_valid())
     {
         delete rom;
+
+        if(!ask_on_failure)
+            throw LandstalkerException("Couldn't find a valid input ROM file with the given settings.");
+
         if (!input_rom_path.empty())
             std::cout << "[ERROR] ROM input path \"" << input_rom_path << "\" is wrong, and no ROM could be opened this way.\n\n";
+
         std::cout << "Please specify input ROM path (or drag ROM on Randstalker.exe icon before launching): ";
         std::getline(std::cin, input_rom_path);
         rom = new md::ROM(input_rom_path);
@@ -142,7 +147,7 @@ void generate(const ArgumentDictionary& args)
     std::string input_rom_path = args.get_string("inputrom", "./input.md");
 
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
-    md::ROM* rom = get_input_rom(input_rom_path);
+    md::ROM* rom = get_input_rom(input_rom_path, args.get_boolean("stdin", true));
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space after System Font
@@ -227,6 +232,12 @@ int main(int argc, char* argv[])
 
     if(args.contains("permalink") && args.get_string("permalink").empty())
     {
+        if(!args.get_boolean("stdin", true))
+        {
+            std::cerr << "[ERROR] --permalink and --nostdin arguments can only coexist if permalink is specified." << std::endl;
+            return EXIT_FAILURE;
+        }
+
         std::string permalink;
         std::cout << "Please specify a permalink: ";
         std::getline(std::cin, permalink);
@@ -245,7 +256,7 @@ int main(int argc, char* argv[])
         return_code = EXIT_FAILURE;
     }
 
-    if(args.get_boolean("pause", true))
+    if(args.get_boolean("pause", true) && args.get_boolean("stdin", true))
     {
         std::cout << "\nPress any key to exit.";
         std::string dummy;
