@@ -28,27 +28,28 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::
         // Regular case: pick a random seed, read a preset file to get the config and generate a new world
         _seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
 
-        std::string preset_name = args.get_string("preset");
-        stringtools::trim(preset_name);
-        if(preset_name.empty())
+        std::string preset_path = args.get_string("preset");
+        stringtools::trim(preset_path);
+        if(preset_path.empty())
         {
-            std::cout << "Please specify a preset name (name of a file inside the 'presets' folder, leave empty for default): ";
-            std::getline(std::cin, preset_name);
-            stringtools::trim(preset_name);
+            if(args.get_boolean("stdin", true))
+            {
+                std::cout << "Please specify a preset name (name of a file inside the 'presets' folder, leave empty for default): ";
+                std::getline(std::cin, preset_path);
+                stringtools::trim(preset_path);
+            }
 
-            if(preset_name.empty())
-                preset_name = "default";
+            if(preset_path.empty())
+                preset_path = "default";
         }
 
         // If a path was given, filter any kind of directories only keeping the last part of the path
-        std::vector<std::string> split_preset_path = stringtools::split(preset_name, "/");
-        if(split_preset_path.size() >= 2)
-            preset_name = *split_preset_path.rbegin();
+        if(preset_path.find('/') == std::string::npos)
+            preset_path = "./presets/" + preset_path;
 
-        if(!preset_name.ends_with(".json"))
-            preset_name += ".json";
+        if(!preset_path.ends_with(".json"))
+            preset_path += ".json";
 
-        std::string preset_path = "./presets/" + preset_name;
         std::ifstream preset_file(preset_path);
         if(!preset_file)
             throw LandstalkerException("Could not open preset file at given path '" + preset_path + "'");
