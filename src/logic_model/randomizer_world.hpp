@@ -37,6 +37,8 @@ private:
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<Item*> _archipelago_items;
 
+    std::string _archipelago_goal;
+
 public:
     RandomizerWorld() = default;
     ~RandomizerWorld();
@@ -92,6 +94,8 @@ public:
     void add_paths_for_tree_connections(bool require_tibor_access);
 
     Item* add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming);
+    const std::string& archipelago_goal() const { return _archipelago_goal; }
+    void archipelago_goal(const std::string& goal) { _archipelago_goal = goal; }
 
     void load_model_from_json();
 

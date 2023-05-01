@@ -34,6 +34,8 @@ public:
 
     void inject_code(md::ROM& rom, World& world) override
     {
+        RandomizerWorld& rando_world = reinterpret_cast<RandomizerWorld&>(world);
+
         // Right before SEGA logo display, call the specific initialization function
         uint32_t func_boot_init_addr = this->inject_func_boot_init(rom);
         rom.set_long(0x38616, func_boot_init_addr);
@@ -51,7 +53,11 @@ public:
         // Change the message when obtaining an Archipelago item on the ground
         add_proc_handle_archipelago_items_on_ground(rom);
         // Change the message when obtaining an Archipelago item from an NPC
-        handle_npc_set_uuid_on_reward(rom, reinterpret_cast<RandomizerWorld&>(world));
+        handle_npc_set_uuid_on_reward(rom, rando_world);
+
+        // If the goal is to reach Kazalt, make the Kazalt teleporter trigger the end cutscene
+        if(rando_world.archipelago_goal() == "reach_kazalt")
+            rom.set_code(0xE56A, md::Code().jmp(0x1556C));
     }
 
     void inject_data(md::ROM& rom, World& world) override

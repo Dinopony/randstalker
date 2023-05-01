@@ -184,4 +184,7 @@ void WorldJsonParser::parse_world_json(RandomizerWorld& world, const Json& json)
     parse_dark_region_from_json(world, json);
     parse_fahl_enemies(world, json);
     parse_teleport_trees(world, json);
+
+    if(json.contains("goal"))
+        world.archipelago_goal(json.at("goal"));
 }
