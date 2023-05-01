@@ -109,6 +109,7 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
     json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
+    json["randomizerSettings"]["shopPricesFactor"] = _shop_prices_factor;
     json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
@@ -231,6 +232,8 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("shuffleTrees"))
             _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
+        if(randomizer_settings_json.contains("shopPricesFactor"))
+            _shop_prices_factor = randomizer_settings_json.at("shopPricesFactor");
         if(randomizer_settings_json.contains("enemyJumpingInLogic"))
             _enemy_jumping_in_logic = randomizer_settings_json.at("enemyJumpingInLogic");
         if(randomizer_settings_json.contains("damageBoostingInLogic"))
@@ -388,6 +391,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_ekeeke_auto_revive);
     bitpack.pack(_allow_spoiler_log);
     bitpack.pack(_shuffle_tibor_trees);
+    bitpack.pack(_shop_prices_factor);
     bitpack.pack(_enemy_jumping_in_logic);
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
@@ -450,6 +454,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _ekeeke_auto_revive = bitpack.unpack<bool>();
     _allow_spoiler_log = bitpack.unpack<bool>();
     _shuffle_tibor_trees = bitpack.unpack<bool>();
+    _shop_prices_factor = bitpack.unpack<uint16_t>();
     _enemy_jumping_in_logic = bitpack.unpack<bool>();
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();

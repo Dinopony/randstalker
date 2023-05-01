@@ -511,8 +511,14 @@ void WorldShuffler::randomize_prices()
         if(!source->is_shop_item())
             continue;
         ItemSourceShop* shop_source = reinterpret_cast<ItemSourceShop*>(source);
-        Item* item = shop_source->item();
-        shop_source->price(item->gold_value());
+
+        uint16_t price = shop_source->item()->gold_value();
+        price = (uint16_t)((double)price * _options.shop_prices_factor());
+        price -= price % 10;
+        if(price < 10)
+            price = 10;
+
+        shop_source->price(price);
     }
 
     for(size_t i=0 ; i<_logical_playthrough.size() ; ++i)
@@ -525,9 +531,15 @@ void WorldShuffler::randomize_prices()
         float current_playthrough_progression = (float)i / (float)_logical_playthrough.size();
         float progression_price_factor = EARLYGAME_PRICE_FACTOR + (current_playthrough_progression * FACTOR_DIFF);
 
-        uint16_t price = (uint16_t)((float)shop_source->item()->gold_value() * progression_price_factor);
-        price -= price % 10;
-        shop_source->price(price);
+        double price = (double)shop_source->item()->gold_value();
+        price *= progression_price_factor;
+        price *= _options.shop_prices_factor();
+        uint16_t rounded_price = (uint16_t)price;
+        rounded_price -= rounded_price % 10;
+        if(price < 10)
+            price = 10;
+
+        shop_source->price(rounded_price);
     }
 }
 

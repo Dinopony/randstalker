@@ -53,6 +53,7 @@ private:
     bool _allow_spoiler_log = true;
     std::vector<std::string> _possible_spawn_locations;
     bool _shuffle_tibor_trees = false;
+    uint16_t _shop_prices_factor = 100;
     bool _enemy_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
@@ -112,6 +113,7 @@ public:
     [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
     [[nodiscard]] bool allow_spoiler_log() const { return _allow_spoiler_log; }
     [[nodiscard]] bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
+    [[nodiscard]] double shop_prices_factor() const { return (double)_shop_prices_factor / 100.0; }
     [[nodiscard]] bool handle_enemy_jumping_in_logic() const { return _enemy_jumping_in_logic; }
     [[nodiscard]] bool handle_damage_boosting_in_logic() const { return _damage_boosting_in_logic; }
     [[nodiscard]] bool handle_tree_cutting_glitch_in_logic() const { return _tree_cutting_glitch_in_logic; }
