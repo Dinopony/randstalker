@@ -5,7 +5,6 @@
 
 #include <landstalker-lib/model/map.hpp>
 #include <landstalker-lib/model/map_connection.hpp>
-#include <landstalker-lib/model/world.hpp>
 #include <landstalker-lib/tools/stringtools.hpp>
 #include <landstalker-lib/tools/json.hpp>
 
@@ -13,13 +12,13 @@
 #include "../logic_model/world_node.hpp"
 #include "../logic_model/randomizer_world.hpp"
 
-namespace graphviz {
+namespace GraphvizWriter {
 
 constexpr const char* COLORS[] = { "indianred2", "lightslateblue", "limegreen", "deeppink2", "darkorchid3", "chocolate2", "darkturquoise" };
 size_t COLORS_SIZE = 7;
 
 
-void output_logic_as_dot(const RandomizerWorld& world, const std::string& path)
+void write_logic_as_dot(const RandomizerWorld& world, const std::string& path)
 {
     std::ofstream graphviz(path);
     graphviz << "digraph {\n";
@@ -65,7 +64,7 @@ void output_logic_as_dot(const RandomizerWorld& world, const std::string& path)
     graphviz << "}\n"; 
 }
 
-void output_maps_as_dot(const RandomizerWorld& world, const std::string& path)
+void write_maps_as_dot(const RandomizerWorld& world, const std::string& path)
 {
     std::ofstream graphviz(path);
     graphviz << "digraph {\n";
