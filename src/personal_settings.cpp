@@ -28,7 +28,7 @@ static Color parse_color_from_name_or_hex(const std::string& string)
     return { lowered };
 }
 
-PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names)
+PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names)
 {
     _item_names = item_names;
 

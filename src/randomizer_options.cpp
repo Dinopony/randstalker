@@ -11,7 +11,7 @@
 
 #include "tools/base64.hpp"
 
-RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names)
+RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names)
 {
     _item_names = item_names;
     _starting_items.fill(0);
@@ -75,7 +75,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["startingLife"] = _starting_life;
 
     json["gameSettings"]["startingItems"] = Json::object();
-    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+    for(uint8_t i=0 ; i<ITEM_LIFESTOCK ; ++i)
     {
         if(_starting_items[i] > 0)
             json["gameSettings"]["startingItems"][_item_names[i]] = _starting_items[i];
@@ -476,7 +476,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _damage_boosting_in_logic = bitpack.unpack<bool>();
     _allow_whistle_usage_behind_trees = bitpack.unpack<bool>();
     _ensure_ekeeke_in_shops = bitpack.unpack<bool>();
-    _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT+1>();
+    _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
     _filler_item = bitpack.unpack<uint8_t>();
     _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
     _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();
@@ -486,7 +486,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
 
     _possible_spawn_locations = bitpack.unpack_vector<std::string>();
 
-    _starting_items = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
+    _starting_items = bitpack.unpack_array<uint8_t, ITEM_LIFESTOCK>();
     _finite_ground_items = bitpack.unpack_vector<uint8_t>();
     _finite_shop_items = bitpack.unpack_vector<uint8_t>();
 

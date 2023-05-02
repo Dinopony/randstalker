@@ -124,22 +124,14 @@ static void patch_items(World& world, const RandomizerOptions& options)
     }
 
     // Process custom starting quantities for items
-    const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
-    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+    const std::array<uint8_t, ITEM_LIFESTOCK>& starting_items = options.starting_items();
+    for(uint8_t i=0 ; i<ITEM_LIFESTOCK ; ++i)
     {
         try
         {
             world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
         }
         catch(std::out_of_range&) {}
-    }
-
-    if(options.archipelago_world())
-    {
-        // Add generic gold items in increasing order when working with Archipelago
-        const std::vector<uint8_t> GOLD_VALUES = { 1, 20, 50, 100, 200 };
-        for(uint8_t value : GOLD_VALUES)
-            world.add_gold_item(value);
     }
 
     // Alter a few things depending on settings
@@ -300,8 +292,8 @@ static void apply_options_on_hint_sources(const RandomizerOptions& options, Rand
 static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
-    const std::array<uint8_t, ITEM_COUNT+1>& distribution_param = options.items_distribution();
-    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
+    const std::array<uint8_t, ITEM_COUNT>& distribution_param = options.items_distribution();
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
         world.item_quantity(i, distribution_param[i]);
 
     // Apply other params that indirectly influence item distribution

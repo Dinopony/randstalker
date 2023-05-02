@@ -257,9 +257,7 @@ void WorldShuffler::init_item_pool()
     {
         for(uint16_t i=0 ; i<quantity ; ++i)
         {
-            if(item_id == ITEM_GOLDS_START)
-                _item_pool.emplace_back(this->generate_gold_item());
-            else if(item_id == ITEM_LIFESTOCK && ignored_lifestocks > 0)
+            if(item_id == ITEM_LIFESTOCK && ignored_lifestocks > 0)
                 --ignored_lifestocks;
             else
                 _item_pool.emplace_back(_world.item(item_id));
@@ -281,23 +279,6 @@ void WorldShuffler::init_item_pool()
     }
 
     vectools::shuffle(_item_pool, _rng);
-}
-
-/**
- * Generate an ItemGolds that has a randomized gold value, and add it to the World.
- * @return the new item
- */
-Item* WorldShuffler::generate_gold_item()
-{
-    std::normal_distribution<double> distribution(40.0, 18.0);
-    double gold_value = distribution(_rng);
-
-    if (gold_value < 1)
-        gold_value = 1;
-    else if (gold_value > 255)
-        gold_value = 255;
-
-    return _world.add_gold_item(static_cast<uint8_t>(gold_value));
 }
 
 /**

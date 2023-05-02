@@ -21,6 +21,17 @@
 
 #include <iostream>
 
+RandomizerWorld::RandomizerWorld() :
+    World()
+{
+    // Add "standard" gold items which can be used through item distribution
+    this->add_item(new ItemGolds(ITEM_1_GOLD, 1));
+    this->add_item(new ItemGolds(ITEM_20_GOLDS, 20));
+    this->add_item(new ItemGolds(ITEM_50_GOLDS, 50));
+    this->add_item(new ItemGolds(ITEM_100_GOLDS, 100));
+    this->add_item(new ItemGolds(ITEM_200_GOLDS, 200));
+}
+
 RandomizerWorld::~RandomizerWorld()
 {
     for (ItemSource* source : _item_sources)
@@ -64,9 +75,9 @@ std::vector<ItemSource*> RandomizerWorld::item_sources_with_item(Item* item)
     return sources_with_item;
 }
 
-std::array<std::string, ITEM_COUNT+1> RandomizerWorld::item_names() const
+std::array<std::string, ITEM_COUNT> RandomizerWorld::item_names() const
 {
-    std::array<std::string, ITEM_COUNT+1> item_names;
+    std::array<std::string, ITEM_COUNT> item_names;
     for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
     {
         try
@@ -78,7 +89,6 @@ std::array<std::string, ITEM_COUNT+1> RandomizerWorld::item_names() const
             item_names[i] = "No" + std::to_string(i);
         }
     }
-    item_names[ITEM_GOLDS_START] = "Golds";
 
     return item_names;
 }

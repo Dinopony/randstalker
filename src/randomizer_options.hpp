@@ -18,7 +18,7 @@ class RandomizerOptions
 private:
     static constexpr uint8_t STARTING_LIFE_USE_SPAWN_LOCATION_VALUE = 0;
 
-    std::array<std::string, ITEM_COUNT+1> _item_names;
+    std::array<std::string, ITEM_COUNT> _item_names;
 
     // ------------- Game patching settings -------------
     // (included in permalink, presets & plandos)
@@ -26,7 +26,7 @@ private:
     bool _use_armor_upgrades = true;
     uint8_t _starting_life = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
     uint16_t _starting_gold = 0;
-    std::array<uint8_t, ITEM_COUNT> _starting_items {};
+    std::array<uint8_t, ITEM_LIFESTOCK> _starting_items {};
     bool _fix_armlet_skip = true;
     bool _remove_tree_cutting_glitch_drops = true;
     bool _consumable_record_book = false;
@@ -59,7 +59,7 @@ private:
     bool _tree_cutting_glitch_in_logic = false;
     bool _allow_whistle_usage_behind_trees = false;
     bool _ensure_ekeeke_in_shops = true;
-    std::array<uint8_t, ITEM_COUNT+1> _items_distribution {};
+    std::array<uint8_t, ITEM_COUNT> _items_distribution {};
     uint8_t _filler_item = ITEM_EKEEKE;
     uint16_t _hints_distribution_region_requirement = 0;
     uint16_t _hints_distribution_item_requirement = 0;
@@ -80,7 +80,7 @@ private:
     Json _model_patch_hint_sources;
 
 public:
-    explicit RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names);
+    explicit RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names);
 
     [[nodiscard]] Json to_json() const;
     void parse_json(const Json& json);
@@ -90,7 +90,7 @@ public:
     [[nodiscard]] bool use_armor_upgrades() const { return _use_armor_upgrades; }
     [[nodiscard]] uint8_t starting_life() const { return _starting_life; }
     [[nodiscard]] uint16_t starting_gold() const { return _starting_gold; }
-    [[nodiscard]] const std::array<uint8_t, ITEM_COUNT>& starting_items() const { return _starting_items; }
+    [[nodiscard]] const std::array<uint8_t, ITEM_LIFESTOCK>& starting_items() const { return _starting_items; }
     [[nodiscard]] bool fix_armlet_skip() const { return _fix_armlet_skip; }
     [[nodiscard]] bool remove_tree_cutting_glitch_drops() const { return _remove_tree_cutting_glitch_drops; }
     [[nodiscard]] bool consumable_record_book() const { return _consumable_record_book; }
@@ -121,7 +121,7 @@ public:
     [[nodiscard]] bool handle_tree_cutting_glitch_in_logic() const { return _tree_cutting_glitch_in_logic; }
     [[nodiscard]] bool allow_whistle_usage_behind_trees() const { return _allow_whistle_usage_behind_trees; }
     [[nodiscard]] bool ensure_ekeeke_in_shops() const { return _ensure_ekeeke_in_shops; }
-    [[nodiscard]] const std::array<uint8_t, ITEM_COUNT+1>& items_distribution() const { return _items_distribution; }
+    [[nodiscard]] const std::array<uint8_t, ITEM_COUNT>& items_distribution() const { return _items_distribution; }
     [[nodiscard]] uint8_t filler_item_id() const { return _filler_item; }
 
     [[nodiscard]] uint16_t hints_count() const { return _hints_distribution_region_requirement

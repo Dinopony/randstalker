@@ -25,7 +25,7 @@ private:
     std::map<std::string, SpawnLocation*> _available_spawn_locations;
     const SpawnLocation* _spawn_location = nullptr;
 
-    std::array<uint16_t, ITEM_COUNT+1> _item_quantities;
+    std::array<uint16_t, ITEM_COUNT> _item_quantities;
 
     std::vector<HintSource*> _hint_sources;
     std::vector<HintSource*> _used_hint_sources;
@@ -40,10 +40,10 @@ private:
     std::string _archipelago_goal;
 
 public:
-    RandomizerWorld() = default;
+    RandomizerWorld();
     ~RandomizerWorld();
 
-    [[nodiscard]] std::array<std::string, ITEM_COUNT+1> item_names() const;
+    [[nodiscard]] std::array<std::string, ITEM_COUNT> item_names() const;
 
     [[nodiscard]] const std::vector<ItemSource*>& item_sources() const { return _item_sources; }
     [[nodiscard]] std::vector<ItemSource*>& item_sources() { return _item_sources; }
@@ -67,7 +67,7 @@ public:
     [[nodiscard]] const SpawnLocation* spawn_location() const { return _spawn_location; }
     void spawn_location(const SpawnLocation* spawn);
 
-    [[nodiscard]] const std::array<uint16_t, ITEM_COUNT+1>& item_quantities() const { return _item_quantities; }
+    [[nodiscard]] const std::array<uint16_t, ITEM_COUNT>& item_quantities() const { return _item_quantities; }
     [[nodiscard]] uint16_t item_quantity(uint8_t item_id) const { return _item_quantities.at(item_id); }
     void item_quantity(uint8_t item_id, uint16_t quantity) { _item_quantities[item_id] = quantity; }
 
