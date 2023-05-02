@@ -60,6 +60,8 @@ set(SOURCES
         "src/assets/archipelago_item.bin.hxx"
         "src/assets/secret_arg_music_bank.bin.hxx"
 
+        "src/constants/rando_constants.hpp"
+
         "src/assets/titlescreen/title1_layout.rle.hxx"
         "src/assets/titlescreen/title1_tiles.lz77.hxx"
         "src/assets/titlescreen/title2_layout.rle.hxx"
@@ -106,6 +108,8 @@ set(SOURCES
         "src/patches/edit_content/patch_edit_dialogues.hpp"
         "src/patches/edit_content/patch_rando_world_edits.hpp"
         "src/patches/edit_content/patch_shorten_cutscenes.hpp"
+        "src/patches/edit_content/patch_add_golas_heart.hpp"
+        "src/patches/edit_content/patch_add_golas_heart.cpp"
 
         "src/patches/item_effects/patch_lithograph_hint_on_use.hpp"
         "src/patches/item_effects/patch_oracle_stone_hint_on_use.hpp"

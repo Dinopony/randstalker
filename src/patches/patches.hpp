@@ -61,6 +61,7 @@
 
 #include "events/patch_christmas_event.hpp"
 #include "events/patch_secret_arg.hpp"
+#include "edit_content/patch_add_golas_heart.hpp"
 
 class RandomizerWorld;
 
@@ -160,6 +161,8 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     // Special events
     if(options.christmas_event())
         patches.emplace_back(new PatchChristmasEvent());
+    if(options.goal() == "beat_dark_nole" || options.secret_event())
+        patches.emplace_back(new PatchAddGolasHeart());
     if(options.secret_event())
         patches.emplace_back(new PatchSecretARG());
 
