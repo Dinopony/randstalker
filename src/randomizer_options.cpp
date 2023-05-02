@@ -125,6 +125,7 @@ Json RandomizerOptions::to_json() const
             items_distribution_with_names[item_name] = amount;
     }
     json["randomizerSettings"]["itemsDistributions"] = items_distribution_with_names;
+    json["randomizerSettings"]["fillerItem"] = _item_names[_filler_item];
 
     json["randomizerSettings"]["hintsDistribution"] = {
         { "regionRequirement", _hints_distribution_region_requirement },
@@ -255,6 +256,15 @@ void RandomizerOptions::parse_json(const Json& json)
                 uint8_t item_id = std::distance(_item_names.begin(), it);
                 _items_distribution[item_id] = quantity;
             }
+        }
+        if(randomizer_settings_json.contains("fillerItem"))
+        {
+            std::string item_name = randomizer_settings_json.at("fillerItem");
+            auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
+            if(it == _item_names.end())
+                throw LandstalkerException("Unknown item name '" + item_name + "' in filler item of preset file.");
+            uint8_t item_id = std::distance(_item_names.begin(), it);
+            _filler_item = item_id;
         }
 
         if(randomizer_settings_json.contains("hintsDistribution"))
@@ -398,6 +408,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_damage_boosting_in_logic);
     bitpack.pack(_allow_whistle_usage_behind_trees);
     bitpack.pack_array(_items_distribution);
+    bitpack.pack(_filler_item);
     bitpack.pack(_hints_distribution_region_requirement);
     bitpack.pack(_hints_distribution_item_requirement);
     bitpack.pack(_hints_distribution_item_location);
@@ -461,6 +472,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _damage_boosting_in_logic = bitpack.unpack<bool>();
     _allow_whistle_usage_behind_trees = bitpack.unpack<bool>();
     _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT+1>();
+    _filler_item = bitpack.unpack<uint8_t>();
     _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
     _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();
     _hints_distribution_item_location = bitpack.unpack<uint16_t>();

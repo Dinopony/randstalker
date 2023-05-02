@@ -37,8 +37,8 @@
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
         "allowWhistleUsageBehindTrees": true,
+        "fillerItem": "EkeEke",
         "itemsDistribution": {
-            "EkeEke": 58,
             "Magic Sword": 1,
             "Sword of Ice": 1,
             "Thunder Sword": 1,

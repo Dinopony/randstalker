@@ -70,8 +70,6 @@ public:
     [[nodiscard]] const std::array<uint16_t, ITEM_COUNT+1>& item_quantities() const { return _item_quantities; }
     [[nodiscard]] uint16_t item_quantity(uint8_t item_id) const { return _item_quantities.at(item_id); }
     void item_quantity(uint8_t item_id, uint16_t quantity) { _item_quantities[item_id] = quantity; }
-    void item_quantity_add(uint8_t item_id, uint16_t diff) { _item_quantities[item_id] += diff; }
-    void item_quantity_remove(uint8_t item_id, uint16_t diff) { _item_quantities[item_id] = (_item_quantities[item_id] >= diff) ? (_item_quantities[item_id] - diff) : 0; }
 
     [[nodiscard]] const std::vector<HintSource*>& hint_sources() const { return _hint_sources; }
     [[nodiscard]] HintSource* hint_source(const std::string& name) const;

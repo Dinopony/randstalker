@@ -200,72 +200,55 @@ void WorldShuffler::init_item_pool()
 {
     _item_pool.clear();
 
-    size_t filled_item_sources_count = 0;
+    size_t empty_item_sources_count = 0;
     for(ItemSource* source : _world.item_sources())
-        if(!source->empty())
-            filled_item_sources_count++;
-    if(filled_item_sources_count == _world.item_sources().size())
-        return;
+        if(source->empty())
+            empty_item_sources_count++;
 
-    _item_pool.reserve(_world.item_sources().size());
+    if(empty_item_sources_count == 0)
+        return;
+    _item_pool.reserve(empty_item_sources_count);
 
     _item_pool_quantities.clear();
     const auto& quantities = _world.item_quantities();
     for(size_t i=0 ; i<quantities.size() ; ++i)
         _item_pool_quantities[i] = quantities[i];
 
-    // Count quantities already in place
-    for(ItemSource* source : _world.item_sources())
-    {
-        if(source->empty())
-            continue;
+    // If using variable starting health, on starting locations where player starts with more health,
+    // remove as many life stocks from the pool
+    uint8_t ignored_lifestocks = 0;
+    if(_options.starting_life() == 0)
+        ignored_lifestocks = _world.spawn_location()->starting_life() - 4;
 
-        uint8_t item_id = source->item()->id();
-        if(_item_pool_quantities[item_id] == 0)
-        {
-            throw LandstalkerException("There are more " + source->item()->name() +
-                                       " already placed than the expected number in the item pool");
-        }
-        _item_pool_quantities[item_id] -= 1;
-    }
-
-    // Build the item pool from the quantities read inside the ItemDistribution objects, and shuffle it
+    // Build the item pool from the quantities, and then check if the item pool size is valid
     for(auto& [item_id, quantity] : _item_pool_quantities)
     {
         for(uint16_t i=0 ; i<quantity ; ++i)
         {
-            if(item_id >= ITEM_GOLDS_START)
+            if(item_id == ITEM_GOLDS_START)
                 _item_pool.emplace_back(this->generate_gold_item());
+            else if(item_id == ITEM_LIFESTOCK && ignored_lifestocks > 0)
+                --ignored_lifestocks;
             else
                 _item_pool.emplace_back(_world.item(item_id));
         }
     }
-    vectools::shuffle(_item_pool, _rng);
-
-    // Count the empty item sources, and compare this count to the item pool size to handle invalid cases
-    size_t empty_item_sources_count = 0;
-    for(ItemSource* source : _world.item_sources())
-    {
-        if(source->empty())
-            empty_item_sources_count += 1;
-    }
 
     if(_item_pool.size() > empty_item_sources_count)
     {
-        throw LandstalkerException("The number of items in item pool is not the same as the number of item sources (" +
-                                    std::to_string(_item_pool.size()) + " =/= " +
-                                    std::to_string(_world.item_sources().size()) + ")");
+        throw LandstalkerException("There are more items in item pool than there are empty item sources (" +
+                                    std::to_string(_item_pool.size()) + " > " +
+                                    std::to_string(empty_item_sources_count) + ")");
     }
-    else if(_item_pool.size() < empty_item_sources_count)
+    else
     {
-        size_t missing_item_count = _world.item_sources().size() - _item_pool.size();
-        std::cout << "Warning: Item pool (" << _item_pool.size() << " items) is smaller than the item sources pool ("
-                                            << _world.item_sources().size() << " item sources)."
-                                            << "Remaining sources will remain empty.\n\n";
-
-        for(size_t i=0 ; i<missing_item_count ; ++i)
-            _item_pool.emplace_back(_world.item(ITEM_NONE));
+        // Fill the item pool with filler items until it has enough items
+        Item* filler_item = _world.item(_options.filler_item_id());
+        while(_item_pool.size() < empty_item_sources_count)
+            _item_pool.emplace_back(filler_item);
     }
+
+    vectools::shuffle(_item_pool, _rng);
 }
 
 /**

@@ -307,39 +307,27 @@ static void apply_options_on_item_distributions(const RandomizerOptions& options
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        if(world.item_quantity(ITEM_RED_JEWEL) == 0)
+        if(world.item_quantity(ITEM_RED_JEWEL) < options.jewel_count())
         {
             world.item_quantity(ITEM_RED_JEWEL, options.jewel_count());
-            world.item_quantity_remove(ITEM_NONE, options.jewel_count());
+            world.item_quantity(ITEM_PURPLE_JEWEL, 0);
+            world.item_quantity(ITEM_GREEN_JEWEL, 0);
+            world.item_quantity(ITEM_BLUE_JEWEL, 0);
+            world.item_quantity(ITEM_YELLOW_JEWEL, 0);
         }
     }
     else
     {
         if(options.jewel_count() >= 1 && world.item_quantity(ITEM_RED_JEWEL) == 0)
-        {
-            world.item_quantity_add(ITEM_RED_JEWEL, 1);
-            world.item_quantity_remove(ITEM_NONE, 1);
-        }
+            world.item_quantity(ITEM_RED_JEWEL, 1);
         if(options.jewel_count() >= 2 && world.item_quantity(ITEM_PURPLE_JEWEL) == 0)
-        {
-            world.item_quantity_add(ITEM_PURPLE_JEWEL, 1);
-            world.item_quantity_remove(ITEM_NONE, 1);
-        }
+            world.item_quantity(ITEM_PURPLE_JEWEL, 1);
         if(options.jewel_count() >= 3 && world.item_quantity(ITEM_GREEN_JEWEL) == 0)
-        {
-            world.item_quantity_add(ITEM_GREEN_JEWEL, 1);
-            world.item_quantity_remove(ITEM_NONE, 1);
-        }
+            world.item_quantity(ITEM_GREEN_JEWEL, 1);
         if(options.jewel_count() >= 4 && world.item_quantity(ITEM_BLUE_JEWEL) == 0)
-        {
-            world.item_quantity_add(ITEM_BLUE_JEWEL, 1);
-            world.item_quantity_remove(ITEM_NONE, 1);
-        }
+            world.item_quantity(ITEM_BLUE_JEWEL, 1);
         if(options.jewel_count() >= 5 && world.item_quantity(ITEM_YELLOW_JEWEL) == 0)
-        {
-            world.item_quantity_add(ITEM_YELLOW_JEWEL, 1);
-            world.item_quantity_remove(ITEM_NONE, 1);
-        }
+            world.item_quantity(ITEM_YELLOW_JEWEL, 1);
     }
 }
 
