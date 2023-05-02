@@ -153,6 +153,7 @@ void WorldShuffler::randomize_fahl_enemies()
 
 void WorldShuffler::randomize_items()
 {
+    this->place_fixed_items();
     this->init_item_pool();
 
     _solver.setup(_world.spawn_node(), _world.end_node(), _world.starting_inventory());
@@ -186,6 +187,29 @@ void WorldShuffler::randomize_items()
         debug_log["requiredItems"] = Json::array();
         for(Item* item : _minimal_items_to_complete)
             debug_log["requiredItems"].emplace_back(item->name());
+    }
+}
+
+/**
+ * Some options place fixed items at fixed stops to provide a better experience. This function takes care of doing
+ * so by pre-placing items according to the selected options.
+ */
+void WorldShuffler::place_fixed_items()
+{
+    if(_options.ensure_ekeeke_in_shops())
+    {
+        const std::vector<std::string> SHOPS_TO_FILL = {
+                "Massan: Shop item #1",
+                "Gumi: Inn item #1",
+                "Ryuma: Inn item",
+                "Mercator: Shop item #1",
+                "Verla: Shop item #1",
+                "Destel: Inn item",
+                "Route to Lake Shrine: Greedly's shop item #1",
+                "Kazalt: Shop item #1"
+        };
+        for(const std::string& source_name : SHOPS_TO_FILL)
+            _world.item_source(source_name)->item(_world.item(ITEM_EKEEKE));
     }
 }
 

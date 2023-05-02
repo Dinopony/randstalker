@@ -37,6 +37,7 @@
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
         "allowWhistleUsageBehindTrees": false,
+        "ensureEkeEkeInShops": true,
         "fillerItem": "EkeEke",
         "itemsDistribution": {
             "Magic Sword": 1,

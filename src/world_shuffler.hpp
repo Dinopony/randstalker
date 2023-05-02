@@ -52,6 +52,7 @@ private:
 
     // Item randomization
     void randomize_items();
+    void place_fixed_items();
     void init_item_pool();
     [[nodiscard]] Item* generate_gold_item();
     ItemSource* place_item_randomly(Item* item, std::vector<ItemSource*> possible_sources);
