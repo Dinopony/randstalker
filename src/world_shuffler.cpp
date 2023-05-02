@@ -164,6 +164,12 @@ void WorldShuffler::randomize_items()
         // Run a solver step to reach a "blocked" state where something needs to be placed in order to continue
         explored_new_nodes = _solver.run_until_blocked();
 
+        // Update the table of spheres to have accurate data on when an item source was first considered during
+        // generation, which is then used to evaluate prices by "logical distance" to starting point
+        for(ItemSource* source : _solver.reachable_item_sources())
+            if(!_item_source_spheres.count(source))
+                _item_source_spheres[source] = _current_sphere;
+
         // Place all "scheduled" item placements, which correspond to "itemPlacedWhenCrossing" attributes of WorldPaths
         // solver encountered during last step
         for(auto& [item, item_sources] : _solver.scheduled_item_placements())
@@ -174,6 +180,8 @@ void WorldShuffler::randomize_items()
 
         // Item sources changed, force the solver to update its inventory
         _solver.update_current_inventory();
+
+        _current_sphere += 1;
     }
 
     // Place the remaining items from the item pool in the remaining sources
@@ -501,12 +509,12 @@ void WorldShuffler::place_remaining_items()
 }
 
 /**
- * Give a random price to all shop item sources depending on the item that's inside and whether it's required
- * for progression or not
+ * Give a random price to all shop item sources depending on the item that's inside and how late in the seed
+ * it will be encountered.
  */
 void WorldShuffler::randomize_prices()
 {
-    constexpr float EARLYGAME_PRICE_FACTOR = 0.5;
+    constexpr float EARLYGAME_PRICE_FACTOR = 1.0;
     constexpr float ENDGAME_PRICE_FACTOR = 2.0;
     constexpr float FACTOR_DIFF = ENDGAME_PRICE_FACTOR - EARLYGAME_PRICE_FACTOR;
 
@@ -519,32 +527,21 @@ void WorldShuffler::randomize_prices()
             continue;
         ItemSourceShop* shop_source = reinterpret_cast<ItemSourceShop*>(source);
 
-        uint16_t price = shop_source->item()->gold_value();
-        price = (uint16_t)((double)price * _options.shop_prices_factor());
-        price -= price % 10;
-        if(price < 10)
-            price = 10;
+        uint16_t source_sphere = 0;
+        if(_item_source_spheres.count(source))
+            source_sphere = _item_source_spheres[source];
 
-        shop_source->price(price);
-    }
-
-    for(size_t i=0 ; i<_logical_playthrough.size() ; ++i)
-    {
-        ItemSource* source = _logical_playthrough[i];
-        if(!source->is_shop_item())
-            continue;
-        ItemSourceShop* shop_source = reinterpret_cast<ItemSourceShop*>(source);
-
-        float current_playthrough_progression = (float)i / (float)_logical_playthrough.size();
+        float current_playthrough_progression = (float)source_sphere / (float)_current_sphere;
         float progression_price_factor = EARLYGAME_PRICE_FACTOR + (current_playthrough_progression * FACTOR_DIFF);
 
         double price = (double)shop_source->item()->gold_value();
-        price *= progression_price_factor;
         price *= _options.shop_prices_factor();
+        price *= progression_price_factor;
+
         uint16_t rounded_price = (uint16_t)price;
-        rounded_price -= rounded_price % 10;
-        if(price < 10)
-            price = 10;
+        rounded_price -= rounded_price % 5;
+        if(rounded_price < 5)
+            rounded_price = 5;
 
         shop_source->price(rounded_price);
     }

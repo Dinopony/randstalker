@@ -32,6 +32,9 @@ private:
     std::vector<uint8_t> _hintable_item_requirements;
     std::vector<uint8_t> _hintable_item_locations;
 
+    uint16_t _current_sphere = 0;
+    std::map<ItemSource*, uint16_t> _item_source_spheres;
+
 public:
     WorldShuffler(RandomizerWorld& world, const RandomizerOptions& options);
     

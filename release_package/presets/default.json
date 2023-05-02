@@ -24,7 +24,7 @@
         "healthGainedPerLifestock": 1,
         "fastMenuTransitions": true,
         "finiteGroundItems": [ "Life Stock", "Short Cake", "Pawn Ticket" ],
-        "finiteShopItems": [ "Pawn Ticket" ]
+        "finiteShopItems": [ "Life Stock", "Pawn Ticket" ]
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,

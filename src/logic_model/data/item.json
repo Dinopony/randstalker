@@ -168,7 +168,7 @@
     "41": {
         "name": "Pawn Ticket",
         "maxQuantity": 9,
-        "goldValue": 200
+        "goldValue": 150
     },
     "42": {
         "name": "Purple Jewel",
@@ -258,7 +258,7 @@
     },
     "62": {
         "name": "Life Stock",
-        "goldValue": 250
+        "goldValue": 150
     },
     "63": {
         "name": "No Item",
