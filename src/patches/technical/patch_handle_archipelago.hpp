@@ -17,12 +17,6 @@
  */
 class PatchHandleArchipelago : public GamePatch
 {
-public:
-    static constexpr uint32_t ADDR_RECEIVED_ITEM = 0xFF0020;
-    static constexpr uint32_t ADDR_SEED = 0xFF0022;
-    static constexpr uint32_t ADDR_CURRENT_LOCATION_UUID = 0xFF0026;
-    static constexpr uint32_t ADDR_CURRENT_RECEIVED_ITEM_INDEX = 0xFF107E;
-
 private:
     uint32_t _seed;
     uint32_t _remote_names_table_addr = 0xFFFFFFFF;
@@ -54,6 +48,9 @@ public:
         add_proc_handle_archipelago_items_on_ground(rom);
         // Change the message when obtaining an Archipelago item from an NPC
         handle_npc_set_uuid_on_reward(rom, rando_world);
+
+        // Set game completion byte when beating Gola
+        handle_game_completion_byte(rom);
     }
 
     void inject_data(md::ROM& rom, World& world) override
@@ -93,8 +90,8 @@ private:
     {
         md::Code func;
         {
-            func.moveb(0xFF, addr_(ADDR_RECEIVED_ITEM));
-            func.movel(_seed, addr_(ADDR_SEED));
+            func.moveb(0xFF, addr_(ADDR_ARCHIPELAGO_RECEIVED_ITEM));
+            func.movel(_seed, addr_(ADDR_ARCHIPELAGO_SEED));
             func.movew(0x0000, addr_(ADDR_CURRENT_RECEIVED_ITEM_INDEX));
         }
         func.jsr(0x230); // call j_DisableDisplayAndInts whose call was replaced by this function
@@ -123,7 +120,7 @@ private:
                 proc.clrw(reg_D7);
                 proc.moveb(addr_(reg_A4, 0x37), reg_D7);  // Chest ID
                 proc.addiw(0x100, reg_D7);                // + 0x100
-                proc.movew(reg_D7, addr_(ADDR_CURRENT_LOCATION_UUID));
+                proc.movew(reg_D7, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
 
                 proc.movew(0x001E, reg_D0);         // "Sent {ITEM}"
                 proc.jsr(0x22E90);                  // j_PrintString
@@ -227,7 +224,7 @@ private:
             proc.bne("not_archipelago");
             {
                proc.clrl(reg_D7);
-               proc.movew(addr_(ADDR_CURRENT_LOCATION_UUID), reg_D7);
+               proc.movew(addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID), reg_D7);
                proc.cmpiw(0x100, reg_D7);
                proc.blt("generic_ap_item");
                {
@@ -248,7 +245,7 @@ private:
                     proc.movel(string_addr, reg_A2);
                 }
                 proc.label("return_ap");
-                proc.movew(0x0000, addr_(ADDR_CURRENT_LOCATION_UUID));
+                proc.movew(0x0000, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
                 proc.jmp(0x294B2);
             }
             proc.label("not_archipelago");
@@ -289,7 +286,7 @@ private:
                 proc.movem_from_stack({ reg_D0, reg_D7 }, { reg_A0 });
 
                 proc.addiw(0x200, reg_D7);                // add 0x200 to ground_item_id to get UUID
-                proc.movew(reg_D7, addr_(ADDR_CURRENT_LOCATION_UUID));
+                proc.movew(reg_D7, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
 
                 proc.movew(0x1E, reg_D0); // "Sent {ITEM}"
                 proc.jsr(0x28FD8);        // DisplayText
@@ -350,7 +347,7 @@ private:
                 {
                     proc.lsrw(2, reg_D7);
                     proc.addiw(ItemSourceReward::base_reward_uuid(), reg_D7);
-                    proc.movew(reg_D7, addr_(ADDR_CURRENT_LOCATION_UUID));
+                    proc.movew(reg_D7, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
                     proc.bra("return");
                 }
                 proc.label("not_this_reward");
@@ -364,5 +361,17 @@ private:
 
         uint32_t proc_addr = rom.inject_code(proc);
         rom.set_code(0x28DDE, md::Code().jmp(proc_addr));
+    }
+
+    void handle_game_completion_byte(md::ROM& rom)
+    {
+        md::Code proc;
+        {
+            proc.moveb(0x01, addr_(ADDR_ARCHIPELAGO_COMPLETION_BYTE));
+            proc.jmp(0x278); // Sleep
+        }
+
+        uint32_t proc_addr = rom.inject_code(proc);
+        rom.set_code(0x15574, md::Code().jsr(proc_addr));
     }
 };

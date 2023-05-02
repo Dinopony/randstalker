@@ -694,6 +694,9 @@ static uint32_t inject_end_cutscene(md::ROM& rom, World& world)
 {
     md::Code func;
 
+    // Notify Archipelago client we completed the game
+    func.moveb(0x01, addr_(ADDR_ARCHIPELAGO_COMPLETION_BYTE));
+
     // Cut the music and wait
     func.trap(0, { 0x00, 0xFD });
     func.jsr(0x29046); // Sleep

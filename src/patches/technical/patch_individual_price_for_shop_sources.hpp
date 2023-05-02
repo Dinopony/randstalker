@@ -69,7 +69,7 @@ public:
                 func.moveb(addr_(reg_A5, 0x3A), reg_D0);
                 func.lsrb(2, reg_D0);
                 func.addiw(ItemSourceShop::base_shop_uuid(), reg_D0);
-                func.movew(reg_D0, addr_(PatchHandleArchipelago::ADDR_CURRENT_LOCATION_UUID));
+                func.movew(reg_D0, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
                 func.movew(ITEM_ARCHIPELAGO, reg_D0);
             }
             func.label("not_archipelago");

@@ -39,3 +39,15 @@ constexpr uint16_t MAP_GOLAS_HEART_STAIRS_2 = 818;
 constexpr uint16_t MAP_GOLAS_HEART_STAIRS_3 = 819;
 constexpr uint16_t MAP_GOLAS_HEART_FALLING_ROOM = 820;
 constexpr uint16_t MAP_GOLAS_HEART_DARK_NOLE_FIGHT = 821;
+
+
+// =========================================================
+//      MEMORY ADDRESSES
+// =========================================================
+
+constexpr uint32_t ADDR_ARCHIPELAGO_RECEIVED_ITEM = 0xFF0020;            // .b
+constexpr uint32_t ADDR_ARCHIPELAGO_SEED = 0xFF0022;                     // .l
+constexpr uint32_t ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID = 0xFF0026;    // .w
+constexpr uint32_t ADDR_ARCHIPELAGO_COMPLETION_BYTE = 0xFF0028;          // .b
+constexpr uint32_t ADDR_CURRENT_RECEIVED_ITEM_INDEX = 0xFF107E;          // .w
+
