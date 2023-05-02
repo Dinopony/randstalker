@@ -38,7 +38,7 @@ RandomizerWorld::~RandomizerWorld()
         delete source;
     for (auto& [key, node] : _nodes)
         delete node;
-    for (auto& [key, path] : _paths)
+    for (WorldPath* path : _paths)
         delete path;
     for (WorldRegion* region : _regions)
         delete region;
@@ -127,7 +127,10 @@ void RandomizerWorld::load_item_sources()
 
 WorldPath* RandomizerWorld::path(WorldNode* origin, WorldNode* destination)
 {
-    return _paths.at(std::make_pair(origin, destination));
+    for(WorldPath* path : _paths)
+        if(path->origin() == origin && path->destination() == destination)
+            return path;
+    return nullptr;
 }
 
 WorldPath* RandomizerWorld::path(const std::string& origin_name, const std::string& destination_name)
@@ -139,7 +142,7 @@ WorldPath* RandomizerWorld::path(const std::string& origin_name, const std::stri
 
 void RandomizerWorld::add_path(WorldPath* path)
 {
-    _paths[std::make_pair(path->origin(), path->destination())] = path;
+    _paths.emplace_back(path);
 }
 
 WorldRegion* RandomizerWorld::region(const std::string& name) const

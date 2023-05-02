@@ -29,19 +29,19 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
     while(!paths_copy.empty())
     {
         auto it = paths_copy.begin();
-        std::pair<WorldNode*, WorldNode*> node_pair = it->first;
-        WorldPath* path = it->second;
+        WorldPath* path = *it;
+
         paths_copy.erase(it);
 
         bool two_way = false;
-        std::pair<WorldNode*, WorldNode*> reverse_pair = std::make_pair(node_pair.second, node_pair.first);
-        if(paths_copy.count(reverse_pair))
+        for(auto it2 = paths_copy.begin() ; it2 != paths_copy.end() ; ++it2)
         {
-            WorldPath* reverse_path = paths_copy.at(reverse_pair);
-            if(path->is_perfect_opposite_of(reverse_path))
+            WorldPath* other_path = *it2;
+            if(path->is_perfect_opposite_of(other_path))
             {
                 two_way = true;
-                paths_copy.erase(reverse_pair);
+                paths_copy.erase(it2);
+                break;
             }
         }
         

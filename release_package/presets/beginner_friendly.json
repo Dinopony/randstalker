@@ -1,5 +1,6 @@
 {
     "gameSettings": {
+        "goal": "beat_gola",
         "jewelCount": 2,
         "armorUpgrades": true,
         "startingLife": 0,

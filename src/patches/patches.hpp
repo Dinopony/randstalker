@@ -25,6 +25,7 @@
 #include "gameplay_tweaks/patch_armor_upgrades.hpp"
 #include "gameplay_tweaks/patch_show_all_books_in_churches.hpp"
 #include "gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
+#include "gameplay_tweaks/patch_alternative_goals.hpp"
 
 #include "item_effects/patch_lithograph_hint_on_use.hpp"
 #include "item_effects/patch_oracle_stone_hint_on_use.hpp"
@@ -109,6 +110,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchSetLifestocksHealth(options.health_gained_per_lifestock()));
     patches.emplace_back(new PatchUpdateTeleportTreeConnections());
     patches.emplace_back(new PatchIndividualPriceForShopSources());
+    patches.emplace_back(new PatchAlternativeGoals(options.goal()));
     if(options.remove_tree_cutting_glitch_drops())
         patches.emplace_back(new PatchRemoveTreeCuttingGlitchDrops());
     if(options.use_armor_upgrades())

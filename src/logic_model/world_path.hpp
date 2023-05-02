@@ -27,7 +27,10 @@ public:
     void add_required_item(Item* item) { _required_items.emplace_back(item); }
 
     [[nodiscard]] WorldNode* origin() const { return _from_node; }
+    void origin(WorldNode* node) { _from_node = node; }
+
     [[nodiscard]] WorldNode* destination() const { return _to_node; }
+    void destination(WorldNode* node) { _to_node = node; }
 
     [[nodiscard]] const std::vector<WorldNode*>& required_nodes() const { return _required_nodes; }
     [[nodiscard]] bool has_explored_required_nodes(const std::vector<WorldNode*>& explored_nodes) const;

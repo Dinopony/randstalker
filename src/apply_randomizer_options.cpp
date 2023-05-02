@@ -220,7 +220,7 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
     // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements
     if(options.handle_damage_boosting_in_logic())
     {
-        for(auto& [pair, path] : world.paths())
+        for(WorldPath* path : world.paths())
         {
             std::vector<Item*>& required_items = path->required_items();
 
@@ -263,6 +263,16 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
             path_to_kazalt->add_required_item(world.item(ITEM_BLUE_JEWEL));
         if(options.jewel_count() >= 5)
             path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
+    }
+
+    // Change paths to fit alternative goals
+    if(options.goal() == "reach_kazalt")
+    {
+        // The path representing Kazalt teleporter now goes to the end node
+        path_to_kazalt->destination(world.node("end"));
+
+        // Add a fake path from the end to Kazalt to keep the end dungeons logically accessible, although unreachable
+        world.add_path(new WorldPath(world.node("end"), world.node("kazalt")));
     }
 }
 

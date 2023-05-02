@@ -11,6 +11,20 @@
 
 #include "tools/base64.hpp"
 
+static const std::array<std::string, 3> GOALS_TABLE = {
+        "beat_gola",
+        "reach_kazalt",
+        "beat_dark_nole"
+};
+
+static uint8_t get_goal_id(const std::string& goal_string)
+{
+    for(size_t i=0 ; i<GOALS_TABLE.size() ; ++i)
+        if(GOALS_TABLE[i] == goal_string)
+            return i;
+    throw LandstalkerException("Unknown goal '" + goal_string + "'.");
+}
+
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names)
 {
     _item_names = item_names;
@@ -68,7 +82,8 @@ Json RandomizerOptions::to_json() const
 {
     Json json;
 
-    // Game settings 
+    // Game settings
+    json["gameSettings"]["goal"] = this->goal();
     json["gameSettings"]["jewelCount"] = _jewel_count;
     json["gameSettings"]["armorUpgrades"] = _use_armor_upgrades;
     json["gameSettings"]["startingGold"] = _starting_gold;
@@ -157,7 +172,8 @@ void RandomizerOptions::parse_json(const Json& json)
     if(json.contains("gameSettings"))
     {
         const Json& game_settings_json = json.at("gameSettings");
-
+        if(game_settings_json.contains("goal"))
+            _goal = get_goal_id(game_settings_json.at("goal"));
         if(game_settings_json.contains("jewelCount"))            
             _jewel_count = game_settings_json.at("jewelCount");
         if(game_settings_json.contains("armorUpgrades"))
@@ -346,6 +362,11 @@ void RandomizerOptions::validate() const
         throw LandstalkerException("Jewel count must be between 0 and 9.");
 }
 
+std::string RandomizerOptions::goal() const
+{
+    return GOALS_TABLE.at(_goal);
+}
+
 std::vector<std::string> RandomizerOptions::hash_words() const
 {
     std::vector<std::string> words = { 
@@ -380,7 +401,8 @@ std::string RandomizerOptions::permalink() const
     BitstreamWriter bitpack;
 
     bitpack.pack((uint8_t)MAJOR_RELEASE);
-    
+
+    bitpack.pack(_goal);
     bitpack.pack(_jewel_count);
     bitpack.pack(_starting_life);
     bitpack.pack(_starting_gold);
@@ -445,7 +467,8 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     uint8_t version = bitpack.unpack<uint8_t>();
     if(version != (uint8_t)MAJOR_RELEASE)
         throw WrongVersionException("This permalink comes from an incompatible version of Randstalker (" + std::to_string(version) + ").");
-    
+
+    _goal = bitpack.unpack<uint8_t>();
     _jewel_count = bitpack.unpack<uint8_t>();
     _starting_life = bitpack.unpack<uint8_t>();
     _starting_gold = bitpack.unpack<uint16_t>();

@@ -22,6 +22,7 @@ private:
 
     // ------------- Game patching settings -------------
     // (included in permalink, presets & plandos)
+    uint8_t _goal = 0;
     uint8_t _jewel_count = 2;
     bool _use_armor_upgrades = true;
     uint8_t _starting_life = STARTING_LIFE_USE_SPAWN_LOCATION_VALUE;
@@ -86,6 +87,7 @@ public:
     void parse_json(const Json& json);
 
     // Game patching options
+    [[nodiscard]] std::string goal() const;
     [[nodiscard]] uint8_t jewel_count() const { return _jewel_count; }
     [[nodiscard]] bool use_armor_upgrades() const { return _use_armor_upgrades; }
     [[nodiscard]] uint8_t starting_life() const { return _starting_life; }

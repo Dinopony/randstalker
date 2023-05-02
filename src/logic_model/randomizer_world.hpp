@@ -19,7 +19,7 @@ private:
     std::vector<ItemSource*> _item_sources;
 
     std::map<std::string, WorldNode*> _nodes;
-    std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*> _paths;
+    std::vector<WorldPath*> _paths;
     std::vector<WorldRegion*> _regions;
 
     std::map<std::string, SpawnLocation*> _available_spawn_locations;
@@ -37,8 +37,6 @@ private:
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<Item*> _archipelago_items;
 
-    std::string _archipelago_goal;
-
 public:
     RandomizerWorld();
     ~RandomizerWorld();
@@ -53,7 +51,7 @@ public:
     [[nodiscard]] const std::map<std::string, WorldNode*>& nodes() const { return _nodes; }
     [[nodiscard]] WorldNode* node(const std::string& id) const { return _nodes.at(id); }
 
-    [[nodiscard]] const std::map<std::pair<WorldNode*, WorldNode*>, WorldPath*>& paths() const { return _paths; }
+    [[nodiscard]] const std::vector<WorldPath*>& paths() const { return _paths; }
     WorldPath* path(WorldNode* origin, WorldNode* destination);
     WorldPath* path(const std::string& origin_name, const std::string& destination_name);
     void add_path(WorldPath* path);
@@ -92,8 +90,6 @@ public:
     void add_paths_for_tree_connections(bool require_tibor_access);
 
     Item* add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming);
-    const std::string& archipelago_goal() const { return _archipelago_goal; }
-    void archipelago_goal(const std::string& goal) { _archipelago_goal = goal; }
 
     void load_model_from_json();
 

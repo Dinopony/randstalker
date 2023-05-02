@@ -54,10 +54,6 @@ public:
         add_proc_handle_archipelago_items_on_ground(rom);
         // Change the message when obtaining an Archipelago item from an NPC
         handle_npc_set_uuid_on_reward(rom, rando_world);
-
-        // If the goal is to reach Kazalt, make the Kazalt teleporter trigger the end cutscene
-        if(rando_world.archipelago_goal() == "reach_kazalt")
-            rom.set_code(0xE56A, md::Code().jmp(0x1556C));
     }
 
     void inject_data(md::ROM& rom, World& world) override
