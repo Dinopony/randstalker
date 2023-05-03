@@ -37,9 +37,9 @@ void HintSource::apply_text(World& world)
 
     std::string initial_game_string;
     if(this->special())
-        initial_game_string = GameText(_text, textbox_size).getOutput();
+        initial_game_string = GameText(_text, textbox_size).get_output();
     else
-        initial_game_string = GameText(_text, "Foxy", textbox_size).getOutput();
+        initial_game_string = GameText(_text, "Foxy", textbox_size).get_output();
 
     std::vector<std::string> final_strings;
     if(initial_game_string.size() <= 253)

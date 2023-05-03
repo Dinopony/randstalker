@@ -8,6 +8,7 @@
 #include <landstalker-lib/constants/flags.hpp>
 #include <landstalker-lib/exceptions.hpp>
 
+#include "constants/rando_constants.hpp"
 #include "assets/game_strings.json.hxx"
 
 #include "logic_model/world_path.hpp"

@@ -7,12 +7,11 @@
 #include <landstalker-lib/model/world.hpp>
 #include "spawn_location.hpp"
 
-constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
-
 class WorldNode;
 class WorldPath;
 class WorldRegion;
 class HintSource;
+class Entity;
 
 class RandomizerWorld : public World {
 private:
@@ -33,6 +32,8 @@ private:
     WorldRegion* _dark_region = nullptr;
 
     std::vector<EntityType*> _fahl_enemies;
+
+    std::map<Entity*, std::string> _custom_dialogues;
 
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> _teleport_tree_pairs;
     std::vector<Item*> _archipelago_items;
@@ -86,6 +87,10 @@ public:
 
     [[nodiscard]] const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& teleport_tree_pairs() const { return _teleport_tree_pairs; }
     void teleport_tree_pairs(const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& new_pairs) { _teleport_tree_pairs = new_pairs; }
+
+    const std::map<Entity*, std::string>& custom_dialogues() { return _custom_dialogues; }
+    void add_custom_dialogue(Entity* entity, const std::string& text);
+    void add_custom_dialogue_raw(Entity* entity, const std::string& text);
 
     void add_paths_for_tree_connections(bool require_tibor_access);
 

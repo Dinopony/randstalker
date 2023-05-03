@@ -108,6 +108,7 @@ set(SOURCES
         "src/patches/edit_content/patch_edit_dialogues.hpp"
         "src/patches/edit_content/patch_rando_world_edits.hpp"
         "src/patches/edit_content/patch_shorten_cutscenes.hpp"
+        "src/patches/edit_content/patch_add_foxies.hpp"
         "src/patches/edit_content/patch_add_golas_heart.hpp"
         "src/patches/edit_content/patch_add_golas_heart.cpp"
 
@@ -138,7 +139,6 @@ set(SOURCES
         "src/patches/technical/patch_improve_gold_rewards_handling.hpp"
         "src/patches/technical/patch_remove_music.hpp"
         "src/patches/technical/patch_swap_overworld_music.hpp"
-        "src/patches/technical/patch_handle_fox_hints.hpp"
         "src/patches/technical/patch_fix_softlocks.hpp"
         "src/patches/technical/patch_fix_armlet_skip.hpp"
         "src/patches/technical/patch_randomizer_adaptations.hpp"
@@ -147,6 +147,7 @@ set(SOURCES
         "src/patches/technical/patch_update_teleport_tree_connections.hpp"
         "src/patches/technical/patch_on_walk_effects.hpp"
         "src/patches/technical/patch_individual_price_for_shop_sources.hpp"
+        "src/patches/technical/patch_handle_custom_dialogues.hpp"
 
         "src/patches/optimization/patch_optimize_maps.hpp"
         "src/patches/optimization/patch_optimize_destel_well_map.hpp"

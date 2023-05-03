@@ -3,6 +3,7 @@
 #include "world_teleport_tree.hpp"
 #include "spawn_location.hpp"
 #include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
 #include <landstalker-lib/exceptions.hpp>
 #include "world_node.hpp"
 #include "world_path.hpp"
@@ -171,6 +172,16 @@ void RandomizerWorld::dark_region(WorldRegion* region)
 
         node->add_hint("in a very dark place");
     }
+}
+
+void RandomizerWorld::add_custom_dialogue(Entity* entity, const std::string& text)
+{
+    _custom_dialogues[entity] = GameText(text).get_output();
+}
+
+void RandomizerWorld::add_custom_dialogue_raw(Entity* entity, const std::string& text)
+{
+    _custom_dialogues[entity] = text;
 }
 
 void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)

@@ -13,6 +13,7 @@
 #include "edit_content/patch_title_screen.hpp"
 #include "edit_content/patch_credits.hpp"
 #include "edit_content/patch_make_ryuma_mayor_saveable.hpp"
+#include "edit_content/patch_add_foxies.hpp"
 
 #include "gameplay_tweaks/patch_remove_tibor_requirement.hpp"
 #include "gameplay_tweaks/patch_allow_whistle_usage_behind_trees.hpp"
@@ -42,7 +43,6 @@
 #include "technical/patch_swap_overworld_music.hpp"
 #include "technical/patch_remove_story_dependencies.hpp"
 #include "technical/patch_save_select_show_hash_option.hpp"
-#include "technical/patch_handle_fox_hints.hpp"
 #include "technical/patch_randomizer_adaptations.hpp"
 #include "technical/patch_fix_item_checks.hpp"
 #include "technical/patch_improve_gold_rewards_handling.hpp"
@@ -52,6 +52,7 @@
 #include "technical/patch_update_teleport_tree_connections.hpp"
 #include "technical/patch_on_walk_effects.hpp"
 #include "technical/patch_individual_price_for_shop_sources.hpp"
+#include "technical/patch_handle_custom_dialogues.hpp"
 
 #include "optimization/patch_optimize_maps.hpp"
 #include "optimization/patch_optimize_destel_well_map.hpp"
@@ -90,6 +91,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchOptimizeReorderDrawOrderList());
     patches.emplace_back(new PatchOptimizeCollisionDetect());
     patches.emplace_back(new PatchFlagsForGroundItems(options));
+    patches.emplace_back(new PatchDisableRegionCheck());
 
     // =======================================================
     // Randomizer adjustments to make it playable / interesting
@@ -102,7 +104,7 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
     patches.emplace_back(new PatchSwordOfGaiaInVolcano());
     patches.emplace_back(new PatchConsumablePawnTicket());
     patches.emplace_back(new PatchPermanentKey());
-    patches.emplace_back(new PatchHandleFoxHints());
+    patches.emplace_back(new PatchAddFoxies());
     patches.emplace_back(new PatchRemoveStoryDependencies());
     patches.emplace_back(new PatchHandleJewels(options.jewel_count()));
     patches.emplace_back(new PatchMakeRyumaMayorSaveable());
@@ -165,6 +167,9 @@ inline void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const
         patches.emplace_back(new PatchAddGolasHeart());
     if(options.secret_event())
         patches.emplace_back(new PatchSecretARG());
+
+    // Custom dialogues patch needs to be applied last as it needs to process dialogues introduced by other patches
+    patches.emplace_back(new PatchHandleCustomDialogues());
 
     execute_patches(patches, rom, world);
 }

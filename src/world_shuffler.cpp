@@ -13,6 +13,7 @@
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
 #include "world_solver.hpp"
+#include "constants/rando_constants.hpp"
 
 #include <algorithm>
 #include <iostream>
