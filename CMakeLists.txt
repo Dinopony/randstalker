@@ -160,6 +160,7 @@ set(SOURCES
         "src/patches/events/patch_secret_arg.cpp"
 
         "src/patches/patches.hpp"
+        "src/patches/patches.cpp"
 
         # --- Tools ----------------------------------------
         "src/tools/base64.hpp"

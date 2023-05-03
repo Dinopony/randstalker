@@ -24,6 +24,8 @@
 #include <landstalker-lib/io/io.hpp>
 
 #include "tools/base64.hpp"
+#include "randomizer_options.hpp"
+#include "personal_settings.hpp"
 #include "patches/patches.hpp"
 #include "apply_randomizer_options.hpp"
 #include "logic_model/randomizer_world.hpp"
