@@ -2,6 +2,7 @@
 
 #include <landstalker-lib/patches/game_patch.hpp>
 #include <landstalker-lib/constants/offsets.hpp>
+#include "../../constants/rando_constants.hpp"
 
 /**
  * This patch makes the key not consumed on use, making it a unique item that needs to be used to open several doors.
@@ -80,46 +81,14 @@ public:
 
     void inject_code(md::ROM& rom, World& world) override
     {
+        uint32_t func_choose_ending_palette_addr = inject_func_choose_ending_palette(rom);
+        rom.set_code(0x9EC5A, md::Code().jsr(func_choose_ending_palette_addr));
+
+        // Set a flag when Blue Ribbon is used to trigger the blue ending
         md::Code func;
-        {
-            func.lea(0xFF0080, reg_A1); // instruction erased by the jsr
-            func.cmpib(2, addr_(0xFF001C));
-            func.bne("not_arg");
-            {
-                func.lea(_red_credits_palette_addr, reg_A0); // Use red credits palette if Dark Gola has been beaten
-                func.bra("ret");
-            }
-            func.label("not_arg");
-            func.movem_to_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
-            func.lea(0xFF1060, reg_A0);
-            func.lea(_all_checks_bytes_addr, reg_A1);
-            func.label("checks_loop");
-            {
-                func.movew(addr_postinc_(reg_A0), reg_D0);  // A0/D0 = cursor on check flags
-                func.movew(addr_postinc_(reg_A1), reg_D1);  // A1/D1 = cursor on target values
-                func.andw(reg_D1, reg_D0);                  // Check if D0 contains at least all bits set in D1
-                func.cmpw(reg_D1, reg_D0);
-                func.bne("not_all_checks");                 // If at least one is not equal, don't give golden ending
-                func.cmpa(0xFF109C, reg_A0);
-                func.blt("checks_loop");
-                func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
-                func.lea(_gold_credits_palette_addr, reg_A0); // Everything was collected, give the golden credits
-                func.bra("ret");
-            }
-
-            func.label("not_all_checks");
-            func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
-            func.btst(1, addr_(0xFF104C));
-            func.beq("ret");
-            {
-                func.lea(_blue_credits_palette_addr, reg_A0); // Use blue credits palette if blue ribbon is held
-            }
-            func.label("ret");
-        }
-        func.rts();
-        uint32_t func_addr = rom.inject_code(func);
-
-        rom.set_code(0x9EC5A, md::Code().jsr(func_addr));
+        func.bset(FLAG_USED_BLUE_RIBBON.bit, addr_(0xFF1000 + FLAG_USED_BLUE_RIBBON.byte));
+        func.jmp(world.item(ITEM_BLUE_RIBBON)->pre_use_address());
+        world.item(ITEM_BLUE_RIBBON)->pre_use_address(rom.inject_code(func));
     }
 
 private:
@@ -191,5 +160,47 @@ private:
             throw LandstalkerException("New credits cannot be bigger than original credits");
 
         return new_credits_text;
+    }
+
+    uint32_t inject_func_choose_ending_palette(md::ROM& rom)
+    {
+        md::Code func;
+        {
+            func.lea(0xFF0080, reg_A1); // instruction erased by the jsr
+            func.cmpib(2, addr_(0xFF001C));
+            func.bne("not_arg");
+            {
+                func.lea(_red_credits_palette_addr, reg_A0); // Use red credits palette if Dark Gola has been beaten
+                func.bra("ret");
+            }
+            func.label("not_arg");
+            func.movem_to_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
+            func.lea(0xFF1060, reg_A0);
+            func.lea(_all_checks_bytes_addr, reg_A1);
+            func.label("checks_loop");
+            {
+                func.movew(addr_postinc_(reg_A0), reg_D0);  // A0/D0 = cursor on check flags
+                func.movew(addr_postinc_(reg_A1), reg_D1);  // A1/D1 = cursor on target values
+                func.andw(reg_D1, reg_D0);                  // Check if D0 contains at least all bits set in D1
+                func.cmpw(reg_D1, reg_D0);
+                func.bne("not_all_checks");                 // If at least one is not equal, don't give golden ending
+                func.cmpa(0xFF109C, reg_A0);
+                func.blt("checks_loop");
+                func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
+                func.lea(_gold_credits_palette_addr, reg_A0); // Everything was collected, give the golden credits
+                func.bra("ret");
+            }
+
+            func.label("not_all_checks");
+            func.movem_from_stack({ reg_D0, reg_D1 }, { reg_A0, reg_A1 });
+            func.btst(FLAG_USED_BLUE_RIBBON.bit, addr_(0xFF1000 + FLAG_USED_BLUE_RIBBON.byte));
+            func.beq("ret");
+            {
+                func.lea(_blue_credits_palette_addr, reg_A0); // Use blue credits palette if blue ribbon is held
+            }
+            func.label("ret");
+        }
+        func.rts();
+        return rom.inject_code(func);
     }
 };

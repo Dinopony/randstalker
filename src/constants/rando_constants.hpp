@@ -54,6 +54,7 @@ constexpr Flag FLAG_FOUND_GNOME_3 = Flag(0x2C, 3);
 constexpr Flag FLAG_FOUND_GNOME_4 = Flag(0x2C, 4);
 constexpr Flag FLAG_SOLVED_ROCKS_RIDDLE = Flag(0x3E, 0);
 
+constexpr Flag FLAG_USED_BLUE_RIBBON = Flag(0x7D, 0);
 constexpr uint32_t ADDR_CURRENT_RECEIVED_ITEM_INDEX = 0xFF107E;          // .w
 
 // Flags related to Gola's Heart room completion
