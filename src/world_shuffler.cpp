@@ -126,13 +126,12 @@ void WorldShuffler::randomize_fahl_enemies()
     };
     std::vector<uint8_t> medium_enemies = {
         ENEMY_SLIME_5,      ENEMY_SLIME_6,      ENEMY_ORC_3,        ENEMY_KNIGHT_1,     ENEMY_LIZARD_2,
-        ENEMY_MIMIC_1,      ENEMY_MIMIC_2,      ENEMY_SKELETON_1,   ENEMY_UNICORN_2,    ENEMY_MUMMY_2, 
-        ENEMY_MUMMY_3,      ENEMY_KNIGHT_2,     ENEMY_NINJA_1,      ENEMY_GIANT_1,      ENEMY_GIANT_2,
-        ENEMY_WORM_2
+        ENEMY_MIMIC_1,      ENEMY_MIMIC_2,      ENEMY_SKELETON_1,   ENEMY_MUMMY_2,      ENEMY_MUMMY_3,
+        ENEMY_KNIGHT_2,     ENEMY_GIANT_1,      ENEMY_GIANT_2,      ENEMY_WORM_2
     };
     std::vector<uint8_t> hard_enemies = {
-        ENEMY_MIMIC_3,      ENEMY_SKELETON_2,   ENEMY_SKELETON_3,   ENEMY_UNICORN_3,    ENEMY_UNICORN_3,
-        ENEMY_KNIGHT_3,     ENEMY_NINJA_2,      ENEMY_NINJA_3,      ENEMY_GIANT_3,      ENEMY_QUAKE_1,
+        ENEMY_MIMIC_3,      ENEMY_SKELETON_2,   ENEMY_SKELETON_3,   ENEMY_UNICORN_2,    ENEMY_UNICORN_3,
+        ENEMY_NINJA_1,      ENEMY_NINJA_2,      ENEMY_NINJA_3,      ENEMY_GIANT_3,      ENEMY_KNIGHT_3,
         ENEMY_LIZARD_3,     ENEMY_WORM_3
     };
 
