@@ -65,10 +65,17 @@ randomizer format.
 ### Release versions
 
 Using the provided release packages (on the right panel of this webpage) is really straightforward since everything
-(except the original ROM) is included for you to start randomizing.
+(except the original ROM) is included for you to start randomizing. 
 
-You just have to put your copy of the original US game ROM inside the folder named `input.md`, and use the 
-`gen_preset.bat` script on Windows (Linux users are expected to know how to use CLI).
+You can legally get a valid US ROM for the game by buying the 
+[Steam version](https://store.steampowered.com/app/71118/Landstalker_The_Treasures_of_King_Nole/) of the
+game and taking it from the `uncompressed ROMs/` folder inside the game files.
+
+Copy the `LandStalker_USA.SGD` ROM file from there into Randstalker's directory, and you can generate seeds for
+endless isometric fun!
+
+Use the `gen_preset.bat` script on Windows and follow the instructions to generate a randomized ROM inside the `seeds/`
+subdirectory (Linux users are expected to know how to use CLI).
 
 ### Building from source
 
