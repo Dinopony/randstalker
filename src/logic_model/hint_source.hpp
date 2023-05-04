@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 #include <string>
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/tools/json.hpp>
 #include "world_node.hpp"
 
 class HintSource 

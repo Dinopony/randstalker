@@ -1,17 +1,27 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 #include "../../randomizer_options.hpp"
 
 class PatchSecretARG : public GamePatch
 {
 private:
-    bool _has_golas_blessing;
+    Map* _room_1 = nullptr;
+    Map* _room_2 = nullptr;
+    Map* _room_3 = nullptr;
+    Map* _room_4 = nullptr;
+    Map* _room_5 = nullptr;
+    Map* _room_6 = nullptr;
 
 public:
-    explicit PatchSecretARG(const RandomizerOptions& options) :
-        _has_golas_blessing(options.hash_sentence().find("Gola") != std::string::npos)
-    {}
+    PatchSecretARG() = default;
 
+    void alter_rom(md::ROM& rom) override
+    {
+        // Replace Dexter voice pitch info (now unused) by Nole voice pitch info
+        rom.set_word(0x29124, 0xA572); // A5 = SPR_NOLE, 72 = SND_Fireball2
+    }
+
+    void alter_world(World& world) override;
     void inject_code(md::ROM& rom, World& world) override;
 };

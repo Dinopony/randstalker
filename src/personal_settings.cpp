@@ -1,7 +1,7 @@
 #include "personal_settings.hpp"
-#include <landstalker_lib/exceptions.hpp>
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/tools/argument_dictionary.hpp>
+#include <landstalker-lib/exceptions.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/argument_dictionary.hpp>
 #include <iostream>
 #include <set>
 
@@ -28,7 +28,7 @@ static Color parse_color_from_name_or_hex(const std::string& string)
     return { lowered };
 }
 
-PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT+1>& item_names)
+PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names)
 {
     _item_names = item_names;
 

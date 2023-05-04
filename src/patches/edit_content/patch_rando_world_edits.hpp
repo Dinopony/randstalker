@@ -1,14 +1,14 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/model/map.hpp>
-#include <landstalker_lib/model/entity.hpp>
-#include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/constants/map_codes.hpp>
-#include <landstalker_lib/constants/entity_type_codes.hpp>
-#include <landstalker_lib/constants/flags.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
+#include <landstalker-lib/constants/flags.hpp>
 
 class PatchRandoWorldEdits : public GamePatch
 {
@@ -31,6 +31,7 @@ public:
         put_back_golems_in_lake_shrine_keydoor_map(world);
         remove_verla_soldiers_on_verla_spawn(world);
         make_verla_mines_bosses_always_present(world);
+        make_mercator_docks_shop_inactive_before_lighthouse_repair(world);
     }
 
 private:
@@ -254,5 +255,18 @@ private:
             .behavior_id = 525, // Open when Dex is killed
             .mask_flags = { EntityMaskFlag(false, FLAG_DEX_KILLED) },
         }));
+    }
+
+    static void make_mercator_docks_shop_inactive_before_lighthouse_repair(World& world)
+    {
+        Map* map = world.map(MAP_MERCATOR_DOCKS_DARK_VARIANT);
+
+        // Hide the shop items
+        map->entity(8)->position(0x7F, 0x7F, 0);
+        map->entity(9)->position(0x7F, 0x7F, 0);
+        map->entity(10)->position(0x7F, 0x7F, 0);
+
+        // Remove the shopkeeper
+        map->remove_entity(5);
     }
 };

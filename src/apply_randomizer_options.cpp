@@ -1,19 +1,18 @@
 #include "randomizer_options.hpp"
 
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/model/item.hpp>
-#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/item.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
 #include "logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/constants/flags.hpp>
-#include <landstalker_lib/constants/values.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/constants/flags.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
+#include "constants/rando_constants.hpp"
 #include "assets/game_strings.json.hxx"
 
 #include "logic_model/world_path.hpp"
 #include "logic_model/randomizer_world.hpp"
-#include "logic_model/item_distribution.hpp"
 #include "logic_model/hint_source.hpp"
 
 static void patch_starting_flags(World& world, const RandomizerOptions& options)
@@ -97,11 +96,6 @@ static void patch_items(World& world, const RandomizerOptions& options)
             world.add_item(Item::from_json(id, patch_json));
     }
 
-    // Process custom starting quantities for items
-    const std::array<uint8_t, ITEM_COUNT>& starting_items = options.starting_items();
-    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
-        world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
-
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
         Item* red_jewel = world.item(ITEM_RED_JEWEL);
@@ -114,7 +108,7 @@ static void patch_items(World& world, const RandomizerOptions& options)
         {
             world.item(ITEM_YELLOW_JEWEL)->name("Yellow Jewel");
             world.item(ITEM_YELLOW_JEWEL)->gold_value(500);
-            world.item(ITEM_YELLOW_JEWEL)->max_quantity(1);
+            world.item(ITEM_BLUE_JEWEL)->max_quantity(1);
         }
         if(options.jewel_count() >= 4)
         {
@@ -128,6 +122,17 @@ static void patch_items(World& world, const RandomizerOptions& options)
             world.item(ITEM_GREEN_JEWEL)->gold_value(500);
             world.item(ITEM_GREEN_JEWEL)->max_quantity(1);
         }
+    }
+
+    // Process custom starting quantities for items
+    const std::array<uint8_t, ITEM_LIFESTOCK>& starting_items = options.starting_items();
+    for(uint8_t i=0 ; i<ITEM_LIFESTOCK ; ++i)
+    {
+        try
+        {
+            world.item(i)->starting_quantity(std::min<uint8_t>(starting_items[i], 9));
+        }
+        catch(std::out_of_range&) {}
     }
 
     // Alter a few things depending on settings
@@ -216,7 +221,7 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
     // If damage boosting is taken in account in logic, remove all iron boots & fireproof requirements
     if(options.handle_damage_boosting_in_logic())
     {
-        for(auto& [pair, path] : world.paths())
+        for(WorldPath* path : world.paths())
         {
             std::vector<Item*>& required_items = path->required_items();
 
@@ -260,6 +265,16 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
         if(options.jewel_count() >= 5)
             path_to_kazalt->add_required_item(world.item(ITEM_YELLOW_JEWEL));
     }
+
+    // Change paths to fit alternative goals
+    if(options.goal() == "reach_kazalt")
+    {
+        // The path representing Kazalt teleporter now goes to the end node
+        path_to_kazalt->destination(world.node("end"));
+
+        // Add a fake path from the end to Kazalt to keep the end dungeons logically accessible, although unreachable
+        world.add_path(new WorldPath(world.node("end"), world.node("kazalt")));
+    }
 }
 
 static void apply_options_on_spawn_locations(const RandomizerOptions& options, RandomizerWorld& world)
@@ -288,47 +303,34 @@ static void apply_options_on_hint_sources(const RandomizerOptions& options, Rand
 static void apply_options_on_item_distributions(const RandomizerOptions& options, RandomizerWorld& world)
 {
     // Apply the global distribution params, if set by the user
-    const std::array<uint8_t, ITEM_COUNT+1>& distribution_param = options.items_distribution();
-    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
-        world.item_distribution(i)->quantity(distribution_param[i]);
+    const std::array<uint8_t, ITEM_COUNT>& distribution_param = options.items_distribution();
+    for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
+        world.item_quantity(i, distribution_param[i]);
 
     // Apply other params that indirectly influence item distribution
     if(options.jewel_count() > MAX_INDIVIDUAL_JEWELS)
     {
-        world.item_distribution(ITEM_RED_JEWEL)->allowed_on_ground(false);
-        if(world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
+        if(world.item_quantity(ITEM_RED_JEWEL) < options.jewel_count())
         {
-            world.item_distribution(ITEM_RED_JEWEL)->add(options.jewel_count());
-            world.item_distribution(ITEM_NONE)->remove(options.jewel_count());
+            world.item_quantity(ITEM_RED_JEWEL, options.jewel_count());
+            world.item_quantity(ITEM_PURPLE_JEWEL, 0);
+            world.item_quantity(ITEM_GREEN_JEWEL, 0);
+            world.item_quantity(ITEM_BLUE_JEWEL, 0);
+            world.item_quantity(ITEM_YELLOW_JEWEL, 0);
         }
     }
     else
     {
-        if(options.jewel_count() >= 1 && world.item_distribution(ITEM_RED_JEWEL)->quantity() == 0)
-        {
-            world.item_distribution(ITEM_RED_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
-        }
-        if(options.jewel_count() >= 2 && world.item_distribution(ITEM_PURPLE_JEWEL)->quantity() == 0)
-        {
-            world.item_distribution(ITEM_PURPLE_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
-        }
-        if(options.jewel_count() >= 3 && world.item_distribution(ITEM_GREEN_JEWEL)->quantity() == 0)
-        {
-            world.item_distribution(ITEM_GREEN_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
-        }
-        if(options.jewel_count() >= 4 && world.item_distribution(ITEM_BLUE_JEWEL)->quantity() == 0)
-        {
-            world.item_distribution(ITEM_BLUE_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
-        }
-        if(options.jewel_count() >= 5 && world.item_distribution(ITEM_YELLOW_JEWEL)->quantity() == 0)
-        {
-            world.item_distribution(ITEM_YELLOW_JEWEL)->add(1);
-            world.item_distribution(ITEM_NONE)->remove(1);
-        }
+        if(options.jewel_count() >= 1 && world.item_quantity(ITEM_RED_JEWEL) == 0)
+            world.item_quantity(ITEM_RED_JEWEL, 1);
+        if(options.jewel_count() >= 2 && world.item_quantity(ITEM_PURPLE_JEWEL) == 0)
+            world.item_quantity(ITEM_PURPLE_JEWEL, 1);
+        if(options.jewel_count() >= 3 && world.item_quantity(ITEM_GREEN_JEWEL) == 0)
+            world.item_quantity(ITEM_GREEN_JEWEL, 1);
+        if(options.jewel_count() >= 4 && world.item_quantity(ITEM_BLUE_JEWEL) == 0)
+            world.item_quantity(ITEM_BLUE_JEWEL, 1);
+        if(options.jewel_count() >= 5 && world.item_quantity(ITEM_YELLOW_JEWEL) == 0)
+            world.item_quantity(ITEM_YELLOW_JEWEL, 1);
     }
 }
 

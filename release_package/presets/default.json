@@ -1,5 +1,6 @@
 {
     "gameSettings": {
+        "goal": "beat_gola",
         "jewelCount": 5,
         "armorUpgrades": true,
         "startingLife": 0,
@@ -22,7 +23,9 @@
         "enemiesGoldsFactor": 100,
         "enemiesDropChanceFactor": 100,
         "healthGainedPerLifestock": 1,
-        "fastMenuTransitions": true
+        "fastMenuTransitions": true,
+        "finiteGroundItems": [ "Life Stock", "Short Cake", "Pawn Ticket" ],
+        "finiteShopItems": [ "Life Stock", "Pawn Ticket" ]
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,
@@ -30,12 +33,14 @@
             "massan", "gumi", "kado", "waterfall", "ryuma", "mercator", "verla", "greenmaze", "destel"
         ],
         "shuffleTrees": false,
+        "shopPricesFactor": 100,
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
         "allowWhistleUsageBehindTrees": true,
+        "ensureEkeEkeInShops": true,
+        "fillerItem": "EkeEke",
         "itemsDistribution": {
-            "EkeEke": 58,
             "Magic Sword": 1,
             "Sword of Ice": 1,
             "Thunder Sword": 1,
@@ -85,7 +90,11 @@
             "Gola's Fang": 1,
             "Life Stock": 80,
             "No Item": 6,
-            "Golds": 30
+            "1 Gold": 1,
+            "20 Golds": 15,
+            "50 Golds": 7,
+            "100 Golds": 5,
+            "200 Golds": 2
         },
         "hintsDistribution": {
             "regionRequirement": 6,

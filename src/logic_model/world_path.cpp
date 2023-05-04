@@ -1,7 +1,7 @@
 #include "world_path.hpp"
 #include "world_node.hpp"
-#include <landstalker_lib/tools/vectools.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
+#include <landstalker-lib/exceptions.hpp>
 #include <utility>
 
 WorldPath::WorldPath(WorldNode* from_node, WorldNode* to_node, uint16_t weight, std::vector<Item*> required_items,

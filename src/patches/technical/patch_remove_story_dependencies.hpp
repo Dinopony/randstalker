@@ -1,13 +1,12 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
-
-#include "landstalker_lib/model/world.hpp"
-#include "landstalker_lib/model/map.hpp"
-#include "landstalker_lib/model/entity.hpp"
-#include "landstalker_lib/model/entity_type.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
 #include "../../logic_model/item_source.hpp"
-#include "landstalker_lib/constants/map_codes.hpp"
 
 class PatchRemoveStoryDependencies : public GamePatch
 {
@@ -72,6 +71,9 @@ private:
         uint32_t addr = rom.inject_code(elder_dialogue);
 
         rom.set_code(0x25F98, md::Code().jmp(addr).rts());
+
+        // Update the ItemSource address to make it point on the new relevant item byte
+        reinterpret_cast<ItemSourceReward*>(source)->address_in_rom(addr + 0x2B);
 
         rom.mark_empty_chunk(0x25FA0, 0x25FB1);
     }

@@ -1,8 +1,8 @@
 #include "io.hpp"
 
-#include <landstalker_lib/tools/json.hpp>
+#include <landstalker-lib/tools/json.hpp>
 #include "../logic_model/world_teleport_tree.hpp"
-#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/randomizer_world.hpp"
@@ -40,7 +40,17 @@ Json SpoilerWriter::build_spoiler_json(const RandomizerWorld& world, const Rando
             for(ItemSource* source : node->item_sources())
             {
                 Item* item = world.item(source->item_id());
-                json["itemSources"][region->name()][source->name()] = item->name();
+                if(source->is_shop_item())
+                {
+                    Json source_details = Json::object();
+                    source_details["item"] = item->name();
+                    source_details["price"] = reinterpret_cast<ItemSourceShop*>(source)->price();
+                    json["itemSources"][region->name()][source->name()] = source_details;
+                }
+                else
+                {
+                    json["itemSources"][region->name()][source->name()] = item->name();
+                }
             }
         }
     }

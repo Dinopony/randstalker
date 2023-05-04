@@ -1,9 +1,9 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
-#include "landstalker_lib/model/map.hpp"
-#include "landstalker_lib/model/entity.hpp"
-#include "landstalker_lib/constants/map_codes.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
 
 /**
  * This patch optimizes a laggy map in Lake Shrine (the one with lots of falling platforms leading to Sword of Ice)

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include <random>
-#include <landstalker_lib/model/world.hpp>
+#include <landstalker-lib/model/world.hpp>
 
 #include "randomizer_options.hpp"
 #include "world_solver.hpp"
@@ -32,6 +32,9 @@ private:
     std::vector<uint8_t> _hintable_item_requirements;
     std::vector<uint8_t> _hintable_item_locations;
 
+    uint16_t _current_sphere = 0;
+    std::map<ItemSource*, uint16_t> _item_source_spheres;
+
 public:
     WorldShuffler(RandomizerWorld& world, const RandomizerOptions& options);
     
@@ -52,6 +55,7 @@ private:
 
     // Item randomization
     void randomize_items();
+    void place_fixed_items();
     void init_item_pool();
     [[nodiscard]] Item* generate_gold_item();
     ItemSource* place_item_randomly(Item* item, std::vector<ItemSource*> possible_sources);
@@ -60,6 +64,7 @@ private:
     [[nodiscard]] std::vector<WorldPath*> build_weighted_blocked_paths_list();
     void open_random_blocked_path();
     void place_remaining_items();
+    void randomize_prices();
 
     // Hints randomization
     void randomize_hints();

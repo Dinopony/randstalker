@@ -17,6 +17,7 @@ randomizer format.
 - Game starts at a given spawn location (usually randomized) and intro is fully skipped.
 - Most cutscenes and scenario related checks / blockers are removed to put the focus on gameplay & exploration
 - You will need as many jewels as specified in the settings to use the teleporter to go to Kazalt
+
 - All other conditions from the original game stay as-is (Safety Pass to reach Mercator, Gola's Eye to reach King Nole's
   Cave, Axe Magic to cut trees, all three Gola pieces to reach King Nole's fight...)
 - The secondary shop of Mercator requiring to do the traders sidequest in the original game is now unlocked by having
@@ -64,10 +65,17 @@ randomizer format.
 ### Release versions
 
 Using the provided release packages (on the right panel of this webpage) is really straightforward since everything
-(excepted the original ROM) is included for you to start randomizing.
+(except the original ROM) is included for you to start randomizing. 
 
-You just have to put your copy of the original US game ROM inside the folder named `ìnput.md`, and use the 
-`gen_preset.bat` script on Windows (Linux users are expected to know how to use CLI).
+You can legally get a valid US ROM for the game by buying the 
+[Steam version](https://store.steampowered.com/app/71118/Landstalker_The_Treasures_of_King_Nole/) of the
+game and taking it from the `uncompressed ROMs/` folder inside the game files.
+
+Copy the `LandStalker_USA.SGD` ROM file from there into Randstalker's directory, and you can generate seeds for
+endless isometric fun!
+
+Use the `gen_preset.bat` script on Windows and follow the instructions to generate a randomized ROM inside the `seeds/`
+subdirectory (Linux users are expected to know how to use CLI).
 
 ### Building from source
 

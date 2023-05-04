@@ -1,21 +1,19 @@
 #include "world_shuffler.hpp"
 
-#include <landstalker_lib/constants/entity_type_codes.hpp>
-#include <landstalker_lib/constants/item_codes.hpp>
-#include <landstalker_lib/constants/values.hpp>
-#include "landstalker_lib/tools/stringtools.hpp"
-#include <landstalker_lib/tools/vectools.hpp>
-#include <landstalker_lib/tools/game_text.hpp>
-#include <landstalker_lib/model/entity_type.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/exceptions.hpp>
 #include "logic_model/item_source.hpp"
 #include "logic_model/world_teleport_tree.hpp"
 #include "logic_model/spawn_location.hpp"
-#include <landstalker_lib/exceptions.hpp>
-
 #include "logic_model/hint_source.hpp"
 #include "logic_model/world_region.hpp"
-#include "logic_model/item_distribution.hpp"
 #include "world_solver.hpp"
+#include "constants/rando_constants.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -44,6 +42,7 @@ void WorldShuffler::randomize()
     this->randomize_items();
 
     // 3rd pass: randomizations happening AFTER randomizing items
+    this->randomize_prices();
     this->randomize_hints();
     for(HintSource* hint_source : _world.hint_sources())
         hint_source->apply_text(_world);
@@ -98,48 +97,21 @@ void WorldShuffler::randomize_dark_rooms()
 
 void WorldShuffler::randomize_tibor_trees()
 {
-    const std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>>& tree_pairs = _world.teleport_tree_pairs();
-
-    std::vector<uint16_t> tree_map_ids;
-    std::map<uint16_t, uint16_t> original_tree_map_for_exterior_maps;
-    std::map<uint16_t, std::string> exterior_map_names;
-    std::vector<std::pair<uint16_t, std::string>> exterior_map_and_node_list;
-    for(auto& pair : tree_pairs)
+    std::vector<WorldTeleportTree*> all_trees;
+    for(const auto& pair : _world.teleport_tree_pairs())
     {
-        for(uint8_t i=0 ; i<2 ; ++i)
-        {
-            WorldTeleportTree* tree = (i==0) ? pair.first : pair.second;
-            tree_map_ids.emplace_back(tree->tree_map_id());
-            original_tree_map_for_exterior_maps[tree->exterior_map_id()] = tree->tree_map_id();
-            exterior_map_and_node_list.emplace_back(std::make_pair(tree->exterior_map_id(), tree->node_id()));
-            exterior_map_names[tree->exterior_map_id()] = tree->name();
-            delete tree;
-        }
+        all_trees.emplace_back(pair.first);
+        all_trees.emplace_back(pair.second);
     }
-    vectools::shuffle(exterior_map_and_node_list, _rng);
-
-    // Create new pairs of teleport trees and update map connections
-    std::vector<WorldTeleportTree*> new_teleport_trees;
-    for(size_t i=0 ; i<exterior_map_and_node_list.size() ; ++i)
-    {
-        uint16_t exterior_map_id = exterior_map_and_node_list[i].first;
-        const std::string& name = exterior_map_names[exterior_map_id];
-        const std::string& node_id = exterior_map_and_node_list[i].second;
-
-        uint16_t old_tree_map_id = original_tree_map_for_exterior_maps[exterior_map_id];
-        uint16_t new_tree_map_id = tree_map_ids[i];
-
-        new_teleport_trees.emplace_back(new WorldTeleportTree(name, new_tree_map_id, exterior_map_id, node_id));
-
-        std::vector<MapConnection*> connections = _world.map_connections(exterior_map_id, old_tree_map_id);
-        for(MapConnection* conn : connections)
-            conn->replace_map(old_tree_map_id, new_tree_map_id);
-    }
+    vectools::shuffle(all_trees, _rng);
 
     std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> new_pairs;
-    for(size_t i=1 ; i<new_teleport_trees.size() ; i+=2)
-        new_pairs.emplace_back(std::make_pair(new_teleport_trees[i-1], new_teleport_trees[i]));
-
+    for(size_t i=0 ; i < all_trees.size() ; i+=2)
+    {
+        WorldTeleportTree* tree_1 = all_trees[i];
+        WorldTeleportTree* tree_2 = all_trees[i+1];
+        new_pairs.emplace_back(std::make_pair(tree_1, tree_2));
+    }
     _world.teleport_tree_pairs(new_pairs);
 }
 
@@ -182,6 +154,7 @@ void WorldShuffler::randomize_fahl_enemies()
 
 void WorldShuffler::randomize_items()
 {
+    this->place_fixed_items();
     this->init_item_pool();
 
     _solver.setup(_world.spawn_node(), _world.end_node(), _world.starting_inventory());
@@ -191,6 +164,12 @@ void WorldShuffler::randomize_items()
     {
         // Run a solver step to reach a "blocked" state where something needs to be placed in order to continue
         explored_new_nodes = _solver.run_until_blocked();
+
+        // Update the table of spheres to have accurate data on when an item source was first considered during
+        // generation, which is then used to evaluate prices by "logical distance" to starting point
+        for(ItemSource* source : _solver.reachable_item_sources())
+            if(!_item_source_spheres.count(source))
+                _item_source_spheres[source] = _current_sphere;
 
         // Place all "scheduled" item placements, which correspond to "itemPlacedWhenCrossing" attributes of WorldPaths
         // solver encountered during last step
@@ -202,6 +181,8 @@ void WorldShuffler::randomize_items()
 
         // Item sources changed, force the solver to update its inventory
         _solver.update_current_inventory();
+
+        _current_sphere += 1;
     }
 
     // Place the remaining items from the item pool in the remaining sources
@@ -209,10 +190,36 @@ void WorldShuffler::randomize_items()
 
     // Analyse items required to complete the seed
     Json& debug_log = _solver.debug_log();
-    _minimal_items_to_complete = _solver.find_minimal_inventory();
-    debug_log["requiredItems"] = Json::array();
-    for (Item* item : _minimal_items_to_complete)
-        debug_log["requiredItems"].emplace_back(item->name());
+    if(!_options.archipelago_world())
+    {
+        _minimal_items_to_complete = _solver.find_minimal_inventory();
+        debug_log["requiredItems"] = Json::array();
+        for(Item* item : _minimal_items_to_complete)
+            debug_log["requiredItems"].emplace_back(item->name());
+    }
+}
+
+/**
+ * Some options place fixed items at fixed stops to provide a better experience. This function takes care of doing
+ * so by pre-placing items according to the selected options.
+ */
+void WorldShuffler::place_fixed_items()
+{
+    if(_options.ensure_ekeeke_in_shops())
+    {
+        const std::vector<std::string> SHOPS_TO_FILL = {
+                "Massan: Shop item #1",
+                "Gumi: Inn item #1",
+                "Ryuma: Inn item",
+                "Mercator: Shop item #1",
+                "Verla: Shop item #1",
+                "Destel: Inn item",
+                "Route to Lake Shrine: Greedly's shop item #1",
+                "Kazalt: Shop item #1"
+        };
+        for(const std::string& source_name : SHOPS_TO_FILL)
+            _world.item_source(source_name)->item(_world.item(ITEM_EKEEKE));
+    }
 }
 
 /**
@@ -226,85 +233,53 @@ void WorldShuffler::init_item_pool()
 {
     _item_pool.clear();
 
-    size_t filled_item_sources_count = 0;
+    size_t empty_item_sources_count = 0;
     for(ItemSource* source : _world.item_sources())
-        if(!source->empty())
-            filled_item_sources_count++;
-    if(filled_item_sources_count == _world.item_sources().size())
-        return;
-
-    _item_pool.reserve(_world.item_sources().size());
-    _item_pool_quantities = _world.item_quantities();
-
-    // Count quantities already in place
-    for(ItemSource* source : _world.item_sources())
-    {
         if(source->empty())
-            continue;
+            empty_item_sources_count++;
 
-        uint8_t item_id = source->item()->id();
-        if(_item_pool_quantities[item_id] == 0)
-        {
-            throw LandstalkerException("There are more " + source->item()->name() +
-                                       " already placed than the expected number in the item pool");
-        }
-        _item_pool_quantities[item_id] -= 1;
-    }
+    if(empty_item_sources_count == 0)
+        return;
+    _item_pool.reserve(empty_item_sources_count);
 
-    // Build the item pool from the quantities read inside the ItemDistribution objects, and shuffle it
+    _item_pool_quantities.clear();
+    const auto& quantities = _world.item_quantities();
+    for(size_t i=0 ; i<quantities.size() ; ++i)
+        _item_pool_quantities[i] = quantities[i];
+
+    // If using variable starting health, on starting locations where player starts with more health,
+    // remove as many life stocks from the pool
+    uint8_t ignored_lifestocks = 0;
+    if(_options.starting_life() == 0)
+        ignored_lifestocks = _world.spawn_location()->starting_life() - 4;
+
+    // Build the item pool from the quantities, and then check if the item pool size is valid
     for(auto& [item_id, quantity] : _item_pool_quantities)
     {
         for(uint16_t i=0 ; i<quantity ; ++i)
         {
-            if(item_id >= ITEM_GOLDS_START)
-                _item_pool.emplace_back(this->generate_gold_item());
+            if(item_id == ITEM_LIFESTOCK && ignored_lifestocks > 0)
+                --ignored_lifestocks;
             else
                 _item_pool.emplace_back(_world.item(item_id));
         }
     }
-    vectools::shuffle(_item_pool, _rng);
-
-    // Count the empty item sources, and compare this count to the item pool size to handle invalid cases
-    size_t empty_item_sources_count = 0;
-    for(ItemSource* source : _world.item_sources())
-    {
-        if(source->empty())
-            empty_item_sources_count += 1;
-    }
 
     if(_item_pool.size() > empty_item_sources_count)
     {
-        throw LandstalkerException("The number of items in item pool is not the same as the number of item sources (" +
-                                    std::to_string(_item_pool.size()) + " =/= " +
-                                    std::to_string(_world.item_sources().size()) + ")");
+        throw LandstalkerException("There are more items in item pool than there are empty item sources (" +
+                                    std::to_string(_item_pool.size()) + " > " +
+                                    std::to_string(empty_item_sources_count) + ")");
     }
-    else if(_item_pool.size() < empty_item_sources_count)
+    else
     {
-        size_t missing_item_count = _world.item_sources().size() - _item_pool.size();
-        std::cout << "Warning: Item pool (" << _item_pool.size() << " items) is smaller than the item sources pool ("
-                                            << _world.item_sources().size() << " item sources)."
-                                            << "Remaining sources will remain empty.\n\n";
-
-        for(size_t i=0 ; i<missing_item_count ; ++i)
-            _item_pool.emplace_back(_world.item(ITEM_NONE));
+        // Fill the item pool with filler items until it has enough items
+        Item* filler_item = _world.item(_options.filler_item_id());
+        while(_item_pool.size() < empty_item_sources_count)
+            _item_pool.emplace_back(filler_item);
     }
-}
 
-/**
- * Generate an ItemGolds that has a randomized gold value, and add it to the World.
- * @return the new item
- */
-Item* WorldShuffler::generate_gold_item()
-{
-    std::normal_distribution<double> distribution(40.0, 18.0);
-    double gold_value = distribution(_rng);
-
-    if (gold_value < 1)
-        gold_value = 1;
-    else if (gold_value > 255)
-        gold_value = 255;
-
-    return _world.add_gold_item(static_cast<uint8_t>(gold_value));
+    vectools::shuffle(_item_pool, _rng);
 }
 
 /**
@@ -318,11 +293,7 @@ Item* WorldShuffler::generate_gold_item()
 ItemSource* WorldShuffler::place_item_randomly(Item* item, std::vector<ItemSource*> possible_sources)
 {
     if(_item_pool_quantities[item->id()] == 0)
-    {
-        std::cout << "Ignored placement of " << item->name() << " after crossing path because there are no more"
-                                                                " instances of it inside the item pool." << std::endl;
         return nullptr;
-    }
 
     vectools::shuffle(possible_sources, _rng);
 
@@ -385,8 +356,6 @@ bool WorldShuffler::test_item_source_compatibility(ItemSource* source, Item* ite
 
     ItemSourceOnGround* cast_source = reinterpret_cast<ItemSourceOnGround*>(source);
     if(item->id() >= ITEM_GOLDS_START)
-        return false;
-    if(!cast_source->can_be_taken_only_once() && !_world.item_distribution(item->id())->allowed_on_ground())
         return false;
 
     if(source->is_shop_item())
@@ -521,6 +490,44 @@ void WorldShuffler::place_remaining_items()
     _item_pool.clear();
 }
 
+/**
+ * Give a random price to all shop item sources depending on the item that's inside and how late in the seed
+ * it will be encountered.
+ */
+void WorldShuffler::randomize_prices()
+{
+    constexpr float EARLYGAME_PRICE_FACTOR = 1.0;
+    constexpr float ENDGAME_PRICE_FACTOR = 2.0;
+    constexpr float FACTOR_DIFF = ENDGAME_PRICE_FACTOR - EARLYGAME_PRICE_FACTOR;
+
+    if(_options.archipelago_world())
+        return;
+
+    for(ItemSource* source : _world.item_sources())
+    {
+        if(!source->is_shop_item())
+            continue;
+        ItemSourceShop* shop_source = reinterpret_cast<ItemSourceShop*>(source);
+
+        uint16_t source_sphere = 0;
+        if(_item_source_spheres.count(source))
+            source_sphere = _item_source_spheres[source];
+
+        float current_playthrough_progression = (float)source_sphere / (float)_current_sphere;
+        float progression_price_factor = EARLYGAME_PRICE_FACTOR + (current_playthrough_progression * FACTOR_DIFF);
+
+        double price = (double)shop_source->item()->gold_value();
+        price *= _options.shop_prices_factor();
+        price *= progression_price_factor;
+
+        uint16_t rounded_price = (uint16_t)price;
+        rounded_price -= rounded_price % 5;
+        if(rounded_price < 5)
+            rounded_price = 5;
+
+        shop_source->price(rounded_price);
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///        THIRD PASS RANDOMIZATIONS (after items)
@@ -533,7 +540,7 @@ void WorldShuffler::randomize_hints()
     this->randomize_lithograph_hint();
     this->randomize_where_is_lithograph_hint();
 
-    Item* hinted_item =this->randomize_fortune_teller_hint();
+    Item* hinted_item = this->randomize_fortune_teller_hint();
     this->randomize_oracle_stone_hint(hinted_item);
 
     this->randomize_fox_hints();
@@ -581,7 +588,7 @@ void WorldShuffler::randomize_lithograph_hint()
         return;
     }
 
-    if(_options.jewel_count() == 0 || _world.item_distribution(ITEM_LITHOGRAPH)->quantity() == 0)
+    if(_options.jewel_count() == 0 || _world.item_quantity(ITEM_LITHOGRAPH) == 0)
     {
         lithograph_hint_source->text("This tablet seems of no use...");
         return;
@@ -621,6 +628,9 @@ void WorldShuffler::randomize_lithograph_hint()
 
 void WorldShuffler::randomize_where_is_lithograph_hint()
 {
+    if(_options.archipelago_world())
+        return;
+
     HintSource* knc_sign_source = _world.hint_source("King Nole's Cave sign");
 
     _world.add_used_hint_source(knc_sign_source);
@@ -638,6 +648,9 @@ void WorldShuffler::randomize_where_is_lithograph_hint()
 
 Item* WorldShuffler::randomize_fortune_teller_hint()
 {
+    if(_options.archipelago_world())
+        return nullptr;
+
     HintSource* fortune_teller_source = _world.hint_source("Mercator fortune teller");
 
     _world.add_used_hint_source(fortune_teller_source);
@@ -673,13 +686,16 @@ void WorldShuffler::randomize_oracle_stone_hint(Item* forbidden_fortune_teller_i
 {
     HintSource* oracle_stone_source = _world.hint_source("Oracle Stone");
 
-    if(_world.item_distribution(ITEM_ORACLE_STONE)->quantity() > 0)
+    // If hint source already contains text (e.g. through plando descriptor), ignore it
+    if(!oracle_stone_source->text().empty())
     {
         _world.add_used_hint_source(oracle_stone_source);
+        return;
+    }
 
-        // If hint source already contains text (e.g. through plando descriptor), ignore it
-        if(!oracle_stone_source->text().empty())
-            return;
+    if(_world.item_quantity(ITEM_ORACLE_STONE) > 0)
+    {
+        _world.add_used_hint_source(oracle_stone_source);
 
         std::vector<Item*> forbidden_items = {
                 forbidden_fortune_teller_item, _world.item(ITEM_RED_JEWEL), _world.item(ITEM_PURPLE_JEWEL),
@@ -960,5 +976,3 @@ Json WorldShuffler::playthrough_as_json() const
 
     return json;
 }
-
-

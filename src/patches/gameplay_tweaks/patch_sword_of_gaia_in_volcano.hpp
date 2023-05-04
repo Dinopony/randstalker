@@ -1,6 +1,6 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * In the base game, only statues of Gaia work to trigger the volcano leading to Lake Shrine.

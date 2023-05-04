@@ -1,7 +1,7 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
-#include "landstalker_lib/constants/entity_type_codes.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
 
 /**
  * When performing the tree-cutting glitch (feeding a goldbag to a tree to make it killable), they systematically

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/model/entity_type.hpp>
-#include <landstalker_lib/tools/sprite.hpp>
-#include <landstalker_lib/md_tools.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/tools/sprite.hpp>
+#include <landstalker-lib/md_tools.hpp>
 
 void extract_nigel_sprites(md::ROM& rom, const World& world)
 {

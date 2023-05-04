@@ -1,11 +1,10 @@
 #include "io.hpp"
 
-#include <landstalker_lib/io/io.hpp>
-#include "landstalker_lib/tools/stringtools.hpp"
+#include <landstalker-lib/io/io.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
 
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/hint_source.hpp"
-#include "../logic_model/item_distribution.hpp"
 #include "../logic_model/randomizer_world.hpp"
 
 void ModelWriter::write_world_model(const RandomizerWorld& world)
@@ -30,19 +29,19 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
     while(!paths_copy.empty())
     {
         auto it = paths_copy.begin();
-        std::pair<WorldNode*, WorldNode*> node_pair = it->first;
-        WorldPath* path = it->second;
+        WorldPath* path = *it;
+
         paths_copy.erase(it);
 
         bool two_way = false;
-        std::pair<WorldNode*, WorldNode*> reverse_pair = std::make_pair(node_pair.second, node_pair.first);
-        if(paths_copy.count(reverse_pair))
+        for(auto it2 = paths_copy.begin() ; it2 != paths_copy.end() ; ++it2)
         {
-            WorldPath* reverse_path = paths_copy.at(reverse_pair);
-            if(path->is_perfect_opposite_of(reverse_path))
+            WorldPath* other_path = *it2;
+            if(path->is_perfect_opposite_of(other_path))
             {
                 two_way = true;
-                paths_copy.erase(reverse_pair);
+                paths_copy.erase(it2);
+                break;
             }
         }
         
@@ -69,10 +68,4 @@ void ModelWriter::write_logic_model(const RandomizerWorld& world)
     for(auto& [id, spawn] : world.available_spawn_locations())
         spawns_json[id] = spawn->to_json();
     dump_json_to_file(spawns_json, "./json_data/spawn_location.json");
-
-    Json distribs_json = Json::object();
-    auto item_names = world.item_names();
-    for(uint8_t i=0 ; i<ITEM_COUNT+1 ; ++i)
-        distribs_json[item_names[i]] = world.item_distribution(i)->to_json();
-    dump_json_to_file(distribs_json, "./json_data/item_distribution.json");
 }

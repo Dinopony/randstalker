@@ -1,10 +1,9 @@
 #include "item_source.hpp"
-#include "../../extlibs/landstalker_lib/model/entity.hpp"
-#include "../../extlibs/landstalker_lib/model/entity_type.hpp"
-#include "../../extlibs/landstalker_lib/model/map.hpp"
-#include "../../extlibs/landstalker_lib/model/world.hpp"
-
-#include "../../extlibs/landstalker_lib/exceptions.hpp"
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/model/entity_type.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
 ItemSource::ItemSource(const std::string& name, const std::string& node_id, const std::vector<std::string>& hints) :
     _name       (name),
@@ -63,15 +62,21 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
         }
 
         if(type == "shop")
-            return new ItemSourceShop(name, entities, node_id, hints);
-
-        bool cannot_be_taken_repeatedly = json.value("cannotBeTakenRepeatedly", false);
-        return new ItemSourceOnGround(name, entities, node_id, hints, cannot_be_taken_repeatedly); 
+        {
+            uint8_t shop_item_id = json.at("shopItemId");
+            return new ItemSourceShop(name, entities, shop_item_id, node_id, hints);
+        }
+        else
+        {
+            uint8_t ground_item_id = json.at("groundItemId");
+            return new ItemSourceOnGround(name, entities, ground_item_id, node_id, hints);
+        }
     }
     else if(type == "reward")
     {
         uint32_t address_in_rom = json.at("address");
-        return new ItemSourceReward(address_in_rom, name, node_id, hints);        
+        uint8_t reward_id = json.at("rewardId");
+        return new ItemSourceReward(address_in_rom, name, reward_id, node_id, hints);
     }
 
     std::stringstream msg;
@@ -109,9 +114,6 @@ Json ItemSourceOnGround::to_json() const
         else
             json["entities"].emplace_back(entity_json);
     }
-
-    if(_cannot_be_taken_repeatedly)
-        json["cannotBeTakenRepeatedly"] = _cannot_be_taken_repeatedly;
 
     return json;
 }

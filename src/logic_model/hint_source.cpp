@@ -2,9 +2,9 @@
 
 #include <algorithm>
 #include <utility>
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/tools/game_text.hpp>
-#include <landstalker_lib/tools/stringtools.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
+#include <landstalker-lib/tools/stringtools.hpp>
 
 HintSource::HintSource(std::vector<uint16_t> text_ids, std::string description,
         WorldNode* node, bool small_textbox,
@@ -37,9 +37,9 @@ void HintSource::apply_text(World& world)
 
     std::string initial_game_string;
     if(this->special())
-        initial_game_string = GameText(_text, textbox_size).getOutput();
+        initial_game_string = GameText(_text, textbox_size).get_output();
     else
-        initial_game_string = GameText(_text, "Foxy", textbox_size).getOutput();
+        initial_game_string = GameText(_text, "Foxy", textbox_size).get_output();
 
     std::vector<std::string> final_strings;
     if(initial_game_string.size() <= 253)

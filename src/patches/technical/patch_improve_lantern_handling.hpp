@@ -1,13 +1,13 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
-#include "landstalker_lib/model/world.hpp"
-#include "landstalker_lib/model/map.hpp"
-#include "landstalker_lib/model/item.hpp"
-#include "landstalker_lib/constants/offsets.hpp"
-#include "landstalker_lib/constants/item_codes.hpp"
-#include "landstalker_lib/exceptions.hpp"
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/item.hpp>
+#include <landstalker-lib/constants/offsets.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
 /**
  * Make the lantern a flexible item, by actually being able to impact a predefined

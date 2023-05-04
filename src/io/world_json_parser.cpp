@@ -4,8 +4,9 @@
 #include "../logic_model/world_region.hpp"
 #include "../logic_model/randomizer_world.hpp"
 #include "../logic_model/hint_source.hpp"
-#include <landstalker_lib/tools/stringtools.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include "../logic_model/world_teleport_tree.hpp"
+#include <landstalker-lib/tools/stringtools.hpp>
+#include <landstalker-lib/exceptions.hpp>
 
 static Item* parse_item_from_name_in_json(const std::string& item_name, RandomizerWorld& world)
 {
@@ -14,7 +15,7 @@ static Item* parse_item_from_name_in_json(const std::string& item_name, Randomiz
         return item;
 
     // If item is formatted as "X golds", parse X value and create the matching gold stack item
-    if(item_name.ends_with("golds"))
+    if(item_name.ends_with(" golds") || item_name.ends_with(" Golds"))
     {
         size_t space_index = item_name.find_first_of(' ');
         if(space_index != std::string::npos)
@@ -36,25 +37,44 @@ static void parse_item_sources_from_json(RandomizerWorld& world, const Json& jso
     if(!json.count("itemSources"))
         return;
 
-    const Json& item_sources_json = json.at("itemSources");
-    for(auto&[region_id, item_sources_in_region_json] : item_sources_json.items())
-    {
-        try {
-            WorldRegion* region = world.region(region_id);
-            std::map<std::string, ItemSource*> region_item_sources = region->item_sources();
+    std::map<std::string, ItemSource*> item_sources_table;
+    for(ItemSource* source : world.item_sources())
+        item_sources_table[source->name()] = source;
 
-            for(auto&[source_name, item_name] : item_sources_in_region_json.items())
-            {
-                try {
-                    ItemSource* source = region_item_sources.at(source_name);
-                    Item* item = parse_item_from_name_in_json(item_name, world);
-                    source->item(item);
-                } catch(std::out_of_range&) {
-                    throw LandstalkerException("Item source '" + source_name + "' could not be found in region '" + region_id +  "'");
-                }
-            }
+    const Json& item_sources_json = json.at("itemSources");
+    for(auto&[source_name, item_data] : item_sources_json.items())
+    {
+        ItemSource* source;
+        try {
+            source = item_sources_table.at(source_name);
         } catch(std::out_of_range&) {
-            throw LandstalkerException("Region '" + region_id + "' could not be found");
+            throw LandstalkerException("Item source '" + source_name + "' could not be found.");
+        }
+
+        if(item_data.is_string())
+        {
+            // If we find a string, that's the shorthand syntax for an item name from our own world
+            Item* item = parse_item_from_name_in_json(item_data, world);
+            source->item(item);
+            continue;
+        }
+
+        // Otherwise, it means it's either an item for another player in the case of an Archipelago world, or an item
+        // with additionnal data (e.g. price)
+        Item* item;
+        if(item_data.contains("player"))
+            item = world.add_archipelago_item(item_data["item"], item_data["player"], source->is_shop_item());
+        else
+            item = parse_item_from_name_in_json(item_data["item"], world);
+        source->item(item);
+
+        if(item_data.contains("price"))
+        {
+            if(!source->is_shop_item())
+                throw LandstalkerException("Trying to put an item with a price inside an item source which is not a shop");
+
+            uint16_t price = item_data.at("price");
+            reinterpret_cast<ItemSourceShop*>(source)->price(price);
         }
     }
 }
@@ -118,17 +138,42 @@ static void parse_dark_region_from_json(RandomizerWorld& world, const Json& json
 
 static void parse_fahl_enemies(RandomizerWorld& world, const Json& json)
 {
-    if(json.contains("fahlEnemies"))
-    {
-        for(std::string enemy_name : json.at("fahlEnemies"))
-        {
-            EntityType* enemy = world.entity_type(enemy_name);
-            if(!enemy)
-                throw LandstalkerException("Enemy type '" + enemy_name + "' could not be found");
+    if(!json.contains("fahlEnemies"))
+        return;
 
-            world.add_fahl_enemy(enemy);
-        }
+    for(std::string enemy_name : json.at("fahlEnemies"))
+    {
+        EntityType* enemy = world.entity_type(enemy_name);
+        if(!enemy)
+            throw LandstalkerException("Enemy type '" + enemy_name + "' could not be found");
+
+        world.add_fahl_enemy(enemy);
     }
+}
+
+static void parse_teleport_trees(RandomizerWorld& world, const Json& json)
+{
+    if(!json.contains("teleportTreePairs"))
+        return;
+
+    std::vector<std::pair<WorldTeleportTree*, WorldTeleportTree*>> pairs = world.teleport_tree_pairs();
+
+    std::map<std::string, WorldTeleportTree*> tree_dictionary;
+    for(const auto& pair : pairs)
+    {
+        tree_dictionary[pair.first->name()] = pair.first;
+        tree_dictionary[pair.second->name()] = pair.second;
+    }
+    pairs.clear();
+
+    for(Json pair : json.at("teleportTreePairs"))
+    {
+        WorldTeleportTree* tree_1 = tree_dictionary.at(pair[0]);
+        WorldTeleportTree* tree_2 = tree_dictionary.at(pair[1]);
+        pairs.emplace_back(std::make_pair(tree_1, tree_2));
+    }
+
+    world.teleport_tree_pairs(pairs);
 }
 
 void WorldJsonParser::parse_world_json(RandomizerWorld& world, const Json& json)
@@ -138,4 +183,5 @@ void WorldJsonParser::parse_world_json(RandomizerWorld& world, const Json& json)
     parse_spawn_location_from_json(world, json);
     parse_dark_region_from_json(world, json);
     parse_fahl_enemies(world, json);
+    parse_teleport_trees(world, json);
 }

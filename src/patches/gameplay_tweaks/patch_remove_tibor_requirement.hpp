@@ -1,6 +1,6 @@
 #pragma once
 
-#include <landstalker_lib/patches/game_patch.hpp>
+#include <landstalker-lib/patches/game_patch.hpp>
 
 /**
  * In the original game, you need to save Tibor to make teleport trees usable.

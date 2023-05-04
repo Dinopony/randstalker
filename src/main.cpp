@@ -16,14 +16,16 @@
 #include <string>
 #include <iostream>
 
-#include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/md_tools.hpp>
-#include <landstalker_lib/tools/argument_dictionary.hpp>
-#include <landstalker_lib/constants/offsets.hpp>
-#include <landstalker_lib/exceptions.hpp>
-#include <landstalker_lib/io/io.hpp>
+#include <landstalker-lib/tools/json.hpp>
+#include <landstalker-lib/md_tools.hpp>
+#include <landstalker-lib/tools/argument_dictionary.hpp>
+#include <landstalker-lib/constants/offsets.hpp>
+#include <landstalker-lib/exceptions.hpp>
+#include <landstalker-lib/io/io.hpp>
 
 #include "tools/base64.hpp"
+#include "randomizer_options.hpp"
+#include "personal_settings.hpp"
 #include "patches/patches.hpp"
 #include "apply_randomizer_options.hpp"
 #include "logic_model/randomizer_world.hpp"
@@ -31,15 +33,42 @@
 #include "io/io.hpp"
 #include "bingo.hpp"
 
-md::ROM* get_input_rom(std::string input_rom_path)
+md::ROM* get_input_rom(const ArgumentDictionary& args)
 {
+    const std::vector<std::string> DEFAULT_FILENAMES = {
+        "LandStalker_USA.SGD",
+        "Landstalker (USA).md",
+        "Landstalker (USA).bin",
+        "input.md"
+    };
+
+    std::string input_rom_path = args.get_string("inputrom", "");
+    if(input_rom_path.empty() || input_rom_path.ends_with("/"))
+    {
+        // If not input path or a directory was provided, test various common filenames
+        for(const std::string& filename : DEFAULT_FILENAMES)
+        {
+            if(std::filesystem::exists(input_rom_path + filename))
+            {
+                input_rom_path += filename;
+                break;
+            }
+        }
+    }
+
     md::ROM* rom = new md::ROM(input_rom_path);
     while (!rom->is_valid())
     {
         delete rom;
+
+        if(!args.get_boolean("stdin", true))
+            throw LandstalkerException("Couldn't find a valid input ROM file with the given settings.");
+
         if (!input_rom_path.empty())
             std::cout << "[ERROR] ROM input path \"" << input_rom_path << "\" is wrong, and no ROM could be opened this way.\n\n";
-        std::cout << "Please specify input ROM path (or drag ROM on Randstalker.exe icon before launching): ";
+
+        std::cout << "Could not find an input ROM with a generic filename (e.g. \"Landstalker (USA).md\") inside randstalker folder." << std::endl;
+        std::cout << "Please specify input ROM path: ";
         std::getline(std::cin, input_rom_path);
         rom = new md::ROM(input_rom_path);
     }
@@ -87,7 +116,9 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 {
     Json spoiler_json;
 
-    spoiler_json["permalink"] = options.permalink();
+    if(!options.archipelago_world())
+        spoiler_json["permalink"] = options.permalink();
+
     spoiler_json["hashSentence"] = options.hash_sentence();
     spoiler_json.merge_patch(options.to_json());
 
@@ -137,10 +168,8 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
 void generate(const ArgumentDictionary& args)
 {
-    std::string input_rom_path = args.get_string("inputrom", "./input.md");
-
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
-    md::ROM* rom = get_input_rom(input_rom_path);
+    md::ROM* rom = get_input_rom(args);
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space after System Font
@@ -154,7 +183,7 @@ void generate(const ArgumentDictionary& args)
     world.load_model_from_json();
 
     // Parse options from command-line args, preset file, plando file...
-    RandomizerOptions options(args, world.item_names());
+    RandomizerOptions options(args, world.item_names(), world.spawn_location_names());
     PersonalSettings personal_settings(args, world.item_names());
 
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);
@@ -190,7 +219,7 @@ void generate(const ArgumentDictionary& args)
     }
 
     // Write a spoiler log to help the player
-    if(!spoiler_log_path.empty())
+    if(!spoiler_log_path.empty() && !options.archipelago_world())
     {
         std::ofstream spoiler_file(spoiler_log_path);
         if(!spoiler_file)
@@ -206,8 +235,13 @@ void generate(const ArgumentDictionary& args)
 
     //std::cout << "Settings: " << options.to_json().dump(2) << "\n\n";
     std::cout << "\nHash sentence: " << options.hash_sentence() << "\n";
-    std::cout << "\nPermalink: " << options.permalink() << "\n";
-    std::cout << "\nShare the permalink above with other people to enable them building the exact same seed.\n" << std::endl;
+
+    if(!options.archipelago_world())
+    {
+        std::cout << "\nPermalink: " << options.permalink() << "\n";
+        std::cout << "\nShare the permalink above with other people to enable them building the exact same seed.\n"
+                  << std::endl;
+    }
 }
 
 int main(int argc, char* argv[])
@@ -220,6 +254,12 @@ int main(int argc, char* argv[])
 
     if(args.contains("permalink") && args.get_string("permalink").empty())
     {
+        if(!args.get_boolean("stdin", true))
+        {
+            std::cerr << "[ERROR] --permalink and --nostdin arguments can only coexist if permalink is specified." << std::endl;
+            return EXIT_FAILURE;
+        }
+
         std::string permalink;
         std::cout << "Please specify a permalink: ";
         std::getline(std::cin, permalink);
@@ -238,7 +278,7 @@ int main(int argc, char* argv[])
         return_code = EXIT_FAILURE;
     }
 
-    if(args.get_boolean("pause", true))
+    if(args.get_boolean("pause", true) && args.get_boolean("stdin", true))
     {
         std::cout << "\nPress any key to exit.";
         std::string dummy;

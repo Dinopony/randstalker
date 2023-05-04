@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(randstalker VERSION 1.7.4 LANGUAGES CXX)
+project(randstalker VERSION 1.8.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,15 +12,15 @@ if(DEBUG)
     add_compile_definitions(DEBUG)
 endif()
 
-add_subdirectory(extlibs/landstalker_lib landstalker_lib)
-include_directories("extlibs/")
+add_subdirectory(extlibs/landstalker_lib/landstalker-lib landstalker_lib)
+include_directories("extlibs/landstalker_lib")
 
 macro(WRAPPED_DEPENDENCY)
     message(STATUS "Defining wrapped dependency for ${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}")
     add_custom_command(
             OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}.hxx"
             COMMAND "${CMAKE_COMMAND}"
-            ARGS -DINPUT_FILE="${ARGV1}" -DVARIABLE_NAME="${ARGV2}" -DPROCESS_TYPE="${ARGV0}" -P "extlibs/landstalker_lib/wrap_file.cmake"
+            ARGS -DINPUT_FILE="${ARGV1}" -DVARIABLE_NAME="${ARGV2}" -DPROCESS_TYPE="${ARGV0}" -P "extlibs/landstalker_lib/landstalker-lib/wrap_file.cmake"
             DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${ARGV1}"
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
@@ -40,6 +40,7 @@ wrapped_dependency(RAW      src/assets/christmas_moneybag.bin               CHRI
 wrapped_dependency(RAW      src/assets/blue_jewel.bin                       BLUE_JEWEL_SPRITE)
 wrapped_dependency(RAW      src/assets/green_jewel.bin                      GREEN_JEWEL_SPRITE)
 wrapped_dependency(RAW      src/assets/yellow_jewel.bin                     YELLOW_JEWEL_SPRITE)
+wrapped_dependency(RAW      src/assets/archipelago_item.bin                 ARCHIPELAGO_ITEM_SPRITE)
 wrapped_dependency(RAW      src/assets/secret_arg_music_bank.bin            ARG_MUSIC_BANK)
 
 wrapped_dependency(RAW      src/assets/titlescreen/title1_layout.rle        TITLE1_LAYOUT)
@@ -56,7 +57,10 @@ set(SOURCES
         "src/assets/blue_jewel.bin.hxx"
         "src/assets/green_jewel.bin.hxx"
         "src/assets/yellow_jewel.bin.hxx"
+        "src/assets/archipelago_item.bin.hxx"
         "src/assets/secret_arg_music_bank.bin.hxx"
+
+        "src/constants/rando_constants.hpp"
 
         "src/assets/titlescreen/title1_layout.rle.hxx"
         "src/assets/titlescreen/title1_tiles.lz77.hxx"
@@ -104,8 +108,10 @@ set(SOURCES
         "src/patches/edit_content/patch_edit_dialogues.hpp"
         "src/patches/edit_content/patch_rando_world_edits.hpp"
         "src/patches/edit_content/patch_shorten_cutscenes.hpp"
+        "src/patches/edit_content/patch_add_foxies.hpp"
+        "src/patches/edit_content/patch_add_golas_heart.hpp"
+        "src/patches/edit_content/patch_add_golas_heart.cpp"
 
-        "src/patches/item_effects/patch_statue_of_jypta_golds_on_walk.hpp"
         "src/patches/item_effects/patch_lithograph_hint_on_use.hpp"
         "src/patches/item_effects/patch_oracle_stone_hint_on_use.hpp"
         "src/patches/item_effects/patch_spell_book_teleport_on_use.hpp"
@@ -123,6 +129,7 @@ set(SOURCES
         "src/patches/gameplay_tweaks/patch_remove_ekeeke_auto_revive.hpp"
         "src/patches/gameplay_tweaks/patch_show_all_books_in_churches.hpp"
         "src/patches/gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
+        "src/patches/gameplay_tweaks/patch_alternative_goals.hpp"
 
         "src/patches/technical/patch_apply_item_sources.hpp"
         "src/patches/technical/patch_handle_jewels.hpp"
@@ -132,11 +139,15 @@ set(SOURCES
         "src/patches/technical/patch_improve_gold_rewards_handling.hpp"
         "src/patches/technical/patch_remove_music.hpp"
         "src/patches/technical/patch_swap_overworld_music.hpp"
-        "src/patches/technical/patch_handle_fox_hints.hpp"
         "src/patches/technical/patch_fix_softlocks.hpp"
         "src/patches/technical/patch_fix_armlet_skip.hpp"
         "src/patches/technical/patch_randomizer_adaptations.hpp"
         "src/patches/technical/patch_save_select_show_hash_option.hpp"
+        "src/patches/technical/patch_flags_for_ground_items.hpp"
+        "src/patches/technical/patch_update_teleport_tree_connections.hpp"
+        "src/patches/technical/patch_on_walk_effects.hpp"
+        "src/patches/technical/patch_individual_price_for_shop_sources.hpp"
+        "src/patches/technical/patch_handle_custom_dialogues.hpp"
 
         "src/patches/optimization/patch_optimize_maps.hpp"
         "src/patches/optimization/patch_optimize_destel_well_map.hpp"
@@ -149,6 +160,7 @@ set(SOURCES
         "src/patches/events/patch_secret_arg.cpp"
 
         "src/patches/patches.hpp"
+        "src/patches/patches.cpp"
 
         # --- Tools ----------------------------------------
         "src/tools/base64.hpp"
@@ -167,8 +179,7 @@ set(SOURCES
         "src/world_solver.hpp"
         "src/world_solver.cpp"
         "src/bingo.hpp"
-        "src/main.cpp"
-        )
+        "src/main.cpp")
 
 add_executable(randstalker "${SOURCES}")
 target_link_libraries(randstalker landstalker_lib)

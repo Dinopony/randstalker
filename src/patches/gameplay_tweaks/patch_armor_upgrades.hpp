@@ -1,8 +1,8 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
-#include "landstalker_lib/model/item.hpp"
-#include "landstalker_lib/constants/item_codes.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/model/item.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
 
 class PatchArmorUpgrades : public GamePatch
 {
@@ -95,7 +95,6 @@ private:
                                                                                     uint32_t function_alter_item_in_d0)
     {
         md::Code func;
-        func.movem_to_stack({ reg_D7 }, { reg_A0 });
         {
             func.cmpib(ITEM_HYPER_BREAST, reg_D0);
             func.bgt("return");
@@ -103,18 +102,9 @@ private:
             func.blt("return");
             {
                 func.jsr(function_alter_item_in_d0);
-                func.moveb(addr_(reg_A5, 0x3B), reg_D7);
-                func.subib(0xC9, reg_D7);
-                func.cmpa(lval_(0xFF5400), reg_A5); // ???
-                func.blt("return");
-                {
-                    // set a flag when an armor is taken on the ground for it to disappear afterwards
-                    func.bset(reg_D7, addr_(0xFF103F));
-                }
             }
         }
         func.label("return");
-        func.movem_from_stack({ reg_D7 }, { reg_A0 });
         func.lea(0xFF1040, reg_A0);
         func.rts();
 
@@ -125,7 +115,6 @@ private:
                                                                                        uint32_t function_change_item_in_reward_textbox)
     {
         md::Code func;
-        func.movem_to_stack({ reg_D7 }, { reg_A0 });  // movem D7,A0 -(A7)
         {
             func.subib(0xC0, reg_D0);
             func.cmpib(ITEM_HYPER_BREAST, reg_D0);
@@ -133,23 +122,11 @@ private:
             func.cmpib(ITEM_STEEL_BREAST, reg_D0);
             func.blt("place_item");
             {
-                func.moveb(reg_D0, reg_D7);
-                func.subib(ITEM_STEEL_BREAST, reg_D7);
-                func.btst(reg_D7, addr_(0xFF103F));
-                func.bne("already_taken");
-                {
-                    // Item was NOT already taken, alter the armor inside
-                    func.jsr(function_change_item_in_reward_textbox);
-                    func.bra("place_item");
-                }
-                // Item was already taken, remove it by filling it with an empty item
-                func.label("already_taken");
-                func.movew(ITEM_NONE, reg_D0);
+                func.jsr(function_change_item_in_reward_textbox);
             }
             func.label("place_item");
-            func.moveb(reg_D0, addr_(reg_A1, 0x36)); // move D0, ($36,A1) (1340 0036)
+            func.moveb(reg_D0, addr_(reg_A1, 0x36));
         }
-        func.movem_from_stack({ reg_D7 }, { reg_A0 }); // movem (A7)+, D7,A0	(4CDF 0180)
         func.rts();
 
         return rom.inject_code(func);

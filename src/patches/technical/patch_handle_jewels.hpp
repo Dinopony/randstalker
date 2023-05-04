@@ -1,16 +1,14 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
-
-#include "landstalker_lib/model/world.hpp"
-#include "landstalker_lib/model/map.hpp"
-#include "landstalker_lib/model/entity.hpp"
-#include "landstalker_lib/constants/item_codes.hpp"
-#include "landstalker_lib/constants/map_codes.hpp"
-#include "landstalker_lib/constants/offsets.hpp"
-#include "landstalker_lib/constants/values.hpp"
-#include "landstalker_lib/exceptions.hpp"
-#include "landstalker_lib/tools/sprite.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/model/map.hpp>
+#include <landstalker-lib/model/entity.hpp>
+#include <landstalker-lib/constants/item_codes.hpp>
+#include <landstalker-lib/constants/map_codes.hpp>
+#include <landstalker-lib/constants/offsets.hpp>
+#include <landstalker-lib/exceptions.hpp>
+#include <landstalker-lib/tools/sprite.hpp>
 
 #include "../../assets/blue_jewel.bin.hxx"
 #include "../../assets/yellow_jewel.bin.hxx"
@@ -117,10 +115,10 @@ private:
     {
         md::Code func;
         {
-            func.jsr(0x22EE8); // open textbox
+            func.jsr(0x28F9E); // open textbox
             func.movew(0x22, reg_D0);
             func.jsr(0x28FD8); // display text
-            func.jsr(0x22EA0); // close textbox
+            func.jsr(0x28FB8); // close textbox
         }
         func.rts();
         return rom.inject_code(func);

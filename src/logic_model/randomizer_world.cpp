@@ -2,13 +2,13 @@
 
 #include "world_teleport_tree.hpp"
 #include "spawn_location.hpp"
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/exceptions.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/tools/game_text.hpp>
+#include <landstalker-lib/exceptions.hpp>
 #include "world_node.hpp"
 #include "world_path.hpp"
 #include "world_region.hpp"
 #include "hint_source.hpp"
-#include "item_distribution.hpp"
 
 // Include headers automatically generated from model json files
 #include "data/item.json.hxx"
@@ -22,13 +22,24 @@
 
 #include <iostream>
 
+RandomizerWorld::RandomizerWorld() :
+    World()
+{
+    // Add "standard" gold items which can be used through item distribution
+    this->add_item(new ItemGolds(ITEM_1_GOLD, 1));
+    this->add_item(new ItemGolds(ITEM_20_GOLDS, 20));
+    this->add_item(new ItemGolds(ITEM_50_GOLDS, 50));
+    this->add_item(new ItemGolds(ITEM_100_GOLDS, 100));
+    this->add_item(new ItemGolds(ITEM_200_GOLDS, 200));
+}
+
 RandomizerWorld::~RandomizerWorld()
 {
     for (ItemSource* source : _item_sources)
         delete source;
     for (auto& [key, node] : _nodes)
         delete node;
-    for (auto& [key, path] : _paths)
+    for (WorldPath* path : _paths)
         delete path;
     for (WorldRegion* region : _regions)
         delete region;
@@ -41,6 +52,8 @@ RandomizerWorld::~RandomizerWorld()
         delete tree_1;
         delete tree_2;
     }
+    for(Item* item : _archipelago_items)
+        delete item;
 }
 
 ItemSource* RandomizerWorld::item_source(const std::string& name) const
@@ -63,12 +76,20 @@ std::vector<ItemSource*> RandomizerWorld::item_sources_with_item(Item* item)
     return sources_with_item;
 }
 
-std::array<std::string, ITEM_COUNT+1> RandomizerWorld::item_names() const
+std::array<std::string, ITEM_COUNT> RandomizerWorld::item_names() const
 {
-    std::array<std::string, ITEM_COUNT+1> item_names;
+    std::array<std::string, ITEM_COUNT> item_names;
     for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
-        item_names[i] = this->item(i)->name();
-    item_names[ITEM_COUNT] = "Golds";
+    {
+        try
+        {
+            item_names[i] = this->item(i)->name();
+        }
+        catch(std::out_of_range&)
+        {
+            item_names[i] = "No" + std::to_string(i);
+        }
+    }
 
     return item_names;
 }
@@ -107,7 +128,10 @@ void RandomizerWorld::load_item_sources()
 
 WorldPath* RandomizerWorld::path(WorldNode* origin, WorldNode* destination)
 {
-    return _paths.at(std::make_pair(origin, destination));
+    for(WorldPath* path : _paths)
+        if(path->origin() == origin && path->destination() == destination)
+            return path;
+    return nullptr;
 }
 
 WorldPath* RandomizerWorld::path(const std::string& origin_name, const std::string& destination_name)
@@ -119,7 +143,7 @@ WorldPath* RandomizerWorld::path(const std::string& origin_name, const std::stri
 
 void RandomizerWorld::add_path(WorldPath* path)
 {
-    _paths[std::make_pair(path->origin(), path->destination())] = path;
+    _paths.emplace_back(path);
 }
 
 WorldRegion* RandomizerWorld::region(const std::string& name) const
@@ -128,6 +152,14 @@ WorldRegion* RandomizerWorld::region(const std::string& name) const
         if(region->name() == name)
             return region;
     return nullptr;
+}
+
+std::vector<std::string> RandomizerWorld::spawn_location_names() const
+{
+    std::vector<std::string> ret;
+    for(auto& [name, _] : _available_spawn_locations)
+        ret.emplace_back(name);
+    return ret;
 }
 
 void RandomizerWorld::add_spawn_location(SpawnLocation* spawn)
@@ -150,6 +182,16 @@ void RandomizerWorld::dark_region(WorldRegion* region)
     }
 }
 
+void RandomizerWorld::add_custom_dialogue(Entity* entity, const std::string& text)
+{
+    _custom_dialogues[entity] = GameText(text).get_output();
+}
+
+void RandomizerWorld::add_custom_dialogue_raw(Entity* entity, const std::string& text)
+{
+    _custom_dialogues[entity] = text;
+}
+
 void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
 {
     std::vector<WorldNode*> required_nodes;
@@ -165,6 +207,30 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
     }
 }
 
+Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming)
+{
+    std::string formatted_name;
+    if(use_shop_naming)
+    {
+        formatted_name = player_name + "'s " + name;
+        if(formatted_name.size() > 30)
+        {
+            formatted_name = formatted_name.substr(0,30);;
+            formatted_name += ".";
+        }
+    }
+    else
+        formatted_name = name + " to " + player_name;
+
+    for(Item* item : _archipelago_items)
+        if(item->name() == formatted_name)
+            return item;
+
+    Item* new_item = new Item(ITEM_ARCHIPELAGO, formatted_name, 0, 0, 0, 0);
+    _archipelago_items.emplace_back(new_item);
+    return new_item;
+}
+
 void RandomizerWorld::spawn_location(const SpawnLocation* spawn)
 {
     _spawn_location = spawn;
@@ -176,14 +242,6 @@ void RandomizerWorld::spawn_location(const SpawnLocation* spawn)
 
     if(this->starting_life() == 0)
         this->starting_life(spawn->starting_life());
-}
-
-std::map<uint8_t, uint16_t> RandomizerWorld::item_quantities() const
-{
-    std::map<uint8_t, uint16_t> item_quantities;
-    for(uint8_t i=0 ; i<=ITEM_GOLDS_START ; ++i)
-        item_quantities[i] = _item_distributions[i].quantity();
-    return item_quantities;
 }
 
 HintSource* RandomizerWorld::hint_source(const std::string& name) const
@@ -204,7 +262,6 @@ void RandomizerWorld::load_model_from_json()
     this->load_regions();
     this->load_spawn_locations();
     this->load_hint_sources();
-    this->init_item_distributions();
     this->load_teleport_trees();
 }
 
@@ -294,15 +351,6 @@ void RandomizerWorld::load_hint_sources()
 #endif
 }
 
-void RandomizerWorld::init_item_distributions()
-{
-    const std::vector<uint8_t> ITEMS_FORBIDDEN_ON_GROUND = {
-            ITEM_PAWN_TICKET, ITEM_DAHL, ITEM_SHORT_CAKE, ITEM_LIFESTOCK, ITEM_GOLDS_START
-    };
-    for(uint8_t item_id : ITEMS_FORBIDDEN_ON_GROUND)
-        _item_distributions[item_id].allowed_on_ground(false);
-}
-
 void RandomizerWorld::load_teleport_trees()
 {
     Json trees_json = Json::parse(WORLD_TELEPORT_TREES_JSON);
@@ -310,6 +358,8 @@ void RandomizerWorld::load_teleport_trees()
     {
         WorldTeleportTree* tree_1 = WorldTeleportTree::from_json(tree_pair_json[0]);
         WorldTeleportTree* tree_2 = WorldTeleportTree::from_json(tree_pair_json[1]);
+        tree_1->paired_map_id(tree_2->map_id());
+        tree_2->paired_map_id(tree_1->map_id());
         _teleport_tree_pairs.emplace_back(std::make_pair(tree_1, tree_2));
     }
 

@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include <landstalker_lib/tools/json.hpp>
-#include <landstalker_lib/model/world.hpp>
-#include <landstalker_lib/tools/vectools.hpp>
+#include <landstalker-lib/tools/json.hpp>
+#include <landstalker-lib/model/world.hpp>
+#include <landstalker-lib/tools/vectools.hpp>
 #include "logic_model/randomizer_world.hpp"
 
 class WorldNode;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "landstalker_lib/patches/game_patch.hpp"
+#include <landstalker-lib/patches/game_patch.hpp>
 
 #include "../../assets/titlescreen/title1_tiles.lz77.hxx"
 #include "../../assets/titlescreen/title1_layout.rle.hxx"
