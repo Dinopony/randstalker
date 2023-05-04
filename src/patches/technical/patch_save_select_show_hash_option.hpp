@@ -43,13 +43,14 @@ public:
                 show_hash_func.jsr(0xF5DC); // DMACopyTextBuffer
                 show_hash_func.moveb(0x00, addr_(0xFF0556));
                 show_hash_func.jsr(0x10C6); // WaitForNextButtonPress
-                show_hash_func.jmp(0x00EEF6);
-                show_hash_func.add_bytes({ 0x3D, 0x7C, 0xFF, 0xFF, 0xFF, 0xFC });
+                show_hash_func.jmp(0xEEF6);
             }
             show_hash_func.label("hash_not_selected");
-            show_hash_func.jmp(0x00EF00);
+            show_hash_func.jsr(0xEFF0);
+            show_hash_func.tstw(reg_D0);
+            show_hash_func.jmp(0xEF16);
         }
         uint32_t addr = rom.inject_code(show_hash_func);
-        rom.set_code(0xEEFA, md::Code().jmp(addr));
+        rom.set_code(0xEF10, md::Code().jmp(addr));
     }
 };
