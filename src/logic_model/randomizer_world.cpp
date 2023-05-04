@@ -154,6 +154,14 @@ WorldRegion* RandomizerWorld::region(const std::string& name) const
     return nullptr;
 }
 
+std::vector<std::string> RandomizerWorld::spawn_location_names() const
+{
+    std::vector<std::string> ret;
+    for(auto& [name, _] : _available_spawn_locations)
+        ret.emplace_back(name);
+    return ret;
+}
+
 void RandomizerWorld::add_spawn_location(SpawnLocation* spawn)
 {
     _available_spawn_locations[spawn->id()] = spawn;

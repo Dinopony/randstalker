@@ -11,7 +11,7 @@
 
 #include "tools/base64.hpp"
 
-static const std::array<std::string, 3> GOALS_TABLE = {
+static const std::array<const char*, 3> GOALS_TABLE = {
         "beat_gola",
         "reach_kazalt",
         "beat_dark_nole"
@@ -25,9 +25,12 @@ static uint8_t get_goal_id(const std::string& goal_string)
     throw LandstalkerException("Unknown goal '" + goal_string + "'.");
 }
 
-RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names)
+RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args,
+                                     const std::array<std::string, ITEM_COUNT>& item_names,
+                                     const std::vector<std::string>& spawn_location_names)
 {
     _item_names = item_names;
+    _spawn_location_names = spawn_location_names;
     _starting_items.fill(0);
     _items_distribution.fill(0);
 
@@ -123,7 +126,11 @@ Json RandomizerOptions::to_json() const
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
-    json["randomizerSettings"]["spawnLocations"] = _possible_spawn_locations;
+
+    json["randomizerSettings"]["spawnLocations"] = Json::array();
+    for(uint8_t spawn_loc_id : _possible_spawn_locations)
+        json["randomizerSettings"]["spawnLocations"].emplace_back(_spawn_location_names[spawn_loc_id]);
+
     json["randomizerSettings"]["shuffleTrees"] = _shuffle_tibor_trees;
     json["randomizerSettings"]["shopPricesFactor"] = _shop_prices_factor;
     json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
@@ -167,6 +174,22 @@ void RandomizerOptions::parse_json(const Json& json)
     {
         this->parse_permalink(json.at("permalink"));
         return;
+    }
+
+    if(json.contains("modelPatch"))
+    {
+        const Json& model_patch_json = json.at("modelPatch");
+
+        if(model_patch_json.contains("items"))
+            _model_patch_items = model_patch_json.at("items");
+        if(model_patch_json.contains("spawnLocations"))
+        {
+            _model_patch_spawns = model_patch_json.at("spawnLocations");
+            for(const auto& [name, _] : _model_patch_spawns.items())
+                _spawn_location_names.emplace_back(name);
+        }
+        if(model_patch_json.contains("hintSources"))
+            _model_patch_hint_sources = model_patch_json.at("hintSources");
     }
 
     if(json.contains("gameSettings"))
@@ -245,7 +268,17 @@ void RandomizerOptions::parse_json(const Json& json)
             _allow_spoiler_log = randomizer_settings_json.at("allowSpoilerLog");
 
         if(randomizer_settings_json.contains("spawnLocations"))
-            randomizer_settings_json.at("spawnLocations").get_to(_possible_spawn_locations);
+        {
+            std::vector<std::string> spawn_loc_names;
+            randomizer_settings_json.at("spawnLocations").get_to(spawn_loc_names);
+            for(const std::string& name : spawn_loc_names)
+            {
+                auto it = std::find(_spawn_location_names.begin(), _spawn_location_names.end(), name);
+                if(it == _spawn_location_names.end())
+                    throw LandstalkerException("Unknown spawn location '" + name + "' in preset file.");
+                _possible_spawn_locations.emplace_back((uint8_t)std::distance(_spawn_location_names.begin(), it));
+            }
+        }
         else if(randomizer_settings_json.contains("spawnLocation"))
             _possible_spawn_locations = { randomizer_settings_json.at("spawnLocation") };
 
@@ -303,18 +336,6 @@ void RandomizerOptions::parse_json(const Json& json)
         }
     }
 
-    if(json.contains("modelPatch"))
-    {
-        const Json& model_patch_json = json.at("modelPatch");
-
-        if(model_patch_json.contains("items"))
-            _model_patch_items = model_patch_json.at("items");
-        if(model_patch_json.contains("spawnLocations"))
-            _model_patch_spawns = model_patch_json.at("spawnLocations");
-        if(model_patch_json.contains("hintSources"))
-            _model_patch_hint_sources = model_patch_json.at("hintSources");
-    }
-
     _christmas_event = json.value("christmasEvent", false);
     _secret_event = json.value("secretEvent", false);
 
@@ -367,6 +388,14 @@ std::string RandomizerOptions::goal() const
     return GOALS_TABLE.at(_goal);
 }
 
+std::vector<std::string> RandomizerOptions::possible_spawn_locations() const
+{
+    std::vector<std::string> ret;
+    for(uint8_t spawn_loc_id : _possible_spawn_locations)
+        ret.emplace_back(_spawn_location_names[spawn_loc_id]);
+    return ret;
+}
+
 std::vector<std::string> RandomizerOptions::hash_words() const
 {
     std::vector<std::string> words = { 
@@ -406,11 +435,6 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_jewel_count);
     bitpack.pack(_starting_life);
     bitpack.pack(_starting_gold);
-    bitpack.pack(_enemies_damage_factor);
-    bitpack.pack(_enemies_health_factor);
-    bitpack.pack(_enemies_armor_factor);
-    bitpack.pack(_enemies_golds_factor);
-    bitpack.pack(_enemies_drop_chance_factor);
     bitpack.pack(_health_gained_per_lifestock);
     bitpack.pack(_fast_transitions);
 
@@ -427,7 +451,6 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_ekeeke_auto_revive);
     bitpack.pack(_allow_spoiler_log);
     bitpack.pack(_shuffle_tibor_trees);
-    bitpack.pack(_shop_prices_factor);
     bitpack.pack(_enemy_jumping_in_logic);
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
@@ -440,17 +463,37 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_hints_distribution_item_location);
     bitpack.pack(_hints_distribution_dark_region);
     bitpack.pack(_hints_distribution_joke);
+    bitpack.pack(_christmas_event);
+    bitpack.pack(_secret_event);
+
+    bitpack.pack_if(_enemies_damage_factor != 100, _enemies_damage_factor);
+    bitpack.pack_if(_enemies_health_factor != 100, _enemies_health_factor);
+    bitpack.pack_if(_enemies_armor_factor != 100, _enemies_armor_factor);
+    bitpack.pack_if(_enemies_golds_factor != 100, _enemies_golds_factor);
+    bitpack.pack_if(_enemies_drop_chance_factor != 100, _enemies_drop_chance_factor);
+    bitpack.pack_if(_shop_prices_factor != 100, _shop_prices_factor);
+
+    for(size_t i=0 ; i<_starting_items.size() ; ++i)
+    {
+        uint8_t item_id = (uint8_t)i;
+        uint8_t quantity = _starting_items[i];
+        if(quantity != 0)
+        {
+            bitpack.pack(true);
+            bitpack.pack(item_id);
+            bitpack.pack(quantity);
+        }
+    }
+    bitpack.pack(false);
 
     bitpack.pack_vector(_possible_spawn_locations);
-
-    bitpack.pack_array(_starting_items);
     bitpack.pack_vector(_finite_ground_items);
     bitpack.pack_vector(_finite_shop_items);
 
-    bitpack.pack_vector(Json::to_msgpack(_model_patch_items));
-    bitpack.pack_vector(Json::to_msgpack(_model_patch_spawns));
-    bitpack.pack_vector(Json::to_msgpack(_model_patch_hint_sources));
-    bitpack.pack_vector(Json::to_msgpack(_world_json));
+    bitpack.pack_vector_if(!_world_json.empty(), Json::to_msgpack(_world_json));
+    bitpack.pack_vector_if(!_model_patch_items.empty(), Json::to_msgpack(_model_patch_items));
+    bitpack.pack_vector_if(!_model_patch_spawns.empty(), Json::to_msgpack(_model_patch_spawns));
+    bitpack.pack_vector_if(!_model_patch_hint_sources.empty(), Json::to_msgpack(_model_patch_hint_sources));
 
     return "l" + base64_encode(bitpack.bytes()) + "s";
 }
@@ -472,11 +515,6 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _jewel_count = bitpack.unpack<uint8_t>();
     _starting_life = bitpack.unpack<uint8_t>();
     _starting_gold = bitpack.unpack<uint16_t>();
-    _enemies_damage_factor = bitpack.unpack<uint16_t>();
-    _enemies_health_factor = bitpack.unpack<uint16_t>();
-    _enemies_armor_factor = bitpack.unpack<uint16_t>();
-    _enemies_golds_factor = bitpack.unpack<uint16_t>();
-    _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
     _health_gained_per_lifestock = bitpack.unpack<uint8_t>();
     _fast_transitions = bitpack.unpack<bool>();
 
@@ -493,7 +531,6 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _ekeeke_auto_revive = bitpack.unpack<bool>();
     _allow_spoiler_log = bitpack.unpack<bool>();
     _shuffle_tibor_trees = bitpack.unpack<bool>();
-    _shop_prices_factor = bitpack.unpack<uint16_t>();
     _enemy_jumping_in_logic = bitpack.unpack<bool>();
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
@@ -501,20 +538,34 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _ensure_ekeeke_in_shops = bitpack.unpack<bool>();
     _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
     _filler_item = bitpack.unpack<uint8_t>();
-    _hints_distribution_region_requirement = bitpack.unpack<uint16_t>();
-    _hints_distribution_item_requirement = bitpack.unpack<uint16_t>();
-    _hints_distribution_item_location = bitpack.unpack<uint16_t>();
-    _hints_distribution_dark_region = bitpack.unpack<uint16_t>();
-    _hints_distribution_joke = bitpack.unpack<uint16_t>();
+    _hints_distribution_region_requirement = bitpack.unpack<uint8_t>();
+    _hints_distribution_item_requirement = bitpack.unpack<uint8_t>();
+    _hints_distribution_item_location = bitpack.unpack<uint8_t>();
+    _hints_distribution_dark_region = bitpack.unpack<uint8_t>();
+    _hints_distribution_joke = bitpack.unpack<uint8_t>();
+    _christmas_event = bitpack.unpack<bool>();
+    _secret_event = bitpack.unpack<bool>();
 
-    _possible_spawn_locations = bitpack.unpack_vector<std::string>();
+    if(bitpack.unpack<bool>()) _enemies_damage_factor = bitpack.unpack<uint16_t>();
+    if(bitpack.unpack<bool>()) _enemies_health_factor = bitpack.unpack<uint16_t>();
+    if(bitpack.unpack<bool>()) _enemies_armor_factor = bitpack.unpack<uint16_t>();
+    if(bitpack.unpack<bool>()) _enemies_golds_factor = bitpack.unpack<uint16_t>();
+    if(bitpack.unpack<bool>()) _enemies_drop_chance_factor = bitpack.unpack<uint16_t>();
+    if(bitpack.unpack<bool>()) _shop_prices_factor = bitpack.unpack<uint16_t>();
 
-    _starting_items = bitpack.unpack_array<uint8_t, ITEM_LIFESTOCK>();
+    while(bitpack.unpack<bool>())
+    {
+        uint8_t item_id = bitpack.unpack<uint8_t>();
+        uint8_t quantity = bitpack.unpack<uint8_t>();
+        _starting_items[item_id] = quantity;
+    }
+
+    _possible_spawn_locations = bitpack.unpack_vector<uint8_t>();
     _finite_ground_items = bitpack.unpack_vector<uint8_t>();
     _finite_shop_items = bitpack.unpack_vector<uint8_t>();
 
-    _model_patch_items = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
-    _model_patch_spawns = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
-    _model_patch_hint_sources = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
-    _world_json = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    if(bitpack.unpack<bool>()) _world_json = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    if(bitpack.unpack<bool>()) _model_patch_items = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    if(bitpack.unpack<bool>()) _model_patch_spawns = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+    if(bitpack.unpack<bool>()) _model_patch_hint_sources = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
 }

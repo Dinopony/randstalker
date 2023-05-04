@@ -163,7 +163,7 @@ void generate(const ArgumentDictionary& args)
     world.load_model_from_json();
 
     // Parse options from command-line args, preset file, plando file...
-    RandomizerOptions options(args, world.item_names());
+    RandomizerOptions options(args, world.item_names(), world.spawn_location_names());
     PersonalSettings personal_settings(args, world.item_names());
 
     Json spoiler_json = randomize(*rom, world, options, personal_settings, args);

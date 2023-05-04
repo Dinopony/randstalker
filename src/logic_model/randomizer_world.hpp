@@ -61,6 +61,7 @@ public:
     [[nodiscard]] WorldRegion* region(const std::string& name) const;
 
     [[nodiscard]] const std::map<std::string, SpawnLocation*>& available_spawn_locations() const { return _available_spawn_locations; }
+    [[nodiscard]] std::vector<std::string> spawn_location_names() const;
     void add_spawn_location(SpawnLocation* spawn);
 
     [[nodiscard]] const SpawnLocation* spawn_location() const { return _spawn_location; }

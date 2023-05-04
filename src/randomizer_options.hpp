@@ -19,6 +19,7 @@ private:
     static constexpr uint8_t STARTING_LIFE_USE_SPAWN_LOCATION_VALUE = 0;
 
     std::array<std::string, ITEM_COUNT> _item_names;
+    std::vector<std::string> _spawn_location_names;
 
     // ------------- Game patching settings -------------
     // (included in permalink, presets & plandos)
@@ -52,7 +53,7 @@ private:
     // (included in permalink & presets, not in plandos)
     uint32_t _seed = 0;
     bool _allow_spoiler_log = true;
-    std::vector<std::string> _possible_spawn_locations;
+    std::vector<uint8_t> _possible_spawn_locations;
     bool _shuffle_tibor_trees = false;
     uint16_t _shop_prices_factor = 100;
     bool _enemy_jumping_in_logic = false;
@@ -62,11 +63,11 @@ private:
     bool _ensure_ekeeke_in_shops = true;
     std::array<uint8_t, ITEM_COUNT> _items_distribution {};
     uint8_t _filler_item = ITEM_EKEEKE;
-    uint16_t _hints_distribution_region_requirement = 0;
-    uint16_t _hints_distribution_item_requirement = 0;
-    uint16_t _hints_distribution_item_location = 0;
-    uint16_t _hints_distribution_dark_region = 0;
-    uint16_t _hints_distribution_joke = 0;
+    uint8_t _hints_distribution_region_requirement = 0;
+    uint8_t _hints_distribution_item_requirement = 0;
+    uint8_t _hints_distribution_item_location = 0;
+    uint8_t _hints_distribution_dark_region = 0;
+    uint8_t _hints_distribution_joke = 0;
 
     // ------------- Events -------------
     bool _christmas_event = false;
@@ -81,7 +82,9 @@ private:
     Json _model_patch_hint_sources;
 
 public:
-    explicit RandomizerOptions(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names);
+    explicit RandomizerOptions(const ArgumentDictionary& args,
+                               const std::array<std::string, ITEM_COUNT>& item_names,
+                               const std::vector<std::string>& spawn_location_names);
 
     [[nodiscard]] Json to_json() const;
     void parse_json(const Json& json);
@@ -114,7 +117,7 @@ public:
 
     // Randomization options
     [[nodiscard]] uint32_t seed() const { return _seed; }
-    [[nodiscard]] const std::vector<std::string>& possible_spawn_locations() const { return _possible_spawn_locations; }
+    [[nodiscard]] std::vector<std::string> possible_spawn_locations() const;
     [[nodiscard]] bool allow_spoiler_log() const { return _allow_spoiler_log; }
     [[nodiscard]] bool shuffle_tibor_trees() const { return _shuffle_tibor_trees; }
     [[nodiscard]] double shop_prices_factor() const { return (double)_shop_prices_factor / 100.0; }
@@ -131,11 +134,11 @@ public:
                                                      + _hints_distribution_item_location
                                                      + _hints_distribution_dark_region
                                                      + _hints_distribution_joke; }
-    [[nodiscard]] uint16_t hints_distribution_region_requirement() const { return _hints_distribution_region_requirement; }
-    [[nodiscard]] uint16_t hints_distribution_item_requirement() const { return _hints_distribution_item_requirement; }
-    [[nodiscard]] uint16_t hints_distribution_item_location() const { return _hints_distribution_item_location; }
-    [[nodiscard]] uint16_t hints_distribution_dark_region() const { return _hints_distribution_dark_region; }
-    [[nodiscard]] uint16_t hints_distribution_joke() const { return _hints_distribution_joke; }
+    [[nodiscard]] uint8_t hints_distribution_region_requirement() const { return _hints_distribution_region_requirement; }
+    [[nodiscard]] uint8_t hints_distribution_item_requirement() const { return _hints_distribution_item_requirement; }
+    [[nodiscard]] uint8_t hints_distribution_item_location() const { return _hints_distribution_item_location; }
+    [[nodiscard]] uint8_t hints_distribution_dark_region() const { return _hints_distribution_dark_region; }
+    [[nodiscard]] uint8_t hints_distribution_joke() const { return _hints_distribution_joke; }
 
     // Event
     [[nodiscard]] bool christmas_event() const { return _christmas_event; }
