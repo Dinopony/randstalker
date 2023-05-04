@@ -283,7 +283,13 @@ void RandomizerOptions::parse_json(const Json& json)
             }
         }
         else if(randomizer_settings_json.contains("spawnLocation"))
-            _possible_spawn_locations = { randomizer_settings_json.at("spawnLocation") };
+        {
+            std::string name = randomizer_settings_json.at("spawnLocation");
+            auto it = std::find(_spawn_location_names.begin(), _spawn_location_names.end(), name);
+            if(it == _spawn_location_names.end())
+                throw LandstalkerException("Unknown spawn location '" + name + "' in preset file.");
+            _possible_spawn_locations.emplace_back((uint8_t)std::distance(_spawn_location_names.begin(), it));
+        }
 
         if(randomizer_settings_json.contains("shuffleTrees"))
             _shuffle_tibor_trees = randomizer_settings_json.at("shuffleTrees");
