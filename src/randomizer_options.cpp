@@ -165,6 +165,9 @@ Json RandomizerOptions::to_json() const
     if(!_model_patch_hint_sources.empty())
         json["modelPatch"]["hintSources"] = _model_patch_hint_sources;
 
+    json["christmasEvent"] = _christmas_event;
+    json["secretEvent"] = _secret_event;
+
     return json;
 }
 
