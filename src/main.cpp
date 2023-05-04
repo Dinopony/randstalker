@@ -33,20 +33,42 @@
 #include "io/io.hpp"
 #include "bingo.hpp"
 
-md::ROM* get_input_rom(std::string input_rom_path, bool ask_on_failure)
+md::ROM* get_input_rom(const ArgumentDictionary& args)
 {
+    const std::vector<std::string> DEFAULT_FILENAMES = {
+        "LandStalker_USA.SGD",
+        "Landstalker (USA).md",
+        "Landstalker (USA).bin",
+        "input.md"
+    };
+
+    std::string input_rom_path = args.get_string("inputrom", "");
+    if(input_rom_path.empty() || input_rom_path.ends_with("/"))
+    {
+        // If not input path or a directory was provided, test various common filenames
+        for(const std::string& filename : DEFAULT_FILENAMES)
+        {
+            if(std::filesystem::exists(input_rom_path + filename))
+            {
+                input_rom_path += filename;
+                break;
+            }
+        }
+    }
+
     md::ROM* rom = new md::ROM(input_rom_path);
     while (!rom->is_valid())
     {
         delete rom;
 
-        if(!ask_on_failure)
+        if(!args.get_boolean("stdin", true))
             throw LandstalkerException("Couldn't find a valid input ROM file with the given settings.");
 
         if (!input_rom_path.empty())
             std::cout << "[ERROR] ROM input path \"" << input_rom_path << "\" is wrong, and no ROM could be opened this way.\n\n";
 
-        std::cout << "Please specify input ROM path (or drag ROM on Randstalker.exe icon before launching): ";
+        std::cout << "Could not find an input ROM with a generic filename (e.g. \"Landstalker (USA).md\") inside randstalker folder." << std::endl;
+        std::cout << "Please specify input ROM path: ";
         std::getline(std::cin, input_rom_path);
         rom = new md::ROM(input_rom_path);
     }
@@ -146,10 +168,8 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
 void generate(const ArgumentDictionary& args)
 {
-    std::string input_rom_path = args.get_string("inputrom", "./input.md");
-
     // Load input ROM and tag known empty chunks of data to know where to inject code / data
-    md::ROM* rom = get_input_rom(input_rom_path, args.get_boolean("stdin", true));
+    md::ROM* rom = get_input_rom(args);
     rom->mark_empty_chunk(offsets::LITHOGRAPH_TILES, offsets::LITHOGRAPH_TILES_END);
     rom->mark_empty_chunk(0x19314, 0x19514); // Empty space
     rom->mark_empty_chunk(0x11F380, 0x120000); // Empty space after System Font
