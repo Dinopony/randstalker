@@ -20,6 +20,8 @@ public:
         optimize_map_connections(world);
 
         transform_variant_into_standard(world.map(MAP_MERCATOR_CASTLE_THRONE_ROOM_ARTHUR_VARIANT));
+        transform_variant_into_standard(world.map(MAP_RYUMA_INN_VARIANT));
+        transform_variant_into_standard(world.map(MAP_MERCATOR_HOTEL_VARIANT));
 
         remove_useless_map_variants(world);
     }
@@ -157,8 +159,12 @@ private:
             parent_map = parent_map->parent_map();
 
         parent_map->clear_entities();
-        for(Entity* entity : map->entities())
-            parent_map->add_entity(new Entity(*entity));
+        while(!map->entities().empty())
+        {
+            Entity* entity = map->entity(0);
+            map->remove_entity(0, false);
+            parent_map->add_entity(entity);
+        }
 
         for(auto& [variant_map, flag] : parent_map->variants())
             variant_map->clear();
