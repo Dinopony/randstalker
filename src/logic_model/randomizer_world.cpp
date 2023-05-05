@@ -19,6 +19,7 @@
 #include "data/spawn_location.json.hxx"
 #include "data/hint_source.json.hxx"
 #include "data/world_teleport_tree.json.hxx"
+#include "landstalker-lib/tools/stringtools.hpp"
 
 #include <iostream>
 
@@ -209,18 +210,53 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
 
 Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming)
 {
+    constexpr size_t MAX_FULL_STRING_SIZE = 42;
+    constexpr size_t MAX_PLAYER_NAME_SIZE = 10;
+    const std::set<char> VOWELS = { 'a', 'e', 'i', 'o', 'u', 'y' };
+
+    // Shorten player name if needed
+    std::string shortened_player_name = player_name;
+    if(shortened_player_name.size() > MAX_PLAYER_NAME_SIZE)
+        shortened_player_name = player_name.substr(0, MAX_PLAYER_NAME_SIZE-1) + ".";
+
+    // Use all the remaining space for item name
+    size_t max_item_name_size = MAX_FULL_STRING_SIZE - shortened_player_name.size();
+
+    // If the item name is too long, try truncating individual words to keep the global meaning
+    std::string shortened_item_name = name;
+    std::vector<std::string> words = stringtools::split(shortened_item_name, " ");
+    size_t current_word_index = 0;
+    while(shortened_item_name.size() > max_item_name_size && current_word_index < words.size())
+    {
+        std::string& current_word = words[current_word_index];
+        for(size_t i=3 ; i<current_word.size()-1 ; ++i)
+        {
+            if(VOWELS.contains(current_word[i]))
+            {
+                current_word = current_word.substr(0, i) + ".";
+                break;
+            }
+        }
+
+       shortened_item_name = stringtools::join(words, " ");
+    }
+
+    // If after shortening individual words, the global name is still too long, just truncate it
+    if(shortened_item_name.size() > max_item_name_size)
+        shortened_item_name = shortened_item_name.substr(0, max_item_name_size-1) + ".";
+
     std::string formatted_name;
     if(use_shop_naming)
     {
-        formatted_name = player_name + "'s " + name;
-        if(formatted_name.size() > 30)
+        formatted_name = shortened_player_name + "'s " + shortened_item_name;
+        if(formatted_name.size() > 28)
         {
-            formatted_name = formatted_name.substr(0,30);;
+            formatted_name = formatted_name.substr(0,30);
             formatted_name += ".";
         }
     }
     else
-        formatted_name = name + " to " + player_name;
+        formatted_name = shortened_item_name + " to " + shortened_player_name;
 
     for(Item* item : _archipelago_items)
         if(item->name() == formatted_name)
