@@ -51,30 +51,48 @@ public:
     {
         md::Code func;
         {
+            // When stealing, A5 is initialized wrongly and it doesn't make sense to compute a price anyway
+            func.cmpa(0xFF5480, reg_A5);
+            func.blt("return");
+
             func.clrl(reg_D0);
             // Put shop item source ID in D0
             func.moveb(addr_(reg_A5, 0x3A), reg_D0);
+            func.bne("custom_price");
+            {
+                // shop_id == 0, it means this is not linked to an item source and therefore has no custom price
+                // Branch back into the vanilla "get_price" function
+                func.movem_to_stack({ reg_D2 }, {});
+                func.moveb(addr_(0xFF1903), reg_D0);
+                func.jmp(0x24CCC);
+            }
+            func.label("custom_price");
             func.lsrw(1, reg_D0);
             // Put price in D1 and 0xFF1878
-            func.lea(_gold_prices_table_addr, reg_A0);
-            func.clrl(reg_D1);
-            func.movew(addr_(reg_A0, reg_D0), reg_D1);
-            func.movel(reg_D1, addr_(0xFF1878));
-            // Put item ID in D0 and 0xFF1198
-            func.clrl(reg_D0);
-            func.moveb(addr_(0xFF1903), reg_D0);
-            func.cmpib(ITEM_ARCHIPELAGO, reg_D0);
-            func.bne("not_archipelago");
+            func.movem_to_stack({}, { reg_A0 });
             {
-                func.moveb(addr_(reg_A5, 0x3A), reg_D0);
-                func.lsrb(2, reg_D0);
-                func.addiw(ItemSourceShop::base_shop_uuid(), reg_D0);
-                func.movew(reg_D0, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
-                func.movew(ITEM_ARCHIPELAGO, reg_D0);
+                func.lea(_gold_prices_table_addr, reg_A0);
+                func.clrl(reg_D1);
+                func.movew(addr_(reg_A0, reg_D0), reg_D1);
+                func.movel(reg_D1, addr_(0xFF1878));
+                // Put item ID in D0 and 0xFF1198
+                func.clrl(reg_D0);
+                func.moveb(addr_(0xFF1903), reg_D0);
+                func.cmpib(ITEM_ARCHIPELAGO, reg_D0);
+                func.bne("not_archipelago");
+                {
+                    func.moveb(addr_(reg_A5, 0x3A), reg_D0);
+                    func.lsrb(2, reg_D0);
+                    func.addiw(ItemSourceShop::base_shop_uuid(), reg_D0);
+                    func.movew(reg_D0, addr_(ADDR_ARCHIPELAGO_CURRENT_LOCATION_UUID));
+                    func.movew(ITEM_ARCHIPELAGO, reg_D0);
+                }
+                func.label("not_archipelago");
+                func.movew(reg_D0, addr_(0xFF1198));
             }
-            func.label("not_archipelago");
-            func.movew(reg_D0, addr_(0xFF1198));
+            func.movem_from_stack({}, { reg_A0 });
         }
+        func.label("return");
         func.rts();
 
         uint32_t func_addr = rom.inject_code(func);
