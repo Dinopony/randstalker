@@ -32,6 +32,7 @@ public:
         remove_verla_soldiers_on_verla_spawn(world);
         make_verla_mines_bosses_always_present(world);
         make_mercator_docks_shop_inactive_before_lighthouse_repair(world);
+        add_reverse_golems_after_verla_mines(world);
     }
 
 private:
@@ -268,5 +269,29 @@ private:
 
         // Remove the shopkeeper
         map->remove_entity(5);
+    }
+
+    /**
+     * By default, the path going from Verla Mines to Destel is barred with golem statues, but only in one direction.
+     * Coming from Destel, there is nothing preventing you from entering Verla Mines.
+     * This patch adds the "reverse golems", barring the path in the other direction to make things consistent.
+     */
+    static void add_reverse_golems_after_verla_mines(World& world)
+    {
+        Entity* reverse_golem = new Entity({
+            .type_id = ENTITY_GREEN_GOLEM_STATUE,
+            .position = Position(0x38, 0x13, 0x3, false, true, false),
+            .orientation = ENTITY_ORIENTATION_NW,
+            .palette = 1
+        });
+        reverse_golem->remove_when_flag_is_set(FLAG_MARLEY_KILLED);
+        world.map(MAP_VERLA_MINES_EXIT_TO_DESTEL)->add_entity(reverse_golem);
+
+        Entity* invisible_cube = new Entity({
+            .type_id = ENTITY_INVISIBLE_CUBE,
+            .position = Position(0x39, 0x13, 0x4, false, true, true),
+        });
+        invisible_cube->remove_when_flag_is_set(FLAG_MARLEY_KILLED);
+        world.map(MAP_VERLA_MINES_EXIT_TO_DESTEL)->add_entity(invisible_cube);
     }
 };

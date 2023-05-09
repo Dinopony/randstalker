@@ -255,8 +255,7 @@
     },
     {
         "fromId": "verla_mines",
-        "toId": "route_verla_destel",
-        "twoWay": true
+        "toId": "route_verla_destel"
     },
     {
         "fromId": "verla_mines",
