@@ -1,6 +1,7 @@
 #pragma once
 
 #include <landstalker-lib/constants/map_codes.hpp>
+#include <landstalker-lib/constants/entity_type_codes.hpp>
 #include <landstalker-lib/tools/flag.hpp>
 
 // =========================================================
@@ -8,6 +9,13 @@
 // =========================================================
 
 constexpr uint8_t MAX_INDIVIDUAL_JEWELS = 5;
+
+
+// =========================================================
+//      ENTITY TYPES
+// =========================================================
+
+constexpr uint8_t ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE = ENTITY_NPC_DUKE_CHAIR;
 
 
 // =========================================================
