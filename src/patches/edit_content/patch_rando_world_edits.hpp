@@ -324,7 +324,7 @@ private:
         }
         func.label("return");
         func.rts();
-        world.map(MAP_LAKE_SHRINE_302)->map_setup_addr(rom.inject_code(func));
+        world.map(MAP_LAKE_SHRINE_302)->map_update_addr(rom.inject_code(func));
     }
 
     static void add_lake_shrine_mir_tower_tp(RandomizerWorld& world)
