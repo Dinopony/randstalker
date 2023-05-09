@@ -210,9 +210,10 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
 
 Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming)
 {
-    constexpr size_t MAX_FULL_STRING_SIZE = 42;
     constexpr size_t MAX_PLAYER_NAME_SIZE = 10;
-    const std::set<char> VOWELS = { 'a', 'e', 'i', 'o', 'u', 'y' };
+    const std::set<char> VOWELS = { 'a', 'e', 'i', 'o', 'u', 'y', 'A', 'E', 'I', 'O', 'U', 'Y' };
+
+    size_t max_full_string_size = (use_shop_naming) ? 30 : 38;
 
     // Shorten player name if needed
     std::string shortened_player_name = player_name;
@@ -220,25 +221,31 @@ Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::
         shortened_player_name = player_name.substr(0, MAX_PLAYER_NAME_SIZE-1) + ".";
 
     // Use all the remaining space for item name
-    size_t max_item_name_size = MAX_FULL_STRING_SIZE - shortened_player_name.size();
+    size_t max_item_name_size = max_full_string_size - shortened_player_name.size();
 
     // If the item name is too long, try truncating individual words to keep the global meaning
     std::string shortened_item_name = name;
-    std::vector<std::string> words = stringtools::split(shortened_item_name, " ");
+    std::vector<std::string> words = stringtools::split_with_delims(shortened_item_name, { ' ', '-', '(', ')' });
     size_t current_word_index = 0;
     while(shortened_item_name.size() > max_item_name_size && current_word_index < words.size())
     {
         std::string& current_word = words[current_word_index];
-        for(size_t i=3 ; i<current_word.size()-1 ; ++i)
+        if(current_word.size() > 4)
         {
-            if(VOWELS.contains(current_word[i]))
+            for(size_t i = 1 ; i < current_word.size() - 3 ; ++i)
             {
-                current_word = current_word.substr(0, i) + ".";
-                break;
+                if(VOWELS.contains(current_word[i]) && !VOWELS.contains(current_word[i + 1]))
+                {
+                    current_word = current_word.substr(0, i+2) + ".";
+                    if(current_word_index + 1 < words.size() && words[current_word_index + 1] == " ")
+                        words.erase(words.begin() + ((int)current_word_index + 1));
+                    break;
+                }
             }
         }
 
-       shortened_item_name = stringtools::join(words, " ");
+        ++current_word_index;
+        shortened_item_name = stringtools::join(words, "");
     }
 
     // If after shortening individual words, the global name is still too long, just truncate it
@@ -247,14 +254,7 @@ Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::
 
     std::string formatted_name;
     if(use_shop_naming)
-    {
         formatted_name = shortened_player_name + "'s " + shortened_item_name;
-        if(formatted_name.size() > 28)
-        {
-            formatted_name = formatted_name.substr(0,30);
-            formatted_name += ".";
-        }
-    }
     else
         formatted_name = shortened_item_name + " to " + shortened_player_name;
 
