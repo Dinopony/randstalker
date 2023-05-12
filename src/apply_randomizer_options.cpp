@@ -159,23 +159,6 @@ static void patch_items(World& world, const RandomizerOptions& options)
     }
 }
 
-static void patch_entity_types(World& world, const RandomizerOptions& options)
-{
-    // Apply multiplicators from randomizer settings
-    for (auto& [id, entity_type] : world.entity_types())
-    {
-        if(entity_type->type_name() != "enemy")
-            continue;
-        EnemyType* enemy_type = reinterpret_cast<EnemyType*>(entity_type);
-
-        enemy_type->apply_damage_factor(options.enemies_damage_factor());
-        enemy_type->apply_health_factor(options.enemies_health_factor());
-        enemy_type->apply_armor_factor(options.enemies_armor_factor());
-        enemy_type->apply_golds_factor(options.enemies_golds_factor());
-        enemy_type->apply_drop_chance_factor(options.enemies_drop_chance_factor());
-    }
-}
-
 static void patch_game_strings(World& world, const RandomizerOptions& options)
 {
     Json game_strings_json = Json::parse(GAME_STRINGS_JSON, nullptr, true, true);
@@ -341,7 +324,6 @@ void apply_randomizer_options(const RandomizerOptions& options, RandomizerWorld&
 
     patch_starting_flags(world, options);
     patch_items(world, options);
-    patch_entity_types(world, options);
     patch_game_strings(world, options);
 
     apply_options_on_logic_paths(options, world);
