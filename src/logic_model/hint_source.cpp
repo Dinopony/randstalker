@@ -33,6 +33,9 @@ std::string HintSource::text() const
 
 void HintSource::apply_text(World& world)
 {
+    if(_text.empty())
+        return;
+
     uint8_t textbox_size = _small_textbox ? 2 : 3;
 
     std::string initial_game_string;

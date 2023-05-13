@@ -26,6 +26,7 @@
 #include "gameplay_tweaks/patch_show_all_books_in_churches.hpp"
 #include "gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
 #include "gameplay_tweaks/patch_alternative_goals.hpp"
+#include "gameplay_tweaks/patch_apply_difficulty_factors.hpp"
 
 #include "item_effects/patch_lithograph_hint_on_use.hpp"
 #include "item_effects/patch_oracle_stone_hint_on_use.hpp"
@@ -94,6 +95,7 @@ void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const Random
     // Randomizer adjustments to make it playable / interesting
     patches.emplace_back(new PatchNewGame(personal_settings.add_ingame_item_tracker()));
     patches.emplace_back(new PatchApplyItemSources());
+    patches.emplace_back(new PatchApplyDifficultyFactors(options));
     patches.emplace_back(new PatchRandoWorldEdits());
     patches.emplace_back(new PatchRandomizerAdaptations());
     patches.emplace_back(new PatchFixItemChecks());

@@ -130,6 +130,7 @@ set(SOURCES
         "src/patches/gameplay_tweaks/patch_show_all_books_in_churches.hpp"
         "src/patches/gameplay_tweaks/patch_remove_continue_prompt_after_saving.hpp"
         "src/patches/gameplay_tweaks/patch_alternative_goals.hpp"
+        "src/patches/gameplay_tweaks/patch_apply_difficulty_factors.hpp"
 
         "src/patches/technical/patch_apply_item_sources.hpp"
         "src/patches/technical/patch_handle_jewels.hpp"

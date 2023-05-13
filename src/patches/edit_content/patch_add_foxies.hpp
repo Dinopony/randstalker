@@ -16,9 +16,6 @@
 
 class PatchAddFoxies : public GamePatch
 {
-private:
-    static constexpr uint8_t ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE = ENTITY_NPC_DUKE_CHAIR;
-
 public:
     void alter_rom(md::ROM& rom) override
     {

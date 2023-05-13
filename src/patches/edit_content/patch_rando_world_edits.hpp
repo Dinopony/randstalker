@@ -9,6 +9,7 @@
 #include <landstalker-lib/constants/map_codes.hpp>
 #include <landstalker-lib/constants/entity_type_codes.hpp>
 #include <landstalker-lib/constants/flags.hpp>
+#include "../../constants/rando_constants.hpp"
 
 class PatchRandoWorldEdits : public GamePatch
 {
@@ -32,6 +33,13 @@ public:
         remove_verla_soldiers_on_verla_spawn(world);
         make_verla_mines_bosses_always_present(world);
         make_mercator_docks_shop_inactive_before_lighthouse_repair(world);
+        add_reverse_golems_after_verla_mines(world);
+        add_lake_shrine_mir_tower_tp(reinterpret_cast<RandomizerWorld&>(world));
+    }
+
+    void inject_code(md::ROM& rom, World& world) override
+    {
+        add_lake_shrine_mir_tower_tp_handler(rom, world);
     }
 
 private:
@@ -268,5 +276,82 @@ private:
 
         // Remove the shopkeeper
         map->remove_entity(5);
+    }
+
+    /**
+     * By default, the path going from Verla Mines to Destel is barred with golem statues, but only in one direction.
+     * Coming from Destel, there is nothing preventing you from entering Verla Mines.
+     * This patch adds the "reverse golems", barring the path in the other direction to make things consistent.
+     */
+    static void add_reverse_golems_after_verla_mines(World& world)
+    {
+        Entity* reverse_golem = new Entity({
+            .type_id = ENTITY_GREEN_GOLEM_STATUE,
+            .position = Position(0x38, 0x13, 0x3, false, true, false),
+            .orientation = ENTITY_ORIENTATION_NW,
+            .palette = 1
+        });
+        reverse_golem->remove_when_flag_is_set(FLAG_MARLEY_KILLED);
+        world.map(MAP_VERLA_MINES_EXIT_TO_DESTEL)->add_entity(reverse_golem);
+
+        Entity* invisible_cube = new Entity({
+            .type_id = ENTITY_INVISIBLE_CUBE,
+            .position = Position(0x39, 0x13, 0x4, false, true, true),
+        });
+        invisible_cube->remove_when_flag_is_set(FLAG_MARLEY_KILLED);
+        world.map(MAP_VERLA_MINES_EXIT_TO_DESTEL)->add_entity(invisible_cube);
+    }
+
+    /**
+     * In the vanilla game, when you beat Duke in Lake Shrine, you get teleported once to Mir Tower. This never happens
+     * again, and this can be a softlock cause in rando if you start at Destel, do Lake Shrine and teleport back using
+     * Spell Book. This function solves this issue by adding a small teleporter at the beginning of Lake Shrine if
+     * Duke has already been beaten, teleporting back to Mir Tower.
+     */
+    static void add_lake_shrine_mir_tower_tp_handler(md::ROM& rom, World& world)
+    {
+        constexpr Flag flag = FLAG_FINISHED_LAKE_SHRINE;
+
+        // Add a function to make a teleporter appear in Lake Shrine main hallway when having already finished the dungeon
+        md::Code func;
+        func.btst(flag.bit, addr_(0xFF1000 + flag.byte));
+        func.beq("return");
+        {
+            func.movew(0x01A2, addr_(0xFF962E));
+            func.movew(0x01A4, addr_(0xFF9630));
+            func.movew(0x01A7, addr_(0xFFC0F6));
+            func.movew(0x0008, addr_(0xFFEBBE));
+        }
+        func.label("return");
+        func.rts();
+        world.map(MAP_LAKE_SHRINE_302)->map_update_addr(rom.inject_code(func));
+    }
+
+    static void add_lake_shrine_mir_tower_tp(RandomizerWorld& world)
+    {
+        constexpr Flag flag = FLAG_FINISHED_LAKE_SHRINE;
+
+        // Add a map connection to make the teleporter work
+        world.map_connections().emplace_back(MapConnection(
+                MAP_LAKE_SHRINE_302,    0x14, 0x2D,
+                MAP_MIR_TOWER_EXTERIOR, 0x16, 0x1C
+        ));
+
+        // Add a Mir NPC explaining the teleporter
+        Entity* entity = new Entity({
+            .type_id = ENTITY_NPC_MAGIC_FOX_HIGH_PALETTE,
+            .position = Position(0x16, 0x2D, 0x0, true, false, false),
+            .orientation = ENTITY_ORIENTATION_SE,
+            .palette = 1
+        });
+        entity->only_when_flag_is_set(flag);
+        world.add_custom_dialogue(entity, "Foxy: The teleporter behind me\n"
+                                          "will bring you back in front of\n"
+                                          "Mir Tower, with no way back.\n"
+                                          "Consider it as a gift from\n"
+                                          "Mir for beating his brother\n"
+                                          "in a duel...");
+
+        world.map(MAP_LAKE_SHRINE_302)->add_entity(entity);
     }
 };
