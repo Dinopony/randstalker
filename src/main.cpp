@@ -150,18 +150,18 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
             debug_log_file << shuffler.debug_log_as_json().dump(4);
             debug_log_file.close();
         }
+    }
 
 #ifdef DEBUG
-        // Output model if requested, only if spoiler log is authorized
-        if(args.get_boolean("dumpmodel"))
-        {
-            std::cout << "Outputting model...\n\n";
-            ModelWriter::write_world_model(world);
-            ModelWriter::write_logic_model(world);
-            std::cout << "Model dumped to './json_data/'" << std::endl;
-        }
-#endif
+    // Output model if requested, only if spoiler log is authorized
+    if(args.get_boolean("dumpmodel"))
+    {
+        std::cout << "Outputting model...\n\n";
+        ModelWriter::write_world_model(world);
+        ModelWriter::write_logic_model(world);
+        std::cout << "Model dumped to './json_data/'" << std::endl;
     }
+#endif
 
     return spoiler_json;
 }
