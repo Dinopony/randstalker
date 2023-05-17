@@ -33,6 +33,8 @@
 #include "io/io.hpp"
 #include "bingo.hpp"
 
+int solve_logic(ArgumentDictionary& args);
+
 md::ROM* get_input_rom(const ArgumentDictionary& args)
 {
     const std::vector<std::string> DEFAULT_FILENAMES = {
@@ -118,12 +120,15 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
     if(!options.archipelago_world())
         spoiler_json["permalink"] = options.permalink();
-
     spoiler_json["hashSentence"] = options.hash_sentence();
-    spoiler_json.merge_patch(options.to_json());
 
     // Apply randomizer options to alter World and RandomizerWorld accordingly before starting the actual randomization
     apply_randomizer_options(options, world);
+
+    // Update item names with a strict set of item names (unlike the first set which is intentionnally broad to accept
+    // all possible alternative names) to be able to write the accurate item names in the output JSON
+    options.item_names(world.item_names(true));
+    spoiler_json.merge_patch(options.to_json());
 
     // Parse a potential "world" section inside the preset for plandos & half plandos
     WorldJsonParser::parse_world_json(world, options.world_json());
@@ -249,6 +254,9 @@ int main(int argc, char* argv[])
     int return_code = EXIT_SUCCESS;
 
     ArgumentDictionary args(argc, argv);
+
+    if(args.get_boolean("solvelogic", false))
+        return solve_logic(args);
 
     std::cout << "======== Randstalker v" << RELEASE << " ========\n\n";
 

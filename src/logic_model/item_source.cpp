@@ -23,7 +23,7 @@ Json ItemSource::to_json() const
     return json;
 }
 
-ItemSource* ItemSource::from_json(const Json& json, const World& world)
+ItemSource* ItemSource::from_json(const Json& json, const World& world, bool resolve_map_entities)
 {
     const std::string& name = json.at("name");
     const std::string& type = json.at("type");
@@ -42,23 +42,26 @@ ItemSource* ItemSource::from_json(const Json& json, const World& world)
     {
         std::vector<Entity*> entities;
 
-        std::vector<Json> entity_jsons;
-        if(json.contains("entities"))
-            json.at("entities").get_to(entity_jsons);
-        else if(json.contains("entity"))
-            entity_jsons = { json.at("entity") };
-        else
-            throw LandstalkerException("No entity information was provided for ground item source '" + name + "'");
-
-        for(const Json& entity_json : entity_jsons)
+        if(resolve_map_entities)
         {
-            uint16_t map_id = entity_json.at("mapId");
-            uint8_t entity_id = entity_json.at("entityId");
-            Entity* entity = world.map(map_id)->entity(entity_id);
-            if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
-                throw LandstalkerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
-            
-            entities.emplace_back(entity);
+            std::vector<Json> entity_jsons;
+            if(json.contains("entities"))
+                json.at("entities").get_to(entity_jsons);
+            else if(json.contains("entity"))
+                entity_jsons = { json.at("entity") };
+            else
+                throw LandstalkerException("No entity information was provided for ground item source '" + name + "'");
+
+            for(const Json& entity_json : entity_jsons)
+            {
+                uint16_t map_id = entity_json.at("mapId");
+                uint8_t entity_id = entity_json.at("entityId");
+                Entity* entity = world.map(map_id)->entity(entity_id);
+                if(entity->entity_type_id() < 0xC0) // 0xC0 is the first ground item ID
+                    throw LandstalkerException("EntityType " + std::to_string(entity_id) + " of map " + std::to_string(map_id) + " is not a ground item.");
+
+                entities.emplace_back(entity);
+            }
         }
 
         if(type == "shop")

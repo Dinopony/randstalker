@@ -53,7 +53,6 @@ void WorldSolver::setup(WorldNode* start_node, WorldNode* end_node, const std::v
     _blocked_paths.clear();
     _reachable_item_sources.clear();
     _relevant_items.clear();
-    _starting_inventory.clear();
     _inventory.clear();
     _step_count = 0;
     

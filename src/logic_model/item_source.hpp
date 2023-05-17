@@ -51,7 +51,7 @@ public:
     [[nodiscard]] virtual uint16_t uuid() const = 0;
 
     [[nodiscard]] virtual Json to_json() const;
-    static ItemSource* from_json(const Json& json, const World& world);
+    static ItemSource* from_json(const Json& json, const World& world, bool resolve_map_entities);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

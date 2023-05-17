@@ -26,7 +26,7 @@ static uint8_t get_goal_id(const std::string& goal_string)
 }
 
 RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args,
-                                     const std::array<std::string, ITEM_COUNT>& item_names,
+                                     const std::map<std::string, uint8_t>& item_names,
                                      const std::vector<std::string>& spawn_location_names)
 {
     _item_names = item_names;
@@ -71,7 +71,8 @@ RandomizerOptions::RandomizerOptions(const ArgumentDictionary& args,
         if(!preset_file)
             throw LandstalkerException("Could not open preset file at given path '" + preset_path + "'");
 
-        std::cout << "Preset: '" << preset_path << "'\n";
+        if(!args.get_boolean("silent", false))
+            std::cout << "Preset: '" << preset_path << "'\n";
 
         Json preset_json;
         preset_file >> preset_json;
@@ -96,7 +97,7 @@ Json RandomizerOptions::to_json() const
     for(uint8_t i=0 ; i<ITEM_LIFESTOCK ; ++i)
     {
         if(_starting_items[i] > 0)
-            json["gameSettings"]["startingItems"][_item_names[i]] = _starting_items[i];
+            json["gameSettings"]["startingItems"][find_item_name_from_id(i)] = _starting_items[i];
     }
 
     json["gameSettings"]["fixArmletSkip"] = _fix_armlet_skip;
@@ -118,11 +119,11 @@ Json RandomizerOptions::to_json() const
 
     json["gameSettings"]["finiteGroundItems"] = Json::array();
     for(uint8_t item_id : _finite_ground_items)
-        json["gameSettings"]["finiteGroundItems"].emplace_back(_item_names[item_id]);
+        json["gameSettings"]["finiteGroundItems"].emplace_back(find_item_name_from_id(item_id));
 
     json["gameSettings"]["finiteShopItems"] = Json::array();
     for(uint8_t item_id : _finite_shop_items)
-        json["gameSettings"]["finiteShopItems"].emplace_back(_item_names[item_id]);
+        json["gameSettings"]["finiteShopItems"].emplace_back(find_item_name_from_id(item_id));
 
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
@@ -143,12 +144,12 @@ Json RandomizerOptions::to_json() const
     for(size_t i=0 ; i < _items_distribution.size() ; ++i)
     {
         uint8_t amount = _items_distribution[i];
-        const std::string& item_name = _item_names[i];
+        const std::string& item_name = find_item_name_from_id(i);
         if(amount > 0)
             items_distribution_with_names[item_name] = amount;
     }
     json["randomizerSettings"]["itemsDistributions"] = items_distribution_with_names;
-    json["randomizerSettings"]["fillerItem"] = _item_names[_filler_item];
+    json["randomizerSettings"]["fillerItem"] = find_item_name_from_id(_filler_item);
 
     json["randomizerSettings"]["hintsDistribution"] = {
         { "regionRequirement", _hints_distribution_region_requirement },
@@ -246,10 +247,9 @@ void RandomizerOptions::parse_json(const Json& json)
             std::map<std::string, uint8_t> starting_items = game_settings_json.at("startingItems");
             for(auto& [item_name, quantity] : starting_items)
             {
-                auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
-                if(it == _item_names.end())
+                if(!_item_names.count(item_name))
                     throw LandstalkerException("Unknown item name '" + item_name + "' in starting items section of preset file.");
-                uint8_t item_id = std::distance(_item_names.begin(), it);
+                uint8_t item_id = _item_names[item_name];
                 _starting_items[item_id] = quantity;
             }
         }
@@ -311,21 +311,18 @@ void RandomizerOptions::parse_json(const Json& json)
             std::map<std::string, uint8_t> items_distribution = randomizer_settings_json.at("itemsDistribution");
             for(auto& [item_name, quantity] : items_distribution)
             {
-                auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
-                if(it == _item_names.end())
+                if(!_item_names.count(item_name))
                     throw LandstalkerException("Unknown item name '" + item_name + "' in items distribution section of preset file.");
-                uint8_t item_id = std::distance(_item_names.begin(), it);
+                uint8_t item_id = _item_names[item_name];
                 _items_distribution[item_id] = quantity;
             }
         }
         if(randomizer_settings_json.contains("fillerItem"))
         {
             std::string item_name = randomizer_settings_json.at("fillerItem");
-            auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
-            if(it == _item_names.end())
+            if(!_item_names.count(item_name))
                 throw LandstalkerException("Unknown item name '" + item_name + "' in filler item of preset file.");
-            uint8_t item_id = std::distance(_item_names.begin(), it);
-            _filler_item = item_id;
+            _filler_item = _item_names[item_name];
         }
 
         if(randomizer_settings_json.contains("hintsDistribution"))
@@ -377,10 +374,9 @@ void RandomizerOptions::parse_json_item_array(const Json& json, std::vector<uint
         output = {};
         for(std::string item_name : json)
         {
-            auto it = std::find(_item_names.begin(), _item_names.end(), item_name);
-            if(it == _item_names.end())
+            if(!_item_names.count(item_name))
                 throw LandstalkerException("Unknown item name '" + item_name + "' inside item array in preset file.");
-            uint8_t item_id = std::distance(_item_names.begin(), it);
+            uint8_t item_id = _item_names[item_name];
             output.emplace_back(item_id);
         }
     }
@@ -577,4 +573,12 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     if(bitpack.unpack<bool>()) _model_patch_items = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
     if(bitpack.unpack<bool>()) _model_patch_spawns = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
     if(bitpack.unpack<bool>()) _model_patch_hint_sources = Json::from_msgpack(bitpack.unpack_vector<uint8_t>());
+}
+
+std::string RandomizerOptions::find_item_name_from_id(uint8_t searched_id) const
+{
+    for(auto& [item_name, item_id] : _item_names)
+        if(item_id == searched_id)
+            return item_name;
+    throw LandstalkerException("Could not find a valid item name for item " + std::to_string(searched_id));
 }

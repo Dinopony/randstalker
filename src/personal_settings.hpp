@@ -11,7 +11,7 @@ class ArgumentDictionary;
 class PersonalSettings
 {
 private:
-    std::array<std::string, ITEM_COUNT> _item_names;
+    std::map<std::string, uint8_t> _item_names;
 
     bool _add_ingame_item_tracker = false;
     Color _hud_color = Color(0x40, 0x20, 0x80);
@@ -21,7 +21,7 @@ private:
     std::array<uint8_t, 40> _inventory_order;
 
 public:
-    explicit PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names);
+    explicit PersonalSettings(const ArgumentDictionary& args, const std::map<std::string, uint8_t>& item_names);
 
     // Personal options
     [[nodiscard]] bool add_ingame_item_tracker() const { return _add_ingame_item_tracker; }

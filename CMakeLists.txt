@@ -179,6 +179,7 @@ set(SOURCES
         "src/world_shuffler.cpp"
         "src/world_solver.hpp"
         "src/world_solver.cpp"
+        "src/standalone_logic_solver.cpp"
         "src/bingo.hpp"
         "src/main.cpp")
 
