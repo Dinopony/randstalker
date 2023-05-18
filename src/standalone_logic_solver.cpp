@@ -29,6 +29,8 @@ int solve_logic(ArgumentDictionary& args)
     WorldJsonParser::parse_world_json(world, options.world_json());
     for(ItemSource* source : world.item_sources())
         source->item(world.item(ITEM_NONE));
+    if(options.all_trees_visited_at_start())
+        world.add_paths_for_tree_connections(!options.remove_tibor_requirement());
 
     WorldSolver solver(world);
     solver.setup(world.spawn_node(), world.end_node(), world.starting_inventory());
