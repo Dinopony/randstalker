@@ -125,6 +125,11 @@ Json RandomizerOptions::to_json() const
     for(uint8_t item_id : _finite_shop_items)
         json["gameSettings"]["finiteShopItems"].emplace_back(find_item_name_from_id(item_id));
 
+    if(_christmas_event)
+        json["gameSettings"]["christmasEvent"] = true;
+    if(_secret_event)
+        json["gameSettings"]["secretEvent"] = true;
+
     // Randomizer settings
     json["randomizerSettings"]["allowSpoilerLog"] = _allow_spoiler_log;
 
@@ -166,19 +171,15 @@ Json RandomizerOptions::to_json() const
     if(!_model_patch_hint_sources.empty())
         json["modelPatch"]["hintSources"] = _model_patch_hint_sources;
 
-    json["christmasEvent"] = _christmas_event;
-    json["secretEvent"] = _secret_event;
-
     return json;
 }
 
 void RandomizerOptions::parse_json(const Json& json)
 {
+    // Parse permalink first, but do not return to allow setting overrides (this is a potentially useful feature and
+    // cannot be source of confusion since "permalink shell presets" are not the usual way of using permalinks)
     if(json.contains("permalink"))
-    {
         this->parse_permalink(json.at("permalink"));
-        return;
-    }
 
     if(json.contains("modelPatch"))
     {
@@ -261,6 +262,9 @@ void RandomizerOptions::parse_json(const Json& json)
         _finite_shop_items = { ITEM_PAWN_TICKET };
         if(game_settings_json.contains("finiteShopItems"))
             parse_json_item_array(game_settings_json.at("finiteShopItems"), _finite_shop_items);
+
+        _christmas_event = game_settings_json.value("christmasEvent", false);
+        _secret_event = game_settings_json.value("secretEvent", false);
     }
 
     if(json.contains("randomizerSettings"))
@@ -272,6 +276,8 @@ void RandomizerOptions::parse_json(const Json& json)
 
         if(randomizer_settings_json.contains("spawnLocations"))
         {
+            _possible_spawn_locations.clear();
+
             std::vector<std::string> spawn_loc_names;
             randomizer_settings_json.at("spawnLocations").get_to(spawn_loc_names);
             for(const std::string& name : spawn_loc_names)
@@ -284,6 +290,8 @@ void RandomizerOptions::parse_json(const Json& json)
         }
         else if(randomizer_settings_json.contains("spawnLocation"))
         {
+            _possible_spawn_locations.clear();
+
             std::string name = randomizer_settings_json.at("spawnLocation");
             auto it = std::find(_spawn_location_names.begin(), _spawn_location_names.end(), name);
             if(it == _spawn_location_names.end())
@@ -342,14 +350,15 @@ void RandomizerOptions::parse_json(const Json& json)
         }
     }
 
-    _christmas_event = json.value("christmasEvent", false);
-    _secret_event = json.value("secretEvent", false);
-
     if(json.contains("world"))
+    {
         _world_json = json.at("world");
-
-    if(json.contains("seed"))
-        _seed = json.at("seed");
+        if(_world_json.contains("seed"))
+        {
+            _seed = _world_json.at("seed");
+            _world_json.erase("seed");
+        }
+    }
 }
 
 void RandomizerOptions::parse_json_item_array(const Json& json, std::vector<uint8_t>& output)

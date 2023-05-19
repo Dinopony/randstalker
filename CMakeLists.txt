@@ -82,7 +82,7 @@ set(SOURCES
         "src/io/io.hpp"
         "src/io/graphviz_writer.cpp"
         "src/io/model_writer.cpp"
-        "src/io/spoiler_writer.cpp"
+        "src/io/world_json_writer.cpp"
         "src/io/world_json_parser.cpp"
 
         # --- Logic model ----------------------------------------

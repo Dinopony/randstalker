@@ -144,7 +144,8 @@ Json randomize(md::ROM& rom, RandomizerWorld& world, RandomizerOptions& options,
 
     if(options.allow_spoiler_log())
     {
-        spoiler_json.merge_patch(SpoilerWriter::build_spoiler_json(world, options));
+        spoiler_json["world"] = WorldJsonWriter::build_world_json(world, options);
+        spoiler_json["world"]["seed"] = options.seed();
         spoiler_json["playthrough"] = shuffler.playthrough_as_json();
 
         // Output debug log if requested, only if spoiler log is authorized
