@@ -7,6 +7,7 @@
 #include "world_solver.hpp"
 #include "apply_randomizer_options.hpp"
 #include "io/io.hpp"
+#include "world_shuffler.hpp"
 
 int solve_logic(ArgumentDictionary& args)
 {
@@ -29,9 +30,12 @@ int solve_logic(ArgumentDictionary& args)
     WorldJsonParser::parse_world_json(world, options.world_json());
     for(ItemSource* source : world.item_sources())
         source->item(world.item(ITEM_NONE));
-    if(options.all_trees_visited_at_start())
-        world.add_paths_for_tree_connections(!options.remove_tibor_requirement());
 
+    // Perform a light version of randomization, just to randomize meta elements (spawn location, dark dungeon, trees...)
+    WorldShuffler shuffler(world, options);
+    shuffler.pre_randomize_for_logic_solver();
+
+    // Solve the actual logic
     WorldSolver solver(world);
     solver.setup(world.spawn_node(), world.end_node(), world.starting_inventory());
     solver.run_until_blocked();
