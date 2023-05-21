@@ -3,6 +3,7 @@
 #include <landstalker-lib/patches/game_patch.hpp>
 #include "../../logic_model/randomizer_world.hpp"
 #include "../../logic_model/item_source.hpp"
+#include <landstalker-lib/tools/vectools.hpp>
 #include <landstalker-lib/model/entity.hpp>
 
 /**
@@ -15,11 +16,12 @@
  */
 class PatchFlagsForGroundItems : public GamePatch
 {
-private:
+public:
     static constexpr uint8_t OFFSET_ENTITY_GROUND_ITEM_ID = 0x3A;
     static constexpr uint32_t GROUND_ITEM_FLAGS_START_ADDR = 0xFF1060;
     static constexpr uint32_t SHOP_ITEM_FLAGS_START_ADDR = 0xFF1064;
 
+private:
     std::vector<uint8_t> _finite_ground_items;
     std::vector<uint8_t> _finite_shop_items;
 
@@ -64,12 +66,23 @@ public:
 
         set_dialogue_as_ground_item_id(rando_world);
         add_mask_flags_for_already_taken_items(rando_world);
-        add_starting_flags_for_unobtainable_items(rando_world);
     }
 
     void inject_code(md::ROM& rom, World& world) override
     {
         handle_set_flag_for_item_entity(rom);
+    }
+
+    static Flag get_checked_flag_for_item_source(ItemSourceOnGround* item_source)
+    {
+        uint8_t ground_item_id = item_source->ground_item_id();
+        uint8_t flag_byte = ground_item_id >> 3;
+        uint8_t flag_bit = ground_item_id & 0x7;
+
+        if(item_source->is_shop_item())
+            return { (uint16_t)(SHOP_ITEM_FLAGS_START_ADDR + flag_byte), flag_bit };
+        else
+            return { (uint16_t)(GROUND_ITEM_FLAGS_START_ADDR + flag_byte), flag_bit };
     }
 
 private:
@@ -90,18 +103,6 @@ private:
                     entity->dialogue(ground_source->ground_item_id());
             }
         }
-    }
-
-    static Flag get_checked_flag_for_item_source(ItemSourceOnGround* item_source)
-    {
-        uint8_t ground_item_id = item_source->ground_item_id();
-        uint8_t flag_byte = ground_item_id >> 3;
-        uint8_t flag_bit = ground_item_id & 0x7;
-
-        if(item_source->is_shop_item())
-            return { (uint16_t)(SHOP_ITEM_FLAGS_START_ADDR + flag_byte), flag_bit };
-        else
-            return { (uint16_t)(GROUND_ITEM_FLAGS_START_ADDR + flag_byte), flag_bit };
     }
 
     /**
@@ -131,27 +132,6 @@ private:
             Flag flag_source_already_taken = get_checked_flag_for_item_source(ground_source);
             for(Entity* entity : ground_source->entities())
                 entity->remove_when_flag_is_set(flag_source_already_taken);
-        }
-    }
-
-    /**
-     * This function adds all flags related to empty item sources as starting flags to mark those as taken.
-     * This has no other use than giving the possibility to have all 100% check flags, granting the golden credits.
-     */
-    void add_starting_flags_for_unobtainable_items(RandomizerWorld& rando_world)
-    {
-        for(ItemSource* item_source : rando_world.item_sources())
-        {
-            if(item_source->item_id() != ITEM_NONE)
-                continue;
-
-            if(!item_source->is_ground_item() && !item_source->is_shop_item())
-                continue;
-
-            // If we reach this point, it means the item source will never be obtainable, so we need to add the
-            // "checked" flag on game start
-            Flag flag = get_checked_flag_for_item_source(reinterpret_cast<ItemSourceOnGround*>(item_source));
-            rando_world.starting_flags().emplace_back(flag);
         }
     }
 

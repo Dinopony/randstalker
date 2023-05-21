@@ -2,7 +2,9 @@
 
 #include <landstalker-lib/patches/game_patch.hpp>
 #include <landstalker-lib/constants/offsets.hpp>
+#include "../../logic_model/item_source.hpp"
 #include "../../constants/rando_constants.hpp"
+#include "../technical/patch_flags_for_ground_items.hpp"
 
 /**
  * This patch makes the key not consumed on use, making it a unique item that needs to be used to open several doors.
@@ -67,16 +69,7 @@ public:
         gold_credits_palette.add_word(0x26A);
         _gold_credits_palette_addr = rom.inject_bytes(gold_credits_palette);
 
-        std::vector<uint16_t> all_checks_signature = {
-            0xFEFF, 0xFF3F, 0xFEFF, 0xFFFF, 0xFFFF, 0x0300, 0x0000, 0x0000,
-            0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-            0xFFFF, 0x7FB3, 0x5EFE, 0xF71F, 0xFCFF, 0xFFFF, 0xFFFF, 0xFFFF,
-            0xFFFF, 0xFFFF, 0xFFFF, 0xFF87, 0xF7FF, 0xFF3F
-        };
-        ByteArray all_checks_bytes;
-        for(uint16_t word : all_checks_signature)
-            all_checks_bytes.add_word(word);
-        _all_checks_bytes_addr = rom.inject_bytes(all_checks_bytes);
+        inject_all_checks_signature(rom, reinterpret_cast<RandomizerWorld&>(world));
     }
 
     void inject_code(md::ROM& rom, World& world) override
@@ -92,6 +85,54 @@ public:
     }
 
 private:
+    void inject_all_checks_signature(md::ROM& rom, RandomizerWorld& world)
+    {
+        std::vector<uint16_t> all_checks_signature = {
+            0xFEFF, 0xFF3F, 0xFEFF, 0xFFFF, 0xFFFF, 0x0300, 0x0000, 0x0000,
+            0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+            0xFFFF, 0x7FB3, 0x5EFE, 0xF71F, 0xFCFF, 0xFFFF, 0xFFFF, 0xFFFF,
+            0xFFFF, 0xFFFF, 0xFFFF, 0xFF87, 0xF7FF, 0xFF3F
+        };
+
+        // If item has less than 9 max quantity in inventory (because items with 9 max are inherently consumable),
+        // and the world contains more than the max carriable amount, there is a "golden ending softlock" potential.
+        // For instance, taking a first Garlic in a chest makes all Garlic in shops disappear forever, since it can
+        // never be consumed. It's also true with basically any unique item in the game that could be put in big
+        // amounts in items distribution and would lead to unachievable golden endings.
+
+        // For this reason, we just remove the need for checks that *might* become unobtainable for those reasons.
+        // (Oh and also, empty items on ground cannot be taken. That's just sad.)
+        for(ItemSource* item_source : world.item_sources())
+        {
+            if(!item_source->is_ground_item() && !item_source->is_shop_item())
+                continue;
+            if(item_source->item_id() == ITEM_LIFESTOCK) // Lifestock can (almost) always be taken
+                continue;
+
+            uint8_t item_id = item_source->item_id();
+            uint8_t max_qty = item_source->item()->max_quantity();
+            bool more_than_max_inventory = (max_qty < 9 && world.item_quantities()[item_id] > max_qty);
+
+            if(item_id == ITEM_NONE || more_than_max_inventory)
+            {
+                Flag flag = PatchFlagsForGroundItems::get_checked_flag_for_item_source(reinterpret_cast<ItemSourceOnGround*>(item_source));
+                size_t word_index = (flag.byte - (PatchFlagsForGroundItems::GROUND_ITEM_FLAGS_START_ADDR & 0xFFFF)) / 2;
+
+                uint8_t bit_index = flag.bit;
+                if(flag.byte % 2 == 0)
+                    bit_index += 8;
+                uint16_t mask = ~(1 << bit_index);
+
+                all_checks_signature[word_index] &= mask;
+            }
+        }
+
+        ByteArray all_checks_bytes;
+        for(uint16_t word : all_checks_signature)
+            all_checks_bytes.add_word(word);
+        _all_checks_bytes_addr = rom.inject_bytes(all_checks_bytes);
+    }
+
     [[nodiscard]] std::vector<uint8_t> build_credits_bytes() const
     {
         std::vector<uint8_t> new_credits_text;
