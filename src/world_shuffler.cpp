@@ -48,17 +48,6 @@ void WorldShuffler::randomize()
         hint_source->apply_text(_world);
 }
 
-void WorldShuffler::pre_randomize_for_logic_solver()
-{
-    this->randomize_spawn_location();
-    this->randomize_dark_rooms();
-
-    if(_options.shuffle_tibor_trees())
-        this->randomize_tibor_trees();
-    if(_options.all_trees_visited_at_start())
-        _world.add_paths_for_tree_connections(!_options.remove_tibor_requirement());
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////
 ///        FIRST PASS RANDOMIZATIONS (before items)
 ///////////////////////////////////////////////////////////////////////////////////////

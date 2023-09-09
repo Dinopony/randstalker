@@ -39,7 +39,6 @@ public:
     WorldShuffler(RandomizerWorld& world, const RandomizerOptions& options);
     
     void randomize();
-    void pre_randomize_for_logic_solver();
 
     [[nodiscard]] bool is_region_avoidable(WorldRegion* region) const;
     [[nodiscard]] bool is_item_avoidable(Item* item) const;

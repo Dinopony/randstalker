@@ -22,18 +22,17 @@ int solve_logic(ArgumentDictionary& args)
     world.game_strings().resize(2175);
     world.load_model_from_json(true);
 
-    // Parse options to get info such as the starting region, the goal or the current inventory (expressed as starting inventory)
+    // Parse options to get info such as the goal or the current inventory (expressed as starting inventory)
     RandomizerOptions options(args, world.item_names(), world.spawn_location_names());
     apply_randomizer_options(options, world);
 
-    // Parse a potential "world" section inside the preset for plandos & half plandos
+    // Parse the "world" section inside the preset to get the starting region, dark dungeon or trees connections
     WorldJsonParser::parse_world_json(world, options.world_json());
     for(ItemSource* source : world.item_sources())
         source->item(world.item(ITEM_NONE));
 
-    // Perform a light version of randomization, just to randomize meta elements (spawn location, dark dungeon, trees...)
-    WorldShuffler shuffler(world, options);
-    shuffler.pre_randomize_for_logic_solver();
+    if(options.all_trees_visited_at_start())
+        world.add_paths_for_tree_connections(!options.remove_tibor_requirement());
 
     // Solve the actual logic
     WorldSolver solver(world);
