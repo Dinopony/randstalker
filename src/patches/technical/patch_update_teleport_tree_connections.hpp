@@ -17,6 +17,7 @@ public:
     {
         const RandomizerWorld& randomizer_world = reinterpret_cast<RandomizerWorld&>(world);
 
+        // 1) Build a catalog of original tree map connections that are usable to represent the new tree connections
         std::vector<MapConnection*> map_connection_pool;
         for(const auto& pair : randomizer_world.teleport_tree_pairs())
         {
@@ -32,11 +33,21 @@ public:
                     map_connection_pool.emplace_back(conn);
         }
 
+        // 2) Neutralize those connections in case they would end up unused
+        for(MapConnection* connection : map_connection_pool)
+        {
+            connection->map_id_1(0x7FFF);
+            connection->map_id_2(0x7FFF);
+        }
+
+        // 3) Set the proper map IDs to establish a warp connection between the teleport trees
         uint8_t i=0;
         for(const auto& pair : randomizer_world.teleport_tree_pairs())
         {
             WorldTeleportTree* tree_1 = pair.first;
             WorldTeleportTree* tree_2 = pair.second;
+            if(tree_1 == tree_2)
+                continue;
 
             tree_1->paired_map_id(tree_2->map_id());
             tree_2->paired_map_id(tree_1->map_id());

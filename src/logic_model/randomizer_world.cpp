@@ -50,8 +50,9 @@ RandomizerWorld::~RandomizerWorld()
         delete spawn_loc;
     for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
     {
+        if(tree_1 != tree_2)
+            delete tree_2;
         delete tree_1;
-        delete tree_2;
     }
     for(Item* item : _archipelago_items)
         delete item;
