@@ -106,7 +106,7 @@ private:
         {
             if(!item_source->is_ground_item() && !item_source->is_shop_item())
                 continue;
-            if(item_source->item_id() == ITEM_LIFESTOCK) // Lifestock can (almost) always be taken
+            if(item_source->item_id() == ITEM_LIFESTOCK || item_source->item_id() == ITEM_ARCHIPELAGO) // Lifestock can (almost) always be taken
                 continue;
 
             uint8_t item_id = item_source->item_id();
