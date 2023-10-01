@@ -22,6 +22,7 @@
 #include "landstalker-lib/tools/stringtools.hpp"
 
 #include <iostream>
+#include <regex>
 
 RandomizerWorld::RandomizerWorld() :
     World()
@@ -215,23 +216,27 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
     }
 }
 
-Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming)
+Item* RandomizerWorld::add_archipelago_item(std::string item_name, std::string player_name, bool use_shop_naming)
 {
-    constexpr size_t MAX_PLAYER_NAME_SIZE = 10;
     const std::set<char> VOWELS = { 'a', 'e', 'i', 'o', 'u', 'y', 'A', 'E', 'I', 'O', 'U', 'Y' };
+
+    player_name.erase(std::remove(player_name.begin(), player_name.end(), '_'), player_name.end());
+    // Replace underscores which don't exist in LS by hyphens
+    std::replace(item_name.begin(), item_name.end(), '_', '-');
+    // Replace large " - " by simple spaces, we sadly don't have enough space for such luxury
+    item_name = std::regex_replace(item_name, std::regex(" - "), " ");
+    // Remove parentheses which doesn't contain a number ("Arrows (10)" is okay while "Limbo (E3M7)" is not)
+    item_name = std::regex_replace(item_name, std::regex(R"(\(\D(.*)\))"), "");
+    // Remove successive spaces
+    item_name = std::regex_replace(item_name, std::regex(R"(\s(\s+))"), " ");
 
     size_t max_full_string_size = (use_shop_naming) ? 30 : 38;
 
-    // Shorten player name if needed
-    std::string shortened_player_name = player_name;
-    if(shortened_player_name.size() > MAX_PLAYER_NAME_SIZE)
-        shortened_player_name = player_name.substr(0, MAX_PLAYER_NAME_SIZE-1) + ".";
-
     // Use all the remaining space for item name
-    size_t max_item_name_size = max_full_string_size - shortened_player_name.size();
+    size_t max_item_name_size = max_full_string_size - player_name.size();
 
     // If the item name is too long, try truncating individual words to keep the global meaning
-    std::string shortened_item_name = name;
+    std::string shortened_item_name = item_name;
     std::vector<std::string> words = stringtools::split_with_delims(shortened_item_name, { ' ', '-', '(', ')' });
     size_t current_word_index = 0;
     while(shortened_item_name.size() > max_item_name_size && current_word_index < words.size())
@@ -243,9 +248,12 @@ Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::
             {
                 if(VOWELS.contains(current_word[i]) && !VOWELS.contains(current_word[i + 1]))
                 {
-                    current_word = current_word.substr(0, i+2) + ".";
+                    current_word = current_word.substr(0, i+2);
                     if(current_word_index + 1 < words.size() && words[current_word_index + 1] == " ")
-                        words.erase(words.begin() + ((int)current_word_index + 1));
+                    {
+                        current_word += ".";
+                        words.erase(words.begin() + ((int) current_word_index + 1));
+                    }
                     break;
                 }
             }
@@ -261,9 +269,9 @@ Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::
 
     std::string formatted_name;
     if(use_shop_naming)
-        formatted_name = shortened_player_name + "'s " + shortened_item_name;
+        formatted_name = player_name + "'s " + shortened_item_name;
     else
-        formatted_name = shortened_item_name + " to " + shortened_player_name;
+        formatted_name = shortened_item_name + " to " + player_name;
 
     for(Item* item : _archipelago_items)
         if(item->name() == formatted_name)
