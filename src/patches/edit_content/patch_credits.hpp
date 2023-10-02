@@ -110,8 +110,19 @@ private:
                 continue;
 
             uint8_t item_id = item_source->item_id();
+            uint16_t quantity_in_world = world.item_quantities()[item_id];
             uint8_t max_qty = item_source->item()->max_quantity();
-            bool more_than_max_inventory = (max_qty < 9 && world.item_quantities()[item_id] > max_qty);
+            bool more_than_max_inventory = false;
+            if(quantity_in_world == 0)
+            {
+                // If quantity is 0 but we still encounter that item, it means we are in Archipelago / plando context.
+                // In that case, distribution is fixed and we only have to care about two cases: Garlic and Logs.
+                more_than_max_inventory = (item_id == ITEM_LOGS || item_id == ITEM_GARLIC);
+            }
+            else if(max_qty < 9 && quantity_in_world > max_qty)
+            {
+                more_than_max_inventory = true;
+            }
 
             if(item_id == ITEM_NONE || more_than_max_inventory)
             {
