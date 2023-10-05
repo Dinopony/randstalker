@@ -1,14 +1,14 @@
 {
     "gameSettings": {
         "jewelCount": 5,
-        "startingItems": { "Spell Book": 0 }
+        "startingItems": { "Spell Book": 0 },
+        "christmasEvent": true
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,
         "spawnLocations": [ "mercator_zoo" ],
         "hintsCount": 40
     },
-    "christmasEvent": true,
     "modelPatch": {
         "spawnLocations": {
             "mercator_zoo": {

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(randstalker VERSION 1.8.0 LANGUAGES CXX)
+project(randstalker VERSION 1.8.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -82,7 +82,7 @@ set(SOURCES
         "src/io/io.hpp"
         "src/io/graphviz_writer.cpp"
         "src/io/model_writer.cpp"
-        "src/io/spoiler_writer.cpp"
+        "src/io/world_json_writer.cpp"
         "src/io/world_json_parser.cpp"
 
         # --- Logic model ----------------------------------------
@@ -179,6 +179,7 @@ set(SOURCES
         "src/world_shuffler.cpp"
         "src/world_solver.hpp"
         "src/world_solver.cpp"
+        "src/standalone_logic_solver.cpp"
         "src/bingo.hpp"
         "src/main.cpp")
 

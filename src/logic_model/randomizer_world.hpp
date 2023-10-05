@@ -42,7 +42,7 @@ public:
     RandomizerWorld();
     ~RandomizerWorld();
 
-    [[nodiscard]] std::array<std::string, ITEM_COUNT> item_names() const;
+    [[nodiscard]] std::map<std::string, uint8_t> item_names(bool strict = false) const;
 
     [[nodiscard]] const std::vector<ItemSource*>& item_sources() const { return _item_sources; }
     [[nodiscard]] std::vector<ItemSource*>& item_sources() { return _item_sources; }
@@ -95,13 +95,13 @@ public:
 
     void add_paths_for_tree_connections(bool require_tibor_access);
 
-    Item* add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming);
+    Item* add_archipelago_item(std::string item_name, std::string player_name, bool use_shop_naming);
 
-    void load_model_from_json();
+    void load_model_from_json(bool lite_mode = false);
 
 private:
     void load_additional_item_data();
-    void load_item_sources();
+    void load_item_sources(bool lite_mode);
     void load_nodes();
     void load_paths();
     void load_regions();

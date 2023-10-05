@@ -18,7 +18,7 @@ class RandomizerOptions
 private:
     static constexpr uint8_t STARTING_LIFE_USE_SPAWN_LOCATION_VALUE = 0;
 
-    std::array<std::string, ITEM_COUNT> _item_names;
+    std::map<std::string, uint8_t> _item_names;
     std::vector<std::string> _spawn_location_names;
 
     // ------------- Game patching settings -------------
@@ -83,8 +83,10 @@ private:
 
 public:
     explicit RandomizerOptions(const ArgumentDictionary& args,
-                               const std::array<std::string, ITEM_COUNT>& item_names,
+                               const std::map<std::string, uint8_t>& item_names,
                                const std::vector<std::string>& spawn_location_names);
+
+    void item_names(const std::map<std::string, uint8_t>& item_names) { _item_names = item_names; }
 
     [[nodiscard]] Json to_json() const;
     void parse_json(const Json& json);
@@ -160,4 +162,5 @@ private:
     void parse_json_item_array(const Json& json, std::vector<uint8_t>& output);
     void parse_permalink(std::string permalink);
     void validate() const;
+    [[nodiscard]] std::string find_item_name_from_id(uint8_t searched_id) const;
 };

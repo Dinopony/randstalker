@@ -22,6 +22,7 @@
 #include "landstalker-lib/tools/stringtools.hpp"
 
 #include <iostream>
+#include <regex>
 
 RandomizerWorld::RandomizerWorld() :
     World()
@@ -50,8 +51,9 @@ RandomizerWorld::~RandomizerWorld()
         delete spawn_loc;
     for (auto& [tree_1, tree_2] : _teleport_tree_pairs)
     {
+        if(tree_1 != tree_2)
+            delete tree_2;
         delete tree_1;
-        delete tree_2;
     }
     for(Item* item : _archipelago_items)
         delete item;
@@ -77,35 +79,41 @@ std::vector<ItemSource*> RandomizerWorld::item_sources_with_item(Item* item)
     return sources_with_item;
 }
 
-std::array<std::string, ITEM_COUNT> RandomizerWorld::item_names() const
+std::map<std::string, uint8_t> RandomizerWorld::item_names(bool strict) const
 {
-    std::array<std::string, ITEM_COUNT> item_names;
+    // Add factual item names from the world data
+    std::map<std::string, uint8_t> item_names;
     for(uint8_t i=0 ; i<ITEM_COUNT ; ++i)
     {
         try
         {
-            item_names[i] = this->item(i)->name();
+            item_names[this->item(i)->name()] = i;
         }
         catch(std::out_of_range&)
         {
-            item_names[i] = "No" + std::to_string(i);
+            item_names["No" + std::to_string(i)] = i;
         }
+    }
+
+    // Add alternative names which depend on settings unless we are in "strict" mode
+    if(!strict)
+    {
+        item_names["Kazalt Jewel"] = ITEM_RED_JEWEL;
+        item_names["Yellow Jewel"] = ITEM_YELLOW_JEWEL;
+        item_names["Blue Jewel"] = ITEM_BLUE_JEWEL;
+        item_names["Green Jewel"] = ITEM_GREEN_JEWEL;
     }
 
     return item_names;
 }
 
-void RandomizerWorld::load_item_sources()
+void RandomizerWorld::load_item_sources(bool lite_mode)
 {
     Json item_sources_json = Json::parse(ITEM_SOURCES_JSON);
     for(const Json& source_json : item_sources_json)
     {
-        _item_sources.emplace_back(ItemSource::from_json(source_json, *this));
+        _item_sources.emplace_back(ItemSource::from_json(source_json, *this, !lite_mode));
     }
-
-#ifdef DEBUG
-    std::cout << _item_sources.size() << " item sources loaded." << std::endl;
-#endif
 
     // The following chests are absent from the game on release or modded out of the game for the rando, and their IDs are therefore free:
     // 0x0E (14): Mercator Kitchen (variant?)
@@ -208,23 +216,27 @@ void RandomizerWorld::add_paths_for_tree_connections(bool require_tibor_access)
     }
 }
 
-Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::string& player_name, bool use_shop_naming)
+Item* RandomizerWorld::add_archipelago_item(std::string item_name, std::string player_name, bool use_shop_naming)
 {
-    constexpr size_t MAX_PLAYER_NAME_SIZE = 10;
     const std::set<char> VOWELS = { 'a', 'e', 'i', 'o', 'u', 'y', 'A', 'E', 'I', 'O', 'U', 'Y' };
+
+    player_name.erase(std::remove(player_name.begin(), player_name.end(), '_'), player_name.end());
+    // Replace underscores which don't exist in LS by hyphens
+    std::replace(item_name.begin(), item_name.end(), '_', '-');
+    // Replace large " - " by simple spaces, we sadly don't have enough space for such luxury
+    item_name = std::regex_replace(item_name, std::regex(" - "), " ");
+    // Remove parentheses which doesn't contain a number ("Arrows (10)" is okay while "Limbo (E3M7)" is not)
+    item_name = std::regex_replace(item_name, std::regex(R"(\(\D(.*)\))"), "");
+    // Remove successive spaces
+    item_name = std::regex_replace(item_name, std::regex(R"(\s(\s+))"), " ");
 
     size_t max_full_string_size = (use_shop_naming) ? 30 : 38;
 
-    // Shorten player name if needed
-    std::string shortened_player_name = player_name;
-    if(shortened_player_name.size() > MAX_PLAYER_NAME_SIZE)
-        shortened_player_name = player_name.substr(0, MAX_PLAYER_NAME_SIZE-1) + ".";
-
     // Use all the remaining space for item name
-    size_t max_item_name_size = max_full_string_size - shortened_player_name.size();
+    size_t max_item_name_size = max_full_string_size - player_name.size();
 
     // If the item name is too long, try truncating individual words to keep the global meaning
-    std::string shortened_item_name = name;
+    std::string shortened_item_name = item_name;
     std::vector<std::string> words = stringtools::split_with_delims(shortened_item_name, { ' ', '-', '(', ')' });
     size_t current_word_index = 0;
     while(shortened_item_name.size() > max_item_name_size && current_word_index < words.size())
@@ -236,9 +248,12 @@ Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::
             {
                 if(VOWELS.contains(current_word[i]) && !VOWELS.contains(current_word[i + 1]))
                 {
-                    current_word = current_word.substr(0, i+2) + ".";
+                    current_word = current_word.substr(0, i+2);
                     if(current_word_index + 1 < words.size() && words[current_word_index + 1] == " ")
-                        words.erase(words.begin() + ((int)current_word_index + 1));
+                    {
+                        current_word += ".";
+                        words.erase(words.begin() + ((int) current_word_index + 1));
+                    }
                     break;
                 }
             }
@@ -254,9 +269,9 @@ Item* RandomizerWorld::add_archipelago_item(const std::string& name, const std::
 
     std::string formatted_name;
     if(use_shop_naming)
-        formatted_name = shortened_player_name + "'s " + shortened_item_name;
+        formatted_name = player_name + "'s " + shortened_item_name;
     else
-        formatted_name = shortened_item_name + " to " + shortened_player_name;
+        formatted_name = shortened_item_name + " to " + player_name;
 
     for(Item* item : _archipelago_items)
         if(item->name() == formatted_name)
@@ -289,10 +304,10 @@ HintSource* RandomizerWorld::hint_source(const std::string& name) const
     throw LandstalkerException("Could not find hint source '" + name + "' as requested");
 }
 
-void RandomizerWorld::load_model_from_json()
+void RandomizerWorld::load_model_from_json(bool lite_mode)
 {
     this->load_additional_item_data();
-    this->load_item_sources();
+    this->load_item_sources(lite_mode);
     this->load_nodes();
     this->load_paths();
     this->load_regions();
@@ -319,10 +334,6 @@ void RandomizerWorld::load_nodes()
             throw LandstalkerException("Could not find node '" + node_id + "' referenced by item source '" + source->name() + "'");
         }
     }
-
-#ifdef DEBUG
-    std::cout << _nodes.size() << " nodes loaded." << std::endl;
-#endif
 }
 
 void RandomizerWorld::load_paths()
@@ -340,10 +351,6 @@ void RandomizerWorld::load_paths()
             this->add_path(WorldPath::from_json(inverted_json, _nodes, this->items()));
         }
     }
-
-#ifdef DEBUG
-    std::cout << _paths.size() << " paths loaded." << std::endl;
-#endif
 }
 
 void RandomizerWorld::load_regions()
@@ -351,10 +358,6 @@ void RandomizerWorld::load_regions()
     Json regions_json = Json::parse(WORLD_REGIONS_JSON);
     for(const Json& region_json : regions_json)
         _regions.emplace_back(WorldRegion::from_json(region_json, _nodes));
-
-#ifdef DEBUG
-    std::cout << _regions.size() << " regions loaded." << std::endl;
-#endif
 
     for(auto& [id, node] : _nodes)
         if(node->region() == nullptr)
@@ -367,10 +370,6 @@ void RandomizerWorld::load_spawn_locations()
     Json spawns_json = Json::parse(SPAWN_LOCATIONS_JSON);
     for(auto& [id, spawn_json] : spawns_json.items())
         this->add_spawn_location(SpawnLocation::from_json(id, spawn_json));
-
-#ifdef DEBUG
-    std::cout << _available_spawn_locations.size() << " spawn locations loaded." << std::endl;
-#endif
 }
 
 void RandomizerWorld::load_hint_sources()
@@ -381,10 +380,6 @@ void RandomizerWorld::load_hint_sources()
         HintSource* new_source = HintSource::from_json(hint_source_json, _nodes);
         _hint_sources.emplace_back(new_source);
     }
-
-#ifdef DEBUG
-    std::cout << _hint_sources.size() << " hint sources loaded." << std::endl;
-#endif
 }
 
 void RandomizerWorld::load_teleport_trees()
@@ -398,10 +393,6 @@ void RandomizerWorld::load_teleport_trees()
         tree_2->paired_map_id(tree_1->map_id());
         _teleport_tree_pairs.emplace_back(std::make_pair(tree_1, tree_2));
     }
-
-#ifdef DEBUG
-    std::cout << _teleport_tree_pairs.size()  << " teleport tree pairs loaded." << std::endl;
-#endif
 }
 
 void RandomizerWorld::load_additional_item_data()

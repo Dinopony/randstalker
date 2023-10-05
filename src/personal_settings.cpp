@@ -28,7 +28,7 @@ static Color parse_color_from_name_or_hex(const std::string& string)
     return { lowered };
 }
 
-PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::array<std::string, ITEM_COUNT>& item_names)
+PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::map<std::string, uint8_t>& item_names)
 {
     _item_names = item_names;
 
@@ -130,16 +130,21 @@ void PersonalSettings::parse_json(const Json& json)
         std::vector<std::string> items = json.at("inventoryOrder");
         for(uint8_t i=0 ; i < items.size() && i < _inventory_order.size() ; ++i)
         {
-            auto it = std::find(_item_names.begin(), _item_names.end(), items[i]);
-            if(it == _item_names.end())
+            if(!_item_names.count(items[i]))
                 throw LandstalkerException("Unknown item name '" + items[i] + "' in inventory order section of personal settings file.");
-            uint8_t item_id = std::distance(_item_names.begin(), it);
+            uint8_t item_id = _item_names[items[i]];
             _inventory_order[i] = item_id;
+
             if(mandatory_items.contains(item_id))
                 mandatory_items.erase(item_id);
         }
 
         if(!mandatory_items.empty())
-            throw LandstalkerException("Cannot omit " + _item_names[*mandatory_items.begin()] + " from inventory order since it could make seeds uncompletable");
+        {
+            uint8_t first_missing_item_id = *mandatory_items.begin();
+            for(auto& [item_name, item_id] : _item_names)
+                if(item_id == first_missing_item_id)
+                    throw LandstalkerException("Cannot omit " + item_name + " from inventory order since it could make seeds uncompletable");
+        }
     }
 }

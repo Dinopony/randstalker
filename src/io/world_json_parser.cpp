@@ -170,8 +170,18 @@ static void parse_teleport_trees(RandomizerWorld& world, const Json& json)
     {
         WorldTeleportTree* tree_1 = tree_dictionary.at(pair[0]);
         WorldTeleportTree* tree_2 = tree_dictionary.at(pair[1]);
+        if(tree_1 == tree_2)
+            return;
+
+        tree_dictionary.erase(pair[0]);
+        tree_dictionary.erase(pair[1]);
+        
         pairs.emplace_back(std::make_pair(tree_1, tree_2));
     }
+
+    // Add the remaining unpaired trees as "self-connected pairs"
+    for(auto& [_, tree] : tree_dictionary)
+        pairs.emplace_back(std::make_pair(tree, tree));
 
     world.teleport_tree_pairs(pairs);
 }
