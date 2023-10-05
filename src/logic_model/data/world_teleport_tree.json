@@ -3,60 +3,70 @@
         {
             "name": "Massan tree",
             "treeMapId": 512,
-            "nodeId": "route_massan_gumi"
+            "nodeId": "route_massan_gumi",
+            "flag": { "byte": "0x23", "bit": 2 }
         },
         {
             "name": "Tibor tree",
             "treeMapId": 534,
-            "nodeId": "route_gumi_ryuma"
+            "nodeId": "route_gumi_ryuma",
+            "flag": { "byte": "0x23", "bit": 3 }
         }
     ],
     [
         {
             "name": "Mercator front gate tree",
             "treeMapId": 539,
-            "nodeId": "route_gumi_ryuma"
+            "nodeId": "route_gumi_ryuma",
+            "flag": { "byte": "0x23", "bit": 5 }
         },
         {
             "name": "Verla shore tree",
             "treeMapId": 537,
-            "nodeId": "verla_shore"
+            "nodeId": "verla_shore",
+            "flag": { "byte": "0x23", "bit": 4 }
         }
     ],
     [
         {
             "name": "Destel sector tree",
             "treeMapId": 536,
-            "nodeId": "route_after_destel"
+            "nodeId": "route_after_destel",
+            "flag": { "byte": "0x23", "bit": 7 }
         },
         {
             "name": "Lake Shrine sector tree",
             "treeMapId": 513,
-            "nodeId": "route_lake_shrine"
+            "nodeId": "route_lake_shrine",
+            "flag": { "byte": "0x23", "bit": 6 }
         }
     ],
     [
         {
             "name": "Mir Tower sector tree",
             "treeMapId": 538,
-            "nodeId": "mir_tower_sector"
+            "nodeId": "mir_tower_sector",
+            "flag": { "byte": "0x25", "bit": 1 }
         },
         {
             "name": "Mountainous area tree",
             "treeMapId": 535,
-            "nodeId": "mountainous_area"
+            "nodeId": "mountainous_area",
+            "flag": { "byte": "0x25", "bit": 0 }
         }
     ],
     [
         {
             "name": "Greenmaze entrance tree",
             "treeMapId": 510,
-            "nodeId": "greenmaze_pre_whistle"
+            "nodeId": "greenmaze_pre_whistle",
+            "flag": { "byte": "0x23", "bit": 0 }
         },
         {
             "name": "Greenmaze end tree",
             "treeMapId": 511,
-            "nodeId": "greenmaze_post_whistle"
+            "nodeId": "greenmaze_post_whistle",
+            "flag": { "byte": "0x23", "bit": 1 }
         }
     ]
 ]
