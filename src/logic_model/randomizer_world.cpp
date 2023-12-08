@@ -229,6 +229,7 @@ Item* RandomizerWorld::add_archipelago_item(std::string item_name, std::string p
     item_name = std::regex_replace(item_name, std::regex(R"(\(\D(.*)\))"), "");
     // Remove successive spaces
     item_name = std::regex_replace(item_name, std::regex(R"(\s(\s+))"), " ");
+    stringtools::trim(item_name);
 
     size_t max_full_string_size = (use_shop_naming) ? 30 : 38;
 
