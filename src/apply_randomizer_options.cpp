@@ -79,6 +79,8 @@ static void patch_starting_flags(World& world, const RandomizerOptions& options)
     // Mark the boulder as already removed at game start
     if(options.remove_gumi_boulder())
         flags_to_add.emplace_back(Flag(0x02, 6));
+    if(options.open_greenmaze_shortcut())
+        flags_to_add.emplace_back(Flag(0x21, 0));
 
     world.starting_flags().insert(world.starting_flags().end(), flags_to_add.begin(), flags_to_add.end());
 }
@@ -185,6 +187,8 @@ static void apply_options_on_logic_paths(const RandomizerOptions& options, Rando
     // Handle paths related to specific tricks
     if(options.remove_gumi_boulder())
         world.add_path(new WorldPath(world.node("route_gumi_ryuma"), world.node("gumi")));
+    if(options.open_greenmaze_shortcut())
+        world.add_path(new WorldPath(world.node("route_massan_gumi"), world.node("greenmaze_post_whistle")));
 
     if(options.handle_enemy_jumping_in_logic())
     {

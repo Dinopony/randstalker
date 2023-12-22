@@ -141,6 +141,7 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
     json["randomizerSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
+    json["randomizerSettings"]["openGreenmazeShortcut"] = _open_greenmaze_shortcut;
     json["randomizerSettings"]["ensureEkeEkeInShops"] = _ensure_ekeeke_in_shops;
 
     std::map<std::string, uint8_t> items_distribution_with_names;
@@ -308,6 +309,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
         if(randomizer_settings_json.contains("allowWhistleUsageBehindTrees"))
             _allow_whistle_usage_behind_trees = randomizer_settings_json.at("allowWhistleUsageBehindTrees");
+        if(randomizer_settings_json.contains("openGreenmazeShortcut"))
+            _open_greenmaze_shortcut = randomizer_settings_json.at("openGreenmazeShortcut");
         if(randomizer_settings_json.contains("ensureEkeEkeInShops"))
             _ensure_ekeeke_in_shops = randomizer_settings_json.at("ensureEkeEkeInShops");
 
@@ -466,6 +469,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
     bitpack.pack(_allow_whistle_usage_behind_trees);
+    bitpack.pack(_open_greenmaze_shortcut);
     bitpack.pack(_ensure_ekeeke_in_shops);
     bitpack.pack_array(_items_distribution);
     bitpack.pack(_filler_item);
@@ -545,6 +549,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
     _allow_whistle_usage_behind_trees = bitpack.unpack<bool>();
+    _open_greenmaze_shortcut = bitpack.unpack<bool>();
     _ensure_ekeeke_in_shops = bitpack.unpack<bool>();
     _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
     _filler_item = bitpack.unpack<uint8_t>();

@@ -38,6 +38,7 @@
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
         "allowWhistleUsageBehindTrees": true,
+        "openGreenmazeShortcut": false,
         "ensureEkeEkeInShops": true,
         "fillerItem": "EkeEke",
         "itemsDistribution": {
