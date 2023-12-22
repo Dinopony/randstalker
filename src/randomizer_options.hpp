@@ -22,7 +22,7 @@ private:
     std::vector<std::string> _spawn_location_names;
 
     // ------------- Game patching settings -------------
-    // (included in permalink, presets & plandos)
+    // (settings which are always relevant)
     uint8_t _goal = 0;
     uint8_t _jewel_count = 2;
     bool _use_armor_upgrades = true;
@@ -36,6 +36,8 @@ private:
     bool _remove_gumi_boulder = false;
     bool _remove_tibor_requirement = false;
     bool _all_trees_visited_at_start = false;
+    bool _allow_whistle_usage_behind_trees = false;
+    bool _open_greenmaze_shortcut = false;
     bool _ekeeke_auto_revive = true;
     uint16_t _enemies_damage_factor = 100;
     uint16_t _enemies_health_factor = 100;
@@ -50,7 +52,7 @@ private:
     std::vector<uint8_t> _finite_shop_items {};
 
     // ------------- Randomization settings -------------
-    // (included in permalink & presets, not in plandos)
+    // (settings which do no make sense for plandos)
     uint32_t _seed = 0;
     bool _allow_spoiler_log = true;
     std::vector<uint8_t> _possible_spawn_locations;
@@ -59,8 +61,6 @@ private:
     bool _enemy_jumping_in_logic = false;
     bool _damage_boosting_in_logic = false;
     bool _tree_cutting_glitch_in_logic = false;
-    bool _allow_whistle_usage_behind_trees = false;
-    bool _open_greenmaze_shortcut = false;
     bool _ensure_ekeeke_in_shops = true;
     std::array<uint8_t, ITEM_COUNT> _items_distribution {};
     uint8_t _filler_item = ITEM_EKEEKE;

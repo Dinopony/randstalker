@@ -107,6 +107,8 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["removeGumiBoulder"] = _remove_gumi_boulder;
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
+    json["gameSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
+    json["gameSettings"]["openGreenmazeShortcut"] = _open_greenmaze_shortcut;
     json["gameSettings"]["ekeekeAutoRevive"] = _ekeeke_auto_revive;
     json["gameSettings"]["enemiesDamageFactor"] = _enemies_damage_factor;
     json["gameSettings"]["enemiesHealthFactor"] = _enemies_health_factor;
@@ -140,8 +142,6 @@ Json RandomizerOptions::to_json() const
     json["randomizerSettings"]["enemyJumpingInLogic"] = _enemy_jumping_in_logic;
     json["randomizerSettings"]["damageBoostingInLogic"] = _damage_boosting_in_logic;
     json["randomizerSettings"]["treeCuttingGlitchInLogic"] = _tree_cutting_glitch_in_logic;
-    json["randomizerSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
-    json["randomizerSettings"]["openGreenmazeShortcut"] = _open_greenmaze_shortcut;
     json["randomizerSettings"]["ensureEkeEkeInShops"] = _ensure_ekeeke_in_shops;
 
     std::map<std::string, uint8_t> items_distribution_with_names;
@@ -223,6 +223,10 @@ void RandomizerOptions::parse_json(const Json& json)
             _remove_tibor_requirement = game_settings_json.at("removeTiborRequirement");
         if(game_settings_json.contains("allTreesVisitedAtStart"))
             _all_trees_visited_at_start = game_settings_json.at("allTreesVisitedAtStart");
+        if(game_settings_json.contains("allowWhistleUsageBehindTrees"))
+            _allow_whistle_usage_behind_trees = game_settings_json.at("allowWhistleUsageBehindTrees");
+        if(game_settings_json.contains("openGreenmazeShortcut"))
+            _open_greenmaze_shortcut = game_settings_json.at("openGreenmazeShortcut");
         if(game_settings_json.contains("ekeekeAutoRevive"))
             _ekeeke_auto_revive = game_settings_json.at("ekeekeAutoRevive");
         if(game_settings_json.contains("enemiesDamageFactor"))
@@ -307,10 +311,6 @@ void RandomizerOptions::parse_json(const Json& json)
             _damage_boosting_in_logic = randomizer_settings_json.at("damageBoostingInLogic");
         if(randomizer_settings_json.contains("treeCuttingGlitchInLogic"))
             _tree_cutting_glitch_in_logic = randomizer_settings_json.at("treeCuttingGlitchInLogic");
-        if(randomizer_settings_json.contains("allowWhistleUsageBehindTrees"))
-            _allow_whistle_usage_behind_trees = randomizer_settings_json.at("allowWhistleUsageBehindTrees");
-        if(randomizer_settings_json.contains("openGreenmazeShortcut"))
-            _open_greenmaze_shortcut = randomizer_settings_json.at("openGreenmazeShortcut");
         if(randomizer_settings_json.contains("ensureEkeEkeInShops"))
             _ensure_ekeeke_in_shops = randomizer_settings_json.at("ensureEkeEkeInShops");
 

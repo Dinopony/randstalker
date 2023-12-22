@@ -16,6 +16,8 @@
         "removeGumiBoulder": false,
         "removeTiborRequirement": false,
         "allTreesVisitedAtStart": false,
+        "allowWhistleUsageBehindTrees": true,
+        "openGreenmazeShortcut": false,
         "ekeekeAutoRevive": true,
         "enemiesDamageFactor": 100,
         "enemiesHealthFactor": 100,
@@ -37,8 +39,6 @@
         "enemyJumpingInLogic": false,
         "damageBoostingInLogic": false,
         "treeCuttingGlitchInLogic": false,
-        "allowWhistleUsageBehindTrees": true,
-        "openGreenmazeShortcut": false,
         "ensureEkeEkeInShops": true,
         "fillerItem": "EkeEke",
         "itemsDistribution": {
