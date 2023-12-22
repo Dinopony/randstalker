@@ -125,8 +125,6 @@ Json RandomizerOptions::to_json() const
     for(uint8_t item_id : _finite_shop_items)
         json["gameSettings"]["finiteShopItems"].emplace_back(find_item_name_from_id(item_id));
 
-    if(_christmas_event)
-        json["gameSettings"]["christmasEvent"] = true;
     if(_secret_event)
         json["gameSettings"]["secretEvent"] = true;
 
@@ -263,7 +261,6 @@ void RandomizerOptions::parse_json(const Json& json)
         if(game_settings_json.contains("finiteShopItems"))
             parse_json_item_array(game_settings_json.at("finiteShopItems"), _finite_shop_items);
 
-        _christmas_event = game_settings_json.value("christmasEvent", false);
         _secret_event = game_settings_json.value("secretEvent", false);
     }
 
@@ -477,7 +474,6 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_hints_distribution_item_location);
     bitpack.pack(_hints_distribution_dark_region);
     bitpack.pack(_hints_distribution_joke);
-    bitpack.pack(_christmas_event);
     bitpack.pack(_secret_event);
 
     bitpack.pack_if(_enemies_damage_factor != 100, _enemies_damage_factor);
@@ -557,7 +553,6 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _hints_distribution_item_location = bitpack.unpack<uint8_t>();
     _hints_distribution_dark_region = bitpack.unpack<uint8_t>();
     _hints_distribution_joke = bitpack.unpack<uint8_t>();
-    _christmas_event = bitpack.unpack<bool>();
     _secret_event = bitpack.unpack<bool>();
 
     if(bitpack.unpack<bool>()) _enemies_damage_factor = bitpack.unpack<uint16_t>();

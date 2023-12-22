@@ -70,7 +70,6 @@ private:
     uint8_t _hints_distribution_joke = 0;
 
     // ------------- Events -------------
-    bool _christmas_event = false;
     bool _secret_event = false;
 
     // ------------- Plando world JSON -------------
@@ -143,7 +142,6 @@ public:
     [[nodiscard]] uint8_t hints_distribution_joke() const { return _hints_distribution_joke; }
 
     // Event
-    [[nodiscard]] bool christmas_event() const { return _christmas_event; }
     [[nodiscard]] bool secret_event() const { return _secret_event; }
 
     // Plando-specific options

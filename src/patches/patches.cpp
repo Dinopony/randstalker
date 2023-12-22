@@ -160,7 +160,7 @@ void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const Random
 
     // =======================================================
     // Special events
-    if(options.christmas_event())
+    if(personal_settings.winter_theme())
         patches.emplace_back(new PatchChristmasEvent());
     if(options.goal() == "beat_dark_nole" || options.secret_event())
         patches.emplace_back(new PatchAddGolasHeart());

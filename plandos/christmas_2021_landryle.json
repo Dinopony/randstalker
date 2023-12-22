@@ -1,8 +1,7 @@
 {
     "gameSettings": {
         "jewelCount": 5,
-        "startingItems": { "Spell Book": 0 },
-        "christmasEvent": true
+        "startingItems": { "Spell Book": 0 }
     },
     "randomizerSettings": {
         "allowSpoilerLog": true,

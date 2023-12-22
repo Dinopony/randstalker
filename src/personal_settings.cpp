@@ -89,6 +89,9 @@ PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::ma
         _nigel_colors.first = parse_color_from_name_or_hex(nigel_color_as_string);
         _nigel_colors.second = _nigel_colors.first.subtract(0x40);
     }
+
+    if(args.contains("wintertheme"))
+        _winter_theme = true;
 }
 
 void PersonalSettings::parse_json(const Json& json)
@@ -147,4 +150,7 @@ void PersonalSettings::parse_json(const Json& json)
                     throw LandstalkerException("Cannot omit " + item_name + " from inventory order since it could make seeds uncompletable");
         }
     }
+
+    if(json.contains("winterTheme"))
+        _winter_theme = json.at("winterTheme");
 }
