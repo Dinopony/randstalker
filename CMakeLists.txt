@@ -156,7 +156,7 @@ set(SOURCES
         "src/patches/optimization/patch_optimize_tibor_maps.hpp"
         "src/patches/optimization/patch_optimize_lake_shrine_platforms_map.hpp"
 
-        "src/patches/events/patch_christmas_event.hpp"
+        "src/patches/events/patch_season_theme.hpp"
         "src/patches/events/patch_secret_arg.hpp"
         "src/patches/events/patch_secret_arg.cpp"
 

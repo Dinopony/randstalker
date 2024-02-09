@@ -60,7 +60,7 @@
 #include "optimization/patch_optimize_tibor_maps.hpp"
 #include "optimization/patch_optimize_lake_shrine_platforms_map.hpp"
 
-#include "events/patch_christmas_event.hpp"
+#include "events/patch_season_theme.hpp"
 #include "events/patch_secret_arg.hpp"
 #include "edit_content/patch_add_golas_heart.hpp"
 
@@ -160,8 +160,8 @@ void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const Random
 
     // =======================================================
     // Special events
-    if(personal_settings.winter_theme())
-        patches.emplace_back(new PatchChristmasEvent());
+    if(personal_settings.season() != Season::SPRING)
+        patches.emplace_back(new PatchSeasonTheme(personal_settings.season()));
     if(options.goal() == "beat_dark_nole" || options.secret_event())
         patches.emplace_back(new PatchAddGolasHeart());
     if(options.secret_event())

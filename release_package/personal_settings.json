@@ -4,5 +4,5 @@
     "nigelColor": [ "#0A8", "#042" ],
     "removeMusic": false,
     "swapOverworldMusic": false,
-    "winterTheme": false
+    "season": "spring"
 }

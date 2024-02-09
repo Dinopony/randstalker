@@ -8,6 +8,13 @@
 
 class ArgumentDictionary;
 
+enum class Season {
+    SPRING = 0,
+    SUMMER = 1,
+    AUTUMN = 2,
+    WINTER = 3
+};
+
 class PersonalSettings
 {
 private:
@@ -19,7 +26,7 @@ private:
     bool _remove_music = false;
     bool _swap_overworld_music = false;
     std::array<uint8_t, 40> _inventory_order;
-    bool _winter_theme = false;
+    Season _season = Season::SPRING;
 
 public:
     explicit PersonalSettings(const ArgumentDictionary& args, const std::map<std::string, uint8_t>& item_names);
@@ -31,7 +38,7 @@ public:
     [[nodiscard]] bool remove_music() const { return _remove_music; }
     [[nodiscard]] bool swap_overworld_music() const { return _swap_overworld_music; }
     [[nodiscard]] const std::array<uint8_t, 40>& inventory_order() const { return _inventory_order; }
-    [[nodsicard]] bool winter_theme() const { return _winter_theme; }
+    [[nodiscard]] Season season() const { return _season; }
 
     void parse_json(const Json& json);
 };

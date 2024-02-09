@@ -90,8 +90,16 @@ PersonalSettings::PersonalSettings(const ArgumentDictionary& args, const std::ma
         _nigel_colors.second = _nigel_colors.first.subtract(0x40);
     }
 
-    if(args.contains("wintertheme"))
-        _winter_theme = true;
+    if(args.contains("season"))
+    {
+        std::string season_string = args.get_string("season");
+        if(season_string == "winter")
+            _season = Season::WINTER;
+        else if(season_string == "summer")
+            _season = Season::SUMMER;
+        else if(season_string == "autumn" || season_string == "fall")
+            _season = Season::AUTUMN;
+    }
 }
 
 void PersonalSettings::parse_json(const Json& json)
@@ -151,6 +159,21 @@ void PersonalSettings::parse_json(const Json& json)
         }
     }
 
-    if(json.contains("winterTheme"))
-        _winter_theme = json.at("winterTheme");
+    if(json.contains("season"))
+    {
+        std::string season_str = json["season"];
+        stringtools::to_lower(season_str);
+        stringtools::trim(season_str);
+
+        if(season_str == "winter")
+            _season = Season::WINTER;
+        else if(season_str == "summer")
+            _season = Season::SUMMER;
+        else if(season_str == "autumn" || season_str == "fall")
+            _season = Season::AUTUMN;
+    }
+    else if(json.contains("winterTheme") && json.at("winterTheme") == true)
+    {
+        _season = Season::WINTER;
+    }
 }
