@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/Version-1.8.2-blue)
+![version](https://img.shields.io/badge/Version-1.8.3-blue)
 ![compile](https://github.com/Dinopony/randstalker/workflows/Compile/badge.svg)
 <a href="https://discord.gg/XNA76xc9sU">
   <img src="https://img.shields.io/badge/-Discord-lightgrey?logo=discord" alt="Join Discord">
