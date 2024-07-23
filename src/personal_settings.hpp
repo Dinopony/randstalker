@@ -25,6 +25,7 @@ private:
     std::pair<Color, Color> _nigel_colors = std::make_pair(Color(0x00, 0xA0, 0x80), Color(0x00, 0x40, 0x20));
     bool _remove_music = false;
     bool _swap_overworld_music = false;
+    bool _skip_received_item_textboxes = false;
     std::array<uint8_t, 40> _inventory_order;
     Season _season = Season::SPRING;
 
@@ -37,6 +38,7 @@ public:
     [[nodiscard]] const std::pair<Color, Color>& nigel_colors() const { return _nigel_colors; }
     [[nodiscard]] bool remove_music() const { return _remove_music; }
     [[nodiscard]] bool swap_overworld_music() const { return _swap_overworld_music; }
+    [[nodiscard]] bool skip_received_item_textboxes() const { return _skip_received_item_textboxes; }
     [[nodiscard]] const std::array<uint8_t, 40>& inventory_order() const { return _inventory_order; }
     [[nodiscard]] Season season() const { return _season; }
 

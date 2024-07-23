@@ -176,4 +176,9 @@ void PersonalSettings::parse_json(const Json& json)
     {
         _season = Season::WINTER;
     }
+
+    // Archipelago-specific personal setting, handled through randstalker-archipelago but not included in
+    // Randstalker stock personal setting file
+    if(json.contains("skipReceivedItemTextboxes"))
+        _skip_received_item_textboxes = json.at("skipReceivedItemTextboxes");
 }

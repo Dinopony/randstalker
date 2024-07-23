@@ -37,6 +37,7 @@ public:
         uint32_t function_check_gold_reward = inject_function_check_gold_reward(rom);
         handle_gold_rewards_for_chest(rom, function_check_gold_reward);
         handle_gold_rewards_for_npc(rom, function_check_gold_reward);
+        inject_func_get_item_increase_golds(rom, function_check_gold_reward);
     }
 
 private:
@@ -114,5 +115,36 @@ private:
         uint32_t addr = rom.inject_code(proc_check_if_item_is_golds);
 
         rom.set_code(0x28EC4, md::Code().jmp(addr));
+    }
+
+    /**
+     * This function makes GetItem give golds in case it would be called directly with a gold item.
+     * This never happens in regular randomizer, but can happen in Archipelago context when received item textboxes
+     * are disabled: in that case, we directly call GetItem instead of ReceiveItem.
+     */
+    static void inject_func_get_item_increase_golds(md::ROM& rom, uint32_t function_check_gold_reward)
+    {
+        md::Code proc;
+        
+        proc.cmpiw(ITEM_GOLDS_START, reg_D0);
+        proc.blt("item_not_golds");
+        {
+            // Gold reward case
+            proc.subiw(ITEM_GOLDS_START, reg_D0);
+            proc.jsr(function_check_gold_reward);
+            proc.jsr(0x177DC); // AddGold
+            proc.jmp(0x29216); // GetItem (movem on function end)
+        }
+        proc.label("item_not_golds");
+        proc.cmpib(ITEM_LIFESTOCK, reg_D0);
+        proc.bne("not_lifestock");
+        {
+            proc.jmp(0x291E0); // GetItem (lifestock case)
+        }
+        proc.label("not_lifestock");
+        proc.jmp(0x29202); // GetItem (common case)
+
+        uint32_t addr = rom.inject_code(proc);
+        rom.set_code(0x291DA, md::Code().jmp(addr));
     }
 };

@@ -9,9 +9,12 @@ class PatchOnWalkEffects : public GamePatch
 {
 private:
     bool _archipelago;
+    bool _silent_ap_item_reception;
 
 public:
-    explicit PatchOnWalkEffects(bool archipelago) : _archipelago(archipelago)
+    explicit PatchOnWalkEffects(bool archipelago, bool silent_ap_item_reception) :
+        _archipelago                (archipelago),
+        _silent_ap_item_reception   (silent_ap_item_reception)
     {}
 
     void inject_code(md::ROM& rom, World& world) override
@@ -65,15 +68,24 @@ private:
         md::Code func;
         {
             // If an received item needs to be obtained, give the item and display a textbox
-            func.cmpib(0xFF, addr_(0xFF0020));
+            func.cmpib(0xFF, addr_(ADDR_ARCHIPELAGO_RECEIVED_ITEM));
             func.beq("deathlink");
             {
-                func.clrw(addr_(0xFF1196));
-                func.moveb(addr_(0xFF0020), addr_(0xFF1197));
-                func.jsr(0x28EBA); // Receive item
-                func.jsr(0x28FB8); // Close textbox
-                func.addiw(1, addr_(0xFF107E));
-                func.moveb(0xFF, addr_(0xFF0020));
+                if(_silent_ap_item_reception)
+                {
+                    func.clrl(reg_D0);
+                    func.moveb(addr_(ADDR_ARCHIPELAGO_RECEIVED_ITEM), reg_D0);
+                    func.jsr(0x291D6); // GetItem
+                }
+                else
+                {
+                    func.clrw(addr_(0xFF1196));
+                    func.moveb(addr_(ADDR_ARCHIPELAGO_RECEIVED_ITEM), addr_(0xFF1197));
+                    func.jsr(0x28EBA); // ReceiveItem
+                    func.jsr(0x28FB8); // Close textbox
+                }
+                func.addiw(1, addr_(ADDR_CURRENT_RECEIVED_ITEM_INDEX));
+                func.moveb(0xFF, addr_(ADDR_ARCHIPELAGO_RECEIVED_ITEM));
             }
             // If a death was received while playing with deathlink, kill Nigel
             func.label("deathlink");

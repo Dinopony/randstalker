@@ -135,7 +135,7 @@ void apply_randomizer_patches(md::ROM& rom, RandomizerWorld& world, const Random
     patches.emplace_back(new PatchOracleStoneHintOnUse());
     patches.emplace_back(new PatchSpellBookTeleportOnUse(options.consumable_spell_book()));
     patches.emplace_back(new PatchRecordBookSaveOnUse(options.consumable_record_book()));
-    patches.emplace_back(new PatchOnWalkEffects(options.archipelago_world()));
+    patches.emplace_back(new PatchOnWalkEffects(options.archipelago_world(), personal_settings.skip_received_item_textboxes()));
 
     // =======================================================
     // Fluff / quality of life
