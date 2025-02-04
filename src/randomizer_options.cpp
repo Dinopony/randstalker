@@ -108,7 +108,7 @@ Json RandomizerOptions::to_json() const
     json["gameSettings"]["removeTiborRequirement"] = _remove_tibor_requirement;
     json["gameSettings"]["allTreesVisitedAtStart"] = _all_trees_visited_at_start;
     json["gameSettings"]["allowWhistleUsageBehindTrees"] = _allow_whistle_usage_behind_trees;
-    json["gameSettings"]["openGreenmazeShortcut"] = _open_greenmaze_shortcut;
+//    json["gameSettings"]["openGreenmazeShortcut"] = _open_greenmaze_shortcut;
     json["gameSettings"]["ekeekeAutoRevive"] = _ekeeke_auto_revive;
     json["gameSettings"]["enemiesDamageFactor"] = _enemies_damage_factor;
     json["gameSettings"]["enemiesHealthFactor"] = _enemies_health_factor;
@@ -225,8 +225,8 @@ void RandomizerOptions::parse_json(const Json& json)
             _all_trees_visited_at_start = game_settings_json.at("allTreesVisitedAtStart");
         if(game_settings_json.contains("allowWhistleUsageBehindTrees"))
             _allow_whistle_usage_behind_trees = game_settings_json.at("allowWhistleUsageBehindTrees");
-        if(game_settings_json.contains("openGreenmazeShortcut"))
-            _open_greenmaze_shortcut = game_settings_json.at("openGreenmazeShortcut");
+//        if(game_settings_json.contains("openGreenmazeShortcut"))
+//            _open_greenmaze_shortcut = game_settings_json.at("openGreenmazeShortcut");
         if(game_settings_json.contains("ekeekeAutoRevive"))
             _ekeeke_auto_revive = game_settings_json.at("ekeekeAutoRevive");
         if(game_settings_json.contains("enemiesDamageFactor"))
@@ -469,7 +469,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_tree_cutting_glitch_in_logic);
     bitpack.pack(_damage_boosting_in_logic);
     bitpack.pack(_allow_whistle_usage_behind_trees);
-    bitpack.pack(_open_greenmaze_shortcut);
+//    bitpack.pack(_open_greenmaze_shortcut);
     bitpack.pack(_ensure_ekeeke_in_shops);
     bitpack.pack_array(_items_distribution);
     bitpack.pack(_filler_item);
@@ -478,6 +478,7 @@ std::string RandomizerOptions::permalink() const
     bitpack.pack(_hints_distribution_item_location);
     bitpack.pack(_hints_distribution_dark_region);
     bitpack.pack(_hints_distribution_joke);
+    bitpack.pack(false);
     bitpack.pack(_secret_event);
 
     bitpack.pack_if(_enemies_damage_factor != 100, _enemies_damage_factor);
@@ -549,7 +550,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _tree_cutting_glitch_in_logic = bitpack.unpack<bool>();
     _damage_boosting_in_logic = bitpack.unpack<bool>();
     _allow_whistle_usage_behind_trees = bitpack.unpack<bool>();
-    _open_greenmaze_shortcut = bitpack.unpack<bool>();
+//  _open_greenmaze_shortcut = bitpack.unpack<bool>();
     _ensure_ekeeke_in_shops = bitpack.unpack<bool>();
     _items_distribution = bitpack.unpack_array<uint8_t, ITEM_COUNT>();
     _filler_item = bitpack.unpack<uint8_t>();
@@ -558,6 +559,7 @@ void RandomizerOptions::parse_permalink(std::string permalink)
     _hints_distribution_item_location = bitpack.unpack<uint8_t>();
     _hints_distribution_dark_region = bitpack.unpack<uint8_t>();
     _hints_distribution_joke = bitpack.unpack<uint8_t>();
+    bitpack.unpack<bool>();
     _secret_event = bitpack.unpack<bool>();
 
     if(bitpack.unpack<bool>()) _enemies_damage_factor = bitpack.unpack<uint16_t>();
